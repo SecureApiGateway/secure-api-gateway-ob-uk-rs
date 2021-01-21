@@ -1,0 +1,21 @@
+spring:
+  data:
+    mongodb:
+      # force SpringBoot tests to use a random port for mongo
+      port: 0
+
+rs:
+  discovery:
+    financialId: 0015800001041REAAY
+    versions:
+      # Only allow v3.1.5
+      v3.1.5: true
+      v3.1.6: false
+    apis:
+      # Disable GetDomesticPaymentConsentIdFundsConfirmation
+      GetDomesticPaymentConsentIdFundsConfirmation: false
+    versionApiOverrides:
+      # Disable  for v3.1.6
+      # (Use underscore format to avoid binding error - due to more complicated map structure)
+      v3_1_5:
+        GetDomesticPayment: false
