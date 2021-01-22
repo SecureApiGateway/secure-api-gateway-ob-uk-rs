@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.service;
+package com.forgerock.securebanking.openbanking.uk.rs.validator;
 
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
@@ -23,20 +24,33 @@ import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.paymen
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBHeaders.X_IDEMPOTENCY_KEY;
+import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.IDEMPOTENCY_KEY_INVALID;
 
 /**
  * Performs validation of idempotent requests.
  */
-@Service
+@Component
 @Slf4j
-public class IdempotencyService {
+public class IdempotencyValidator {
 
     private static final int X_IDEMPOTENCY_MAX_KEY_LENGTH = 40;
     private static final int X_IDEMPOTENCY_KEY_EXPIRY_HOURS = 24;
 
-    public static boolean isIdempotencyKeyHeaderValid(String xIdempotencyKey) {
+    public void verifyIdempotencyKeyLength(String xIdempotencyKey) throws OBErrorException {
+        if (!isIdempotencyKeyHeaderValid(xIdempotencyKey)) {
+            log.warn("Header value for {} must be between 1 and 40 characters. Provided header {} : {}'",
+                    X_IDEMPOTENCY_KEY, X_IDEMPOTENCY_KEY, xIdempotencyKey);
+            throw new OBErrorException(IDEMPOTENCY_KEY_INVALID, xIdempotencyKey, (xIdempotencyKey == null) ? 0 :
+                    xIdempotencyKey.length());
+        }
+        log.debug("xIdempotency key '{}' is valid length", xIdempotencyKey);
+    }
+
+    private static boolean isIdempotencyKeyHeaderValid(String xIdempotencyKey) {
         return !StringUtils.isEmpty(xIdempotencyKey)
                 && xIdempotencyKey.length() <= X_IDEMPOTENCY_MAX_KEY_LENGTH;
     }
