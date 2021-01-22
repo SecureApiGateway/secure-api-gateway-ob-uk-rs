@@ -30,6 +30,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.acco
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.transactions.FRTransactionRepository;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -312,7 +313,7 @@ public class DataCreator {
 
     FRAccount createAccount(FRAccountData accountData, String username) {
         FRAccount account = new FRAccount();
-        account.setCreated(new Date());
+        account.setCreated(new DateTime());
         account.setId(UUID.randomUUID().toString());
         account.setUserID(username);
         accountData.getAccount().setAccountId(account.getId());

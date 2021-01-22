@@ -15,26 +15,24 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.testsupport;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
+
+import java.util.UUID;
+
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 
 /**
- * Test data factory for {@link FRAmount}.
+ * Test data factory for {@link FRAccount} mongo documents.
  */
-public class FRAmountTestDataFactory {
+public class FRAccountTestDataFactory {
 
     /**
-     * @return a valid instance of {@link FRAmount}
+     * @return a valid {@link FRAccount} instance.
      */
-    public static FRAmount aValidFRAmount() {
-        return aValidFRAmountBuilder().build();
-    }
-
-    /**
-     * @return an instance of {@link FRAmount.FRAmountBuilder} with the required values populated.
-     */
-    public static FRAmount.FRAmountBuilder aValidFRAmountBuilder() {
-        return FRAmount.builder()
-                .currency("GBP")
-                .amount("10.00");
+    public static FRAccount aValidFRAccount() {
+        return FRAccount.builder()
+                .userID(UUID.randomUUID().toString())
+                .account(aValidFRFinancialAccount())
+                .build();
     }
 }

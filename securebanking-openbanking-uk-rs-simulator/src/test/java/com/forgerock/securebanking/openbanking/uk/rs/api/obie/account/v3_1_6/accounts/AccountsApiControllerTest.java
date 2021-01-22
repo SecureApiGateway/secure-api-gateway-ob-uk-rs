@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_6.accounts;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
-import com.forgerock.securebanking.openbanking.uk.rs.common.version.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -32,9 +32,9 @@ import org.springframework.http.ResponseEntity;
 import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBReadAccount5;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
-import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
