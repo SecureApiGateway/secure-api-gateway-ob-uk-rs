@@ -121,6 +121,12 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.forgerock.securebanking</groupId>
+            <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 
         <!-- External Test dependencies -->
         <dependency>

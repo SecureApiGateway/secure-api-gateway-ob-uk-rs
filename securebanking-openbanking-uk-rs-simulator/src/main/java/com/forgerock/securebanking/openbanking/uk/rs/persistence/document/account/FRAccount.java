@@ -20,13 +20,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.Date;
 
 /**
  * Representation of an account. This model is only useful for the demo
@@ -48,8 +47,8 @@ public class FRAccount implements Account {
     private String latestStatementId;
 
     @CreatedDate
-    private Date created;
+    private DateTime created;
     @LastModifiedDate
-    private Date updated;
+    private DateTime updated;
 
 }

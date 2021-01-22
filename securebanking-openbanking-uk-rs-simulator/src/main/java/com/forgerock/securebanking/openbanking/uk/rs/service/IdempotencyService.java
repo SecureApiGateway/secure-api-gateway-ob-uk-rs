@@ -18,7 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.service;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.OpenBankingConstants;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.PaymentSubmission;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
 @Service
 @Slf4j
 public class IdempotencyService {
+
     private static final int X_IDEMPOTENCY_MAX_KEY_LENGTH = 40;
     private static final int X_IDEMPOTENCY_KEY_EXPIRY_HOURS = 24;
 
@@ -39,17 +40,6 @@ public class IdempotencyService {
         return !StringUtils.isEmpty(xIdempotencyKey)
                 && xIdempotencyKey.length() <= X_IDEMPOTENCY_MAX_KEY_LENGTH;
     }
-
-//    /**
-//     * For payment consents.
-//     *
-//     * Consent body must be the same on new and existing requests. Idempotency key must be less than expiry time. (X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
-//     */
-//    public static <T> void validateIdempotencyRequest(String xIdempotencyKey, T submittedRequestBody, PaymentConsent existingConsent, Supplier<T> existingConsentRequestBody) throws OBErrorResponseException {
-//        log.debug("Found an existing consent '{}' with the same x-idempotency-key '{}'.", existingConsent.getId(), xIdempotencyKey);
-//        checkIdempotencyKeyExpiry(xIdempotencyKey, existingConsent.getId(), existingConsent.getCreated());
-//        checkIdempotencyRequestBodyUnchanged(xIdempotencyKey, submittedRequestBody, existingConsentRequestBody.get(), existingConsent.getId());
-//    }
 
     /**
      * For payment submissions.
@@ -62,18 +52,6 @@ public class IdempotencyService {
         checkIdempotencyKeyExpiry(submittedPayment.getIdempotencyKey(), existingPayment.getId(), new DateTime(existingPayment.getCreated()));
         // We don't need to check if body changed since previous request as that is not possible because submission data/risk cannot be changed from the consent anyway.
     }
-
-//    /**
-//     * For file upload.
-//     *
-//     * Consent body must be the same on new and existing requests. Idempotency key must be less than expiry time. (X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
-//     */
-//    public static <T> void validateIdempotencyRequest(String xIdempotencyKey, FileConsent existingConsent) throws OBErrorResponseException {
-//        log.debug("Found an existing consent '{}' with the same x-idempotency-key '{}'.", existingConsent.getId(), xIdempotencyKey);
-//        checkMatchingIdempotencyKey(xIdempotencyKey, existingConsent);
-//        checkIdempotencyKeyExpiry(xIdempotencyKey, existingConsent.getId(), existingConsent.getCreated());
-//        // We don't need to check if file content body changed since previous request with same consent as that would fail the file hash check in RS-API already.
-//    }
 
     private static void checkMatchingIdempotencyKey(String xIdempotencyKey, PaymentSubmission existingPayment) throws OBErrorResponseException {
         if (!xIdempotencyKey.equals(existingPayment.getIdempotencyKey())) {
@@ -89,24 +67,6 @@ public class IdempotencyService {
         log.info("Existing payment '{}' has the same x-idempotency-key '{}'.", existingPayment.getId(), xIdempotencyKey);
     }
 
-//    private static void checkMatchingIdempotencyKey(String xIdempotencyKey, FileConsent existingFileConsent) throws OBErrorResponseException {
-//        checkMatchingIdempotencyKey(xIdempotencyKey, existingFileConsent.getIdempotencyKey(), existingFileConsent.getId(), existingFileConsent.getStatus());
-//    }
-
-//    private static void checkMatchingIdempotencyKey(String xIdempotencyKey, String fileConsentIdempotencyKey, String fileConsentId, ConsentStatusCode consentStatusCode)
-//            throws OBErrorResponseException {
-//        if (!xIdempotencyKey.equals(fileConsentIdempotencyKey)) {
-//            log.warn("An existing file consent with the same id as the upload but a different idempotency key was found. Cannot upload this file." +
-//                    "Consent id: {}, idempotency header of file upload: {}, idempotency key of existing consent: {}", fileConsentId, xIdempotencyKey, fileConsentIdempotencyKey);
-//            throw new OBErrorResponseException(
-//                    HttpStatus.FORBIDDEN,
-//                    OBRIErrorResponseCategory.REQUEST_INVALID,
-//                    OBRIErrorType.PAYMENT_ALREADY_SUBMITTED.toOBError1(consentStatusCode.toOBExternalConsentStatus2Code())
-//            );
-//        }
-//        log.info("Existing payment '{}' has the same x-idempotency-key '{}'.", fileConsentId, xIdempotencyKey);
-//    }
-
     // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-Idempotency.1
     private static void checkIdempotencyKeyExpiry(String xIdempotencyKey, String paymentId, DateTime paymentCreated) throws OBErrorResponseException {
         if ((DateTime.now().minusHours(X_IDEMPOTENCY_KEY_EXPIRY_HOURS).isAfter(paymentCreated))) {
@@ -115,7 +75,7 @@ public class IdempotencyService {
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.IDEMPOTENCY_KEY_EXPIRED.toOBError1(xIdempotencyKey, paymentId, paymentCreated.toString(OpenBankingConstants.BOOKED_TIME_DATE_FORMAT), X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
+                    OBRIErrorType.IDEMPOTENCY_KEY_EXPIRED.toOBError1(xIdempotencyKey, paymentId, paymentCreated.toString(ApiConstants.BOOKED_TIME_DATE_FORMAT), X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
             );
         }
     }

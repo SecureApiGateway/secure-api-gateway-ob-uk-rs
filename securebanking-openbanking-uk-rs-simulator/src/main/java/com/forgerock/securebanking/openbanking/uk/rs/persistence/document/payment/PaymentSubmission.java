@@ -22,7 +22,5 @@ public interface PaymentSubmission {
 
     DateTime getCreated();
 
-    default String getIdempotencyKey() {
-        return null; // Not used on V1.1, V2.0
-    }
+    String getIdempotencyKey();
 }

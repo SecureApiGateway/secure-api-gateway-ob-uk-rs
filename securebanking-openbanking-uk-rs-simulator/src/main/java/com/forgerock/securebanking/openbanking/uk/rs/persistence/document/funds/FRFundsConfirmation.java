@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.funds;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.funds.FRFundsConfirmationData;
-import com.forgerock.securebanking.openbanking.uk.rs.common.version.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

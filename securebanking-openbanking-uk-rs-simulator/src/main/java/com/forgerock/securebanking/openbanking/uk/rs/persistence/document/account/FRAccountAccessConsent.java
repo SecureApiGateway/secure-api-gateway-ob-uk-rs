@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.forgerock.securebanking.openbanking.uk.rs.common.version.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRReadConsentResponse;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalRequestStatusCode;

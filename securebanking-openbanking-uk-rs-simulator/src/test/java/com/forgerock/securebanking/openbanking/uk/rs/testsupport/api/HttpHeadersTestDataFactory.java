@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.testsupport.api;
 
-import com.forgerock.securebanking.openbanking.uk.rs.common.version.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 

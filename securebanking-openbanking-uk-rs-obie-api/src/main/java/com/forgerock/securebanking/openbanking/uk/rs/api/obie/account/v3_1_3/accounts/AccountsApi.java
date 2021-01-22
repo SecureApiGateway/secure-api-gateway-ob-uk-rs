@@ -31,7 +31,7 @@ import uk.org.openbanking.datamodel.account.OBReadAccount5;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
 @Api(tags = "v3.1.3-Accounts", description = "the accounts API")
 @RequestMapping(value = "/open-banking/v3.1.3/aisp")

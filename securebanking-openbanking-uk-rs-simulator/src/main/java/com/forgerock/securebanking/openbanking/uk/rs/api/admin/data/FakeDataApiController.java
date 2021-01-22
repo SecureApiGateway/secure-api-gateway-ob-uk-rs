@@ -166,7 +166,7 @@ public class FakeDataApiController implements FakeDataApi {
 
             String accountId = UUID.randomUUID().toString();
             FRAccount accountPremierBank = new FRAccount();
-            accountPremierBank.setCreated(new Date());
+            accountPremierBank.setCreated(new DateTime());
             accountPremierBank.setId(accountId);
             accountPremierBank.setUserID(userId);
             accountPremierBank.setAccount(builder()
@@ -202,7 +202,7 @@ public class FakeDataApiController implements FakeDataApi {
              String accountId = UUID.randomUUID().toString();
              FRAccount accountPremierBank = new FRAccount();
              accountPremierBank.setId(accountId);
-             accountPremierBank.setCreated(new Date());
+             accountPremierBank.setCreated(new DateTime());
              accountPremierBank.setUserID(userId);
              accountPremierBank.setAccount(builder()
                      .accountId(accountId)
@@ -236,7 +236,7 @@ public class FakeDataApiController implements FakeDataApi {
 
             String accountId = UUID.randomUUID().toString();
             FRAccount accountPremierCard = new FRAccount();
-            accountPremierCard.setCreated(new Date());
+            accountPremierCard.setCreated(new DateTime());
             accountPremierCard.setId(accountId);
             accountPremierCard.setUserID(userId);
             accountPremierCard.setAccount(builder()

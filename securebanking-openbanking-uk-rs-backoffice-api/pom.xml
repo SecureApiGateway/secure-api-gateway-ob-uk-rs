@@ -46,6 +46,10 @@
             <groupId>com.forgerock.securebanking</groupId>
             <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.forgerock.securebanking</groupId>
+            <artifactId>securebanking-openbanking-uk-error</artifactId>
+        </dependency>
 
         <!-- External dependencies -->
 
