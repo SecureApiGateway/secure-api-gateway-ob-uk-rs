@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.rs.service.IdempotencyService;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.IdempotencyValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.PaymentSubmission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -48,7 +48,7 @@ public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
         Optional<T> isPaymentSubmission = repo.findById(paymentSubmission.getId());
         if (isPaymentSubmission.isPresent()) {
             log.info("A payment with this payment id '{}' was already found. Checking idempotency key.", isPaymentSubmission.get().getId());
-            IdempotencyService.validateIdempotencyRequest(paymentSubmission, isPaymentSubmission.get());
+            IdempotencyValidator.validateIdempotencyRequest(paymentSubmission, isPaymentSubmission.get());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return isPaymentSubmission.get();
         } else {

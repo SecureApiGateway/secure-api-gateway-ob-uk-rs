@@ -20,13 +20,17 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.domesticpayments;
 
-import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.IdempotencyValidator;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.OBRisk1Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -55,8 +59,16 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     private final DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository;
 
-    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository) {
+    private final IdempotencyValidator idempotencyValidator;
+
+    private final OBRisk1Validator riskValidator;
+
+    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository,
+                                         IdempotencyValidator idempotencyValidator,
+                                         OBRisk1Validator riskValidator) {
         this.domesticPaymentSubmissionRepository = domesticPaymentSubmissionRepository;
+        this.idempotencyValidator = idempotencyValidator;
+        this.riskValidator = riskValidator;
     }
 
     public ResponseEntity<OBWriteDomesticResponse5> createDomesticPayments(
@@ -72,6 +84,24 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: '{}'", obWriteDomestic2);
+
+        try {
+            // TODO - before we get this far, the IG will need to:
+            //      - verify the consent status
+            //      - verify the payment details match those in the payment consent
+            //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
+            idempotencyValidator.verifyIdempotencyKeyLength(xIdempotencyKey);
+            riskValidator.validate(obWriteDomestic2.getRisk());
+        }
+        catch (OBErrorException e) {
+                log.warn("Verification failed", e);
+                throw new OBErrorResponseException(
+                        e.getObriErrorType().getHttpStatus(),
+                        OBRIErrorResponseCategory.REQUEST_FILTER,
+                        e.getOBError());
+
+            }
+
         FRWriteDomestic frWriteDomestic = toFRWriteDomestic(obWriteDomestic2);
         log.trace("Converted to: '{}'", frWriteDomestic);
 
