@@ -1,0 +1,33 @@
+name: merge-master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Check Master Integrity
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+
+      - name: Set up java environment
+        uses: actions/setup-java@v1
+        with: # running setup-java
+          java-version: "14"
+          architecture: x64
+
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
+
+      - name: Build project with Maven # build the project
+        run: mvn -B clean verify -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip --file pom.xml # this command executes each default lifecycle phase in order (validate, compile, test, package, etc), before executing verify.
+
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
