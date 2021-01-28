@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.discovery;
 
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -27,9 +28,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import uk.org.openbanking.datamodel.account.OBReadAccount5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
 
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_1_5;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_1_6;
+import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountHttpHeaders;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -40,11 +45,11 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
 @ActiveProfiles("test")
 public class ControllerEndpointBlacklistHandlerTest {
 
-    private static HttpHeaders HTTP_HEADERS = requiredPaymentHttpHeaders();
+    private static HttpHeaders PAYMENT_HEADERS = requiredPaymentHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
-    private static final String ENABLED_VERSION = "v3.1.5";
-    private static final String DISABLED_VERSION = "v3.1.6";
-    private static final String DISABLED_ENDPOINT_OVERRIDE_VERSION = "v3.1.5";
+    private static final OBVersion ENABLED_VERSION = v3_1_5;
+    private static final OBVersion DISABLED_VERSION = v3_1_6;
+    private static final OBVersion DISABLED_ENDPOINT_OVERRIDE_VERSION = v3_1_5;
 
     @LocalServerPort
     private int port;
@@ -64,7 +69,7 @@ public class ControllerEndpointBlacklistHandlerTest {
     public void shouldCreateDomesticPaymentGivenApiVersionIsEnabled() {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         String url = paymentsUrl(ENABLED_VERSION);
 
         // When
@@ -78,7 +83,7 @@ public class ControllerEndpointBlacklistHandlerTest {
     public void shouldFailToCreateDomesticPaymentGivenApiVersionIsDisabled() {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         String url = paymentsUrl(DISABLED_VERSION);
 
         // When
@@ -91,7 +96,7 @@ public class ControllerEndpointBlacklistHandlerTest {
     @Test
     public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() {
         // Given
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(aValidOBWriteDomestic2(), HTTP_HEADERS);
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(aValidOBWriteDomestic2(), PAYMENT_HEADERS);
         ResponseEntity<OBWriteDomesticResponse5> persistedPayment = restTemplate.postForEntity(
                 paymentsUrl(ENABLED_VERSION),
                 request,
@@ -99,43 +104,35 @@ public class ControllerEndpointBlacklistHandlerTest {
         String url = paymentsIdUrl(ENABLED_VERSION, persistedPayment.getBody().getData().getDomesticPaymentId());
 
         // When
-        ResponseEntity<?> response = restTemplate.exchange(url, GET, new HttpEntity<>(HTTP_HEADERS), OBWriteDomesticResponse5.class);
+        ResponseEntity<?> response = restTemplate.exchange(url, GET, new HttpEntity<>(PAYMENT_HEADERS), OBWriteDomesticResponse5.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void shouldFailToGetDomesticPaymentFundsConfirmationGivenApiEndpointIsDisabledForVersion() {
+    public void shouldFailToGetAccountGivenApiEndpointIsDisabledForVersion() {
         // Given
-        OBWriteDomestic2 obWriteDomestic2 = aValidOBWriteDomestic2();
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(obWriteDomestic2, HTTP_HEADERS);
-        String url = fundsConfirmationUrl(
-                DISABLED_ENDPOINT_OVERRIDE_VERSION,
-                obWriteDomestic2.getData().getConsentId(),
-                "1234",
-                "10.00");
+        String accountId = "1234";
+        String url = accountIdUrl(DISABLED_ENDPOINT_OVERRIDE_VERSION, accountId);
+        HttpHeaders httpHeaders = requiredAccountHttpHeaders(DISABLED_VERSION, accountId);
 
         // When
-        ResponseEntity<?> response = restTemplate.postForEntity(url, request, OBWriteDomesticResponse5.class);
+        ResponseEntity<?> response = restTemplate.getForEntity(url, OBReadAccount5.class, httpHeaders);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    private String paymentsUrl(String version) {
-        return BASE_URL + port + "/open-banking/" + version + "/pisp/domestic-payments";
+    private String paymentsUrl(OBVersion version) {
+        return BASE_URL + port + "/open-banking/" + version.getCanonicalName() + "/pisp/domestic-payments";
     }
 
-    private String paymentsIdUrl(String version, String id) {
+    private String paymentsIdUrl(OBVersion version, String id) {
         return paymentsUrl(version) + "/" + id;
     }
 
-    private String paymentConsentsUrl(String version, String consentId) {
-        return BASE_URL + port + "/open-banking/" + version + "/domestic-payment-consents/" + consentId;
-    }
-
-    private String fundsConfirmationUrl(String version, String consentId, String accountId, String amount) {
-        return paymentConsentsUrl(version, consentId) + "?accountId=" + accountId + "&amount=" + amount;
+    private String accountIdUrl(OBVersion version, String id) {
+        return BASE_URL + port + "/open-banking/" + version.getCanonicalName() + "/aisp/accounts/" + id;
     }
 }

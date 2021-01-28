@@ -15,9 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.discovery;
 
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.domesticpayments.DomesticPaymentsApiController;
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference.CREATE_DOMESTIC_PAYMENT_CONSENT;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference.GET_DOMESTIC_PAYMENT_CONSENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -43,8 +41,8 @@ public class AvailableApiEndpointsResolverTest {
 
     private static final String BASE_URL = "http://rs";
     private static final String VERSION = "v3.1.5";
-    private static final String CREATE_CONSENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payment-consents";
-    private static final String GET_CONSENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payment-consents/{ConsentId}";
+    private static final String CREATE_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments";
+    private static final String GET_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments/{DomesticPaymentId}";
 
     @Test
     public void shouldGetAvailableApiEndpoints() {
@@ -57,31 +55,31 @@ public class AvailableApiEndpointsResolverTest {
 
         // Then
         assertThat(availableApiEndpoints.size()).isEqualTo(2);
-        AvailableApiEndpoint getConsentEndpoint = getEndpoint(availableApiEndpoints, GET_DOMESTIC_PAYMENT_CONSENT);
-        assertThat(getConsentEndpoint.getVersion().equals(VERSION));
-        assertThat(getConsentEndpoint.getGroupName().equals(OBGroupName.AISP));
-        assertThat(getConsentEndpoint.getUrl().equals(BASE_URL + CREATE_CONSENT_URI));
-        assertThat(getConsentEndpoint.getControllerMethod()).isNotNull();
+        AvailableApiEndpoint getPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.GET_DOMESTIC_PAYMENT);
+        assertThat(getPaymentEndpoint.getVersion()).isEqualTo(VERSION);
+        assertThat(getPaymentEndpoint.getGroupName()).isEqualTo(OBGroupName.PISP);
+        assertThat(getPaymentEndpoint.getUrl()).isEqualTo(BASE_URL + GET_PAYMENT_URI);
+        assertThat(getPaymentEndpoint.getControllerMethod()).isNotNull();
 
-        AvailableApiEndpoint createConsentEndpoint = getEndpoint(availableApiEndpoints, CREATE_DOMESTIC_PAYMENT_CONSENT);
-        assertThat(createConsentEndpoint.getVersion().equals(VERSION));
-        assertThat(createConsentEndpoint.getGroupName().equals(OBGroupName.AISP));
-        assertThat(createConsentEndpoint.getUrl().equals(BASE_URL + GET_CONSENT_URI));
-        assertThat(createConsentEndpoint.getControllerMethod()).isNotNull();
+        AvailableApiEndpoint createPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.CREATE_DOMESTIC_PAYMENT);
+        assertThat(createPaymentEndpoint.getVersion()).isEqualTo(VERSION);
+        assertThat(createPaymentEndpoint.getGroupName()).isEqualTo(OBGroupName.PISP);
+        assertThat(createPaymentEndpoint.getUrl()).isEqualTo(BASE_URL + CREATE_PAYMENT_URI);
+        assertThat(createPaymentEndpoint.getControllerMethod()).isNotNull();
     }
 
     private RequestMappingHandlerMapping requestHandlerMapping() {
         RequestMappingHandlerMapping requestHandlerMapping = mock(RequestMappingHandlerMapping.class);
         HandlerMethod handlerMethod = mock(HandlerMethod.class);
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = Map.of(
-                createConsentMappingInfo(handlerMethod), handlerMethod,
-                getConsentMappingInfo(handlerMethod), handlerMethod
+                createPaymentMappingInfo(handlerMethod), handlerMethod,
+                getPaymentMappingInfo(handlerMethod), handlerMethod
         );
         given(requestHandlerMapping.getHandlerMethods()).willReturn(handlerMethods);
         return requestHandlerMapping;
     }
 
-    private RequestMappingInfo createConsentMappingInfo(HandlerMethod handlerMethod) {
+    private RequestMappingInfo createPaymentMappingInfo(HandlerMethod handlerMethod) {
         Class<?> controllerClass = DomesticPaymentsApiController.class;
         BDDMockito.<Class<?>>given(handlerMethod.getBeanType()).willReturn(controllerClass);
         Method controllerMethod = Arrays.stream(controllerClass.getDeclaredMethods())
@@ -90,12 +88,12 @@ public class AvailableApiEndpointsResolverTest {
                 .get();
         given(handlerMethod.getMethod()).willReturn(controllerMethod);
         return RequestMappingInfo
-                .paths(CREATE_CONSENT_URI)
+                .paths(CREATE_PAYMENT_URI)
                 .methods(RequestMethod.POST)
                 .build();
     }
 
-    private RequestMappingInfo getConsentMappingInfo(HandlerMethod handlerMethod) {
+    private RequestMappingInfo getPaymentMappingInfo(HandlerMethod handlerMethod) {
         Class<?> controllerClass = DomesticPaymentsApiController.class;
         BDDMockito.<Class<?>>given(handlerMethod.getBeanType()).willReturn(controllerClass);
         Method controllerMethod = Arrays.stream(controllerClass.getDeclaredMethods())
@@ -104,7 +102,7 @@ public class AvailableApiEndpointsResolverTest {
                 .get();
         given(handlerMethod.getMethod()).willReturn(controllerMethod);
         return RequestMappingInfo
-                .paths(GET_CONSENT_URI)
+                .paths(GET_PAYMENT_URI)
                 .methods(RequestMethod.GET)
                 .build();
     }

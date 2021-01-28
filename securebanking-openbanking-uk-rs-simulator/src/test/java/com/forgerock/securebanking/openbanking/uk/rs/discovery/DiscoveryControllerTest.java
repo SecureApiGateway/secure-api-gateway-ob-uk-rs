@@ -71,7 +71,7 @@ public class DiscoveryControllerTest {
     @Test
     public void shouldGetDiscoveryUrlsFilteredByApiEndpoint() {
         // Given
-        OBApiReference[] disabledEndpoints = {GET_DOMESTIC_PAYMENT_CONSENT_ID_FUNDS_CONFIRMATION};
+        OBApiReference[] disabledEndpoints = {GET_DOMESTIC_PAYMENT};
         OBApiReference[] enabledEndpoints = {CREATE_DOMESTIC_PAYMENT};
 
         // When
@@ -90,7 +90,7 @@ public class DiscoveryControllerTest {
     public void shouldGetDiscoveryUrlsFilteredByVersionAndApiEndpoint() {
         // Given
         String version = "v3.1.5";
-        OBApiReference disabledEndpoint = GET_DOMESTIC_PAYMENT;
+        OBApiReference disabledEndpoint = GET_ACCOUNT;
 
         // When
         ResponseEntity<OBDiscoveryResponse> response = restTemplate.getForEntity(discoveryUrl(), OBDiscoveryResponse.class);
@@ -98,12 +98,11 @@ public class DiscoveryControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBDiscovery data = response.getBody().getData();
-        List<OBDiscoveryAPI<OBDiscoveryAPILinks>> paymentApis = data.getPaymentInitiationAPIs();
-        assertThat(isEndpointDisabledByVersion(paymentApis, version, disabledEndpoint)).isTrue();
+        List<OBDiscoveryAPI<OBDiscoveryAPILinks>> accountApis = data.getAccountAndTransactionAPIs();
+        assertThat(isEndpointDisabledByVersion(accountApis, version, disabledEndpoint)).isTrue();
         // assert others are not filtered
-        // enable when more APIs are added
-        //assertThat(isEndpointDisabledByVersion(paymentApis, "v3.1.5", disabledEndpoint)).isFalse();
-        assertThat(isEndpointDisabledByVersion(paymentApis, version, CREATE_DOMESTIC_PAYMENT)).isFalse();
+        assertThat(isEndpointDisabledByVersion(accountApis, "v3.1.4", disabledEndpoint)).isFalse();
+        assertThat(isEndpointDisabledByVersion(accountApis, version, GET_ACCOUNTS)).isFalse();
     }
 
     private boolean containsVersions(List<OBDiscoveryAPI<OBDiscoveryAPILinks>> api, String... versions) {
