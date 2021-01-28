@@ -1,0 +1,100 @@
+/**
+ * Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
+
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBalance;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.balances.FRBalanceRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toList;
+
+@Controller
+@Slf4j
+public class AccountsApiController implements AccountsApi {
+    private final FRAccountRepository accountsRepository;
+    private final FRBalanceRepository balanceRepository;
+
+    @Autowired
+    public AccountsApiController(FRAccountRepository accountsRepository, FRBalanceRepository balanceRepository) {
+        this.accountsRepository = accountsRepository;
+        this.balanceRepository = balanceRepository;
+    }
+
+    @Override
+    public ResponseEntity<List<FRBankAccountWithBalance>> getUserAccountsWithBalance(String userId, boolean withBalance) {
+        log.info("Read all accounts for user ID '{}', with Balances: {}", userId, withBalance);
+        Collection<FRAccount> accountsByUserID = accountsRepository.findByUserID(userId);
+
+        if (!withBalance || accountsByUserID.isEmpty()) {
+            log.debug("No balances required so returning {} accounts for userId: {}", accountsByUserID.size(), userId);
+            return ResponseEntity.ok(accountsByUserID.stream()
+                    .map(account -> toFRBankAccountWithBalance(account, emptyMap()))
+                    .collect(toList()));
+        }
+
+        List<String> accountIds = accountsByUserID.stream()
+                .map(FRAccount::getId)
+                .collect(toList());
+        Collection<FRBalance> balances = balanceRepository.findByAccountIdIn(accountIds);
+
+        Map<String, List<FRBalance>> balancesByAccountId = balances.stream()
+                .collect(Collectors.groupingBy(
+                        FRBalance::getAccountId,
+                        HashMap::new,
+                        Collectors.toCollection(ArrayList::new)));
+        log.debug("Balances by accountId: {}", balancesByAccountId);
+
+        return ResponseEntity.ok(accountsByUserID.stream()
+                .map(account -> toFRBankAccountWithBalance(account, balancesByAccountId))
+                .collect(toList())
+        );
+
+    }
+
+    private FRBankAccountWithBalance toFRBankAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {
+        List<FRCashBalance> balances = Optional.ofNullable(balanceMap.get(account.getId()))
+                .orElse(emptyList())
+                .stream()
+                .map(FRBalance::getBalance)
+                .collect(toList());
+
+        return new FRBankAccountWithBalance(toFRBankAccount(account), balances);
+    }
+
+    private FRBankAccount toFRBankAccount(FRAccount account) {
+        return account == null ? null : FRBankAccount.builder()
+                .id(account.getId())
+                .userId(account.getUserID())
+                .account(account.getAccount())
+                .latestStatementId(account.getLatestStatementId())
+                .created(account.getCreated())
+                .updated(account.getUpdated())
+                .build();
+    }
+}

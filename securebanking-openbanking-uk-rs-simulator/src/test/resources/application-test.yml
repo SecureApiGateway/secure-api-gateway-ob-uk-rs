@@ -12,10 +12,10 @@ rs:
       v3.1.5: true
       v3.1.6: false
     apis:
-      # Disable GetDomesticPaymentConsentIdFundsConfirmation
-      GetDomesticPaymentConsentIdFundsConfirmation: false
+      # Disable GetDomesticPayment for all versions
+      GetDomesticPayment: false
     versionApiOverrides:
-      # Disable  for v3.1.6
+      # Disable GetAccount for v3.1.5
       # (Use underscore format to avoid binding error - due to more complicated map structure)
       v3_1_5:
-        GetDomesticPayment: false
+        GetAccount: false

@@ -128,7 +128,7 @@ public class DataApiControllerIT {
         ResponseEntity<FRUserData> response = restTemplate.exchange(dataUrl(), PUT, new HttpEntity<>(userData), FRUserData.class);
 
         // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
     private FRAccountData accountDataWithBalances(OBAccount6 account, OBCashBalance1... obCashBalance1s) {
