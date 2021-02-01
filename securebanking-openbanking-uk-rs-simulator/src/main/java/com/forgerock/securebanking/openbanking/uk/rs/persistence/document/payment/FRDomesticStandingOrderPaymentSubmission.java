@@ -36,6 +36,8 @@ public class FRDomesticStandingOrderPaymentSubmission implements PaymentSubmissi
 
     private FRWriteDomesticStandingOrder domesticStandingOrder;
 
+    private FRSubmissionStatus status;
+
     @CreatedDate
     private DateTime created;
     @LastModifiedDate

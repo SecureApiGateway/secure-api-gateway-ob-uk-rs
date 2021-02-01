@@ -25,19 +25,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
  */
 public class LinksHelper {
 
-    public static final String DOMESTIC_PAYMENT_CONSENTS = "domestic-payment-consents";
-    public static final String DOMESTIC_PAYMENTS = "domestic-payments";
-
-    /**
-     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment consent.
-     *
-     * @param controllerClass The controller class that is responsible for handling the self link.
-     * @param id The ID of the resource concerned.
-     * @return The {@link Links} instance with the populated 'self' URL.
-     */
-    public static Links createDomesticPaymentConsentLink(Class<?> controllerClass, String id) {
-        return createSelfLink(controllerClass, DOMESTIC_PAYMENT_CONSENTS, id);
-    }
+    private static final String DOMESTIC_PAYMENTS = "domestic-payments";
+    private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
+    private static final String DOMESTIC_STANDING_ORDER = "domestic-standing-orders";
+    private static final String FILE_PAYMENTS = "file-payments";
+    private static final String INTERNATIONAL_PAYMENTS = "international-payments";
+    private static final String INTERNATIONAL_SCHEDULED_PAYMENTS = "international-scheduled-payments";
+    private static final String INTERNATIONAL_STANDING_ORDER = "international-standing-orders";
 
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment.
@@ -48,6 +42,77 @@ public class LinksHelper {
      */
     public static Links createDomesticPaymentLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, DOMESTIC_PAYMENTS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic scheduled
+     * payment.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createDomesticScheduledPaymentLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_SCHEDULED_PAYMENTS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic standing
+     * order.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createDomesticStandingOrderPaymentLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_STANDING_ORDER, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a payments file.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createFilePaymentsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, FILE_PAYMENTS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for an international
+     * payment.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createInternationalPaymentLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_PAYMENTS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for an international
+     * scheduled payment.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createInternationalScheduledPaymentLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_SCHEDULED_PAYMENTS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic standing
+     * order.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createInternationalStandingOrderPaymentLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_STANDING_ORDER, id);
     }
 
     /**

@@ -51,16 +51,14 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
-import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRPaymentStatus.PENDING;
+import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRSubmissionStatus.PENDING;
 
 @Controller("DomesticPaymentsApiV3.1.5")
 @Slf4j
 public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     private final DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository;
-
     private final IdempotencyValidator idempotencyValidator;
-
     private final OBRisk1Validator riskValidator;
 
     public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository,
@@ -108,7 +106,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
                 .id(obWriteDomestic2.getData().getConsentId())
                 .domesticPayment(frWriteDomestic)
-                .paymentStatus(PENDING)
+                .status(PENDING)
                 .created(DateTime.now())
                 .updated(DateTime.now())
                 .idempotencyKey(xIdempotencyKey)
@@ -161,7 +159,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                         .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
                         .creationDateTime(paymentSubmission.getCreated())
                         .statusUpdateDateTime(paymentSubmission.getUpdated())
-                        .status(StatusEnum.fromValue(paymentSubmission.getPaymentStatus().getValue()))
+                        .status(StatusEnum.fromValue(paymentSubmission.getStatus().getValue()))
                         .consentId(data.getConsentId())
                         .debtor(toOBDebtorIdentification1(data.getInitiation().getDebtorAccount())))
                 .links(createDomesticPaymentLink(this.getClass(), paymentSubmission.getId()))

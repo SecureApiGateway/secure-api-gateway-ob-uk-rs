@@ -36,6 +36,8 @@ public class FRInternationalStandingOrderPaymentSubmission implements PaymentSub
 
     private FRWriteInternationalStandingOrder internationalStandingOrder;
 
+    private FRSubmissionStatus status;
+
     @CreatedDate
     private DateTime created;
     @LastModifiedDate
