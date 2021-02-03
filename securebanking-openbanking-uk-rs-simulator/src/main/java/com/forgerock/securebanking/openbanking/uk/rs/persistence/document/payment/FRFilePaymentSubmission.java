@@ -37,6 +37,8 @@ public class FRFilePaymentSubmission implements PaymentSubmission {
 
     private FRWriteFile filePayment;
 
+    private FRSubmissionStatus status;
+
     @CreatedDate
     private DateTime created;
     @LastModifiedDate

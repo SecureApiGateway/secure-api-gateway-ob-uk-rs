@@ -63,7 +63,7 @@ public class IdempotencyValidator {
     public static <T> void validateIdempotencyRequest(PaymentSubmission submittedPayment, PaymentSubmission existingPayment)
             throws OBErrorResponseException {
         checkMatchingIdempotencyKey(submittedPayment.getIdempotencyKey(), existingPayment);
-        checkIdempotencyKeyExpiry(submittedPayment.getIdempotencyKey(), existingPayment.getId(), new DateTime(existingPayment.getCreated()));
+        checkIdempotencyKeyExpiry(submittedPayment.getIdempotencyKey(), existingPayment.getId(), existingPayment.getCreated());
         // We don't need to check if body changed since previous request as that is not possible because submission data/risk cannot be changed from the consent anyway.
     }
 
@@ -90,19 +90,6 @@ public class IdempotencyValidator {
                     HttpStatus.BAD_REQUEST,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
                     OBRIErrorType.IDEMPOTENCY_KEY_EXPIRED.toOBError1(xIdempotencyKey, paymentId, paymentCreated.toString(ApiConstants.BOOKED_TIME_DATE_FORMAT), X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
-            );
-        }
-    }
-
-    // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-Idempotency.1
-    private static <T> void checkIdempotencyRequestBodyUnchanged(String xIdempotencyKey, T submittedRequestBody, T existingRequestBody, String paymentId) throws OBErrorResponseException {
-        if (!submittedRequestBody.equals(existingRequestBody)) {
-            log.debug("Matching idempotency key provided but request body was not equal to previous request so rejecting. xIdempotency key: {}, request body: {}, existing id: {}, existing request body: {}",
-                    xIdempotencyKey, submittedRequestBody, paymentId, existingRequestBody);
-            throw new OBErrorResponseException(
-                    HttpStatus.UNAUTHORIZED,
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED.toOBError1(xIdempotencyKey, paymentId, existingRequestBody, submittedRequestBody)
             );
         }
     }

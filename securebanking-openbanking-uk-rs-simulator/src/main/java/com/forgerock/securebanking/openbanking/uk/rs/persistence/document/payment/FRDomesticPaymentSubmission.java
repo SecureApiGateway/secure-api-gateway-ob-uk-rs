@@ -37,7 +37,7 @@ public class FRDomesticPaymentSubmission implements PaymentSubmission {
 
     private FRWriteDomestic domesticPayment;
 
-    private FRPaymentStatus paymentStatus;
+    private FRSubmissionStatus status;
 
     @CreatedDate
     private DateTime created;

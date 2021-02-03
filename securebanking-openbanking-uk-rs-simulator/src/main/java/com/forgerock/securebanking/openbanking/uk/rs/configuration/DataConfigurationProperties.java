@@ -16,12 +16,12 @@
 package com.forgerock.securebanking.openbanking.uk.rs.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Configuration
 @ConfigurationProperties(prefix = "data-template")
 public class DataConfigurationProperties {
 

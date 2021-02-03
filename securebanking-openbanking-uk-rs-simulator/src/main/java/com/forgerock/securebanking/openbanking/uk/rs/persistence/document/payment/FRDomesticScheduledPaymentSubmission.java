@@ -36,6 +36,8 @@ public class FRDomesticScheduledPaymentSubmission implements PaymentSubmission {
 
     private FRWriteDomesticScheduled domesticScheduledPayment;
 
+    private FRSubmissionStatus status;
+
     @CreatedDate
     private DateTime created;
     @LastModifiedDate

@@ -57,6 +57,7 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
+        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-jws-signature", "dummyJwsSignature");
         headers.add("x-ob-tpp-id", "tppId");

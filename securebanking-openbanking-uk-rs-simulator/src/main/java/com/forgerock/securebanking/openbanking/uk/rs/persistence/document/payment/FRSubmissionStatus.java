@@ -20,17 +20,25 @@ import java.util.stream.Stream;
 /**
  * Represents the status of a Payment (not to be confused with the status of the payment's consent).
  */
-public enum FRPaymentStatus {
-    ACCEPTEDCREDITSETTLEMENTCOMPLETED("AcceptedCreditSettlementCompleted"),
-    ACCEPTEDSETTLEMENTCOMPLETED("AcceptedSettlementCompleted"),
-    ACCEPTEDSETTLEMENTINPROCESS("AcceptedSettlementInProcess"),
-    ACCEPTEDWITHOUTPOSTING("AcceptedWithoutPosting"),
+public enum FRSubmissionStatus {
+
+    // "Immediate" Domestic/International Payments
     PENDING("Pending"),
-    REJECTED("Rejected");
+    REJECTED("Rejected"),
+    ACCEPTEDSETTLEMENTINPROCESS("AcceptedSettlementInProcess"),
+    ACCEPTEDCREDITSETTLEMENTCOMPLETED("AcceptedCreditSettlementCompleted"),
+    ACCEPTEDWITHOUTPOSTING("AcceptedWithoutPosting"),
+    ACCEPTEDSETTLEMENTCOMPLETED("AcceptedSettlementCompleted"),
+
+    // Domestic/International Scheduled Payments or Standing Orders, or File Payments
+    INITIATIONPENDING("InitiationPending"),
+    INITIATIONFAILED("InitiationFailed"),
+    INITIATIONCOMPLETED("InitiationCompleted"),
+    CANCELLED("Cancelled");
 
     private String value;
 
-    FRPaymentStatus(String value) {
+    FRSubmissionStatus(String value) {
         this.value = value;
     }
 
@@ -42,7 +50,7 @@ public enum FRPaymentStatus {
         return value;
     }
 
-    public static FRPaymentStatus fromValue(String value) {
+    public static FRSubmissionStatus fromValue(String value) {
         return Stream.of(values())
                 .filter(type -> type.getValue().equals(value))
                 .findFirst()

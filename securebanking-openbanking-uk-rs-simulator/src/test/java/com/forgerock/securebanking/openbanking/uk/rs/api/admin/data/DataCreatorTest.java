@@ -29,7 +29,6 @@ import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.acco
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.transactions.FRTransactionRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +45,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRCashBalanceConverter.toFRCashBalance;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -102,7 +102,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createBalances(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createBeneficiaries(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createDirectDebits(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createStandingOrders(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createTransactions(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -182,7 +182,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createStatements(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -198,7 +198,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createScheduledPayments(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createOffers(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -232,7 +232,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FRBalance>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(balanceRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -250,7 +250,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FRBeneficiary>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(beneficiaryRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -268,7 +268,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FRDirectDebit>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(directDebitRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -286,7 +286,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FRStandingOrder>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(standingOrderRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -304,7 +304,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FRTransaction>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(transactionRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -322,7 +322,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FRStatement>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(statementRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -340,7 +340,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FRScheduledPayment>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(scheduledPaymentRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -358,7 +358,7 @@ public class DataCreatorTest {
         // Then
         ArgumentCaptor<List<FROffer>> argumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(offerRepository).saveAll(argumentCaptor.capture());
-        Assertions.assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
+        assertThat(argumentCaptor.getValue().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
@@ -392,7 +392,7 @@ public class DataCreatorTest {
         assertThatThrownBy(() -> dataCreator.createBalances(accountDataWithBalance(interimAvailBalance), Collections.singleton(interimAvailBalance.getAccountId())))
 
                 // Then
-                .satisfies(t -> Assertions.assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
     @Test

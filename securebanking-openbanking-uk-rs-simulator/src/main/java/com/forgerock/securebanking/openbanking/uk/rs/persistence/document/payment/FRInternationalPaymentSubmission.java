@@ -15,8 +15,10 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRExchangeRateInformation;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternational;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.rs.service.currency.CurrencyRateService;
 import lombok.Builder;
 import lombok.Data;
 import org.joda.time.DateTime;
@@ -37,6 +39,8 @@ public class FRInternationalPaymentSubmission implements PaymentSubmission {
 
     private FRWriteInternational internationalPayment;
 
+    private FRSubmissionStatus status;
+
     @CreatedDate
     private DateTime created;
     @LastModifiedDate
@@ -45,4 +49,12 @@ public class FRInternationalPaymentSubmission implements PaymentSubmission {
     private String idempotencyKey;
 
     private OBVersion obVersion;
+
+    /**
+     * @return {@link FRExchangeRateInformation} with rate and expiry date fields populated where appropriate.
+     */
+    public FRExchangeRateInformation getCalculatedExchangeRate() {
+        FRExchangeRateInformation exchangeRateInformation = internationalPayment.getData().getInitiation().getExchangeRateInformation();
+        return CurrencyRateService.getCalculatedExchangeRate(exchangeRateInformation, created);
+    }
 }
