@@ -16,7 +16,6 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments;
 
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalPaymentSubmission;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface InternationalPaymentSubmissionRepository extends MongoRepository<FRInternationalPaymentSubmission, String> {
+public interface InternationalPaymentSubmissionRepository extends PaymentSubmissionRepository<FRInternationalPaymentSubmission> {
 }

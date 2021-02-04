@@ -18,11 +18,11 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.inte
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledData;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalScheduledPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalScheduledPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createInternationalScheduledPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
@@ -85,13 +86,15 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         log.trace("Converted to: '{}'", frScheduledPayment);
 
         FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
-                .id(frScheduledPayment.getData().getConsentId())
-                .internationalScheduledPayment(frScheduledPayment)
+                .id(UUID.randomUUID().toString())
+                .scheduledPayment(frScheduledPayment)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
+
+        // Save the international scheduled payment
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
@@ -118,14 +121,14 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     }
 
     private OBWriteInternationalScheduledResponse1 responseEntity(FRInternationalScheduledPaymentSubmission frPaymentSubmission) {
-        FRWriteInternationalScheduledData data = frPaymentSubmission.getInternationalScheduledPayment().getData();
+        FRWriteInternationalScheduledData data = frPaymentSubmission.getScheduledPayment().getData();
         return new OBWriteInternationalScheduledResponse1()
                 .data(new OBWriteDataInternationalScheduledResponse1()
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBInternationalScheduled1(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
-                        .consentId(frPaymentSubmission.getId())
+                        .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId())
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
                         .exchangeRateInformation(toOBExchangeRate2(frPaymentSubmission.getCalculatedExchangeRate()))
                         .expectedExecutionDateTime(data.getInitiation().getRequestedExecutionDateTime())

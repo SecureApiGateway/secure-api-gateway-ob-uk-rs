@@ -20,6 +20,8 @@ import org.joda.time.DateTime;
 public interface PaymentSubmission {
     String getId();
 
+    String getConsentId();
+
     DateTime getCreated();
 
     String getIdempotencyKey();

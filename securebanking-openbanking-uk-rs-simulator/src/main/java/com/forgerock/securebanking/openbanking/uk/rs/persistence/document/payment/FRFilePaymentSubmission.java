@@ -47,4 +47,9 @@ public class FRFilePaymentSubmission implements PaymentSubmission {
     private String idempotencyKey;
 
     private OBVersion obVersion;
+
+    @Override
+    public String getConsentId() {
+        return filePayment.getData().getConsentId();
+    }
 }

@@ -17,11 +17,11 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.dome
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createDomesticStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
@@ -83,15 +84,16 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         log.trace("Converted to: '{}'", frStandingOrder);
 
         FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
-                // TODO - openbanking-aspsp uses the consent id - is this for convenience? Could it be a problem?
-                .id(frStandingOrder.getData().getConsentId())
-                .domesticStandingOrder(frStandingOrder)
+                .id(UUID.randomUUID().toString())
+                .standingOrder(frStandingOrder)
                 .status(INITIATIONPENDING)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
+
+        // Save the standing order
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(standingOrderPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
@@ -119,11 +121,11 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private OBWriteDomesticStandingOrderResponse1 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission) {
         return new OBWriteDomesticStandingOrderResponse1().data(new OBWriteDataDomesticStandingOrderResponse1()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
-                .initiation(toOBDomesticStandingOrder1(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
+                .initiation(toOBDomesticStandingOrder1(frPaymentSubmission.getStandingOrder().getData().getInitiation()))
                 .creationDateTime(frPaymentSubmission.getCreated())
                 .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                 .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
-                .consentId(frPaymentSubmission.getDomesticStandingOrder().getData().getConsentId()))
+                .consentId(frPaymentSubmission.getStandingOrder().getData().getConsentId()))
                 .links(createDomesticStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

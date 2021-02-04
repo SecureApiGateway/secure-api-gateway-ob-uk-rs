@@ -16,7 +16,6 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments;
 
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticStandingOrderPaymentSubmission;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface DomesticStandingOrderPaymentSubmissionRepository extends MongoRepository<FRDomesticStandingOrderPaymentSubmission, String> {
+public interface DomesticStandingOrderPaymentSubmissionRepository extends PaymentSubmissionRepository<FRDomesticStandingOrderPaymentSubmission> {
 }

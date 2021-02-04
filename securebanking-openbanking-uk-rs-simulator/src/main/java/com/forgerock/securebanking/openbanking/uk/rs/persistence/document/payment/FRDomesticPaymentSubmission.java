@@ -35,7 +35,7 @@ public class FRDomesticPaymentSubmission implements PaymentSubmission {
     @Indexed
     private String id;
 
-    private FRWriteDomestic domesticPayment;
+    private FRWriteDomestic payment;
 
     private FRSubmissionStatus status;
 
@@ -47,4 +47,9 @@ public class FRDomesticPaymentSubmission implements PaymentSubmission {
     private String idempotencyKey;
 
     private OBVersion obVersion;
+
+    @Override
+    public String getConsentId() {
+        return payment.getData().getConsentId();
+    }
 }

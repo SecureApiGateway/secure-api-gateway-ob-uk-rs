@@ -11,6 +11,12 @@ rs:
         accounts: 100
         documents: 1000
 
+#Spring
+spring:
+  data:
+    mongodb:
+      database: mongo
+
 #Swagger
 springfox:
   documentation:

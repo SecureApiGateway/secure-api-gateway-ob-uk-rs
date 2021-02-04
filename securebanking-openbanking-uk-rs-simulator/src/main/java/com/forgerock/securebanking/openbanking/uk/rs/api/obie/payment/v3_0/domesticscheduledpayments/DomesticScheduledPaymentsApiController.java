@@ -17,11 +17,11 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.dome
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticScheduledPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createDomesticScheduledPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
@@ -83,17 +84,17 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         FRWriteDomesticScheduled frScheduledPayment = toFRWriteDomesticScheduled(obWriteDomesticScheduled1);
         log.trace("Converted to: '{}'", frScheduledPayment);
 
-        // Save Payment
         FRDomesticScheduledPaymentSubmission frPaymentSubmission = FRDomesticScheduledPaymentSubmission.builder()
-                // TODO - openbanking-aspsp uses the consent id - is this for convenience? Could it be a problem?
-                .id(frScheduledPayment.getData().getConsentId())
-                .domesticScheduledPayment(frScheduledPayment)
+                .id(UUID.randomUUID().toString())
+                .scheduledPayment(frScheduledPayment)
                 .status(INITIATIONPENDING)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
+
+        // Save the scheduled payment
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
@@ -124,11 +125,11 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private OBWriteDomesticScheduledResponse1 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
         return new OBWriteDomesticScheduledResponse1().data(new OBWriteDataDomesticScheduledResponse1()
                 .domesticScheduledPaymentId(frPaymentSubmission.getId())
-                .initiation(toOBDomesticScheduled1(frPaymentSubmission.getDomesticScheduledPayment().getData().getInitiation()))
+                .initiation(toOBDomesticScheduled1(frPaymentSubmission.getScheduledPayment().getData().getInitiation()))
                 .creationDateTime(frPaymentSubmission.getCreated())
                 .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                 .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
-                .consentId(frPaymentSubmission.getDomesticScheduledPayment().getData().getConsentId()))
+                .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId()))
                 .links(createDomesticScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

@@ -36,7 +36,7 @@ public class FRInternationalScheduledPaymentSubmission implements PaymentSubmiss
     @Indexed
     private String id;
 
-    private FRWriteInternationalScheduled internationalScheduledPayment;
+    private FRWriteInternationalScheduled scheduledPayment;
 
     private FRSubmissionStatus status;
 
@@ -50,7 +50,12 @@ public class FRInternationalScheduledPaymentSubmission implements PaymentSubmiss
     private OBVersion obVersion;
 
     public FRExchangeRateInformation getCalculatedExchangeRate() {
-        FRExchangeRateInformation exchangeRateInformation = internationalScheduledPayment.getData().getInitiation().getExchangeRateInformation();
+        FRExchangeRateInformation exchangeRateInformation = scheduledPayment.getData().getInitiation().getExchangeRateInformation();
         return CurrencyRateService.getCalculatedExchangeRate(exchangeRateInformation, created);
+    }
+
+    @Override
+    public String getConsentId() {
+        return scheduledPayment.getData().getConsentId();
     }
 }

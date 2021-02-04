@@ -16,10 +16,10 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.IdempotencyValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.PaymentSubmission;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.PaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.IdempotencyValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
@@ -33,28 +33,28 @@ import java.util.Optional;
  * <li/> If invalid -> throw OBErrorResponseException
  * </ul>
  *
- * @param <T> Type of payment submission (e.g. domestic single, international scheduled etc etc )
+ * @param <T> The type of the {@link PaymentSubmission} (e.g. FRDomesticPaymentSubmission).
  */
 @Slf4j
 public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
 
-    private final MongoRepository<T, String> repo;
+    private final PaymentSubmissionRepository<T> repository;
 
-    public IdempotentRepositoryAdapter(MongoRepository<T, String> repo) {
-        this.repo = repo;
+    public IdempotentRepositoryAdapter(PaymentSubmissionRepository<T> repository) {
+        this.repository = repository;
     }
 
     public T idempotentSave(T paymentSubmission) throws OBErrorResponseException {
-        Optional<T> isPaymentSubmission = repo.findById(paymentSubmission.getId());
+        Optional<T> isPaymentSubmission = repository.findByConsentId(paymentSubmission.getConsentId());
         if (isPaymentSubmission.isPresent()) {
-            log.info("A payment with this payment id '{}' was already found. Checking idempotency key.", isPaymentSubmission.get().getId());
+            log.info("A payment with this consent id '{}' was already found. Checking idempotency key.", isPaymentSubmission.get().getConsentId());
             IdempotencyValidator.validateIdempotencyRequest(paymentSubmission, isPaymentSubmission.get());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return isPaymentSubmission.get();
         } else {
-            log.debug("No payment with this id '{}' exists. Proceed to create it.", paymentSubmission.getId());
+            log.info("No payment with this consent id '{}' exists. Proceed to create it.", paymentSubmission.getConsentId());
             log.debug("Saving new payment submission: {}", paymentSubmission);
-            paymentSubmission = repo.save(paymentSubmission);
+            paymentSubmission = repository.save(paymentSubmission);
             log.info("Created new Payment Submission: {}", paymentSubmission.getId());
             return paymentSubmission;
         }

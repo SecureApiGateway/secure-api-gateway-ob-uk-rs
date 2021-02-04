@@ -22,15 +22,12 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.do
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
-import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.IdempotencyValidator;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.OBRisk1Validator;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -46,6 +43,7 @@ import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
@@ -57,16 +55,13 @@ import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document
 @Slf4j
 public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
-    private final DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository;
-    private final IdempotencyValidator idempotencyValidator;
-    private final OBRisk1Validator riskValidator;
+    private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
+    private final PaymentSubmissionValidator paymentSubmissionValidator;
 
-    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository,
-                                         IdempotencyValidator idempotencyValidator,
-                                         OBRisk1Validator riskValidator) {
-        this.domesticPaymentSubmissionRepository = domesticPaymentSubmissionRepository;
-        this.idempotencyValidator = idempotencyValidator;
-        this.riskValidator = riskValidator;
+    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository paymentSubmissionRepository,
+                                         PaymentSubmissionValidator paymentSubmissionValidator) {
+        this.paymentSubmissionRepository = paymentSubmissionRepository;
+        this.paymentSubmissionValidator = paymentSubmissionValidator;
     }
 
     public ResponseEntity<OBWriteDomesticResponse5> createDomesticPayments(
@@ -83,36 +78,28 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: '{}'", obWriteDomestic2);
 
-        try {
-            // TODO - before we get this far, the IG will need to:
-            //      - verify the consent status
-            //      - verify the payment details match those in the payment consent
-            //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
-            idempotencyValidator.verifyIdempotencyKeyLength(xIdempotencyKey);
-            riskValidator.validate(obWriteDomestic2.getRisk());
-        }
-        catch (OBErrorException e) {
-                log.warn("Verification failed", e);
-                throw new OBErrorResponseException(
-                        e.getObriErrorType().getHttpStatus(),
-                        OBRIErrorResponseCategory.REQUEST_FILTER,
-                        e.getOBError());
+        // TODO - before we get this far, the IG will need to:
+        //      - verify the consent status
+        //      - verify the payment details match those in the payment consent
+        //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
 
-            }
+        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomestic2.getRisk());
 
         FRWriteDomestic frWriteDomestic = toFRWriteDomestic(obWriteDomestic2);
         log.trace("Converted to: '{}'", frWriteDomestic);
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
-                .id(obWriteDomestic2.getData().getConsentId())
-                .domesticPayment(frWriteDomestic)
+                .id(UUID.randomUUID().toString())
+                .payment(frWriteDomestic)
                 .status(PENDING)
                 .created(DateTime.now())
                 .updated(DateTime.now())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(domesticPaymentSubmissionRepository)
+
+        // Save the payment
+        frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission));
     }
@@ -128,7 +115,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             Principal principal
     ) {
 
-        Optional<FRDomesticPaymentSubmission> isPaymentSubmission = domesticPaymentSubmissionRepository.findById(domesticPaymentId);
+        Optional<FRDomesticPaymentSubmission> isPaymentSubmission = paymentSubmissionRepository.findById(domesticPaymentId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticPaymentId + "' can't be found");
         }
@@ -152,7 +139,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     }
 
     private OBWriteDomesticResponse5 packagePayment(FRDomesticPaymentSubmission paymentSubmission) {
-        FRWriteDataDomestic data = paymentSubmission.getDomesticPayment().getData();
+        FRWriteDataDomestic data = paymentSubmission.getPayment().getData();
         return new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()
                         .domesticPaymentId(paymentSubmission.getId())

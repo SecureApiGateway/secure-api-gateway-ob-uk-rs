@@ -19,11 +19,11 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.pay
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRFilePaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.FilePaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
@@ -71,7 +72,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                                              HttpServletRequest request,
                                              Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: '{}'", obWriteFile1);
+        log.debug("Received file payment submission: '{}'", obWriteFile1);
 
         // TODO - before we get this far, the IG will need to:
         //      - verify the consent status
@@ -84,13 +85,15 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         log.trace("Converted to: '{}'", frWriteFile);
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
-                .id(frWriteFile.getData().getConsentId())
+                .id(UUID.randomUUID().toString())
                 .filePayment(frWriteFile)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
+
+        // Save the file payment(s)
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));

@@ -96,6 +96,47 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
     }
 
+    @Test
+    public void shouldAvoidCreatingNewPaymentWhenPaymentWithSameConsentIdAlreadyExists() {
+        // Given
+        OBWriteDomestic1 payment = aValidOBWriteDomestic1();
+        HttpEntity<OBWriteDomestic1> request = new HttpEntity<>(payment, HTTP_HEADERS);
+        ResponseEntity<OBWriteDomesticResponse1> initialResponse = restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse1.class);
+        String paymentId = initialResponse.getBody().getData().getDomesticPaymentId();
+
+        // When
+        ResponseEntity<OBWriteDomesticResponse1> subsequentResponse = restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse1.class);
+
+        // Then
+        assertThat(subsequentResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        OBWriteDataDomesticResponse1 responseData = subsequentResponse.getBody().getData();
+        // ensure idempotentSave works
+        assertThat(responseData.getDomesticPaymentId()).isEqualTo(paymentId);
+        assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
+        assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
+    }
+
+    @Test
+    public void shouldCreateNewPaymentWhenPaymentWithDifferentConsentIdAlreadyExists() {
+        // Given
+        OBWriteDomestic1 initialPayment = aValidOBWriteDomestic1();
+        HttpEntity<OBWriteDomestic1> initialRequest = new HttpEntity<>(initialPayment, HTTP_HEADERS);
+        ResponseEntity<OBWriteDomesticResponse1> initialResponse = restTemplate.postForEntity(paymentsUrl(), initialRequest, OBWriteDomesticResponse1.class);
+        String initialPaymentId = initialResponse.getBody().getData().getDomesticPaymentId();
+        OBWriteDomestic1 paymentWithDifferentConsentId = aValidOBWriteDomestic1()
+                .data(aValidOBWriteDataDomestic1().consentId(UUID.randomUUID().toString()));
+        HttpEntity<OBWriteDomestic1> subsequentRequest = new HttpEntity<>(paymentWithDifferentConsentId, HTTP_HEADERS);
+
+        // When
+        ResponseEntity<OBWriteDomesticResponse1> subsequentResponse = restTemplate.postForEntity(paymentsUrl(), subsequentRequest, OBWriteDomesticResponse1.class);
+
+        // Then
+        assertThat(subsequentResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        OBWriteDataDomesticResponse1 responseData = subsequentResponse.getBody().getData();
+        // ensure idempotentSave works
+        assertThat(responseData.getDomesticPaymentId()).isNotEqualTo(initialPaymentId);
+    }
+
     private String paymentsUrl() {
         return BASE_URL + port + DOMESTIC_PAYMENTS_URI;
     }

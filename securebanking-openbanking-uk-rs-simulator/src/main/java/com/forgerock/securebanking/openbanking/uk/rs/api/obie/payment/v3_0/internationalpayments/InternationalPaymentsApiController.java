@@ -17,11 +17,11 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.inte
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternational;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createInternationalPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
@@ -84,14 +85,16 @@ public class InternationalPaymentsApiController implements InternationalPayments
         log.trace("Converted to: '{}'", frInternationalPayment);
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
-                .id(frInternationalPayment.getData().getConsentId())
-                .internationalPayment(frInternationalPayment)
+                .id(UUID.randomUUID().toString())
+                .payment(frInternationalPayment)
                 .status(PENDING)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
+
+        // Save the international payment
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
@@ -119,11 +122,11 @@ public class InternationalPaymentsApiController implements InternationalPayments
     private OBWriteInternationalResponse1 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission) {
         return new OBWriteInternationalResponse1().data(new OBWriteDataInternationalResponse1()
                 .internationalPaymentId(frPaymentSubmission.getId())
-                .initiation(toOBInternational1(frPaymentSubmission.getInternationalPayment().getData().getInitiation()))
+                .initiation(toOBInternational1(frPaymentSubmission.getPayment().getData().getInitiation()))
                 .creationDateTime(frPaymentSubmission.getCreated())
                 .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                 .status(toOBTransactionIndividualStatus1Code(frPaymentSubmission.getStatus()))
-                .consentId(frPaymentSubmission.getInternationalPayment().getData().getConsentId())
+                .consentId(frPaymentSubmission.getPayment().getData().getConsentId())
                 .exchangeRateInformation(toOBExchangeRate2(frPaymentSubmission.getCalculatedExchangeRate())))
                 .links(createInternationalPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
