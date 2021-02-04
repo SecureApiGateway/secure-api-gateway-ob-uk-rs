@@ -17,11 +17,11 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.dome
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBTransactionIndividualStatus1Code;
@@ -47,12 +48,12 @@ import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document
 @Slf4j
 public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
-    private final DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository;
+    private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
-    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository,
+    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository paymentSubmissionRepository,
                                          PaymentSubmissionValidator paymentSubmissionValidator) {
-        this.domesticPaymentSubmissionRepository = domesticPaymentSubmissionRepository;
+        this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
     }
 
@@ -80,17 +81,19 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic1);
         log.trace("Converted to: '{}'", frDomesticPayment);
+
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
-                // TODO - openbanking-aspsp uses the consent id - is this for convenience? Could it be a problem?
-                .id(frDomesticPayment.getData().getConsentId())
-                .domesticPayment(frDomesticPayment)
+                .id(UUID.randomUUID().toString())
+                .payment(frDomesticPayment)
                 .status(PENDING)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(domesticPaymentSubmissionRepository)
+
+        // Save the payment
+        frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
     }
@@ -106,7 +109,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                                                                HttpServletRequest request,
                                                                Principal principal
     ) {
-        Optional<FRDomesticPaymentSubmission> isPaymentSubmission = domesticPaymentSubmissionRepository.findById(domesticPaymentId);
+        Optional<FRDomesticPaymentSubmission> isPaymentSubmission = paymentSubmissionRepository.findById(domesticPaymentId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticPaymentId + "' can't be found");
         }
@@ -118,11 +121,11 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         return new OBWriteDomesticResponse1()
                 .data(new OBWriteDataDomesticResponse1()
                         .domesticPaymentId(frPaymentSubmission.getId())
-                        .initiation(toOBDomestic1(frPaymentSubmission.getDomesticPayment().getData().getInitiation()))
+                        .initiation(toOBDomestic1(frPaymentSubmission.getPayment().getData().getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBTransactionIndividualStatus1Code(frPaymentSubmission.getStatus()))
-                        .consentId(frPaymentSubmission.getDomesticPayment().getData().getConsentId()))
+                        .consentId(frPaymentSubmission.getPayment().getData().getConsentId()))
                 .links(createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

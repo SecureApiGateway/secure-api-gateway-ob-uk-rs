@@ -37,7 +37,7 @@ public class FRInternationalPaymentSubmission implements PaymentSubmission {
     @Indexed
     private String id;
 
-    private FRWriteInternational internationalPayment;
+    private FRWriteInternational payment;
 
     private FRSubmissionStatus status;
 
@@ -54,7 +54,12 @@ public class FRInternationalPaymentSubmission implements PaymentSubmission {
      * @return {@link FRExchangeRateInformation} with rate and expiry date fields populated where appropriate.
      */
     public FRExchangeRateInformation getCalculatedExchangeRate() {
-        FRExchangeRateInformation exchangeRateInformation = internationalPayment.getData().getInitiation().getExchangeRateInformation();
+        FRExchangeRateInformation exchangeRateInformation = payment.getData().getInitiation().getExchangeRateInformation();
         return CurrencyRateService.getCalculatedExchangeRate(exchangeRateInformation, created);
+    }
+
+    @Override
+    public String getConsentId() {
+        return payment.getData().getConsentId();
     }
 }

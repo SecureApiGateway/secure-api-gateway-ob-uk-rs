@@ -34,7 +34,7 @@ public class FRDomesticStandingOrderPaymentSubmission implements PaymentSubmissi
     @Indexed
     private String id;
 
-    private FRWriteDomesticStandingOrder domesticStandingOrder;
+    private FRWriteDomesticStandingOrder standingOrder;
 
     private FRSubmissionStatus status;
 
@@ -46,4 +46,9 @@ public class FRDomesticStandingOrderPaymentSubmission implements PaymentSubmissi
     private String idempotencyKey;
 
     private OBVersion obVersion;
+
+    @Override
+    public String getConsentId() {
+        return standingOrder.getData().getConsentId();
+    }
 }

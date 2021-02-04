@@ -15,7 +15,15 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments;
 
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticPaymentSubmission;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.PaymentSubmission;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface DomesticPaymentSubmissionRepository extends PaymentSubmissionRepository<FRDomesticPaymentSubmission> {
+import java.util.Optional;
+
+public interface PaymentSubmissionRepository<T extends PaymentSubmission> extends MongoRepository<T, String> {
+
+    @Query("{'payment.data.consentId' : ?0}")
+    Optional<T> findByConsentId(@Param("consentId") String consentId);
 }

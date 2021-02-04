@@ -34,7 +34,7 @@ public class FRInternationalStandingOrderPaymentSubmission implements PaymentSub
     @Indexed
     private String id;
 
-    private FRWriteInternationalStandingOrder internationalStandingOrder;
+    private FRWriteInternationalStandingOrder standingOrder;
 
     private FRSubmissionStatus status;
 
@@ -46,4 +46,9 @@ public class FRInternationalStandingOrderPaymentSubmission implements PaymentSub
     private String idempotencyKey;
 
     private OBVersion version;
+
+    @Override
+    public String getConsentId() {
+        return standingOrder.getData().getConsentId();
+    }
 }
