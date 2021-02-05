@@ -19,7 +19,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.accoun
 
 import java.util.UUID;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 
 /**
  * Test data factory for {@link FRAccount} mongo documents.

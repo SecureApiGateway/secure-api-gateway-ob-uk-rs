@@ -20,13 +20,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.Date;
 
 /**
  * Representation of an account. This model is only useful for the demo
@@ -40,12 +39,12 @@ public class FRBeneficiary {
 
     @Id
     @Indexed
-    public String id;
+    private String id;
     @Indexed
-    public String accountId;
-    public FRAccountBeneficiary beneficiary;
+    private String accountId;
+    private FRAccountBeneficiary beneficiary;
     @CreatedDate
-    public Date created;
+    private DateTime created;
     @LastModifiedDate
-    public Date updated;
+    private DateTime updated;
 }

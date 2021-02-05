@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_6.accounts;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.accounts;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
@@ -28,8 +28,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount5;
+import uk.org.openbanking.datamodel.account.OBAccount2;
+import uk.org.openbanking.datamodel.account.OBReadAccount2;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
@@ -45,7 +45,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class AccountsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNTS_URI = "/open-banking/v3.1.6/aisp/accounts";
+    private static final String ACCOUNTS_URI = "/open-banking/v3.0/aisp/accounts";
 
     @LocalServerPort
     private int port;
@@ -57,7 +57,7 @@ public class AccountsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @AfterEach
-    void removeData() {
+    public void removeData() {
         frAccountRepository.deleteAll();
     }
 
@@ -75,15 +75,15 @@ public class AccountsApiControllerTest {
         String url = accountsIdUrl(accountId);
 
         // When
-        ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
+        ResponseEntity<OBReadAccount2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountHttpHeaders(url, accountId)),
-                OBReadAccount5.class);
+                OBReadAccount2.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBAccount6 returnedAccount = response.getBody().getData().getAccount().get(0);
+        OBAccount2 returnedAccount = response.getBody().getData().getAccount().get(0);
         assertThat(returnedAccount).isNotNull();
         assertThat(returnedAccount.getAccountId()).isEqualTo(financialAccount.getAccountId());
         assertThat(returnedAccount.getCurrency()).isEqualTo(financialAccount.getCurrency());
@@ -111,15 +111,15 @@ public class AccountsApiControllerTest {
         String url = accountsUrl();
 
         // When
-        ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
+        ResponseEntity<OBReadAccount2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountHttpHeaders(url, accountId)),
-                OBReadAccount5.class);
+                OBReadAccount2.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBAccount6 returnedAccount = response.getBody().getData().getAccount().get(0);
+        OBAccount2 returnedAccount = response.getBody().getData().getAccount().get(0);
         assertThat(returnedAccount).isNotNull();
         assertThat(returnedAccount.getAccountId()).isEqualTo(financialAccount.getAccountId());
         assertThat(returnedAccount.getCurrency()).isEqualTo(financialAccount.getCurrency());

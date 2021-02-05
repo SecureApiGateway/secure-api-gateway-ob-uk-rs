@@ -15,36 +15,42 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.testsupport.api;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
-import static uk.org.openbanking.datamodel.account.OBExternalPermissions1Code.READACCOUNTSDETAIL;
-import static uk.org.openbanking.datamodel.account.OBExternalPermissions1Code.READPAN;
 
 /**
  * A test data factory for {@link HttpHeaders} that are sent in each HTTP request.
  */
 public class HttpHeadersTestDataFactory {
 
+    private static final String ALL_NON_BASIC_PERMISSIONS = Arrays.stream(OBExternalPermissions1Code.values())
+            .map(Enum::name)
+            .filter(name -> !name.endsWith("BASIC"))
+            .collect(Collectors.joining(","));
+
     /**
      * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Accounts API.
      *
-     * @param version The version of the OB Read/Write API being used.
+     * @param resourceUrl The URL to retrieve the resource in question.
      * @param accountId The ID of the account to be returned.
      * @return the {@link HttpHeaders} instance.
      */
-    public static HttpHeaders requiredAccountHttpHeaders(OBVersion version, String accountId) {
+    public static HttpHeaders requiredAccountHttpHeaders(String resourceUrl, String accountId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
+        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
-        headers.add("x-ob-url", "http://open-banking/" + version.getCanonicalVersion() + "/aisp/accounts/" + accountId);
-        headers.add("x-ob-permissions", READACCOUNTSDETAIL.name() + "," + READPAN.name());
+        headers.add("x-ob-url", resourceUrl);
+        headers.add("x-ob-permissions", ALL_NON_BASIC_PERMISSIONS);
         headers.add("x-ob-account-ids", accountId);
         return headers;
     }

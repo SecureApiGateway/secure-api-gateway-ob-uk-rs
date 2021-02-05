@@ -115,7 +115,7 @@ public class ControllerEndpointBlacklistHandlerTest {
         // Given
         String accountId = "1234";
         String url = accountIdUrl(DISABLED_ENDPOINT_OVERRIDE_VERSION, accountId);
-        HttpHeaders httpHeaders = requiredAccountHttpHeaders(DISABLED_VERSION, accountId);
+        HttpHeaders httpHeaders = requiredAccountHttpHeaders(url, accountId);
 
         // When
         ResponseEntity<?> response = restTemplate.getForEntity(url, OBReadAccount5.class, httpHeaders);

@@ -20,13 +20,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.Date;
 
 /**
  * Representation of an account. This model is only useful for the demo
@@ -39,22 +38,22 @@ import java.util.Date;
 public class FRScheduledPayment {
 
     @Id
-    public String id;
+    private String id;
     @Indexed
-    public String accountId;
-    public FRScheduledPaymentData scheduledPayment;
+    private String accountId;
+    private FRScheduledPaymentData scheduledPayment;
 
     @Indexed
-    public String pispId;
+    private String pispId;
 
     @CreatedDate
-    public Date created;
+    private DateTime created;
     @LastModifiedDate
-    public Date updated;
+    private DateTime updated;
 
-    public String rejectionReason;
+    private String rejectionReason;
 
-    public ScheduledPaymentStatus status;
+    private ScheduledPaymentStatus status;
 
     /** Records if this scheduled payment has been processed or not. Not all scheduled payments have an associated payment consent (e.g. created on /data API). */
     public enum ScheduledPaymentStatus {
