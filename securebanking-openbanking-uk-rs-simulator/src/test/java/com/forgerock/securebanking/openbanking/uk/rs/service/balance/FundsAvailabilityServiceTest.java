@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.service.balance;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.FRCashBalanceTestDataFactory;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRCashBalanceTestDataFactory;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBalance;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

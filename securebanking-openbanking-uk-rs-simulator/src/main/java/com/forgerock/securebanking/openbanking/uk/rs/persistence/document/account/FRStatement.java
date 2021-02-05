@@ -31,8 +31,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import uk.org.openbanking.jackson.DateTimeDeserializer;
 import uk.org.openbanking.jackson.DateTimeSerializer;
 
-import java.util.Date;
-
 /**
  * Representation of an account. This model is only useful for the demo
  */
@@ -44,10 +42,10 @@ import java.util.Date;
 public class FRStatement {
 
     @Id
-    public String id;
+    private String id;
     @Indexed
-    public String accountId;
-    public FRStatementData statement;
+    private String accountId;
+    private FRStatementData statement;
 
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonSerialize(using = DateTimeSerializer.class)
@@ -55,7 +53,7 @@ public class FRStatement {
     private DateTime endDateTime = null;
 
     @CreatedDate
-    public Date created;
+    private DateTime created;
     @LastModifiedDate
-    public Date updated;
+    private DateTime updated;
 }

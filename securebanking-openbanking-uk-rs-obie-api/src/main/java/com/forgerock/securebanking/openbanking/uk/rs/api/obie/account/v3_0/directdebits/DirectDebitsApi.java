@@ -42,7 +42,7 @@ public interface DirectDebitsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags = {"v1.1-Direct-Debits"})
+    }, tags = {"v3.0-Direct-Debits"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Direct Debits successfully retrieved", response = OBReadDirectDebit1.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),

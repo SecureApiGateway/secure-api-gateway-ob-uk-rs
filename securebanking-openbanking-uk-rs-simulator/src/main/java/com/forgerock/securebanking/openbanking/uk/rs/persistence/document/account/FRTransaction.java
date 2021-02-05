@@ -32,7 +32,6 @@ import uk.org.openbanking.jackson.DateTimeDeserializer;
 import uk.org.openbanking.jackson.DateTimeSerializer;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -43,16 +42,16 @@ import java.util.List;
 public class FRTransaction {
 
     @Id
-    public String id;
+    private String id;
     @Indexed
-    public String accountId;
-    public List<String> statementIds;
-    public FRTransactionData transaction;
+    private String accountId;
+    private List<String> statementIds;
+    private FRTransactionData transaction;
 
     @CreatedDate
-    public Date created;
+    private DateTime created;
     @LastModifiedDate
-    public Date updated;
+    private DateTime updated;
 
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonSerialize(using = DateTimeSerializer.class)

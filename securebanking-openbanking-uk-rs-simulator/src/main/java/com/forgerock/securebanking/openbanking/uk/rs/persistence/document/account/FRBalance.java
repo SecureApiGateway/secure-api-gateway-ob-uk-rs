@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -31,7 +32,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -47,15 +47,15 @@ public class FRBalance {
 
     @Id
     @Indexed
-    public String id;
+    private String id;
     @Indexed
-    public String accountId;
-    public FRCashBalance balance;
+    private String accountId;
+    private FRCashBalance balance;
 
     @CreatedDate
-    public Date created;
+    private DateTime created;
     @LastModifiedDate
-    public Date updated;
+    private DateTime updated;
 
     public FRAmount getCurrencyAndAmount() {
         return getBalance().getAmount();
