@@ -15,12 +15,16 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticstandingorders;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrder;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.service.frequency.FrequencyService;
+import com.forgerock.securebanking.openbanking.uk.rs.service.standingorder.StandingOrderService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -38,6 +42,7 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData.FRStandingOrderStatus.ACTIVE;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createDomesticStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder1;
@@ -50,12 +55,18 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
     private final DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
+    private final FrequencyService frequencyService;
+    private final StandingOrderService standingOrderService;
 
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
-            PaymentSubmissionValidator paymentSubmissionValidator) {
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            FrequencyService frequencyService,
+            StandingOrderService standingOrderService) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.frequencyService = frequencyService;
+        this.standingOrderService = standingOrderService;
     }
 
     @Override
@@ -65,6 +76,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
+            String xAccountId,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
@@ -96,6 +108,11 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         // Save the standing order
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(standingOrderPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
+
+        // Save the standing order data for the Accounts API
+        FRStandingOrderData standingOrderData = frStandingOrderData(frStandingOrder.getData().getInitiation(), xAccountId);
+        standingOrderService.createStandingOrder(standingOrderData);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
     }
 
@@ -116,6 +133,29 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         }
 
         return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
+    }
+
+    private FRStandingOrderData frStandingOrderData(FRWriteDomesticStandingOrderDataInitiation initiation, String accountId) {
+        FRStandingOrderData standingOrderData = FRStandingOrderData.builder()
+                .standingOrderId(UUID.randomUUID().toString())
+                .accountId(accountId)
+                .standingOrderStatusCode(ACTIVE)
+                .creditorAccount(initiation.getCreditorAccount())
+                .frequency(initiation.getFrequency())
+                .reference(initiation.getReference())
+                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .firstPaymentAmount(initiation.getFirstPaymentAmount())
+                .nextPaymentAmount(initiation.getRecurringPaymentAmount())
+                .nextPaymentDateTime(frequencyService.getNextDateTime(
+                        initiation.getFirstPaymentDateTime(),
+                        initiation.getFrequency()))
+                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                .finalPaymentAmount(initiation.getFinalPaymentAmount())
+                .frequency(initiation.getFrequency())
+                .reference(initiation.getReference())
+                .numberOfPayments(initiation.getNumberOfPayments())
+                .build();
+        return standingOrderData;
     }
 
     private OBWriteDomesticStandingOrderResponse1 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission) {

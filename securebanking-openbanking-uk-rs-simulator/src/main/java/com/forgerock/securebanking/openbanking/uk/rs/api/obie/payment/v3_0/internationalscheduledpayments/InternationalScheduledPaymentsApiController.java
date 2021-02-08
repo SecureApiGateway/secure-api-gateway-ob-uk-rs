@@ -15,13 +15,16 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalscheduledpayments;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalScheduledPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalScheduledPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -39,6 +42,7 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData.FRScheduleType.EXECUTION;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createInternationalScheduledPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
@@ -51,12 +55,15 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
     private final InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
+    private final ScheduledPaymentService scheduledPaymentService;
 
     public InternationalScheduledPaymentsApiController(
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
-            PaymentSubmissionValidator paymentSubmissionValidator) {
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ScheduledPaymentService scheduledPaymentService) {
         this.scheduledPaymentSubmissionRepository = scheduledPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.scheduledPaymentService = scheduledPaymentService;
     }
 
     @Override
@@ -66,6 +73,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
+            String xAccountId,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
@@ -97,6 +105,11 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         // Save the international scheduled payment
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
+
+        // Save the scheduled payment data for the Accounts API
+        FRScheduledPaymentData scheduledPaymentData = frScheduledPaymentData(frScheduledPayment.getData().getInitiation(), xAccountId);
+        scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
     }
 
@@ -118,6 +131,21 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         }
 
         return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
+    }
+
+    private FRScheduledPaymentData frScheduledPaymentData(
+            FRWriteInternationalScheduledDataInitiation frScheduledDataInitiation,
+            String xAccountId
+    ) {
+        FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentData.builder()
+                .accountId(xAccountId)
+                .scheduledPaymentId(UUID.randomUUID().toString())
+                .scheduledPaymentDateTime(frScheduledDataInitiation.getRequestedExecutionDateTime())
+                .scheduledType(EXECUTION)
+                .instructedAmount(frScheduledDataInitiation.getInstructedAmount())
+                .creditorAccount(frScheduledDataInitiation.getCreditorAccount())
+                .build();
+        return scheduledPaymentData;
     }
 
     private OBWriteInternationalScheduledResponse1 responseEntity(FRInternationalScheduledPaymentSubmission frPaymentSubmission) {

@@ -15,12 +15,15 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticscheduledpayments;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduledDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticScheduledPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -38,6 +41,7 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData.FRScheduleType.EXECUTION;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createDomesticScheduledPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled1;
@@ -50,12 +54,15 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
     private final DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
+    private final ScheduledPaymentService scheduledPaymentService;
 
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
-            PaymentSubmissionValidator paymentSubmissionValidator) {
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ScheduledPaymentService scheduledPaymentService) {
         this.scheduledPaymentSubmissionRepository = scheduledPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.scheduledPaymentService = scheduledPaymentService;
     }
 
     @Override
@@ -65,6 +72,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
+            String xAccountId,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
@@ -97,6 +105,11 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Save the scheduled payment
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
+
+        // Save the scheduled payment data for the Accounts API
+        FRScheduledPaymentData scheduledPaymentData = frScheduledPaymentData(frScheduledPayment.getData().getInitiation(), xAccountId);
+        scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
     }
 
@@ -120,6 +133,21 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         FRDomesticScheduledPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
         return ResponseEntity.ok(responseEntity(frPaymentSubmission));
+    }
+
+    private FRScheduledPaymentData frScheduledPaymentData(
+            FRWriteDomesticScheduledDataInitiation frScheduledDataInitiation,
+            String xAccountId
+    ) {
+        FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentData.builder()
+                .accountId(xAccountId)
+                .scheduledPaymentId(UUID.randomUUID().toString())
+                .scheduledPaymentDateTime(frScheduledDataInitiation.getRequestedExecutionDateTime())
+                .scheduledType(EXECUTION)
+                .instructedAmount(frScheduledDataInitiation.getInstructedAmount())
+                .creditorAccount(frScheduledDataInitiation.getCreditorAccount())
+                .build();
+        return scheduledPaymentData;
     }
 
     private OBWriteDomesticScheduledResponse1 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {

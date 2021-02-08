@@ -66,8 +66,7 @@ public class HttpHeadersTestDataFactory {
         headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-jws-signature", "dummyJwsSignature");
-        headers.add("x-ob-tpp-id", "tppId");
-        headers.add("x-ob-tpp-name", "tppName");
+        headers.add("x-ob-account-id", UUID.randomUUID().toString());
         return headers;
     }
 }
