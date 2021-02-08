@@ -18,7 +18,7 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalstandingorders;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.internationalscheduledpayments;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import io.swagger.annotations.*;
@@ -27,8 +27,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -38,17 +38,17 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
-@Api(value = "international-standing-orders", description = "the international-standing-orders API")
-@RequestMapping(value = "/open-banking/v3.0/pisp")
-public interface InternationalStandingOrdersApi {
+@Api(value = "international-scheduled-payments", description = "the international-scheduled-payments API")
+@RequestMapping(value = "/open-banking/v3.1/pisp")
+public interface InternationalScheduledPaymentsApi {
 
-    @ApiOperation(value = "Create International Standing Orders", nickname = "createInternationalStandingOrders", notes = "", response = OBWriteInternationalStandingOrderResponse1.class, authorizations = {
+    @ApiOperation(value = "Create International Scheduled Payments", nickname = "createInternationalScheduledPayments", notes = "", response = OBWriteInternationalScheduledResponse2.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    }, tags = {"International Scheduled Payments",})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "International Standing Orders Created", response = OBWriteInternationalStandingOrderResponse1.class),
+            @ApiResponse(code = 201, message = "International Scheduled Payments Created", response = OBWriteInternationalScheduledResponse2.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -59,14 +59,14 @@ public interface InternationalStandingOrdersApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/international-standing-orders",
+    @RequestMapping(value = "/international-scheduled-payments",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<OBWriteInternationalStandingOrderResponse1> createInternationalStandingOrders(
+    ResponseEntity<OBWriteInternationalScheduledResponse2> createInternationalScheduledPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteInternationalStandingOrder1 obWriteInternationalStandingOrder1,
+            @RequestBody OBWriteInternationalScheduled2 obWriteInternationalScheduled2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -80,7 +80,7 @@ public interface InternationalStandingOrdersApi {
             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
-            @ApiParam(value = "The ID of the account that the standing order is being made from.")
+            @ApiParam(value = "The ID of the account that the payment is being made from.")
             @RequestHeader(value = "x-ob-account-id", required = true) String xAccountId,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
@@ -102,13 +102,13 @@ public interface InternationalStandingOrdersApi {
     ) throws OBErrorResponseException;
 
 
-    @ApiOperation(value = "Get International Standing Orders", nickname = "getInternationalStandingOrdersInternationalStandingOrderPaymentId", notes = "", response = OBWriteInternationalStandingOrderResponse1.class, authorizations = {
+    @ApiOperation(value = "Get International Scheduled Payments", nickname = "getInternationalScheduledPaymentsInternationalScheduledPaymentId", notes = "", response = OBWriteInternationalScheduledResponse2.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    }, tags = {"International Scheduled Payments",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "International Standing Orders Read", response = OBWriteInternationalStandingOrderResponse1.class),
+            @ApiResponse(code = 200, message = "International Scheduled Payments Read", response = OBWriteInternationalScheduledResponse2.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -118,12 +118,12 @@ public interface InternationalStandingOrdersApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/international-standing-orders/{InternationalStandingOrderPaymentId}",
+    @RequestMapping(value = "/international-scheduled-payments/{InternationalScheduledPaymentId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<OBWriteInternationalStandingOrderResponse1> getInternationalStandingOrdersInternationalStandingOrderPaymentId(
-            @ApiParam(value = "InternationalStandingOrderPaymentId", required = true)
-            @PathVariable("InternationalStandingOrderPaymentId") String internationalStandingOrderPaymentId,
+    ResponseEntity<OBWriteInternationalScheduledResponse2> getInternationalScheduledPaymentsInternationalScheduledPaymentId(
+            @ApiParam(value = "InternationalScheduledPaymentId", required = true)
+            @PathVariable("InternationalScheduledPaymentId") String internationalScheduledPaymentId,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,

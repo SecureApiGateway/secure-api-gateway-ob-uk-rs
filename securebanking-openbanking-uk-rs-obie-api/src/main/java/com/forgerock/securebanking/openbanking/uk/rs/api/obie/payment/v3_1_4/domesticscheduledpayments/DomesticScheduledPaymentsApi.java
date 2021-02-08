@@ -18,72 +18,63 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.file;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_4.domesticscheduledpayments;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import io.swagger.annotations.*;
-import org.joda.time.DateTime;
-import org.springframework.core.io.Resource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile1;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse4;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.security.Principal;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-12-19T16:47:08.987291Z[Europe/London]")
+@Api(value = "domestic-scheduled-payments", description = "the domestic-scheduled-payments API")
+@RequestMapping(value = "/open-banking/v3.1.4/pisp")
+public interface DomesticScheduledPaymentsApi {
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
-
-@Api(value = "file-payments", description = "the file-payments API")
-@RequestMapping(value = "/open-banking/v3.0/pisp")
-public interface FilePaymentsApi {
-
-    @ApiOperation(value = "Create File Payments", nickname = "createFilePayments", notes = "", response = OBWriteFileResponse1.class, authorizations = {
+    @ApiOperation(value = "Create Domestic Scheduled Payments", nickname = "createDomesticScheduledPayments", notes = "", response = OBWriteDomesticScheduledResponse4.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"File Payments",})
+    }, tags = {"Domestic Scheduled Payments",})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "File Payments Created", response = OBWriteFileResponse1.class),
+            @ApiResponse(code = 201, message = "Domestic Scheduled Payments Created", response = OBWriteDomesticScheduledResponse4.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-
-    @RequestMapping(value = "/file-payments",
-            produces = {"application/json; charset=utf-8"},
-            consumes = {"application/json; charset=utf-8"},
+    @RequestMapping(value = "/domestic-scheduled-payments",
+            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.POST)
-    ResponseEntity createFilePayments(
+    ResponseEntity<OBWriteDomesticScheduledResponse4> createDomesticScheduledPayments(
             @ApiParam(value = "Default", required = true)
-            @Valid
-            @RequestBody OBWriteFile1 obWriteFile1,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
+            @RequestBody OBWriteDomesticScheduled2 obWriteDomesticScheduled2,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours.", required = true)
+            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
             @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
 
             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
+            @ApiParam(value = "The ID of the account that the payment is being made from.")
+            @RequestHeader(value = "x-ob-account-id", required = true) String xAccountId,
+
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -99,38 +90,33 @@ public interface FilePaymentsApi {
             Principal principal) throws OBErrorResponseException;
 
 
-    @ApiOperation(value = "Get File Payments", nickname = "getFilePaymentsFilePaymentId", notes = "", response = OBWriteFileResponse1.class, authorizations = {
+    @ApiOperation(value = "Get Domestic Scheduled Payments", nickname = "getDomesticScheduledPaymentsDomesticScheduledPaymentId", notes = "", response = OBWriteDomesticScheduledResponse4.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"File Payments",})
+    }, tags = {"Domestic Scheduled Payments",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "File Payments Read", response = OBWriteFileResponse1.class),
+            @ApiResponse(code = 200, message = "Domestic Scheduled Payments Read", response = OBWriteDomesticScheduledResponse4.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-
-    @RequestMapping(value = "/file-payments/{FilePaymentId}",
-            produces = {"application/json; charset=utf-8"},
+    @RequestMapping(value = "/domestic-scheduled-payments/{DomesticScheduledPaymentId}",
+            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
-    ResponseEntity getFilePaymentsFilePaymentId(
-            @ApiParam(value = "FilePaymentId", required = true)
-            @PathVariable("FilePaymentId") String filePaymentId,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
+    ResponseEntity<OBWriteDomesticScheduledResponse4> getDomesticScheduledPaymentsDomesticScheduledPaymentId(
+            @ApiParam(value = "DomesticScheduledPaymentId", required = true)
+            @PathVariable("DomesticScheduledPaymentId") String domesticScheduledPaymentId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -143,42 +129,36 @@ public interface FilePaymentsApi {
 
             HttpServletRequest request,
 
-            Principal principal
-    ) throws OBErrorResponseException;
+            Principal principal) throws OBErrorResponseException;
 
 
-    @ApiOperation(value = "Get File Payments", nickname = "getFilePaymentsFilePaymentIdReportFile", notes = "", response = Resource.class, authorizations = {
+    @ApiOperation(value = "Get Payment Details", nickname = "getDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails", notes = "", response = OBWritePaymentDetailsResponse1.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"File Payments",})
+    }, tags = {"Payment Details",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "File Payments Read", response = Resource.class),
+            @ApiResponse(code = 200, message = "Payment Details Read", response = OBWritePaymentDetailsResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-
-    @RequestMapping(value = "/file-payments/{FilePaymentId}/report-file",
-            produces = {"*/*"},
+    @RequestMapping(value = "/domestic-scheduled-payments/{DomesticScheduledPaymentId}/payment-details",
+            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
-    ResponseEntity<Resource> getFilePaymentsFilePaymentIdReportFile(
-            @ApiParam(value = "FilePaymentId", required = true)
-            @PathVariable("FilePaymentId") String filePaymentId,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
+    ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails(
+            @ApiParam(value = "DomesticScheduledPaymentId", required = true)
+            @PathVariable("DomesticScheduledPaymentId") String domesticScheduledPaymentId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -191,7 +171,6 @@ public interface FilePaymentsApi {
 
             HttpServletRequest request,
 
-            Principal principal
-    ) throws OBErrorResponseException;
+            Principal principal) throws OBErrorResponseException;
 
 }

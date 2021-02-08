@@ -18,7 +18,7 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalstandingorders;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_1.domesticstandingorders;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import io.swagger.annotations.*;
@@ -27,8 +27,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse3;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -38,17 +38,17 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
-@Api(value = "international-standing-orders", description = "the international-standing-orders API")
-@RequestMapping(value = "/open-banking/v3.0/pisp")
-public interface InternationalStandingOrdersApi {
+@Api(value = "domestic-standing-orders", description = "the domestic-standing-orders API")
+@RequestMapping(value = "/open-banking/v3.1.1/pisp")
+public interface DomesticStandingOrdersApi {
 
-    @ApiOperation(value = "Create International Standing Orders", nickname = "createInternationalStandingOrders", notes = "", response = OBWriteInternationalStandingOrderResponse1.class, authorizations = {
+    @ApiOperation(value = "Create Domestic Standing Orders", nickname = "createDomesticStandingOrders", notes = "", response = OBWriteDomesticStandingOrderResponse3.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    }, tags = {"Domestic Standing Orders",})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "International Standing Orders Created", response = OBWriteInternationalStandingOrderResponse1.class),
+            @ApiResponse(code = 201, message = "Domestic Standing Orders Created", response = OBWriteDomesticStandingOrderResponse3.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -59,14 +59,14 @@ public interface InternationalStandingOrdersApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/international-standing-orders",
+    @RequestMapping(value = "/domestic-standing-orders",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<OBWriteInternationalStandingOrderResponse1> createInternationalStandingOrders(
+    ResponseEntity<OBWriteDomesticStandingOrderResponse3> createDomesticStandingOrders(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteInternationalStandingOrder1 obWriteInternationalStandingOrder1,
+            @RequestBody OBWriteDomesticStandingOrder3 OBWriteDomesticStandingOrder3,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -102,13 +102,13 @@ public interface InternationalStandingOrdersApi {
     ) throws OBErrorResponseException;
 
 
-    @ApiOperation(value = "Get International Standing Orders", nickname = "getInternationalStandingOrdersInternationalStandingOrderPaymentId", notes = "", response = OBWriteInternationalStandingOrderResponse1.class, authorizations = {
+    @ApiOperation(value = "Get Domestic Standing Orders", nickname = "getDomesticStandingOrdersDomesticStandingOrderId", notes = "", response = OBWriteDomesticStandingOrderResponse3.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    }, tags = {"Domestic Standing Orders",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "International Standing Orders Read", response = OBWriteInternationalStandingOrderResponse1.class),
+            @ApiResponse(code = 200, message = "Domestic Standing Orders Read", response = OBWriteDomesticStandingOrderResponse3.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -118,12 +118,12 @@ public interface InternationalStandingOrdersApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/international-standing-orders/{InternationalStandingOrderPaymentId}",
+    @RequestMapping(value = "/domestic-standing-orders/{DomesticStandingOrderId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<OBWriteInternationalStandingOrderResponse1> getInternationalStandingOrdersInternationalStandingOrderPaymentId(
-            @ApiParam(value = "InternationalStandingOrderPaymentId", required = true)
-            @PathVariable("InternationalStandingOrderPaymentId") String internationalStandingOrderPaymentId,
+    ResponseEntity<OBWriteDomesticStandingOrderResponse3> getDomesticStandingOrdersDomesticStandingOrderId(
+            @ApiParam(value = "DomesticStandingOrderId", required = true)
+            @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,

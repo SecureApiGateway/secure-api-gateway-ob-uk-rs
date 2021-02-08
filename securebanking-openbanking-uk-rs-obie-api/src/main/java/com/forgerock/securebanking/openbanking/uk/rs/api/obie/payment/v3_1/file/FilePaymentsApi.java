@@ -18,17 +18,18 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalstandingorders;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.file;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
+import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -38,17 +39,18 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
-@Api(value = "international-standing-orders", description = "the international-standing-orders API")
-@RequestMapping(value = "/open-banking/v3.0/pisp")
-public interface InternationalStandingOrdersApi {
+@Api(value = "file-payments", description = "the file-payments API")
 
-    @ApiOperation(value = "Create International Standing Orders", nickname = "createInternationalStandingOrders", notes = "", response = OBWriteInternationalStandingOrderResponse1.class, authorizations = {
+@RequestMapping(value = "/open-banking/v3.1/pisp")
+public interface FilePaymentsApi {
+
+    @ApiOperation(value = "Create File Payments", nickname = "createFilePayments", notes = "", response = OBWriteFileResponse2.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    }, tags = {"File Payments",})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "International Standing Orders Created", response = OBWriteInternationalStandingOrderResponse1.class),
+            @ApiResponse(code = 201, message = "File Payments Created", response = OBWriteFileResponse2.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -59,14 +61,14 @@ public interface InternationalStandingOrdersApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/international-standing-orders",
+    @RequestMapping(value = "/file-payments",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<OBWriteInternationalStandingOrderResponse1> createInternationalStandingOrders(
+    ResponseEntity<OBWriteFileResponse2> createFilePayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteInternationalStandingOrder1 obWriteInternationalStandingOrder1,
+            @RequestBody OBWriteFile2 obWriteFile2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -80,8 +82,52 @@ public interface InternationalStandingOrdersApi {
             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
-            @ApiParam(value = "The ID of the account that the standing order is being made from.")
-            @RequestHeader(value = "x-ob-account-id", required = true) String xAccountId,
+            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
+            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
+
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
+
+            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
+            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            HttpServletRequest request,
+
+            Principal principal) throws OBErrorResponseException;
+
+
+    @ApiOperation(value = "Get File Payments", nickname = "getFilePaymentsFilePaymentId", notes = "", response = OBWriteFileResponse2.class, authorizations = {
+            @Authorization(value = "TPPOAuth2Security", scopes = {
+                    @AuthorizationScope(scope = "payments", description = "Generic payment scope")
+            })
+    }, tags = {"File Payments",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "File Payments Read", response = OBWriteFileResponse2.class),
+            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 406, message = "Not Acceptable"),
+            @ApiResponse(code = 429, message = "Too Many Requests"),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
+
+    @RequestMapping(value = "/file-payments/{FilePaymentId}",
+            produces = {"application/json; charset=utf-8"},
+            method = RequestMethod.GET)
+    ResponseEntity<OBWriteFileResponse2> getFilePaymentsFilePaymentId(
+            @ApiParam(value = "FilePaymentId", required = true)
+            @PathVariable("FilePaymentId") String filePaymentId,
+
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
+
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
@@ -102,13 +148,13 @@ public interface InternationalStandingOrdersApi {
     ) throws OBErrorResponseException;
 
 
-    @ApiOperation(value = "Get International Standing Orders", nickname = "getInternationalStandingOrdersInternationalStandingOrderPaymentId", notes = "", response = OBWriteInternationalStandingOrderResponse1.class, authorizations = {
+    @ApiOperation(value = "Get File Payments", nickname = "getFilePaymentsFilePaymentIdReportFile", notes = "", response = Resource.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    }, tags = {"File Payments",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "International Standing Orders Read", response = OBWriteInternationalStandingOrderResponse1.class),
+            @ApiResponse(code = 200, message = "File Payments Read", response = Resource.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -118,12 +164,12 @@ public interface InternationalStandingOrdersApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/international-standing-orders/{InternationalStandingOrderPaymentId}",
-            produces = {"application/json; charset=utf-8"},
+    @RequestMapping(value = "/file-payments/{FilePaymentId}/report-file",
+            produces = {"*/*"},
             method = RequestMethod.GET)
-    ResponseEntity<OBWriteInternationalStandingOrderResponse1> getInternationalStandingOrdersInternationalStandingOrderPaymentId(
-            @ApiParam(value = "InternationalStandingOrderPaymentId", required = true)
-            @PathVariable("InternationalStandingOrderPaymentId") String internationalStandingOrderPaymentId,
+    ResponseEntity<Resource> getFilePaymentsFilePaymentIdReportFile(
+            @ApiParam(value = "FilePaymentId", required = true)
+            @PathVariable("FilePaymentId") String filePaymentId,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
