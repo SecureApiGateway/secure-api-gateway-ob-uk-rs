@@ -80,6 +80,9 @@ public interface InternationalScheduledPaymentsApi {
             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
+            @ApiParam(value = "The ID of the account that the payment is being made from.")
+            @RequestHeader(value = "x-ob-account-id", required = true) String xAccountId,
+
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
