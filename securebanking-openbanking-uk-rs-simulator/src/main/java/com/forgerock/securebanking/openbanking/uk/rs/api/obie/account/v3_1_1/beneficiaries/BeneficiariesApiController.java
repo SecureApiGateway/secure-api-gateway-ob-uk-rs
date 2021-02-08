@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.beneficiaries;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_1.beneficiaries;
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
@@ -28,18 +28,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary2;
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary2Data;
+import uk.org.openbanking.datamodel.account.OBReadBeneficiary3;
+import uk.org.openbanking.datamodel.account.OBReadBeneficiary3Data;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
-@Controller("BeneficiariesApiV3.0")
+@Controller("BeneficiariesApiV3.1.1")
 @Slf4j
 public class BeneficiariesApiController implements BeneficiariesApi {
-
     @Value("${rs.page.default.beneficiaries.size:50}")
     private int PAGE_LIMIT_BENEFICIARIES;
 
@@ -53,7 +52,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
     }
 
     @Override
-    public ResponseEntity<OBReadBeneficiary2> getAccountBeneficiaries(String accountId,
+    public ResponseEntity<OBReadBeneficiary3> getAccountBeneficiaries(String accountId,
                                                                       int page,
                                                                       String xFapiFinancialId,
                                                                       String authorization,
@@ -69,11 +68,11 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
         int totalPages = beneficiaries.getTotalPages();
 
-        return ResponseEntity.ok(new OBReadBeneficiary2().data(new OBReadBeneficiary2Data().beneficiary(
+        return ResponseEntity.ok(new OBReadBeneficiary3().data(new OBReadBeneficiary3Data().beneficiary(
                 beneficiaries.getContent()
                         .stream()
                         .map(FRBeneficiary::getBeneficiary)
-                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
+                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary3)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -81,7 +80,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
     }
 
     @Override
-    public ResponseEntity<OBReadBeneficiary2> getBeneficiaries(String xFapiFinancialId,
+    public ResponseEntity<OBReadBeneficiary3> getBeneficiaries(String xFapiFinancialId,
                                                                int page,
                                                                String authorization,
                                                                DateTime xFapiCustomerLastLoggedTime,
@@ -97,11 +96,11 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
         int totalPages = beneficiaries.getTotalPages();
 
-        return ResponseEntity.ok(new OBReadBeneficiary2().data(new OBReadBeneficiary2Data().beneficiary(
+        return ResponseEntity.ok(new OBReadBeneficiary3().data(new OBReadBeneficiary3Data().beneficiary(
                 beneficiaries.getContent()
                         .stream()
                         .map(FRBeneficiary::getBeneficiary)
-                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
+                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary3)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

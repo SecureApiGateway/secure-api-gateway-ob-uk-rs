@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.beneficiaries;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.beneficiaries;
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
@@ -28,83 +28,78 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary2;
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary2Data;
+import uk.org.openbanking.datamodel.account.OBReadBeneficiary4;
+import uk.org.openbanking.datamodel.account.OBReadBeneficiary4Data;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
-@Controller("BeneficiariesApiV3.0")
+@Controller("BeneficiariesApiV3.1.3")
 @Slf4j
 public class BeneficiariesApiController implements BeneficiariesApi {
 
-    @Value("${rs.page.default.beneficiaries.size:50}")
-    private int PAGE_LIMIT_BENEFICIARIES;
+    private final int pageLimitBeneficiaries;
 
-    private final FRBeneficiaryRepository frBeneficiaryRepository;
+    private final com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository FRBeneficiaryRepository;
+
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
-    public BeneficiariesApiController(FRBeneficiaryRepository frBeneficiaryRepository,
+    public BeneficiariesApiController(@Value("${rs.page.default.beneficiaries.size:50}") int pageLimitBeneficiaries,
+                                      FRBeneficiaryRepository FRBeneficiaryRepository,
                                       AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        this.frBeneficiaryRepository = frBeneficiaryRepository;
+        this.pageLimitBeneficiaries = pageLimitBeneficiaries;
+        this.FRBeneficiaryRepository = FRBeneficiaryRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
     }
 
     @Override
-    public ResponseEntity<OBReadBeneficiary2> getAccountBeneficiaries(String accountId,
+    public ResponseEntity<OBReadBeneficiary4> getAccountBeneficiaries(String accountId,
                                                                       int page,
-                                                                      String xFapiFinancialId,
                                                                       String authorization,
-                                                                      DateTime xFapiCustomerLastLoggedTime,
+                                                                      DateTime xFapiAuthDate,
                                                                       String xFapiCustomerIpAddress,
                                                                       String xFapiInteractionId,
                                                                       String xCustomerUserAgent,
                                                                       List<OBExternalPermissions1Code> permissions,
-                                                                      String httpUrl
-    ) {
+                                                                      String httpUrl) {
         log.info("Read beneficiaries for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
-                PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
-        int totalPages = beneficiaries.getTotalPages();
 
-        return ResponseEntity.ok(new OBReadBeneficiary2().data(new OBReadBeneficiary2Data().beneficiary(
-                beneficiaries.getContent()
-                        .stream()
-                        .map(FRBeneficiary::getBeneficiary)
-                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
-                        .map(b -> accountDataInternalIdFilter.apply(b))
-                        .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
-                .meta(PaginationUtil.generateMetaData(totalPages)));
+        Page<FRBeneficiary> beneficiaries = FRBeneficiaryRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitBeneficiaries));
+        return packageResponse(page, httpUrl, beneficiaries);
     }
 
     @Override
-    public ResponseEntity<OBReadBeneficiary2> getBeneficiaries(String xFapiFinancialId,
-                                                               int page,
+    public ResponseEntity<OBReadBeneficiary4> getBeneficiaries(int page,
                                                                String authorization,
-                                                               DateTime xFapiCustomerLastLoggedTime,
+                                                               DateTime xFapiAuthDate,
                                                                String xFapiCustomerIpAddress,
                                                                String xFapiInteractionId,
                                                                String xCustomerUserAgent,
                                                                List<String> accountIds,
                                                                List<OBExternalPermissions1Code> permissions,
-                                                               String httpUrl
-    ) {
+                                                               String httpUrl) {
         log.info("Beneficiaries from account ids {}", accountIds);
-        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
-                PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
+
+        Page<FRBeneficiary> beneficiaries = FRBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitBeneficiaries));
+        return packageResponse(page, httpUrl, beneficiaries);
+    }
+
+    private ResponseEntity<OBReadBeneficiary4> packageResponse(int page, String httpUrl, Page<FRBeneficiary> beneficiaries) {
         int totalPages = beneficiaries.getTotalPages();
 
-        return ResponseEntity.ok(new OBReadBeneficiary2().data(new OBReadBeneficiary2Data().beneficiary(
+        return ResponseEntity.ok(new OBReadBeneficiary4().data(new OBReadBeneficiary4Data().beneficiary(
                 beneficiaries.getContent()
                         .stream()
                         .map(FRBeneficiary::getBeneficiary)
-                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
+                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary4)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
+
 }
