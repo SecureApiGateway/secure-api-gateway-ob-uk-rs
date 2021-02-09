@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticscheduledpayments;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.domesticscheduledpayments;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
@@ -30,9 +30,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -43,11 +43,11 @@ import java.util.UUID;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createDomesticScheduledPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled1;
+import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled2;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticScheduledConverter.toFRWriteDomesticScheduled;
 import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRSubmissionStatus.INITIATIONPENDING;
 
-@Controller("DomesticScheduledPaymentsApiV3.0")
+@Controller("DomesticScheduledPaymentsApiV3.1")
 @Slf4j
 public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
 
@@ -65,8 +65,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticScheduledResponse1> createDomesticScheduledPayments(
-            @Valid OBWriteDomesticScheduled1 obWriteDomesticScheduled1,
+    public ResponseEntity<OBWriteDomesticScheduledResponse2> createDomesticScheduledPayments(
+            @Valid OBWriteDomesticScheduled2 obWriteDomesticScheduled2,
             String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
@@ -79,16 +79,11 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: '{}'", obWriteDomesticScheduled1);
+        log.debug("Received payment submission: '{}'", obWriteDomesticScheduled2);
 
-        // TODO - before we get this far, the IG will need to:
-        //      - verify the consent status
-        //      - verify the payment details match those in the payment consent
-        //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
+        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomesticScheduled2.getRisk());
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomesticScheduled1.getRisk());
-
-        FRWriteDomesticScheduled frScheduledPayment = toFRWriteDomesticScheduled(obWriteDomesticScheduled1);
+        FRWriteDomesticScheduled frScheduledPayment = toFRWriteDomesticScheduled(obWriteDomesticScheduled2);
         log.trace("Converted to: '{}'", frScheduledPayment);
 
         FRDomesticScheduledPaymentSubmission frPaymentSubmission = FRDomesticScheduledPaymentSubmission.builder()
@@ -134,10 +129,10 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         return ResponseEntity.ok(responseEntity(frPaymentSubmission));
     }
 
-    private OBWriteDomesticScheduledResponse1 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
-        return new OBWriteDomesticScheduledResponse1().data(new OBWriteDataDomesticScheduledResponse1()
+    private OBWriteDomesticScheduledResponse2 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
+        return new OBWriteDomesticScheduledResponse2().data(new OBWriteDataDomesticScheduledResponse2()
                 .domesticScheduledPaymentId(frPaymentSubmission.getId())
-                .initiation(toOBDomesticScheduled1(frPaymentSubmission.getScheduledPayment().getData().getInitiation()))
+                .initiation(toOBDomesticScheduled2(frPaymentSubmission.getScheduledPayment().getData().getInitiation()))
                 .creationDateTime(frPaymentSubmission.getCreated())
                 .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                 .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))

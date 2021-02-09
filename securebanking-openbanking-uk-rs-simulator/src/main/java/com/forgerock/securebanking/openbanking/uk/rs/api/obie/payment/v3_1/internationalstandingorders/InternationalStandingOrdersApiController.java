@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalstandingorders;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.internationalstandingorders;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrder;
@@ -30,9 +30,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -43,11 +43,11 @@ import java.util.UUID;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder1;
+import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder2;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRSubmissionStatus.PENDING;
 
-@Controller("InternationalStandingOrdersApiV3.0")
+@Controller("InternationalStandingOrdersApiV3.1")
 @Slf4j
 public class InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
 
@@ -65,8 +65,8 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     }
 
     @Override
-    public ResponseEntity<OBWriteInternationalStandingOrderResponse1> createInternationalStandingOrders(
-            @Valid OBWriteInternationalStandingOrder1 obWriteInternationalStandingOrder1,
+    public ResponseEntity<OBWriteInternationalStandingOrderResponse2> createInternationalStandingOrders(
+            @Valid OBWriteInternationalStandingOrder2 obWriteInternationalStandingOrder2,
             String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
@@ -79,16 +79,11 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder1);
+        log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder2);
 
-        // TODO - before we get this far, the IG will need to:
-        //      - verify the consent status
-        //      - verify the payment details match those in the payment consent
-        //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
+        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalStandingOrder2.getRisk());
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalStandingOrder1.getRisk());
-
-        FRWriteInternationalStandingOrder frStandingOrder = toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder1);
+        FRWriteInternationalStandingOrder frStandingOrder = toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder2);
         log.trace("Converted to: '{}'", frStandingOrder);
 
         FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
@@ -132,11 +127,11 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
     }
 
-    private OBWriteInternationalStandingOrderResponse1 responseEntity(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission) {
-        return new OBWriteInternationalStandingOrderResponse1()
-                .data(new OBWriteDataInternationalStandingOrderResponse1()
+    private OBWriteInternationalStandingOrderResponse2 responseEntity(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission) {
+        return new OBWriteInternationalStandingOrderResponse2()
+                .data(new OBWriteDataInternationalStandingOrderResponse2()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
-                        .initiation(toOBInternationalStandingOrder1(frPaymentSubmission.getStandingOrder().getData().getInitiation()))
+                        .initiation(toOBInternationalStandingOrder2(frPaymentSubmission.getStandingOrder().getData().getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticstandingorders;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.domesticstandingorders;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrder;
@@ -30,9 +30,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -43,11 +43,11 @@ import java.util.UUID;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createDomesticStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder1;
+import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder2;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRSubmissionStatus.INITIATIONPENDING;
 
-@Controller("DomesticStandingOrdersApiV3.0")
+@Controller("DomesticStandingOrdersApiV3.1")
 @Slf4j
 public class DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
 
@@ -58,15 +58,16 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            StandingOrderService standingOrderService) {
+            StandingOrderService standingOrderService
+    ) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.standingOrderService = standingOrderService;
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticStandingOrderResponse1> createDomesticStandingOrders(
-            @Valid OBWriteDomesticStandingOrder1 obWriteDomesticStandingOrder1,
+    public ResponseEntity<OBWriteDomesticStandingOrderResponse2> createDomesticStandingOrders(
+            @Valid OBWriteDomesticStandingOrder2 obWriteDomesticStandingOrder2,
             String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
@@ -77,17 +78,13 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             String xFapiInteractionId,
             String xCustomerUserAgent,
             HttpServletRequest request,
-            Principal principal) throws OBErrorResponseException {
-        log.debug("Received payment submission: '{}'", obWriteDomesticStandingOrder1);
+            Principal principal
+    ) throws OBErrorResponseException {
+        log.debug("Received payment submission: '{}'", obWriteDomesticStandingOrder2);
 
-        // TODO - before we get this far, the IG will need to:
-        //      - verify the consent status
-        //      - verify the payment details match those in the payment consent
-        //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
+        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomesticStandingOrder2.getRisk());
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomesticStandingOrder1.getRisk());
-
-        FRWriteDomesticStandingOrder frStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder1);
+        FRWriteDomesticStandingOrder frStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder2);
         log.trace("Converted to: '{}'", frStandingOrder);
 
         FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
@@ -130,10 +127,10 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
     }
 
-    private OBWriteDomesticStandingOrderResponse1 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission) {
-        return new OBWriteDomesticStandingOrderResponse1().data(new OBWriteDataDomesticStandingOrderResponse1()
+    private OBWriteDomesticStandingOrderResponse2 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission) {
+        return new OBWriteDomesticStandingOrderResponse2().data(new OBWriteDataDomesticStandingOrderResponse2()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
-                .initiation(toOBDomesticStandingOrder1(frPaymentSubmission.getStandingOrder().getData().getInitiation()))
+                .initiation(toOBDomesticStandingOrder2(frPaymentSubmission.getStandingOrder().getData().getInitiation()))
                 .creationDateTime(frPaymentSubmission.getCreated())
                 .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                 .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))

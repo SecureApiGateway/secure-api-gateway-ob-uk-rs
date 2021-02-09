@@ -45,7 +45,7 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.LinksHelper.createDomesticPaymentLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;

@@ -17,14 +17,12 @@ package com.forgerock.securebanking.openbanking.uk.rs.service.frequency;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.springframework.stereotype.Service;
 
 import java.util.regex.Matcher;
 
-@Service
 public class FrequencyService {
 
-    public DateTime getNextDateTime(DateTime previous, String frequency) {
+    public static DateTime getNextDateTime(DateTime previous, String frequency) {
 
         String[] parts = frequency.split(":", 2);
 
@@ -56,7 +54,7 @@ public class FrequencyService {
         }
     }
 
-    private DateTime nextWorkingDay(DateTime previous) {
+    private static DateTime nextWorkingDay(DateTime previous) {
         if (previous.dayOfWeek().get() >= DateTimeConstants.FRIDAY) {
             return previous.plusDays(7 - previous.dayOfWeek().get() + 1);
         } else {
@@ -64,12 +62,12 @@ public class FrequencyService {
         }
     }
 
-    private DateTime nextDay(DateTime previous) {
+    private static DateTime nextDay(DateTime previous) {
         return previous.plusDays(1);
     }
 
 
-    private DateTime nextQuarterDay(DateTime previous, Matcher matcher) {
+    private static DateTime nextQuarterDay(DateTime previous, Matcher matcher) {
         String quarterStr = matcher.group(1);
         QuarterType quarterType = QuarterType.fromQuarterTypeString(quarterStr);
 
@@ -84,7 +82,7 @@ public class FrequencyService {
         return candidateDate;
     }
 
-    private DateTime nextIntervalMonthDay(DateTime previous, Matcher matcher) {
+    private static DateTime nextIntervalMonthDay(DateTime previous, Matcher matcher) {
         int monthIntv = Integer.valueOf(matcher.group(1));
         int daysIntv = Integer.valueOf(matcher.group(2));
         if (daysIntv < 0) {
@@ -99,7 +97,7 @@ public class FrequencyService {
         }
     }
 
-    private DateTime nextIntervalWeekDay(DateTime previous, Matcher matcher) {
+    private static DateTime nextIntervalWeekDay(DateTime previous, Matcher matcher) {
         int weekIntv = Integer.valueOf(matcher.group(1));
         int dayOfWeekIntv = Integer.valueOf(matcher.group(2));
         return previous
@@ -107,7 +105,7 @@ public class FrequencyService {
                 .withDayOfWeek(dayOfWeekIntv);
     }
 
-    private DateTime nextIntervalDay(DateTime previous, Matcher matcher) {
+    private static DateTime nextIntervalDay(DateTime previous, Matcher matcher) {
         int dayIntv = Integer.valueOf(matcher.group(1));
         return previous.plusDays(dayIntv);
     }
