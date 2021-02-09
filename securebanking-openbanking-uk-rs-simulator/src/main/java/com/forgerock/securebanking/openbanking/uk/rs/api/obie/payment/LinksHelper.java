@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment;
 
 import org.springframework.hateoas.Link;
 import uk.org.openbanking.datamodel.account.Links;

@@ -28,8 +28,6 @@ public class FrequencyServiceTest {
     // (Saturday 6th Feb 2021)
     private static final DateTime PREVIOUS_DATE_TIME = new DateTime(2021, 2, 6, 11, 0);
 
-    private final FrequencyService frequencyService = new FrequencyService();
-
     // EVERYDAY("EvryDay")
     @Test
     public void shouldMatchPattern_everyDay() {
@@ -37,7 +35,7 @@ public class FrequencyServiceTest {
         String frequency = FrequencyType.EVERYDAY.getFrequencyStr();
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+        DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
@@ -53,7 +51,7 @@ public class FrequencyServiceTest {
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+                FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
         assertThat(e.getMessage()).isEqualTo("Frequency type value not found: " + frequency);
@@ -66,7 +64,7 @@ public class FrequencyServiceTest {
         String frequency = FrequencyType.EVERYWORKINGDAY.getFrequencyStr();
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+        DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
@@ -82,7 +80,7 @@ public class FrequencyServiceTest {
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+                FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
         assertThat(e.getMessage()).isEqualTo("Frequency type value not found: " + frequency);
@@ -95,7 +93,7 @@ public class FrequencyServiceTest {
         String frequency = FrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":01:07";
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+        DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
@@ -112,7 +110,7 @@ public class FrequencyServiceTest {
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+                FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
         assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
@@ -125,7 +123,7 @@ public class FrequencyServiceTest {
         String frequency = FrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":02:03";
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+        DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
@@ -142,7 +140,7 @@ public class FrequencyServiceTest {
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+                FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
         assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
@@ -155,7 +153,7 @@ public class FrequencyServiceTest {
         String frequency = FrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":01:30";
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+        DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
@@ -172,7 +170,7 @@ public class FrequencyServiceTest {
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+                FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
         assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
@@ -185,7 +183,7 @@ public class FrequencyServiceTest {
         String frequency = FrequencyType.QUARTERDAY.getFrequencyStr() + ":ENGLISH";
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+        DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
@@ -202,7 +200,7 @@ public class FrequencyServiceTest {
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+                FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
         assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
@@ -215,7 +213,7 @@ public class FrequencyServiceTest {
         String frequency = FrequencyType.INTERVALDAY.getFrequencyStr() + ":02";
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+        DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
@@ -232,7 +230,7 @@ public class FrequencyServiceTest {
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+                FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
         assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalpayments;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.internationalpayments;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternational;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
@@ -28,9 +28,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -41,11 +41,11 @@ import java.util.UUID;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBTransactionIndividualStatus1Code;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalConsentConverter.toOBInternational1;
+import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalConsentConverter.toOBInternational2;
 import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRSubmissionStatus.PENDING;
 
-@Controller("InternationalPaymentsApiV3.0")
+@Controller("InternationalPaymentsApiV3.1")
 @Slf4j
 public class InternationalPaymentsApiController implements InternationalPaymentsApi {
 
@@ -59,8 +59,8 @@ public class InternationalPaymentsApiController implements InternationalPayments
     }
 
     @Override
-    public ResponseEntity<OBWriteInternationalResponse1> createInternationalPayments(
-            @Valid OBWriteInternational1 obWriteInternational1,
+    public ResponseEntity<OBWriteInternationalResponse2> createInternationalPayments(
+            @Valid OBWriteInternational2 obWriteInternational2,
             String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
@@ -70,18 +70,12 @@ public class InternationalPaymentsApiController implements InternationalPayments
             String xFapiInteractionId,
             String xCustomerUserAgent,
             HttpServletRequest request,
-            Principal principal
-    ) throws OBErrorResponseException {
-        log.debug("Received payment submission: '{}'", obWriteInternational1);
+            Principal principal) throws OBErrorResponseException {
+        log.debug("Received payment submission: '{}'", obWriteInternational2);
 
-        // TODO - before we get this far, the IG will need to:
-        //      - verify the consent status
-        //      - verify the payment details match those in the payment consent
-        //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
+        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternational2.getRisk());
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternational1.getRisk());
-
-        FRWriteInternational frInternationalPayment = toFRWriteInternational(obWriteInternational1);
+        FRWriteInternational frInternationalPayment = toFRWriteInternational(obWriteInternational2);
         log.trace("Converted to: '{}'", frInternationalPayment);
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
@@ -110,8 +104,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             String xFapiInteractionId,
             String xCustomerUserAgent,
             HttpServletRequest request,
-            Principal principal
-    ) {
+            Principal principal) {
         Optional<FRInternationalPaymentSubmission> isPaymentSubmission = paymentSubmissionRepository.findById(internationalPaymentId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + internationalPaymentId + "' can't be found");
@@ -119,10 +112,10 @@ public class InternationalPaymentsApiController implements InternationalPayments
         return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
     }
 
-    private OBWriteInternationalResponse1 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission) {
-        return new OBWriteInternationalResponse1().data(new OBWriteDataInternationalResponse1()
+    private OBWriteInternationalResponse2 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission) {
+        return new OBWriteInternationalResponse2().data(new OBWriteDataInternationalResponse2()
                 .internationalPaymentId(frPaymentSubmission.getId())
-                .initiation(toOBInternational1(frPaymentSubmission.getPayment().getData().getInitiation()))
+                .initiation(toOBInternational2(frPaymentSubmission.getPayment().getData().getInitiation()))
                 .creationDateTime(frPaymentSubmission.getCreated())
                 .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                 .status(toOBTransactionIndividualStatus1Code(frPaymentSubmission.getStatus()))
