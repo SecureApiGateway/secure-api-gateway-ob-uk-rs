@@ -91,6 +91,9 @@ public interface InternationalScheduledPaymentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
+            @ApiParam(value = "Indicates if 'ReadRefundAccount' was set to 'Yes' or 'No' in the consent. Defaults to 'No'", required = false)
+            @RequestHeader(value = "x-read-refund-account", required = false) String xReadRefundAccount,
+
             HttpServletRequest request,
 
             Principal principal
@@ -134,6 +137,9 @@ public interface InternationalScheduledPaymentsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @ApiParam(value = "Indicates if 'ReadRefundAccount' was set to 'Yes' or 'No' in the consent. Defaults to 'No'", required = false)
+            @RequestHeader(value = "x-read-refund-account", required = false) String xReadRefundAccount,
 
             HttpServletRequest request,
 

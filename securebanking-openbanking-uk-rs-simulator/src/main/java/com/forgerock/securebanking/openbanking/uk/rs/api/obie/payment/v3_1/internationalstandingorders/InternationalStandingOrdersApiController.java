@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.inte
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrder;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderData;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalStandingOrderPaymentSubmission;
@@ -128,14 +129,15 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     }
 
     private OBWriteInternationalStandingOrderResponse2 responseEntity(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission) {
+        FRWriteInternationalStandingOrderData data = frPaymentSubmission.getStandingOrder().getData();
         return new OBWriteInternationalStandingOrderResponse2()
                 .data(new OBWriteDataInternationalStandingOrderResponse2()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
-                        .initiation(toOBInternationalStandingOrder2(frPaymentSubmission.getStandingOrder().getData().getInitiation()))
+                        .initiation(toOBInternationalStandingOrder2(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
-                        .consentId(frPaymentSubmission.getStandingOrder().getData().getConsentId())
+                        .consentId(data.getConsentId())
                 )
                 .links(createInternationalStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
