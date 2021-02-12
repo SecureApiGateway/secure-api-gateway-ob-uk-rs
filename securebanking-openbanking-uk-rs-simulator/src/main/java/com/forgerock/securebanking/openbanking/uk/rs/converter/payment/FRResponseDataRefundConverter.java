@@ -34,11 +34,23 @@ public class FRResponseDataRefundConverter {
                 .account(toOBWriteDomesticResponse4DataRefundAccount(refund.getAccount()));
     }
 
+    public static OBWriteDomesticResponse5DataRefund toOBWriteDomesticResponse5DataRefund(FRDomesticResponseDataRefund refund) {
+        return refund == null ? null : new OBWriteDomesticResponse5DataRefund()
+                .account(toOBWriteDomesticResponse5DataRefundAccount(refund.getAccount()));
+    }
+
     public static OBWriteInternationalResponse4DataRefund toOBWriteInternationalResponse4DataRefund(FRInternationalResponseDataRefund refund) {
         return refund == null ? null : new OBWriteInternationalResponse4DataRefund()
                 .account(toOBWriteDomesticResponse4DataRefundAccount(refund.getAccount()))
                 .creditor(toOBWriteInternationalResponse4DataRefundCreditor(refund.getCreditor()))
                 .agent(toOBWriteInternationalResponse4DataRefundAgent(refund.getAgent()));
+    }
+
+    public static OBWriteInternationalResponse5DataRefund toOBWriteInternationalResponse5DataRefund(FRInternationalResponseDataRefund refund) {
+        return refund == null ? null : new OBWriteInternationalResponse5DataRefund()
+                .account(toOBWriteDomesticResponse5DataRefundAccount(refund.getAccount()))
+                .creditor(toOBWriteInternationalResponse5DataRefundCreditor(refund.getCreditor()))
+                .agent(toOBWriteInternationalResponse5DataRefundAgent(refund.getAgent()));
     }
 
     public static OBWriteInternationalRefundResponse1DataRefund toOBWriteInternationalRefundResponse1DataRefund(FRInternationalResponseDataRefund refund) {
@@ -56,8 +68,22 @@ public class FRResponseDataRefundConverter {
                 .secondaryIdentification(account.getSecondaryIdentification());
     }
 
+    private static OBWriteDomesticResponse5DataRefundAccount toOBWriteDomesticResponse5DataRefundAccount(FRAccountIdentifier account) {
+        return account == null ? null : new OBWriteDomesticResponse5DataRefundAccount()
+                .schemeName(account.getSchemeName())
+                .identification(account.getIdentification())
+                .name(account.getName())
+                .secondaryIdentification(account.getSecondaryIdentification());
+    }
+
     private static OBWriteInternationalResponse4DataRefundCreditor toOBWriteInternationalResponse4DataRefundCreditor(FRFinancialCreditor creditor) {
         return creditor == null ? null : new OBWriteInternationalResponse4DataRefundCreditor()
+                .name(creditor.getName())
+                .postalAddress(toOBPostalAddress6(creditor.getPostalAddress()));
+    }
+
+    private static OBWriteInternationalResponse5DataRefundCreditor toOBWriteInternationalResponse5DataRefundCreditor(FRFinancialCreditor creditor) {
+        return creditor == null ? null : new OBWriteInternationalResponse5DataRefundCreditor()
                 .name(creditor.getName())
                 .postalAddress(toOBPostalAddress6(creditor.getPostalAddress()));
     }
@@ -70,6 +96,14 @@ public class FRResponseDataRefundConverter {
 
     private static OBWriteInternationalResponse4DataRefundAgent toOBWriteInternationalResponse4DataRefundAgent(FRFinancialAgent agent) {
         return agent == null ? null : new OBWriteInternationalResponse4DataRefundAgent()
+                .schemeName(agent.getSchemeName())
+                .identification(agent.getIdentification())
+                .name(agent.getName())
+                .postalAddress(toOBPostalAddress6(agent.getPostalAddress()));
+    }
+
+    private static OBWriteInternationalResponse5DataRefundAgent toOBWriteInternationalResponse5DataRefundAgent(FRFinancialAgent agent) {
+        return agent == null ? null : new OBWriteInternationalResponse5DataRefundAgent()
                 .schemeName(agent.getSchemeName())
                 .identification(agent.getIdentification())
                 .name(agent.getName())
