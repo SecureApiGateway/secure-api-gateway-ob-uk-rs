@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.domesticscheduledpayments;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomesticScheduled;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
@@ -130,13 +131,15 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     private OBWriteDomesticScheduledResponse2 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
-        return new OBWriteDomesticScheduledResponse2().data(new OBWriteDataDomesticScheduledResponse2()
-                .domesticScheduledPaymentId(frPaymentSubmission.getId())
-                .initiation(toOBDomesticScheduled2(frPaymentSubmission.getScheduledPayment().getData().getInitiation()))
-                .creationDateTime(frPaymentSubmission.getCreated())
-                .statusUpdateDateTime(frPaymentSubmission.getUpdated())
-                .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
-                .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId()))
+        FRWriteDataDomesticScheduled data = frPaymentSubmission.getScheduledPayment().getData();
+        return new OBWriteDomesticScheduledResponse2()
+                .data(new OBWriteDataDomesticScheduledResponse2()
+                        .domesticScheduledPaymentId(frPaymentSubmission.getId())
+                        .initiation(toOBDomesticScheduled2(data.getInitiation()))
+                        .creationDateTime(frPaymentSubmission.getCreated())
+                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
+                        .consentId(data.getConsentId()))
                 .links(createDomesticScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

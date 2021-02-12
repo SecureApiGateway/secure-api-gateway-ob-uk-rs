@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticstandingorders;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomesticStandingOrder;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
@@ -131,13 +132,15 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     }
 
     private OBWriteDomesticStandingOrderResponse1 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission) {
-        return new OBWriteDomesticStandingOrderResponse1().data(new OBWriteDataDomesticStandingOrderResponse1()
-                .domesticStandingOrderId(frPaymentSubmission.getId())
-                .initiation(toOBDomesticStandingOrder1(frPaymentSubmission.getStandingOrder().getData().getInitiation()))
-                .creationDateTime(frPaymentSubmission.getCreated())
-                .statusUpdateDateTime(frPaymentSubmission.getUpdated())
-                .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
-                .consentId(frPaymentSubmission.getStandingOrder().getData().getConsentId()))
+        FRWriteDataDomesticStandingOrder data = frPaymentSubmission.getStandingOrder().getData();
+        return new OBWriteDomesticStandingOrderResponse1()
+                .data(new OBWriteDataDomesticStandingOrderResponse1()
+                        .domesticStandingOrderId(frPaymentSubmission.getId())
+                        .initiation(toOBDomesticStandingOrder1(data.getInitiation()))
+                        .creationDateTime(frPaymentSubmission.getCreated())
+                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
+                        .consentId(data.getConsentId()))
                 .links(createDomesticStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

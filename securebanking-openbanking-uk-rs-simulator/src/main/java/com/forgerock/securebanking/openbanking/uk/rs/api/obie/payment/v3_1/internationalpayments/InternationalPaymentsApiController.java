@@ -113,14 +113,15 @@ public class InternationalPaymentsApiController implements InternationalPayments
     }
 
     private OBWriteInternationalResponse2 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission) {
-        return new OBWriteInternationalResponse2().data(new OBWriteDataInternationalResponse2()
-                .internationalPaymentId(frPaymentSubmission.getId())
-                .initiation(toOBInternational2(frPaymentSubmission.getPayment().getData().getInitiation()))
-                .creationDateTime(frPaymentSubmission.getCreated())
-                .statusUpdateDateTime(frPaymentSubmission.getUpdated())
-                .status(toOBTransactionIndividualStatus1Code(frPaymentSubmission.getStatus()))
-                .consentId(frPaymentSubmission.getPayment().getData().getConsentId())
-                .exchangeRateInformation(toOBExchangeRate2(frPaymentSubmission.getCalculatedExchangeRate())))
+        return new OBWriteInternationalResponse2()
+                .data(new OBWriteDataInternationalResponse2()
+                        .internationalPaymentId(frPaymentSubmission.getId())
+                        .initiation(toOBInternational2(frPaymentSubmission.getPayment().getData().getInitiation()))
+                        .creationDateTime(frPaymentSubmission.getCreated())
+                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .status(toOBTransactionIndividualStatus1Code(frPaymentSubmission.getStatus()))
+                        .consentId(frPaymentSubmission.getPayment().getData().getConsentId())
+                        .exchangeRateInformation(toOBExchangeRate2(frPaymentSubmission.getCalculatedExchangeRate())))
                 .links(createInternationalPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }
