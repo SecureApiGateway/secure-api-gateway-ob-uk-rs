@@ -43,26 +43,26 @@ public class FREventNotification implements Persistable<String> {
 
     @Id
     @Indexed
-    public String id;
+    private String id;
 
     @Indexed
-    public String jti;
+    private String jti;
 
-    public String signedJwt;
+    private String signedJwt;
 
     @Indexed
-    public String tppId;
+    private String tppId;
 
     @CreatedDate
-    public DateTime created;
+    private DateTime created;
     @LastModifiedDate
-    public DateTime updated;
+    private DateTime updated;
 
-    public FREventPollingError errors;
+    private FREventPollingError errors;
 
     @Override
     public boolean isNew() {
-        return created == null;
+        return id == null;
     }
 
     public boolean hasErrors() {
