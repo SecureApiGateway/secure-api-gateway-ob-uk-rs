@@ -16,3 +16,10 @@ spring:
   data:
     mongodb:
       database: mongo
+
+#Swagger
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
