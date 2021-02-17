@@ -32,8 +32,8 @@
         <module>securebanking-openbanking-uk-rs-admin-api</module>
         <module>securebanking-openbanking-uk-rs-backoffice-api</module>
         <module>securebanking-openbanking-uk-rs-obie-api</module>
-        <module>securebanking-openbanking-uk-rs-simulator</module>
-        <module>securebanking-openbanking-uk-rs-simulator-app</module>
+        <module>securebanking-openbanking-uk-rs-simulator-server</module>
+        <module>securebanking-openbanking-uk-rs-simulator-sample</module>
     </modules>
 
     <parent>

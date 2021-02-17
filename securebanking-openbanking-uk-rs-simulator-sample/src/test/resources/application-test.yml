@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      # force SpringBoot tests to use a random port for mongo
+      port: 0
+

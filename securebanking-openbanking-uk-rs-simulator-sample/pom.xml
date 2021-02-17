@@ -21,11 +21,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.forgerock.securebanking</groupId>
-    <artifactId>securebanking-openbanking-uk-rs-simulator</artifactId>
+    <artifactId>securebanking-openbanking-uk-rs-simulator-sample</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>securebanking-openbanking-uk-rs-simulator</name>
-    <description>A UK Open Banking RS simulator for the Secure Banking Accelerator Toolkit</description>
+    <name>securebanking-openbanking-uk-rs-simulator-sample</name>
+    <description>A Spring Boot application for the Secure Banking Accelerator Toolkit's Open Banking RS simulator</description>
 
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
@@ -41,36 +41,15 @@
     <url>http://www.forgerock.org</url>
 
     <properties>
-        <securebanking-openbanking-uk-rs-obie-api.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-obie-api.version>
-        <securebanking-openbanking-uk-rs-backoffice-api.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-backoffice-api.version>
-        <securebanking-openbanking-uk-rs-admin-api.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-admin-api.version>
+        <securebanking-openbanking-uk-rs-simulator-server.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-simulator-server.version>
     </properties>
 
     <dependencies>
         <!-- ForgeRock dependencies -->
         <dependency>
             <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-rs-obie-api</artifactId>
-            <version>${securebanking-openbanking-uk-rs-obie-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-rs-backoffice-api</artifactId>
-            <version>${securebanking-openbanking-uk-rs-backoffice-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-rs-admin-api</artifactId>
-            <version>${securebanking-openbanking-uk-rs-admin-api.version}</version>
+            <artifactId>securebanking-openbanking-uk-rs-simulator-server</artifactId>
+            <version>${securebanking-openbanking-uk-rs-simulator-server.version}</version>
         </dependency>
 
         <!-- External dependencies -->
@@ -89,43 +68,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
-        </dependency>
-
-        <!-- swagger -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-        </dependency>
-
-        <!-- ForgeRock Test dependencies -->
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-obie-datamodel</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
 
         <!-- External Test dependencies -->
