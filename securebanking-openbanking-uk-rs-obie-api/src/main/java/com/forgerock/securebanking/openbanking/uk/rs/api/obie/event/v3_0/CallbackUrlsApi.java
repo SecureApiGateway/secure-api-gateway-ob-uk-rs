@@ -65,7 +65,7 @@ public interface CallbackUrlsApi {
     ResponseEntity<OBCallbackUrlResponse1> createCallbackUrls(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBCallbackUrl1 obCallbackUrl1Param,
+            @RequestBody OBCallbackUrl1 obCallbackUrl1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -73,8 +73,8 @@ public interface CallbackUrlsApi {
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @ApiParam(value = "Header containing a detached JWS signature of the body of the payload." ,required=true)
-            @RequestHeader(value="x-jws-signature", required=false) String xJwsSignature,
+            @ApiParam(value = "Header containing a detached JWS signature of the body of the payload.", required = true)
+            @RequestHeader(value = "x-jws-signature", required = false) String xJwsSignature,
 
             @ApiParam(value = "An RFC4122 UID used as a correlation id.")
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
@@ -143,7 +143,7 @@ public interface CallbackUrlsApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = BASE_PATH+"/{CallbackUrlId}",
+    @RequestMapping(value = BASE_PATH + "/{CallbackUrlId}",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
@@ -153,7 +153,7 @@ public interface CallbackUrlsApi {
 
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBCallbackUrl1 obCallbackUrl1Param,
+            @RequestBody OBCallbackUrl1 obCallbackUrl1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = false)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -193,7 +193,7 @@ public interface CallbackUrlsApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = BASE_PATH+"/{CallbackUrlId}",
+    @RequestMapping(value = BASE_PATH + "/{CallbackUrlId}",
             method = RequestMethod.DELETE)
     ResponseEntity deleteCallbackUrl(
             @ApiParam(value = "CallbackUrlId", required = true)

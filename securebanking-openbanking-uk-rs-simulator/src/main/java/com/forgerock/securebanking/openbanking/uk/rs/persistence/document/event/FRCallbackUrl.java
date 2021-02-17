@@ -37,21 +37,22 @@ public class FRCallbackUrl implements Persistable<String> {
 
     @Id
     @Indexed
-    public String id;
+    private String id;
 
-    public FRCallbackUrlData callbackUrl;
+    private FRCallbackUrlData callbackUrl;
 
     @Indexed
-    public String tppId;
+    private String tppId;
 
     @CreatedDate
-    public DateTime created;
+    private DateTime created;
+
     @LastModifiedDate
-    public DateTime updated;
+    private DateTime updated;
 
     @Override
     public boolean isNew() {
-        return created == null;
+        return id == null;
     }
 
     public String getCallBackUrlString() {

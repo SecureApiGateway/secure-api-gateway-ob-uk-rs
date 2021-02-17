@@ -38,22 +38,22 @@ public class FREventSubscription implements Persistable<String> {
 
     @Id
     @Indexed
-    public String id;
+    private String id;
 
-    public FREventSubscriptionData eventSubscription;
+    private FREventSubscriptionData eventSubscription;
 
     @Indexed
-    public String tppId;
+    private String tppId;
 
     @CreatedDate
-    public DateTime created;
+    private DateTime created;
     @LastModifiedDate
-    public DateTime updated;
+    private DateTime updated;
 
-    public OBVersion version;
+    private OBVersion version;
 
     @Override
     public boolean isNew() {
-        return created == null;
+        return id == null;
     }
 }
