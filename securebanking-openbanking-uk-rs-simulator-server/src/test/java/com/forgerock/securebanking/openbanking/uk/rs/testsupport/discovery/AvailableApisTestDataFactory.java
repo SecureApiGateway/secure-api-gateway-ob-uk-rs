@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.testsupport.discovery;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
-import com.forgerock.securebanking.openbanking.uk.rs.discovery.AvailableApiEndpoint;
+import com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpoint;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
 
