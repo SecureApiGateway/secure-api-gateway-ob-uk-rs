@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.discovery;
+package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.domesticpayments.DomesticPaymentsApiController;

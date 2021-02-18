@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.web;
 
-import com.forgerock.securebanking.openbanking.uk.rs.discovery.ControllerEndpointBlacklistHandler;
-import com.forgerock.securebanking.openbanking.uk.rs.discovery.DiscoveryApiService;
+import com.forgerock.securebanking.openbanking.uk.rs.api.discovery.ControllerEndpointBlacklistHandler;
+import com.forgerock.securebanking.openbanking.uk.rs.api.discovery.DiscoveryApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;

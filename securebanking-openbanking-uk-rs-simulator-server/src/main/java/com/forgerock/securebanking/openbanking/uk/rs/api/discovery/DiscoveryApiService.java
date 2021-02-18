@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.discovery;
+package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
@@ -35,16 +35,16 @@ import java.util.Map;
 @Slf4j
 public class DiscoveryApiService {
 
-    private final com.forgerock.securebanking.openbanking.uk.rs.discovery.DiscoveryApiConfigurationProperties discoveryProperties;
+    private final com.forgerock.securebanking.openbanking.uk.rs.api.discovery.DiscoveryApiConfigurationProperties discoveryProperties;
 
-    private final com.forgerock.securebanking.openbanking.uk.rs.discovery.AvailableApiEndpointsResolver availableApiEndpointsResolver;
+    private final com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpointsResolver availableApiEndpointsResolver;
 
     private final ControllerEndpointBlacklistHandler blacklistHandler;
 
     private final Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = new HashMap<>();
 
-    public DiscoveryApiService(com.forgerock.securebanking.openbanking.uk.rs.discovery.DiscoveryApiConfigurationProperties discoveryProperties,
-                               com.forgerock.securebanking.openbanking.uk.rs.discovery.AvailableApiEndpointsResolver availableApiEndpointsResolver,
+    public DiscoveryApiService(com.forgerock.securebanking.openbanking.uk.rs.api.discovery.DiscoveryApiConfigurationProperties discoveryProperties,
+                               com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpointsResolver availableApiEndpointsResolver,
                                ControllerEndpointBlacklistHandler blacklistHandler) {
         this.discoveryProperties = discoveryProperties;
         this.availableApiEndpointsResolver = availableApiEndpointsResolver;
@@ -57,10 +57,10 @@ public class DiscoveryApiService {
      */
     @PostConstruct
     protected void init() {
-        List<com.forgerock.securebanking.openbanking.uk.rs.discovery.AvailableApiEndpoint> availableEndpoints = availableApiEndpointsResolver.getAvailableApiEndpoints();
+        List<com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpoint> availableEndpoints = availableApiEndpointsResolver.getAvailableApiEndpoints();
 
         // iterate over each API endpoint
-        for (com.forgerock.securebanking.openbanking.uk.rs.discovery.AvailableApiEndpoint availableEndpoint : availableEndpoints) {
+        for (com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpoint availableEndpoint : availableEndpoints) {
             String version = availableEndpoint.getVersion();
             OBApiReference endpointReference = availableEndpoint.getApiReference();
             String endpointUrl = availableEndpoint.getUrl();
