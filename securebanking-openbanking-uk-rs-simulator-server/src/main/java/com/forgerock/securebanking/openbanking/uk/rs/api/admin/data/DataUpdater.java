@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.admin.data;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.*;
 import com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.dto.FRAccountData;
 import com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.dto.FRUserData;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.*;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.balances.FRBalanceRepository;
