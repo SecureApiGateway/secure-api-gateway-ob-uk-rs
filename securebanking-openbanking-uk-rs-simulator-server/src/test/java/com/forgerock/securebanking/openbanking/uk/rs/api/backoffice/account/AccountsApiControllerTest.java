@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBalanceType;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCreditDebitIndicator;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
@@ -77,11 +77,11 @@ public class AccountsApiControllerTest {
         FRBalance accountBalance = aValidFRBalance(account.getId());
         frBalanceRepository.save(accountBalance);
         URI uri = findUserAccountsUriWithBalance(account.getUserID());
-        ParameterizedTypeReference<List<FRBankAccountWithBalance>> typeReference = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<List<FRAccountWithBalance>> typeReference = new ParameterizedTypeReference<>() {
         };
 
         // When
-        ResponseEntity<List<FRBankAccountWithBalance>> response = restTemplate.exchange(
+        ResponseEntity<List<FRAccountWithBalance>> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 new HttpEntity<>(httpHeaders()),
@@ -90,7 +90,7 @@ public class AccountsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotEmpty();
-        FRBankAccountWithBalance accountWithBalance = response.getBody().get(0);
+        FRAccountWithBalance accountWithBalance = response.getBody().get(0);
         assertThat(accountWithBalance.getId()).isEqualTo(account.getId());
         assertThat(accountWithBalance.getUserId()).isEqualTo(account.getUserID());
         assertThat(accountWithBalance.getAccount().getAccountId()).isEqualTo(account.getAccount().getAccountId());
@@ -106,11 +106,11 @@ public class AccountsApiControllerTest {
         FRBalance accountBalance = aValidFRBalance(account.getId());
         frBalanceRepository.save(accountBalance);
         URI uri = findUserAccountsUri(account.getUserID(), false);
-        ParameterizedTypeReference<List<FRBankAccountWithBalance>> typeReference = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<List<FRAccountWithBalance>> typeReference = new ParameterizedTypeReference<>() {
         };
 
         // When
-        ResponseEntity<List<FRBankAccountWithBalance>> response = restTemplate.exchange(
+        ResponseEntity<List<FRAccountWithBalance>> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 new HttpEntity<>(httpHeaders()),
@@ -119,7 +119,7 @@ public class AccountsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotEmpty();
-        FRBankAccountWithBalance accountWithBalance = response.getBody().get(0);
+        FRAccountWithBalance accountWithBalance = response.getBody().get(0);
         assertThat(accountWithBalance.getId()).isEqualTo(account.getId());
         assertThat(accountWithBalance.getBalances()).isEmpty();
     }
@@ -132,11 +132,11 @@ public class AccountsApiControllerTest {
         FRBalance accountBalance = aValidFRBalance(account.getId());
         frBalanceRepository.save(accountBalance);
         URI uri = findUserAccountsUri("unknown-user-id", false);
-        ParameterizedTypeReference<List<FRBankAccountWithBalance>> typeReference = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<List<FRAccountWithBalance>> typeReference = new ParameterizedTypeReference<>() {
         };
 
         // When
-        ResponseEntity<List<FRBankAccountWithBalance>> response = restTemplate.exchange(
+        ResponseEntity<List<FRAccountWithBalance>> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 new HttpEntity<>(httpHeaders()),
