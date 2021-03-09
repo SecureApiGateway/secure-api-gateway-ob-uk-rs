@@ -20,7 +20,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,14 +42,14 @@ public interface AccountsApi {
      *
      * @param userId The ID of the user who owns the account
      * @param withBalance Indicates if the account's balances(s) should be returned. Defaults to false.
-     * @return a {@link List} of {@link FRBankAccountWithBalance} instances, or an empty list.
+     * @return a {@link List} of {@link FRAccountWithBalance} instances, or an empty list.
      */
     @ApiOperation(value = "Get User Accounts With Balance",
             nickname = "getUserAccountsWithBalance",
-            notes = "", response = FRBankAccountWithBalance.class,
+            notes = "", response = FRAccountWithBalance.class,
             tags = {"Get User Accounts With Balance",})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User Accounts With Balance", response = FRBankAccountWithBalance.class),
+            @ApiResponse(code = 200, message = "User Accounts With Balance", response = FRAccountWithBalance.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
@@ -61,7 +61,7 @@ public interface AccountsApi {
     @RequestMapping(value = "/search/findByUserId",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<List<FRBankAccountWithBalance>> getUserAccountsWithBalance(
+    ResponseEntity<List<FRAccountWithBalance>> getUserAccountsWithBalance(
             @ApiParam(value = "The ID of the PSU who owns the account.")
             @RequestParam(value = "userId") String userId,
             @ApiParam(value = "Indicates if the account's balance(s) should be returned. Defaults to false.")

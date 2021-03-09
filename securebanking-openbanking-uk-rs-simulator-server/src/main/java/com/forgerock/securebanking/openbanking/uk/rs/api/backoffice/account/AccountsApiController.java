@@ -15,8 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBankAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBalance;
@@ -47,14 +46,14 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<List<FRBankAccountWithBalance>> getUserAccountsWithBalance(String userId, boolean withBalance) {
+    public ResponseEntity<List<FRAccountWithBalance>> getUserAccountsWithBalance(String userId, boolean withBalance) {
         log.info("Read all accounts for user ID '{}', with Balances: {}", userId, withBalance);
         Collection<FRAccount> accountsByUserID = accountsRepository.findByUserID(userId);
 
         if (!withBalance || accountsByUserID.isEmpty()) {
             log.debug("No balances required so returning {} accounts for userId: {}", accountsByUserID.size(), userId);
             return ResponseEntity.ok(accountsByUserID.stream()
-                    .map(account -> toFRBankAccountWithBalance(account, emptyMap()))
+                    .map(account -> toFRAccountWithBalance(account, emptyMap()))
                     .collect(toList()));
         }
 
@@ -71,24 +70,24 @@ public class AccountsApiController implements AccountsApi {
         log.debug("Balances by accountId: {}", balancesByAccountId);
 
         return ResponseEntity.ok(accountsByUserID.stream()
-                .map(account -> toFRBankAccountWithBalance(account, balancesByAccountId))
+                .map(account -> toFRAccountWithBalance(account, balancesByAccountId))
                 .collect(toList())
         );
 
     }
 
-    private FRBankAccountWithBalance toFRBankAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {
+    private FRAccountWithBalance toFRAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {
         List<FRCashBalance> balances = Optional.ofNullable(balanceMap.get(account.getId()))
                 .orElse(emptyList())
                 .stream()
                 .map(FRBalance::getBalance)
                 .collect(toList());
 
-        return new FRBankAccountWithBalance(toFRBankAccount(account), balances);
+        return new FRAccountWithBalance(toFRAccountDto(account), balances);
     }
 
-    private FRBankAccount toFRBankAccount(FRAccount account) {
-        return account == null ? null : FRBankAccount.builder()
+    private com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount toFRAccountDto(FRAccount account) {
+        return account == null ? null : com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccount.builder()
                 .id(account.getId())
                 .userId(account.getUserID())
                 .account(account.getAccount())
