@@ -29,6 +29,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
@@ -46,6 +47,7 @@ import static org.springframework.http.HttpMethod.PUT;
  * A SpringBoot test for the {@link DataApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 @TestPropertySource(properties = {"rs.data.upload.limit.accounts=10", "rs.data.upload.limit.documents=1"})
 public class DataApiControllerIT {
 

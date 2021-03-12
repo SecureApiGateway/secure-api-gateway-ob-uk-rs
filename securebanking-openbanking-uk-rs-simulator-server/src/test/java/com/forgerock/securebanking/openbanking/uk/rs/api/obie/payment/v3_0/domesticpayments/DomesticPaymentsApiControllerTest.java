@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomestic1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic1;
@@ -40,6 +41,7 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
  * A SpringBoot test for the {@link DomesticPaymentsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class DomesticPaymentsApiControllerTest {
 
     private static final HttpHeaders HTTP_HEADERS = requiredPaymentHttpHeaders();

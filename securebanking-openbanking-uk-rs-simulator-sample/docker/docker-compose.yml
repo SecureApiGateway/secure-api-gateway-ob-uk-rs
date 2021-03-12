@@ -14,8 +14,20 @@
 # limitations under the License.
 #
 
-version: '3.1'
+version: '3.8'
 services:
+
+  securebanking-config-server:
+    container_name: securebanking-config-server
+    hostname: securebanking-config-server
+    image: eu.gcr.io/openbanking-214714/securebanking/securebanking-config-server:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+      - CONFIG_SERVER_SEARCH_LOCATIONS=file:///home/config
+    ports:
+      - 8888:8888
+    volumes:
+      - ./config:/home/config
 
   rs-simulator:
     container_name: rs-simulator
@@ -23,12 +35,21 @@ services:
     ports:
       - 8080:8080
     environment:
-      - spring.data.mongodb.host=rs-mongo
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://securebanking-config-server:8888
+      - SPRING_DATA_MONGODB_HOST=rs-mongo
+    restart: on-failure
+    depends_on:
+      - rs-mongo
+      - securebanking-config-server
     links:
       - rs-mongo
+      - securebanking-config-server
 
   rs-mongo:
     container_name: rs-mongo
     image: mongo:4.4.2
     ports:
       - 27017:27017
+    volumes:
+    - ./.mongo/data:/data/db

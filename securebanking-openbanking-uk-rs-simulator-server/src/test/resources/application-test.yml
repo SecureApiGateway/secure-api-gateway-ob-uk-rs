@@ -1,21 +1,28 @@
 spring:
+  cloud:
+    config:
+      enabled: false
+
   data:
     mongodb:
       # force SpringBoot tests to use a random port for mongo
       port: 0
 
+#Swagger
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /api-docs
+
 rs:
+  baseUrl: http://localhost:8080
   discovery:
     financialId: 0015800001041REAAY
-    versions:
-      # Only allow v3.1.5
-      v3.1.5: true
-      v3.1.6: false
-    apis:
-      # Disable GetDomesticPayment for all versions
-      GetDomesticPayment: false
-    versionApiOverrides:
-      # Disable GetAccount for v3.1.5
-      # (Use underscore format to avoid binding error - due to more complicated map structure)
-      v3_1_5:
-        GetAccount: false
+
+  # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
+  data:
+    upload:
+      limit:
+        accounts: 100
+        documents: 1000

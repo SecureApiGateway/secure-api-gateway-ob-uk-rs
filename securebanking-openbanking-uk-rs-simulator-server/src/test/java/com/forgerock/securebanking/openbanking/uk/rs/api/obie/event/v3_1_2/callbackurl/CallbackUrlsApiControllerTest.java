@@ -26,6 +26,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.event.*;
 
 import java.util.List;
@@ -43,6 +44,7 @@ import static org.springframework.http.HttpStatus.*;
  * A SpringBoot test for the {@link CallbackUrlsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class CallbackUrlsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

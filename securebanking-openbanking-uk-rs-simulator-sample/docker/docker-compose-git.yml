@@ -1,0 +1,53 @@
+#
+# Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+version: '3.8'
+services:
+
+  securebanking-config-server:
+    container_name: securebanking-config-server
+    image: eu.gcr.io/openbanking-214714/securebanking/securebanking-config-server:latest
+    environment:
+      - SSH_KEY=${GIT_SSH_KEY}
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-spring-config.git
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT-LABEL=master
+    ports:
+      - 8888:8888
+
+  rs-simulator:
+    container_name: rs-simulator
+    image: eu.gcr.io/openbanking-214714/securebanking/uk-ob-rs-simulator:latest
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://securebanking-config-server:8888
+      - SPRING_DATA_MONGODB_HOST=rs-mongo
+    restart: on-failure
+    depends_on:
+      - rs-mongo
+      - securebanking-config-server
+    links:
+      - rs-mongo
+      - securebanking-config-server
+
+  rs-mongo:
+    container_name: rs-mongo
+    image: mongo:4.4.2
+    ports:
+      - 27017:27017
+    volumes:
+    - ./.mongo/data:/data/db

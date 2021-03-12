@@ -28,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import uk.org.openbanking.datamodel.account.OBReadAccount5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
@@ -43,6 +44,11 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
+@TestPropertySource(properties = {
+        "rs.discovery.versions.v3.1.5=true",
+        "rs.discovery.versions.v3.1.6=false",
+        "rs.discovery.apis.GetDomesticPayment=false",
+        "rs.discovery.versionApiOverrides.v3_1_5.GetAccount=false"})
 public class ControllerEndpointBlacklistHandlerTest {
 
     private static HttpHeaders PAYMENT_HEADERS = requiredPaymentHttpHeaders();
