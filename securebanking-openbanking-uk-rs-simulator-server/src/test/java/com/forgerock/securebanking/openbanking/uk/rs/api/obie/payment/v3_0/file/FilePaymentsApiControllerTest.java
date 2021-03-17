@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -32,6 +33,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * A SpringBoot test for the {@link FilePaymentsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class FilePaymentsApiControllerTest {
 
     private static final HttpHeaders HTTP_HEADERS = requiredPaymentHttpHeaders();

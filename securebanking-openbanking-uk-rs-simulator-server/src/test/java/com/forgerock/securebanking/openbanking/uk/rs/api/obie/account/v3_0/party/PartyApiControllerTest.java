@@ -29,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBReadParty1;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
@@ -41,6 +42,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Spring Boot Test for {@link PartyApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class PartyApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

@@ -32,6 +32,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBReadBalance1;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRCashBalanceTestDataFactory.aValidFRCashBalance;
@@ -44,6 +45,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Spring Boot Test for {@link BalancesApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class BalancesApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

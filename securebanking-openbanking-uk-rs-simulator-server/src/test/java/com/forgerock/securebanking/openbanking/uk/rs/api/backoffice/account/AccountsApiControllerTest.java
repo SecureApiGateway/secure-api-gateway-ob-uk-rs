@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBalanceType;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBalanceType;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCreditDebitIndicator;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
@@ -32,6 +32,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -46,6 +47,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Unit test for {@link AccountsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class AccountsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

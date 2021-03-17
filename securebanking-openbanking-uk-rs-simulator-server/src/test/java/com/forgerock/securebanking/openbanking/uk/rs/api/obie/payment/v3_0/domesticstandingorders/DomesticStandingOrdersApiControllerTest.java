@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
@@ -40,6 +41,7 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrde
  * A SpringBoot test for the {@link DomesticStandingOrdersApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class DomesticStandingOrdersApiControllerTest {
 
     private static final HttpHeaders HTTP_HEADERS = requiredPaymentHttpHeaders();

@@ -24,6 +24,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import uk.org.openbanking.datamodel.discovery.*;
 
 import java.util.List;
@@ -37,6 +38,11 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
+@TestPropertySource(properties = {
+        "rs.discovery.versions.v3.1.5=true",
+        "rs.discovery.versions.v3.1.6=false",
+        "rs.discovery.apis.GetDomesticPayment=false",
+        "rs.discovery.versionApiOverrides.v3_1_5.GetAccount=false"})
 public class DiscoveryControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

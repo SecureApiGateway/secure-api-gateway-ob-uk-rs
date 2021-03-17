@@ -31,6 +31,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBReadProduct2;
 import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
 
@@ -45,6 +46,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Spring Boot Test for {@link ProductsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class ProductsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

@@ -32,6 +32,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary2;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRAccountBeneficiaryTestDataFactory.aValidFRAccountBeneficiary;
@@ -44,6 +45,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Spring Boot Test for {@link BeneficiariesApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@ActiveProfiles("test")
 public class BeneficiariesApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
