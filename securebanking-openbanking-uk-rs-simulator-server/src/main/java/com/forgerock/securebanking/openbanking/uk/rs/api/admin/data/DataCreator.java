@@ -41,17 +41,17 @@ import uk.org.openbanking.datamodel.account.*;
 
 import java.util.*;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRCashBalanceConverter.toFRBalanceType;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRCashBalanceConverter.toFRCashBalance;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRDirectDebitConverter.toFRDirectDebitData;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toFRFinancialAccount;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FROfferConverter.toFROfferData;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRScheduledPaymentConverter.toFRScheduledPaymentData;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRStandingOrderConverter.toFRStandingOrderData;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRStatementConverter.toFRStatementData;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRTransactionConverter.toFRTransactionData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRCashBalanceConverter.toFRBalanceType;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRDirectDebitConverter.toFRDirectDebitData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toFRFinancialAccount;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FROfferConverter.toFROfferData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRScheduledPaymentConverter.toFRScheduledPaymentData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStandingOrderConverter.toFRStandingOrderData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter.toFRStatementData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRTransactionConverter.toFRTransactionData;
 
 @Service
 @NoArgsConstructor

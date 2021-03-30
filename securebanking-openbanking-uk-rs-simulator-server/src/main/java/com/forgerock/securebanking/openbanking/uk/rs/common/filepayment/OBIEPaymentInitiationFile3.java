@@ -24,7 +24,7 @@ import com.forgerock.securebanking.openbanking.uk.error.FileParseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.JsonUtils;
-import com.forgerock.securebanking.openbanking.uk.rs.converter.FRAmountConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAmountConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.MediaType;

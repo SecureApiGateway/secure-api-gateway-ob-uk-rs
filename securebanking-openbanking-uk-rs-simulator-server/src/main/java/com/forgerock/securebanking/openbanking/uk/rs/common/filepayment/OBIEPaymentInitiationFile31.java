@@ -23,7 +23,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFilePayment;
-import com.forgerock.securebanking.openbanking.uk.rs.converter.FRAmountConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAmountConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRCashBalanceConverter.toFRCashBalance;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
