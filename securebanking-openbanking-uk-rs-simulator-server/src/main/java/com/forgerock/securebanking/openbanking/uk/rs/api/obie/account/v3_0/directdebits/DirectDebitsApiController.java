@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.dire
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRDirectDebitConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRDirectDebitConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRDirectDebit;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.directdebits.FRDirectDebitRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import uk.org.openbanking.datamodel.account.OBReadDirectDebit1Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("DirectDebitsApiV3.0")
 @Slf4j

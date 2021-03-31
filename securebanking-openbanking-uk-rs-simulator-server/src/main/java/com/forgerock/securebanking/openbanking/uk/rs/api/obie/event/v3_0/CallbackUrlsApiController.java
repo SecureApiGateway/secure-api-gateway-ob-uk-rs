@@ -36,7 +36,7 @@ import java.util.*;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil.isAccessToResourceAllowed;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil.packageResponse;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor.getVersionFromPath;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.event.FRCallbackUrlConverter.toFRCallbackUrlData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FRCallbackUrlConverter.toFRCallbackUrlData;
 import static org.springframework.http.HttpStatus.*;
 
 @Controller("CallbackUrlsApiV3.0")

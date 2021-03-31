@@ -43,10 +43,10 @@ import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalScheduledPaymentLink;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
 
 @Controller("InternationalScheduledPaymentsApiV3.1")
 @Slf4j

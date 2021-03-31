@@ -27,8 +27,8 @@ import uk.org.openbanking.datamodel.account.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRPartyConverter.toOBParty2;
 
 @Controller("PartyApiV3.1.1")
 @Slf4j

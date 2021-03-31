@@ -28,8 +28,8 @@ import uk.org.openbanking.datamodel.account.OBReadParty1Data;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRPartyConverter.toOBParty1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRPartyConverter.toOBParty1;
 
 @Controller("PartyApiV3.0")
 @Slf4j

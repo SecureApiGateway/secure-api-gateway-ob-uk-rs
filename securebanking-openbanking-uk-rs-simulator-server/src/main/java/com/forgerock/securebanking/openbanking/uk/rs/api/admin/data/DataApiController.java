@@ -46,17 +46,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRCashBalanceConverter.toOBCashBalance1;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBAccount6;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FROfferConverter.toOBOffer1;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRPartyConverter.toOBParty2;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRScheduledPaymentConverter.toOBScheduledPayment3;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRStandingOrderConverter.toOBStandingOrder6;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRStatementConverter.toOBStatement2;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRTransactionConverter.toOBTransaction6;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRCashBalanceConverter.toOBCashBalance1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FROfferConverter.toOBOffer1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStandingOrderConverter.toOBStandingOrder6;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRTransactionConverter.toOBTransaction6;
 
 @Controller("DataApi")
 @Slf4j

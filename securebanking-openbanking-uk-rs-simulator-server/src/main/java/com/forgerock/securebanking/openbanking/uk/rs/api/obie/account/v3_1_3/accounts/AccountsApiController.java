@@ -31,8 +31,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
 
 @Controller("AccountsApiV3.1.3")
 @Slf4j

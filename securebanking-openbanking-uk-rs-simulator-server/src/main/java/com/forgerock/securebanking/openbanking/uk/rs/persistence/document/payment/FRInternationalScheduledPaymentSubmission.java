@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRExchangeRateInformation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.service.currency.CurrencyRateService;

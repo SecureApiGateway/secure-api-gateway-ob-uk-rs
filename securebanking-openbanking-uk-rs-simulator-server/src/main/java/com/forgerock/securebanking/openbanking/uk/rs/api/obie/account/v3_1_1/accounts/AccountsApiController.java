@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_1.accounts;
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBAccount3;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount3;
 
 @Controller("AccountsApiV3.1.1")
 @Slf4j

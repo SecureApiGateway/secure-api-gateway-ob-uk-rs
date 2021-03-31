@@ -32,7 +32,7 @@ import uk.org.openbanking.datamodel.account.OBReadBalance1Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRCashBalanceConverter.toOBCashBalance1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRCashBalanceConverter.toOBCashBalance1;
 
 @Controller("BalancesApiV3.0")
 @Slf4j

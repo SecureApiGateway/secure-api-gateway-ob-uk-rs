@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.stat
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRStatementConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRStatement;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.service.statement.StatementPDFService;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("StatementsApiV3.0")
 @Slf4j

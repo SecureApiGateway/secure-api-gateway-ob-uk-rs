@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_1.be
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRAccountBeneficiaryConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRAccountBeneficiaryConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBeneficiary;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ import uk.org.openbanking.datamodel.account.OBReadBeneficiary3Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("BeneficiariesApiV3.1.1")
 @Slf4j

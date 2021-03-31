@@ -33,8 +33,8 @@ import uk.org.openbanking.datamodel.account.OBAccount2;
 import uk.org.openbanking.datamodel.account.OBReadAccount2;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
-import static com.forgerock.securebanking.openbanking.uk.rs.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
