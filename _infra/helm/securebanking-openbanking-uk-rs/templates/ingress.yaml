@@ -1,0 +1,26 @@
+apiVersion: {{ .Values.ingress.apiVersion }}
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- with .Values.ingress.additionalAnnotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  labels:
+    app: {{ .Chart.Name }}
+    appVersion: {{ .Chart.AppVersion }}
+    helmVersion: {{ .Chart.Version }}
+  name: {{ .Chart.Name }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - backend:
+          serviceName: rs
+          servicePort: 8080
+        path: /
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host }}
+    secretName: {{ .Values.ingress.tls.secretName }}
