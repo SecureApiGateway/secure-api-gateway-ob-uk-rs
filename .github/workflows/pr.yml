@@ -39,7 +39,7 @@ jobs:
 
       - name: package helm
         run: |
-          echo HELM_VERSION=$(grep -E "version:\s+" $CHART_DIRECTORY/Chart.yaml | cut -d" " -f2 | sed -r 's/"//g') >> $GITHUB_ENV
+          echo HELM_VERSION=$(grep -E "version:\s+" $HELM_DIRECTORY/$SERVICE_NAME/Chart.yaml | cut -d" " -f2 | sed -r 's/"//g') >> $GITHUB_ENV
           helm dep up $HELM_DIRECTORY/$SERVICE_NAME
           helm package $HELM_DIRECTORY/$SERVICE_NAME
 
