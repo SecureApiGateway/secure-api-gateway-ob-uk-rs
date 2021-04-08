@@ -56,7 +56,7 @@ jobs:
           mvn -B clean package -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip --file pom.xml
 
       - run: |
-        gcloud auth configure-docker
+          gcloud auth configure-docker
 
       - name: pr docker tag
         id: tag
