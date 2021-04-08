@@ -1,0 +1,12 @@
+apiVersion: {{ .Values.service.apiVersion }}
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: {{ .Values.deployment.server.port }}
+    protocol: TCP
+  selector:
+    app: {{ .Chart.Name }}

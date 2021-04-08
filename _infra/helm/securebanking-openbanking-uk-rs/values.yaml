@@ -1,0 +1,40 @@
+deployment:
+  apiVersion: apps/v1
+  replicas: 1
+
+  rollingUpdate:
+    maxSurge: 50%
+    maxUnavailable: 25%
+
+  imagePullPolicy: Always
+
+  # Deploy a different image to the intended release (useful for development)
+  imageOverride:
+    enabled: true
+    repo: eu.gcr.io/sbat-gcr-develop/securebanking/rcs
+    tag: latest
+
+  server:
+    port: 8080
+
+  resources: {}
+
+ingress:
+  apiVersion: extensions/v1beta1
+  class: nginx
+  additionalAnnotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 1m
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
+      Include /etc/nginx/modsecurity/modsecurity.conf
+      SecRuleEngine On
+    nginx.ingress.kubernetes.io/proxy-body-size: 150m
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 100k
+
+  host: localhost
+  tls:
+    secretName: selfSignedCert
+  
+service:
+  apiVersion: v1

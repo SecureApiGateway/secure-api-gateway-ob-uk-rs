@@ -1,0 +1,62 @@
+apiVersion: {{ .Values.deployment.apiVersion }}
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.deployment.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.deployment.rollingUpdate.maxUnavailable }}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        appVersion: {{ .Chart.AppVersion }}
+        helmVersion: {{ .Chart.Version }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.deployment.imageOverride.enabled }}
+          image: "{{ .Values.deployment.imageOverride.repo }}:{{ .Values.deployment.imageOverride.tag }}"
+          {{- else }}
+          image: "eu.gcr.io/sbat-gcr-release/securebanking/securebanking-openbanking-uk-rs:{{ .Chart.AppVersion }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
+          ports:
+            - name: http-server
+              containerPort: {{ .Values.deployment.server.port }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.deployment.server.port }}
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.deployment.server.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
+            timeoutSeconds: 5
+          env:
+          - name: SPRING_DATA_MONGODB_HOST
+            value: "mongo"
+          - name: SERVER_PORT
+            value: {{ .Values.deployment.server.port | quote }}
+          - name: SPRING_CLOUD_CONFIG_URI
+            value: "http://securebanking-spring-config-server:8080"
+          - name: SPRING_PROFILES_ACTIVE
+            value: "docker"
+          resources:
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
