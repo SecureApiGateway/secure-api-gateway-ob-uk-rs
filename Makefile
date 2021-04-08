@@ -12,7 +12,7 @@ test:
 	mvn verify
 
 package:
-	mvn package -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip --file pom.xml
+	mvn package -DskipTests -DskipITs --file pom.xml
 
 docker: clean package
 ifndef tag
@@ -21,3 +21,7 @@ endif
 	cp ${name}-simulator-sample/target/${name}-*.jar ./${name}.jar
 	docker build -t eu.gcr.io/${repo}/securebanking/${name}:${tag} .
 	docker push eu.gcr.io/${repo}/securebanking/${name}:${tag}
+
+dev: clean package
+	cp ${name}-simulator-sample/target/${name}-*.jar ./${name}.jar
+	docker build -t eu.gcr.io/${repo}/securebanking/${name}:latest .
