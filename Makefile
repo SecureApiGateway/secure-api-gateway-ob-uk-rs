@@ -19,5 +19,5 @@ ifndef tag
 	$(error "You must supply a docker tag")
 endif
 	cp ${name}-sample/target/${name}-*.jar ./${name}.jar
-	docker build -t eu.gcr.io/${repo}/securebanking/rs:${tag} .
-	docker push eu.gcr.io/${repo}/securebanking/rs:${tag}
+	docker build -t eu.gcr.io/${repo}/securebanking/${name}:${tag} .
+	docker push eu.gcr.io/${repo}/securebanking/${name}:${tag}

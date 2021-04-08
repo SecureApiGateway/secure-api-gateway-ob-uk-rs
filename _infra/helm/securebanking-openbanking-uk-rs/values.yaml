@@ -11,7 +11,7 @@ deployment:
   # Deploy a different image to the intended release (useful for development)
   imageOverride:
     enabled: true
-    repo: eu.gcr.io/sbat-gcr-develop/securebanking/rs
+    repo: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
     tag: latest
 
   server:
