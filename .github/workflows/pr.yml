@@ -69,7 +69,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@main
         with:
           path: ${{ env.SERVICE_NAME }}-${{ steps.tag.outputs.pr_number }}.tgz
-          destination: ${{ secrets.HELM_DEV_BUCKET }}/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}-${{ steps.tag.outputs.pr_number }}.tgz
+          destination: ${{ secrets.HELM_DEV_BUCKET }}/${{ env.SERVICE_NAME }}/
 
       - uses: codecov/codecov-action@v1
         with:
