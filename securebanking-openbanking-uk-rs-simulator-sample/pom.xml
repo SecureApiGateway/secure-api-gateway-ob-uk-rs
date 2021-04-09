@@ -123,34 +123,28 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
                 <configuration>
-                    <from>
-                        <image>adoptopenjdk/openjdk14:jre-14.0.2_12</image>
-                    </from>
-                    <to>
-                        <image>eu.gcr.io/openbanking-214714/securebanking/uk-ob-rs-simulator</image>
-                        <tags>
-                            <tag>${project.version}</tag>
-                            <tag>latest</tag>
-                        </tags>
-                    </to>
-                    <container>
-                        <!-- Using this setting means the image is not truly reproducible, as a new one is created each
-                        time. However it gives it a proper creation date in the registry (rather than 1 Jan 1970!) -->
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                        <jvmFlags>
-                            <jvmFlag>-Xms512m</jvmFlag>
-                            <jvmFlag>-Xdebug</jvmFlag>
-                        </jvmFlags>
-                    </container>
+                    <skipPush>false</skipPush>
+                    <repository>eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs</repository>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <id>build</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
                         </goals>
                     </execution>
                 </executions>

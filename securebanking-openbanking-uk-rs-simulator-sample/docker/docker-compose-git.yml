@@ -19,7 +19,7 @@ services:
 
   securebanking-config-server:
     container_name: securebanking-config-server
-    image: eu.gcr.io/openbanking-214714/securebanking/securebanking-config-server:latest
+    image: eu.gcr.io/sbat-gcr-develop/securebanking/spring-config-server:latest
     environment:
       - SSH_KEY=${GIT_SSH_KEY}
       - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-spring-config.git
@@ -29,7 +29,7 @@ services:
 
   rs-simulator:
     container_name: rs-simulator
-    image: eu.gcr.io/openbanking-214714/securebanking/uk-ob-rs-simulator:latest
+    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs:latest
     ports:
       - 8080:8080
     environment:
