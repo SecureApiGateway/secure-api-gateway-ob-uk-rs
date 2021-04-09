@@ -34,12 +34,6 @@ jobs:
       - name: test
         run: |
           make verify
-      
-      - name: output PR tags
-        id: tags
-        run: |
-          PR=$(echo "$GITHUB_REF" | awk -F / '{print $3}')
-          echo ::set-output name=pr_number::pr-"$PR"
 
       - uses: google-github-actions/setup-gcloud@master
         with:
