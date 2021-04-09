@@ -20,7 +20,7 @@ services:
   securebanking-config-server:
     container_name: securebanking-config-server
     hostname: securebanking-config-server
-    image: eu.gcr.io/openbanking-214714/securebanking/securebanking-config-server:latest
+    image: eu.gcr.io/sbat-gcr-develop/securebanking/spring-config-server:latest
     environment:
       - SPRING_PROFILES_ACTIVE=native
       - CONFIG_SERVER_SEARCH_LOCATIONS=file:///home/config
@@ -31,7 +31,7 @@ services:
 
   rs-simulator:
     container_name: rs-simulator
-    image: eu.gcr.io/openbanking-214714/securebanking/uk-ob-rs-simulator:latest
+    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs:latest
     ports:
       - 8080:8080
     environment:
