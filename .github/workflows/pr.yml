@@ -65,7 +65,8 @@ jobs:
         run: |
           make helm
 
-      - id: Publish PR Chart
+      - name: Publish PR Chart
+        id: upload
         uses: google-github-actions/upload-cloud-storage@main
         with:
           path: $SERVICE_NAME-*.tgz
