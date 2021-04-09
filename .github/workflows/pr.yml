@@ -29,31 +29,23 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
 
-      - uses: google-github-actions/setup-gcloud@master
-        with:
-          service_account_key: ${{ secrets.GCR_KEY }}
-
-      - name: template helm
-        run: |
-          helm template $HELM_DIRECTORY/$SERVICE_NAME
-
-      - name: package helm
-        run: |
-          echo HELM_VERSION=$(grep -E "version:\s+" $HELM_DIRECTORY/$SERVICE_NAME/Chart.yaml | cut -d" " -f2 | sed -r 's/"//g') >> $GITHUB_ENV
-          helm dep up $HELM_DIRECTORY/$SERVICE_NAME
-          helm package $HELM_DIRECTORY/$SERVICE_NAME
-
-      - name: Publish PR Chart
-        run: |
-          mv $SERVICE_NAME-${{ env.HELM_VERSION }}.tgz $SERVICE_NAME-latest.tgz
-          gsutil cp $SERVICE_NAME-*.tgz gs://${{ secrets.HELM_DEV_BUCKET }}/$SERVICE_NAME/
-
       - name: Check Copyright
         run: mvn license:check
 
       - name: Build
         run: |
-          mvn -B clean package -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip --file pom.xml
+          make test
+      
+      - name: output PR tags
+        id: tags
+        run: |
+          PR=$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+          echo ::set-output name=pr_number::pr-"$PR"
+
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCR_KEY }}
+          export_default_credentials: true
 
       - run: |
           gcloud auth configure-docker
@@ -68,6 +60,16 @@ jobs:
       - name: Build Docker Image
         run: |
           make docker tag=${{ steps.tag.outputs.pr_number }}
+
+      - name: package helm
+        run: |
+          make helm
+
+      - id: Publish PR Chart
+        uses: google-github-actions/upload-cloud-storage@main
+        with:
+          path: $SERVICE_NAME-*.tgz
+          destination: ${{ secrets.HELM_DEV_BUCKET }}/$SERVICE_NAME/$SERVICE_NAME-latest.tgz
 
       - uses: codecov/codecov-action@v1
         with:

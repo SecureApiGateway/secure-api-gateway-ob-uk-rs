@@ -4,18 +4,21 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - README.md
+
+env:
+  SERVICE_NAME: securebanking-openbanking-uk-rs
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Check Master Integrity
+    name: Check PR integrity
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
-      - name: Set up java environment
-        uses: actions/setup-java@v1
-        with: # running setup-java
+      - uses: actions/setup-java@v1
+        with:
           java-version: "14"
           architecture: x64
 
@@ -25,8 +28,32 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
 
-      - name: Build project with Maven # build the project
-        run: mvn -B clean verify -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip --file pom.xml # this command executes each default lifecycle phase in order (validate, compile, test, package, etc), before executing verify.
+      - name: Build
+        run: |
+          make test
+
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCR_KEY }}
+          export_default_credentials: true
+
+      - run: |
+          gcloud auth configure-docker
+
+      - name: Build Docker Image
+        run: |
+          make docker repo=${{ secrets.RELEASE_REPO }}
+
+      - name: package helm
+        run: |
+          echo HELM_VERSION=$(make version) >> $GITHUB_ENV
+          make helm
+
+      - id: Publish Release Chart
+        uses: google-github-actions/upload-cloud-storage@main
+        with:
+          path: $SERVICE_NAME-*.tgz
+          destination: ${{ secrets.HELM_RELEASE_BUCKET }}/$SERVICE_NAME/$SERVICE_NAME-$HELM_VERSION.tgz
 
       - uses: codecov/codecov-action@v1
         with:
