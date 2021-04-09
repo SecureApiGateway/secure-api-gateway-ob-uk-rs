@@ -1,6 +1,14 @@
 name: pull-request
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - README.md
+
+env:
+  SERVICE_NAME: securebanking-openbanking-uk-rs
 
 jobs:
   build:
@@ -23,9 +31,39 @@ jobs:
       - name: Check Copyright
         run: mvn license:check
 
-      - name: Build
+      - name: test
         run: |
-          mvn -B clean package -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip --file pom.xml
+          make verify
+
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCR_KEY }}
+          export_default_credentials: true
+
+      - run: |
+          gcloud auth configure-docker
+
+      - name: pr docker tag
+        id: tag
+        run: |
+          PR=$(echo "$GITHUB_REF" | awk -F / '{print $3}')
+          echo "$PR"
+          echo ::set-output name=pr_number::pr-"$PR"
+
+      - name: Build Docker Image
+        run: |
+          make docker tag=${{ steps.tag.outputs.pr_number }}
+
+      - name: package helm
+        run: |
+          make helm version=${{ steps.tag.outputs.pr_number }}
+
+      - name: Publish PR Chart
+        id: upload
+        uses: google-github-actions/upload-cloud-storage@main
+        with:
+          path: ${{ env.SERVICE_NAME }}-${{ steps.tag.outputs.pr_number }}.tgz
+          destination: ${{ secrets.HELM_DEV_BUCKET }}/${{ env.SERVICE_NAME }}
 
       - uses: codecov/codecov-action@v1
         with:
