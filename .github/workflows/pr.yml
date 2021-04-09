@@ -8,7 +8,6 @@ on:
       - README.md
 
 env:
-  HELM_DIRECTORY: _infra/helm/
   SERVICE_NAME: securebanking-openbanking-uk-rs
 
 jobs:
@@ -69,8 +68,8 @@ jobs:
         id: upload
         uses: google-github-actions/upload-cloud-storage@main
         with:
-          path: $SERVICE_NAME-*.tgz
-          destination: ${{ secrets.HELM_DEV_BUCKET }}/$SERVICE_NAME/$SERVICE_NAME-latest.tgz
+          path: ${{ env.SERVICE_NAME }}-*.tgz
+          destination: ${{ secrets.HELM_DEV_BUCKET }}/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}-latest.tgz
 
       - uses: codecov/codecov-action@v1
         with:

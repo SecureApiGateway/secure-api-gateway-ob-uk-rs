@@ -53,8 +53,8 @@ jobs:
         id: upload
         uses: google-github-actions/upload-cloud-storage@main
         with:
-          path: $SERVICE_NAME-*.tgz
-          destination: ${{ secrets.HELM_RELEASE_BUCKET }}/$SERVICE_NAME/$SERVICE_NAME-$HELM_VERSION.tgz
+          path: ${{ env.SERVICE_NAME }}-*.tgz
+          destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}-$HELM_VERSION.tgz
 
       - uses: codecov/codecov-action@v1
         with:
