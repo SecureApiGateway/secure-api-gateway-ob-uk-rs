@@ -17,9 +17,12 @@ docker: clean
 	  -DgcrRepo=${repo} --file securebanking-openbanking-uk-rs-simulator-sample/pom.xml
 
 helm:
+ifndef version
+	$(error A version must be supplied, Eg. make helm version=1.0.0)
+endif
 	helm dep up _infra/helm/${name}
 	helm template _infra/helm/${name}
-	helm package _infra/helm/${name}
+	helm package _infra/helm/${name} --version ${version}
 
 dev: clean
 	mvn package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \

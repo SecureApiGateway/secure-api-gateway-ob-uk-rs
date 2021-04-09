@@ -47,14 +47,14 @@ jobs:
       - name: package helm
         run: |
           echo HELM_VERSION=$(make version) >> $GITHUB_ENV
-          make helm
+          make helm version=${{ env.HELM_VERSION }}
 
       - name: Publish Release Chart 
         id: upload
         uses: google-github-actions/upload-cloud-storage@main
         with:
-          path: ${{ env.SERVICE_NAME }}-*.tgz
-          destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}-$HELM_VERSION.tgz
+          path: ${{ env.SERVICE_NAME }}-${{ env.HELM_VERSION }}.tgz
+          destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}-${{ env.HELM_VERSION }}.tgz
 
       - uses: codecov/codecov-action@v1
         with:

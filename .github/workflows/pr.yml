@@ -62,14 +62,14 @@ jobs:
 
       - name: package helm
         run: |
-          make helm
+          make helm version=${{ steps.tag.outputs.pr_number }}
 
       - name: Publish PR Chart
         id: upload
         uses: google-github-actions/upload-cloud-storage@main
         with:
-          path: ${{ env.SERVICE_NAME }}-*.tgz
-          destination: ${{ secrets.HELM_DEV_BUCKET }}/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}-latest.tgz
+          path: ${{ env.SERVICE_NAME }}-${{ steps.tag.outputs.pr_number }}.tgz
+          destination: ${{ secrets.HELM_DEV_BUCKET }}/${{ env.SERVICE_NAME }}/${{ env.SERVICE_NAME }}-${{ steps.tag.outputs.pr_number }}.tgz
 
       - uses: codecov/codecov-action@v1
         with:
