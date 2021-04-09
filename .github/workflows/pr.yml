@@ -32,9 +32,9 @@ jobs:
       - name: Check Copyright
         run: mvn license:check
 
-      - name: Build
+      - name: test
         run: |
-          make test
+          make verify
       
       - name: output PR tags
         id: tags
