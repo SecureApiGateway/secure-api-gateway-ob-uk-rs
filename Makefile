@@ -7,6 +7,7 @@ all: clean test package
 
 clean:
 	rm -f ${name}.jar
+	rm -f ${name}-*.tgz
 	mvn clean
 
 verify: clean
@@ -16,13 +17,14 @@ docker: clean
 	mvn package dockerfile:push -DskipTests=true -Dtag=${tag} \
 	  -DgcrRepo=${repo} --file securebanking-openbanking-uk-rs-simulator-sample/pom.xml
 
-helm:
+helm: clean
 ifndef version
 	$(error A version must be supplied, Eg. make helm version=1.0.0)
 endif
 	helm dep up _infra/helm/${name}
 	helm template _infra/helm/${name}
-	helm package _infra/helm/${name} --version ${version}
+	helm package _infra/helm/${name}
+	cp ./${name}-*.tgz ./${name}-${version}.tgz
 
 dev: clean
 	mvn package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \
