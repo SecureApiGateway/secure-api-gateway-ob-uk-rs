@@ -51,12 +51,14 @@ spec:
             timeoutSeconds: 5
           env:
           - name: SPRING_DATA_MONGODB_HOST
-            value: "mongo"
+            value: "mongo-mongodb"
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
           - name: SPRING_CLOUD_CONFIG_URI
             value: "http://securebanking-spring-config-server:8080"
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
+          - name: RS_BASEURL
+            value: http://rs:8080
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
