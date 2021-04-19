@@ -8,6 +8,7 @@ on:
       - README.md
 
 env:
+  HELM_DIRECTORY: _infra/helm/
   SERVICE_NAME: securebanking-openbanking-uk-rs
 
 jobs:
@@ -27,6 +28,22 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
+      
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCR_KEY }}
+      
+      - name: template helm
+        run: |
+          helm template $HELM_DIRECTORY/$SERVICE_NAME
+    
+      - name: package helm
+        run: |
+          make helm version=latest
+      
+      - name: Publish PR Chart
+        run: |
+          gsutil cp $SERVICE_NAME-*.tgz gs://${{ secrets.HELM_DEV_BUCKET }}/$SERVICE_NAME/
 
       - name: Check Copyright
         run: mvn license:check
@@ -34,12 +51,7 @@ jobs:
       - name: test
         run: |
           make verify
-
-      - uses: google-github-actions/setup-gcloud@master
-        with:
-          service_account_key: ${{ secrets.GCR_KEY }}
-          export_default_credentials: true
-
+      
       - run: |
           gcloud auth configure-docker
 
@@ -49,21 +61,12 @@ jobs:
           PR=$(echo "$GITHUB_REF" | awk -F / '{print $3}')
           echo "$PR"
           echo ::set-output name=pr_number::pr-"$PR"
-
+      
       - name: Build Docker Image
         run: |
-          make docker
-
-      - name: package helm
-        run: |
-          make helm version=${{ steps.tag.outputs.pr_number }}
-
-      - name: Publish PR Chart
-        id: upload
-        uses: google-github-actions/upload-cloud-storage@main
-        with:
-          path: ${{ env.SERVICE_NAME }}-${{ steps.tag.outputs.pr_number }}.tgz
-          destination: ${{ secrets.HELM_DEV_BUCKET }}/${{ env.SERVICE_NAME }}
+          make docker tag=latest
+          docker tag eu.gcr.io/${{ secrets.DEV_REPO }}/securebanking/$SERVICE_NAME:latest eu.gcr.io/${{ secrets.DEV_REPO }}/securebanking/$SERVICE_NAME:${{ steps.tag.outputs.pr_number }}
+          docker push eu.gcr.io/${{ secrets.DEV_REPO }}/securebanking/$SERVICE_NAME:${{ steps.tag.outputs.pr_number }}
 
       - uses: codecov/codecov-action@v1
         with:
