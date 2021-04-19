@@ -6,8 +6,6 @@ tag  := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 all: clean test package
 
 clean:
-	rm -f ${name}.jar
-	rm -f ${name}-*.tgz
 	mvn clean
 
 verify: clean

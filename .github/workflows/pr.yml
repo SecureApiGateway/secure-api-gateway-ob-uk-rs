@@ -52,7 +52,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          make docker tag=${{ steps.tag.outputs.pr_number }}
+          make docker
 
       - name: package helm
         run: |
