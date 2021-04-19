@@ -41,8 +41,7 @@
     <url>http://www.forgerock.org</url>
 
     <properties>
-        <securebanking-openbanking-uk-rs-simulator-server.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-simulator-server.version>
-        <tag>${project.version}</tag>
+        <tag>latest</tag>
         <gcrRepo>sbat-gcr-develop</gcrRepo>
     </properties>
 
@@ -51,7 +50,7 @@
         <dependency>
             <groupId>com.forgerock.securebanking</groupId>
             <artifactId>securebanking-openbanking-uk-rs-simulator-server</artifactId>
-            <version>${securebanking-openbanking-uk-rs-simulator-server.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- External dependencies -->
@@ -128,6 +127,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <configuration>
+                    <dockerfile>docker/Dockerfile</dockerfile>
                     <skipPush>false</skipPush>
                     <repository>eu.gcr.io/${gcrRepo}/securebanking/securebanking-openbanking-uk-rs</repository>
                     <buildArgs>

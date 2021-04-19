@@ -40,14 +40,24 @@
     </organization>
     <url>http://www.forgerock.org</url>
 
-    <properties>
-        <securebanking-openbanking-uk-rs-obie-api.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-obie-api.version>
-        <securebanking-openbanking-uk-rs-backoffice-api.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-backoffice-api.version>
-        <securebanking-openbanking-uk-rs-admin-api.version>1.0.0-SNAPSHOT</securebanking-openbanking-uk-rs-admin-api.version>
-    </properties>
-
     <dependencies>
         <!-- ForgeRock dependencies -->
+        <dependency>
+            <groupId>com.forgerock.securebanking</groupId>
+            <artifactId>securebanking-openbanking-uk-rs-obie-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.securebanking</groupId>
+            <artifactId>securebanking-openbanking-uk-rs-backoffice-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.securebanking</groupId>
+            <artifactId>securebanking-openbanking-uk-rs-admin-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.forgerock.securebanking</groupId>
             <artifactId>securebanking-openbanking-uk-common</artifactId>
@@ -55,22 +65,6 @@
         <dependency>
             <groupId>com.forgerock.securebanking</groupId>
             <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-rs-obie-api</artifactId>
-            <version>${securebanking-openbanking-uk-rs-obie-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-rs-backoffice-api</artifactId>
-            <version>${securebanking-openbanking-uk-rs-backoffice-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
-            <artifactId>securebanking-openbanking-uk-rs-admin-api</artifactId>
-            <version>${securebanking-openbanking-uk-rs-admin-api.version}</version>
         </dependency>
 
         <!-- External dependencies -->
