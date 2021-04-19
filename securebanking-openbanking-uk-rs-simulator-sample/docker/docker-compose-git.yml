@@ -20,6 +20,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONFIG_URI=http://securebanking-config-server:8888
       - SPRING_DATA_MONGODB_HOST=rs-mongo
+    command: /app/wait-for.sh securebanking-config-server:8888 -- java -jar securebanking-openbanking-uk-rs.jar
     restart: on-failure
     depends_on:
       - rs-mongo
