@@ -1,4 +1,4 @@
-name := securebanking-openbanking-uk-rs
+name := $(shell mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
 repo := sbat-gcr-develop
 tag  := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
@@ -6,8 +6,6 @@ tag  := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 all: clean test package
 
 clean:
-	rm -f ${name}.jar
-	rm -f ${name}-*.tgz
 	mvn clean
 
 verify: clean
