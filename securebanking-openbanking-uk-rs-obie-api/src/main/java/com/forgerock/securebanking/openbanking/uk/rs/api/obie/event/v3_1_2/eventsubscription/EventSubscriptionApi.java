@@ -140,7 +140,7 @@ public interface EventSubscriptionApi {
 
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBEventSubscriptionResponse1 obEventSubscriptionsParam,
+            @RequestBody OBEventSubscriptionResponse1 obEventSubscription,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
