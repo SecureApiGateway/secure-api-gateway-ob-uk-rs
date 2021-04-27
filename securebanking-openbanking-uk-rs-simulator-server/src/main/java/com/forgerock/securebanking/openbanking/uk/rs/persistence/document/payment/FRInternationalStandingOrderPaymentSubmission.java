@@ -46,7 +46,7 @@ public class FRInternationalStandingOrderPaymentSubmission implements PaymentSub
 
     private String idempotencyKey;
 
-    private OBVersion version;
+    private OBVersion obVersion;
 
     @Override
     public String getConsentId() {

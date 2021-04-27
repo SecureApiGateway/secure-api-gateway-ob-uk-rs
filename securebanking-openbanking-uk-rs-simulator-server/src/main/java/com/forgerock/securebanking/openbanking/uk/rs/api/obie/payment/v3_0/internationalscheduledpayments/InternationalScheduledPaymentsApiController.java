@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.inte
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledData;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalScheduledPaymentSubmission;
@@ -39,14 +40,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalScheduledPaymentLink;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled1;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalScheduledPaymentLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("InternationalScheduledPaymentsApiV3.0")
 @Slf4j
@@ -93,7 +95,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         log.trace("Converted to: '{}'", frScheduledPayment);
 
         FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
-                .id(UUID.randomUUID().toString())
+                .id(obWriteInternationalScheduled1.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
                 .created(new DateTime())
                 .updated(new DateTime())
@@ -106,7 +108,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .idempotentSave(frPaymentSubmission);
 
         // Save the scheduled payment data for the Accounts API
-        FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment.getData().getInitiation(), xAccountId);
+        FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment, xAccountId);
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
@@ -129,7 +131,12 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + internationalScheduledPaymentId + "' can't be found");
         }
 
-        return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
+        FRInternationalScheduledPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission));
     }
 
     private OBWriteInternationalScheduledResponse1 responseEntity(FRInternationalScheduledPaymentSubmission frPaymentSubmission) {

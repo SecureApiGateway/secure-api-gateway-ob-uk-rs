@@ -23,6 +23,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_3.do
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomesticScheduled;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticScheduledPaymentSubmission;
@@ -45,14 +46,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createDomesticScheduledPaymentLink;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBWriteDomesticScheduledResponse3DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticScheduledConverter.toFRWriteDomesticScheduled;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.INITIATIONPENDING;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createDomesticScheduledPaymentLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.3")
 @Slf4j
@@ -93,7 +95,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         log.trace("Converted to: '{}'", frScheduledPayment);
 
         FRDomesticScheduledPaymentSubmission frPaymentSubmission = FRDomesticScheduledPaymentSubmission.builder()
-                .id(UUID.randomUUID().toString())
+                .id(obWriteDomesticScheduled2.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
                 .status(INITIATIONPENDING)
                 .created(new DateTime())
@@ -107,7 +109,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .idempotentSave(frPaymentSubmission);
 
         // Save the scheduled payment data for the Accounts API
-        FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment.getData().getInitiation(), xAccountId);
+        FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment, xAccountId);
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
@@ -129,8 +131,12 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             // OB specifies a 400 when the id does not match an existing consent
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticScheduledPaymentId + "' can't be found");
         }
-        FRDomesticScheduledPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
+        FRDomesticScheduledPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
         return ResponseEntity.ok(responseEntity(frPaymentSubmission));
     }
 

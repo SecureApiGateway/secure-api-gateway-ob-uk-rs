@@ -16,11 +16,11 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrderDataInitiation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrder;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.rs.service.frequency.FrequencyService;
-
-import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData.FRStandingOrderStatus.ACTIVE;
 
@@ -29,9 +29,10 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
  */
 public class FRStandingOrderDataFactory {
 
-    public static FRStandingOrderData createFRStandingOrderData(FRWriteDomesticStandingOrderDataInitiation initiation, String accountId) {
+    public static FRStandingOrderData createFRStandingOrderData(FRWriteDomesticStandingOrder frWriteDomesticStandingOrder, String accountId) {
+        FRWriteDomesticStandingOrderDataInitiation initiation = frWriteDomesticStandingOrder.getData().getInitiation();
         return FRStandingOrderData.builder()
-                .standingOrderId(UUID.randomUUID().toString())
+                .standingOrderId(frWriteDomesticStandingOrder.getData().getConsentId())
                 .accountId(accountId)
                 .standingOrderStatusCode(ACTIVE)
                 .creditorAccount(initiation.getCreditorAccount())
@@ -49,9 +50,10 @@ public class FRStandingOrderDataFactory {
                 .build();
     }
 
-    public static FRStandingOrderData createFRStandingOrderData(FRWriteInternationalStandingOrderDataInitiation initiation, String accountId) {
+    public static FRStandingOrderData createFRStandingOrderData(FRWriteInternationalStandingOrder frWriteInternationalStandingOrder, String accountId) {
+        FRWriteInternationalStandingOrderDataInitiation initiation = frWriteInternationalStandingOrder.getData().getInitiation();
         return FRStandingOrderData.builder()
-                .standingOrderId(UUID.randomUUID().toString())
+                .standingOrderId(frWriteInternationalStandingOrder.getData().getConsentId())
                 .accountId(accountId)
                 .standingOrderStatusCode(ACTIVE)
                 .creditorAccount(initiation.getCreditorAccount())

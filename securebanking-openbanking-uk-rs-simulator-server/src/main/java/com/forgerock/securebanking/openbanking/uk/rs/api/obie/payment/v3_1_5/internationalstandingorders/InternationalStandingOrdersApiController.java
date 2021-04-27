@@ -21,11 +21,12 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.internationalstandingorders;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRReadRefundAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrder;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderData;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -46,18 +47,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalStandingOrderPaymentLink;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter.toOBWriteInternationalResponse5DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBWriteInternationalStandingOrderResponse7DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.PENDING;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalStandingOrderPaymentLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.*;
 
 @Controller("InternationalStandingOrdersApiV3.1.5")
@@ -100,13 +102,13 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         log.trace("Converted to: '{}'", frStandingOrder);
 
         FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
-                .id(UUID.randomUUID().toString())
+                .id(obWriteInternationalStandingOrder4.getData().getConsentId())
                 .standingOrder(frStandingOrder)
                 .status(PENDING)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
-                .version(VersionPathExtractor.getVersionFromPath(request))
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
 
         // Save the international standing order
@@ -114,7 +116,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .idempotentSave(frPaymentSubmission);
 
         // Save the standing order data for the Accounts API
-        FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder.getData().getInitiation(), xAccountId);
+        FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder, xAccountId);
         standingOrderService.createStandingOrder(standingOrderData);
 
         return ResponseEntity.status(CREATED).body(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
@@ -137,7 +139,12 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             return ResponseEntity.status(BAD_REQUEST).body("Payment submission '" + internationalStandingOrderPaymentId + "' can't be found");
         }
 
-        return ResponseEntity.ok(responseEntity(isPaymentSubmission.get(), frReadRefundAccount(xReadRefundAccount)));
+        FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
     }
 
     @Override

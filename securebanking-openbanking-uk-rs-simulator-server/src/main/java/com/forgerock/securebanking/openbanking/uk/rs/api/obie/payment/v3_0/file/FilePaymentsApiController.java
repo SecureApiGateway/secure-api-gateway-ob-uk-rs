@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.file;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFile;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
@@ -38,12 +39,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConsentConverter.toOBFile1;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createFilePaymentsLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("FilePaymentsApiV3.0")
 @Slf4j
@@ -74,18 +76,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     ) throws OBErrorResponseException {
         log.debug("Received file payment submission: '{}'", obWriteFile1);
 
-        // TODO - before we get this far, the IG will need to:
-        //      - verify the consent status
-        //      - verify the payment details match those in the payment consent
-        //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
-
         paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         FRWriteFile frWriteFile = toFRWriteFile(obWriteFile1);
         log.trace("Converted to: '{}'", frWriteFile);
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
-                .id(UUID.randomUUID().toString())
+                .id(obWriteFile1.getData().getConsentId())
                 .filePayment(frWriteFile)
                 .created(new DateTime())
                 .updated(new DateTime())
@@ -119,7 +116,12 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                             .toOBError1(filePaymentId));
         }
 
-        return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
+        FRFilePaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission));
     }
 
     @Override

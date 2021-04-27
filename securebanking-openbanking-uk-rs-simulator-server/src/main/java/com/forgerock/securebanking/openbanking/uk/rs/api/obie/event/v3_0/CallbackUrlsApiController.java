@@ -33,7 +33,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil.isAccessToResourceAllowed;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil.packageResponse;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor.getVersionFromPath;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FRCallbackUrlConverter.toFRCallbackUrlData;

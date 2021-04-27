@@ -16,13 +16,8 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAccountIdentifier;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduledDataInitiation;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.*;
 import org.joda.time.DateTime;
-
-import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData.FRScheduleType.EXECUTION;
 
@@ -31,30 +26,37 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
  */
 public class FRScheduledPaymentDataFactory {
 
-    public static FRScheduledPaymentData createFRScheduledPaymentData(FRWriteDomesticScheduledDataInitiation initiation,
+    public static FRScheduledPaymentData createFRScheduledPaymentData(FRWriteDomesticScheduled frWriteDomesticScheduled,
                                                                       String xAccountId) {
-        return frScheduledPaymentData(xAccountId,
+        FRWriteDomesticScheduledDataInitiation initiation = frWriteDomesticScheduled.getData().getInitiation();
+        return frScheduledPaymentData(
+                frWriteDomesticScheduled.getData().getConsentId(),
+                xAccountId,
                 initiation.getRequestedExecutionDateTime(),
                 initiation.getInstructedAmount(),
                 initiation.getCreditorAccount());
     }
 
 
-    public static FRScheduledPaymentData createFRScheduledPaymentData(FRWriteInternationalScheduledDataInitiation initiation,
+    public static FRScheduledPaymentData createFRScheduledPaymentData(FRWriteInternationalScheduled frWriteInternationalScheduled,
                                                                       String xAccountId) {
-        return frScheduledPaymentData(xAccountId,
+        FRWriteInternationalScheduledDataInitiation initiation = frWriteInternationalScheduled.getData().getInitiation();
+        return frScheduledPaymentData(
+                frWriteInternationalScheduled.getData().getConsentId(),
+                xAccountId,
                 initiation.getRequestedExecutionDateTime(),
                 initiation.getInstructedAmount(),
                 initiation.getCreditorAccount());
     }
 
-    private static FRScheduledPaymentData frScheduledPaymentData(String xAccountId,
+    private static FRScheduledPaymentData frScheduledPaymentData(String scheduledPaymentId,
+                                                                 String xAccountId,
                                                                  DateTime requestedExecutionDateTime,
                                                                  FRAmount instructedAmount,
                                                                  FRAccountIdentifier creditorAccount) {
         return FRScheduledPaymentData.builder()
                 .accountId(xAccountId)
-                .scheduledPaymentId(UUID.randomUUID().toString())
+                .scheduledPaymentId(scheduledPaymentId)
                 .scheduledPaymentDateTime(requestedExecutionDateTime)
                 .scheduledType(EXECUTION)
                 .instructedAmount(instructedAmount)
