@@ -37,7 +37,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil.isAccessToResourceAllowed;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor.getVersionFromPath;
 
 @Controller("EventSubscriptionApiV3.1.2")

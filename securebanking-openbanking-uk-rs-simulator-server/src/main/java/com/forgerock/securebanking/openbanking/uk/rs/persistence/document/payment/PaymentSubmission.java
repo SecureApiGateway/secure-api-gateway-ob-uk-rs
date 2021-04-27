@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment;
 
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import org.joda.time.DateTime;
 
 public interface PaymentSubmission {
@@ -25,4 +26,6 @@ public interface PaymentSubmission {
     DateTime getCreated();
 
     String getIdempotencyKey();
+
+    OBVersion getObVersion();
 }

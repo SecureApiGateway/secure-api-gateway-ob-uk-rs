@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.inte
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrder;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrderData;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalStandingOrderPaymentSubmission;
@@ -39,14 +40,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalStandingOrderPaymentLink;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder2;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.PENDING;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalStandingOrderPaymentLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("InternationalStandingOrdersApiV3.1")
 @Slf4j
@@ -88,13 +90,13 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         log.trace("Converted to: '{}'", frStandingOrder);
 
         FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
-                .id(UUID.randomUUID().toString())
+                .id(obWriteInternationalStandingOrder2.getData().getConsentId())
                 .standingOrder(frStandingOrder)
                 .status(PENDING)
                 .created(new DateTime())
                 .updated(new DateTime())
                 .idempotencyKey(xIdempotencyKey)
-                .version(VersionPathExtractor.getVersionFromPath(request))
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
 
         // Save the international standing order
@@ -102,7 +104,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .idempotentSave(frPaymentSubmission);
 
         // Save the standing order data for the Accounts API
-        FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder.getData().getInitiation(), xAccountId);
+        FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder, xAccountId);
         standingOrderService.createStandingOrder(standingOrderData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
@@ -125,7 +127,12 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + internationalStandingOrderPaymentId + "' can't be found");
         }
 
-        return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
+        FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission));
     }
 
     private OBWriteInternationalStandingOrderResponse2 responseEntity(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission) {

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_0;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 /**
  * Helps build responses for the Event Notification API, according to the "Release Management" rules of the OB API. For
@@ -37,24 +38,6 @@ import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersi
  */
 @Slf4j
 public class EventApiResponseUtil {
-
-    /**
-     * Checks if a resource can be accessed from the version of the API that's currently being invoked. The OB spec
-     * states that a TPP cannot access a resource from an older API version if the resource was created in a newer
-     * version.
-     *
-     * <p>
-     * This method is being used to filter any resources that cannot be accessed via the version of the API version
-     * in question.
-     *
-     * @param apiVersion The version of the API currently being invoked.
-     * @param resourceVersion The version of the API that the resource was saved against.
-     * @return {@code true} if the resource is allowed to be accessed, otherwise false.
-     */
-    public static boolean isAccessToResourceAllowed(OBVersion apiVersion, OBVersion resourceVersion) {
-        return apiVersion.equals(resourceVersion) ||
-                apiVersion.isAfterVersion(resourceVersion);
-    }
 
     /**
      * Provides the required {@link OBCallbackUrlsResponse1} instance, filtered according to the API version rules. Any

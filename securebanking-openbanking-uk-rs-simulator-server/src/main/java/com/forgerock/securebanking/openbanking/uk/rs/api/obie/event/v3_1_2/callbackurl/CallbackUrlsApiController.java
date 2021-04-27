@@ -20,7 +20,6 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
-import com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.event.FRCallbackUrl;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.events.CallbackUrlsRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +34,10 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FRCallbackUrlConverter.toFRCallbackUrlData;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil.packageResponse;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor.getVersionFromPath;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FRCallbackUrlConverter.toFRCallbackUrlData;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.*;
 
 @Controller("CallbackUrlsApiV3.1.2")
@@ -123,7 +123,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
             FRCallbackUrl frCallbackUrl = byId.get();
             OBVersion apiVersion = getVersionFromPath(request);
             OBVersion resourceVersion = OBVersion.fromString(frCallbackUrl.getCallbackUrl().getVersion());
-            if (EventApiResponseUtil.isAccessToResourceAllowed(apiVersion, resourceVersion)) {
+            if (isAccessToResourceAllowed(apiVersion, resourceVersion)) {
                 FRCallbackUrlData callbackUrl = toFRCallbackUrlData(obCallbackUrl1);
                 frCallbackUrl.setCallbackUrl(callbackUrl);
                 callbackUrlsRepository.save(frCallbackUrl);
@@ -159,7 +159,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
         if (byId.isPresent()) {
             OBVersion apiVersion = getVersionFromPath(request);
             OBVersion resourceVersion = OBVersion.fromString(byId.get().getCallbackUrl().getVersion());
-            if (EventApiResponseUtil.isAccessToResourceAllowed(apiVersion, resourceVersion)) {
+            if (isAccessToResourceAllowed(apiVersion, resourceVersion)) {
                 log.debug("Deleting callback url: {}", byId.get());
                 callbackUrlsRepository.deleteById(callbackUrlId);
                 return ResponseEntity.noContent().build();

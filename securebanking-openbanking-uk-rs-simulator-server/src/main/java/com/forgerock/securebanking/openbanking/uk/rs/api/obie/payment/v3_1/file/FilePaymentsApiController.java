@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.file;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFile;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
@@ -39,12 +40,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConsentConverter.toOBFile2;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createFilePaymentsLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("FilePaymentsApiV3.1")
 @Slf4j
@@ -80,7 +82,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         log.trace("Converted to: '{}'", frWriteFile);
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
-                .id(UUID.randomUUID().toString())
+                .id(obWriteFile2.getData().getConsentId())
                 .filePayment(frWriteFile)
                 .created(new DateTime())
                 .updated(new DateTime())
@@ -95,7 +97,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     }
 
     @Override
-    public ResponseEntity<OBWriteFileResponse2> getFilePaymentsFilePaymentId(String filePaymentId,
+    public ResponseEntity getFilePaymentsFilePaymentId(String filePaymentId,
                                                                              String xFapiFinancialId,
                                                                              String authorization,
                                                                              DateTime xFapiCustomerLastLoggedTime,
@@ -114,7 +116,12 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                             .toOBError1(filePaymentId));
         }
 
-        return ResponseEntity.ok(responseEntity(isPaymentSubmission.get()));
+        FRFilePaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission));
     }
 
     @Override

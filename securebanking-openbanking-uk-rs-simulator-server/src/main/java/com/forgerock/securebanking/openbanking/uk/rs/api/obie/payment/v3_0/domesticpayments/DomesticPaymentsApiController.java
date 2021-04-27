@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticpayments;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticPaymentSubmission;
@@ -36,13 +37,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBTransactionIndividualStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBDomestic1;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.PENDING;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createDomesticPaymentLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("DomesticPaymentsApiV3.0")
 @Slf4j
@@ -73,7 +75,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         log.debug("Received payment submission: '{}'", obWriteDomestic1);
 
         // TODO - before we get this far, the IG will need to:
-        //      - verify the consent status
+        //      - verify the consent status and consent version (not newer than this submission URL path)
         //      - verify the payment details match those in the payment consent
         //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
 
@@ -83,7 +85,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         log.trace("Converted to: '{}'", frDomesticPayment);
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
-                .id(UUID.randomUUID().toString())
+                .id(obWriteDomestic1.getData().getConsentId())
                 .payment(frDomesticPayment)
                 .status(PENDING)
                 .created(new DateTime())
@@ -113,7 +115,13 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticPaymentId + "' can't be found");
         }
+
         FRDomesticPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+
         return ResponseEntity.ok(responseEntity(frPaymentSubmission));
     }
 
