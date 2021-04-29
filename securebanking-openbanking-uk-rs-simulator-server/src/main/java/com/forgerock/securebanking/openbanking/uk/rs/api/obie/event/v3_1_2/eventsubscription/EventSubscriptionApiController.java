@@ -37,8 +37,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
-import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor.getVersionFromPath;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.*;
+import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("EventSubscriptionApiV3.1.2")
 @Slf4j
@@ -201,9 +202,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                     .data(new OBEventSubscriptionsResponse1Data()
                             .eventSubscription(eventSubsByClient))
                     .meta(new Meta())
-                    //.links(resourceLinkService.toSelfLink(discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()));
-                    // TODO - fix this as part of #55
-                    .links(new Links());
+                    .links(createEventSubscriptionResourcesLink(this.getClass()));
         }
     }
 
@@ -216,9 +215,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                         .eventTypes(obEventSubs.getEventTypes())
                         .version(obEventSubs.getVersion())
                 )
-                //.links(resourceLinkService.toSelfLink(frEventSubscription, discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()))
-                // TODO - fix this as part of #55
-                .links(new Links())
+                .links(createEventSubscriptionSelfLink(this.getClass(), frEventSubscription.getId()))
                 .meta(new Meta());
     }
 }

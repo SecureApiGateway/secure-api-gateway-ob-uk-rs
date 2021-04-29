@@ -25,7 +25,6 @@ import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
@@ -38,6 +37,7 @@ import java.util.Optional;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.fund.FRFundsConfirmationConverter.toFRFundsConfirmationData;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createFundsConfirmationSelfLink;
 
 @Controller("FundsConfirmationsApiV3.0")
 @Slf4j
@@ -120,9 +120,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
                         .reference(obFundsConfirmationData.getReference())
                         .consentId(fundsConfirmation.getFundsConfirmation().getConsentId()))
                 .meta(new Meta())
-                // TODO - fix this as part of #55
-                //.links(resourceLinkService.toSelfLink(fundsConfirmation, discovery -> discovery.getVersion(VersionPathExtractor.getVersionFromPath(request)).getCreateFundsConfirmation()));
-                .links(new Links());
+                .links(createFundsConfirmationSelfLink(this.getClass(), fundsConfirmation.getId()));
     }
 
 }

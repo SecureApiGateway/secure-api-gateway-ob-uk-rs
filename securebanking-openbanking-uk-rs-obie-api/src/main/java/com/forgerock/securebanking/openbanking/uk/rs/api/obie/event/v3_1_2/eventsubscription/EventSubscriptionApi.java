@@ -29,8 +29,10 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @Api(value = "event-subscriptions", description = "the event subscriptions API")
-@RequestMapping(value = "/open-banking/v3.1.2/event-subscriptions")
+@RequestMapping(value = "/open-banking/v3.1.2")
 public interface EventSubscriptionApi {
+
+    String BASE_PATH = "/event-subscriptions";
 
     @ApiOperation(value = "Create an event subscription", nickname = "createEventSubscription", notes = "", response = OBEventSubscriptionResponse1.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
@@ -51,7 +53,7 @@ public interface EventSubscriptionApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(
+    @RequestMapping(value = BASE_PATH,
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
@@ -94,7 +96,7 @@ public interface EventSubscriptionApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(
+    @RequestMapping(value = BASE_PATH,
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBEventSubscriptionsResponse1> readEventSubscription(
@@ -130,7 +132,7 @@ public interface EventSubscriptionApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/{EventSubscriptionId}",
+    @RequestMapping(value = "/event-subscriptions/{EventSubscriptionId}",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
@@ -177,7 +179,7 @@ public interface EventSubscriptionApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = "/{EventSubscriptionId}",
+    @RequestMapping(value = "/event-subscriptions/{EventSubscriptionId}",
             method = RequestMethod.DELETE)
     ResponseEntity deleteEventSubscription(
             @ApiParam(value = "EventSubscriptionId", required = true)

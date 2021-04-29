@@ -24,7 +24,6 @@ import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.accoun
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.funds.FundsConfirmationRepository;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +51,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
-/**OBFundsConfirmationResponse1
+/**
  * A SpringBoot test for the {@link FundsConfirmationsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -112,8 +111,7 @@ public class FundsConfirmationsApiControllerTest {
         assertThat(responseData.getReference()).isEqualTo(fundsConfirmation.getData().getReference());
         assertThat(responseData.getInstructedAmount()).isEqualTo(fundsConfirmation.getData().getInstructedAmount());
         assertThat(response.getBody().getMeta()).isNotNull();
-        // TODO - enable as part of #54
-        //assertThat(response.getBody().getLinks().getFirst().equals(callbacksUrl()));
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(fundsConfirmationsIdUrl(responseData.getFundsConfirmationId()));
     }
 
     @Test
@@ -134,9 +132,8 @@ public class FundsConfirmationsApiControllerTest {
         assertThat(responseData.getFundsAvailable()).isTrue();
         assertThat(responseData.getReference()).isEqualTo(fundsConfirmation.getData().getReference());
         assertThat(responseData.getInstructedAmount()).isEqualTo(fundsConfirmation.getData().getInstructedAmount());
-        AssertionsForClassTypes.assertThat(response.getBody().getMeta()).isNotNull();
-        // TODO - enable as part of #54
-        //assertThat(response.getBody().getLinks().getFirst().equals(callbacksUrl()));
+        assertThat(response.getBody().getMeta()).isNotNull();
+        assertThat(response.getBody().getLinks().getSelf().equals(url));
     }
 
     private String fundsConfirmationsUrl() {
