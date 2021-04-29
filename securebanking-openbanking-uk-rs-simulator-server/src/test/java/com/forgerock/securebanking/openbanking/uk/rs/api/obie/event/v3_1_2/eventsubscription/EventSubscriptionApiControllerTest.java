@@ -80,8 +80,7 @@ public class EventSubscriptionApiControllerTest {
         assertThat(responseData.getVersion()).isEqualTo(eventSubscription.getData().getVersion());
         assertThat(responseData.getEventTypes()).isEqualTo(eventSubscription.getData().getEventTypes());
         assertThat(response.getBody().getMeta()).isNotNull();
-        // TODO - enable as part of #54
-        //assertThat(response.getBody().getLinks().getFirst().equals(callbacksUrl()));
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(eventSubscriptionsIdUrl(responseData.getEventSubscriptionId()));
     }
 
     @Test
@@ -103,8 +102,7 @@ public class EventSubscriptionApiControllerTest {
         assertThat(eventSubscriptions.get(0).getVersion()).isEqualTo(eventSubscription.getData().getVersion());
         assertThat(eventSubscriptions.get(0).getEventTypes()).isEqualTo(eventSubscription.getData().getEventTypes());
         assertThat(response.getBody().getMeta()).isNotNull();
-        // TODO - enable as part of #54
-        //assertThat(response.getBody().getLinks().getFirst().equals(callbacksUrl()));
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(eventSubscriptionsUrl());
     }
 
     @Test
@@ -127,8 +125,7 @@ public class EventSubscriptionApiControllerTest {
         OBEventSubscriptionResponse1Data responseData = response.getBody().getData();
         assertThat(responseData.getCallbackUrl()).isEqualTo("http://updatedcallbackurl.com");
         assertThat(response.getBody().getMeta()).isNotNull();
-        // TODO - enable as part of #54
-        //assertThat(response.getBody().getLinks().getFirst().equals(callbacksUrl()));
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(updateUrl);
     }
 
     @Test

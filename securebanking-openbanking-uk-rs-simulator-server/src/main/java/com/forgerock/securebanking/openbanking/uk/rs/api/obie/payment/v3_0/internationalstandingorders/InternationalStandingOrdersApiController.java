@@ -46,7 +46,7 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
-import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.LinksHelper.createInternationalStandingOrderPaymentLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
@@ -83,11 +83,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder1);
-
-        // TODO - before we get this far, the IG will need to:
-        //      - verify the consent status
-        //      - verify the payment details match those in the payment consent
-        //      - verify security concerns (e.g. detached JWS, access token, roles, MTLS etc.)
 
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalStandingOrder1.getRisk());
 

@@ -35,7 +35,7 @@ import java.security.Principal;
 import java.util.*;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FRCallbackUrlConverter.toFRCallbackUrlData;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.EventApiResponseUtil.packageResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.CallbackUrlsResponseUtil.packageResponse;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor.getVersionFromPath;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.*;
@@ -85,7 +85,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
         return ResponseEntity
                 .status(CREATED)
-                .body(packageResponse(frCallbackUrl, getVersionFromPath(request)));
+                .body(packageResponse(frCallbackUrl, getVersionFromPath(request), this.getClass()));
     }
 
     @Override
@@ -99,10 +99,10 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
         Collection<FRCallbackUrl> callbackUrls = callbackUrlsRepository.findByTppId(tppId);
         if (callbackUrls.isEmpty()) {
             log.warn("No CallbackURL found for tpp id '{}'", tppId);
-            return ResponseEntity.ok(packageResponse(Collections.emptyList(), getVersionFromPath(request)));
+            return ResponseEntity.ok(packageResponse(Collections.emptyList(), getVersionFromPath(request), this.getClass()));
         }
         // A TPP must only create a callback-url on one version
-        OBCallbackUrlsResponse1 responseBody = packageResponse(new ArrayList<>(callbackUrls), getVersionFromPath(request));
+        OBCallbackUrlsResponse1 responseBody = packageResponse(new ArrayList<>(callbackUrls), getVersionFromPath(request), this.getClass());
         return ResponseEntity.ok(responseBody);
     }
 
@@ -127,7 +127,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
                 FRCallbackUrlData callbackUrl = toFRCallbackUrlData(obCallbackUrl1);
                 frCallbackUrl.setCallbackUrl(callbackUrl);
                 callbackUrlsRepository.save(frCallbackUrl);
-                return ResponseEntity.ok(packageResponse(frCallbackUrl, apiVersion));
+                return ResponseEntity.ok(packageResponse(frCallbackUrl, apiVersion, this.getClass()));
             } else {
                 return ResponseEntity
                         .status(CONFLICT)

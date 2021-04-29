@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment;
+package com.forgerock.securebanking.openbanking.uk.rs.common.util.link;
 
 import org.springframework.hateoas.Link;
 import uk.org.openbanking.datamodel.account.Links;
@@ -32,6 +32,10 @@ public class LinksHelper {
     private static final String INTERNATIONAL_PAYMENTS = "international-payments";
     private static final String INTERNATIONAL_SCHEDULED_PAYMENTS = "international-scheduled-payments";
     private static final String INTERNATIONAL_STANDING_ORDER = "international-standing-orders";
+
+    private static final String CALLBACK_URLS = "callback-urls";
+    private static final String EVENT_SUBSCRIPTIONS = "event-subscriptions";
+    private static final String FUNDS_CONFIRMATION = "funds-confirmations";
 
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment.
@@ -116,7 +120,63 @@ public class LinksHelper {
     }
 
     /**
-     * Uses Spring HATEOAS to create an instance of the OB {@link Links} class with only the 'self' link populated.
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for returning callback URLs.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createCallbackUrlsSelfLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, CALLBACK_URLS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for returning callback URLs.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createCallbackUrlsResourcesLink(Class<?> controllerClass) {
+        return createResourcesLink(controllerClass, CALLBACK_URLS);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for an event subscription.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createEventSubscriptionSelfLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, EVENT_SUBSCRIPTIONS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for the event subscription
+     * resources.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createEventSubscriptionResourcesLink(Class<?> controllerClass) {
+        return createResourcesLink(controllerClass, EVENT_SUBSCRIPTIONS);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a funds confirmation
+     * resource.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createFundsConfirmationSelfLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, FUNDS_CONFIRMATION, id);
+    }
+
+    /**
+     * Uses Spring HATEOAS to create an instance of the OB {@link Links} class with the 'self' link pointing to a
+     * specific resource (e.g. /callback-urls/{id}).
      *
      * @param controllerClass The controller class that is responsible for handling the self link.
      * @param resourcePath The relative path of the resource to retrieve
@@ -125,6 +185,19 @@ public class LinksHelper {
      */
     private static Links createSelfLink(Class<?> controllerClass, String resourcePath, String id) {
         Link link = linkTo(controllerClass).slash(resourcePath).slash(id).withSelfRel();
+        return new Links().self(link.getHref());
+    }
+
+    /**
+     * Uses Spring HATEOAS to create an instance of the OB {@link Links} class with the self link pointing to a
+     * resource's base path (e.g. /callback-urls).
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param resourcePath The relative path of the resource to retrieve
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    private static Links createResourcesLink(Class<?> controllerClass, String resourcePath) {
+        Link link = linkTo(controllerClass).slash(resourcePath).withSelfRel();
         return new Links().self(link.getHref());
     }
 }

@@ -81,8 +81,7 @@ public class CallbackUrlsApiControllerTest {
         assertThat(responseData.getUrl()).isEqualTo(obCallbackUrl1.getData().getUrl());
         assertThat(responseData.getVersion()).isEqualTo(obCallbackUrl1.getData().getVersion());
         assertThat(response.getBody().getMeta()).isNotNull();
-        // TODO - enable as part of #54
-        //assertThat(response.getBody().getLinks().getFirst().equals(callbacksUrl()));
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(callbackIdUrl(responseData.getCallbackUrlId()));
     }
 
     @Test
@@ -105,8 +104,7 @@ public class CallbackUrlsApiControllerTest {
         assertThat(callbackUrlResponse.getUrl()).isEqualTo(obCallbackUrl1.getData().getUrl());
         assertThat(callbackUrlResponse.getVersion()).isEqualTo(obCallbackUrl1.getData().getVersion());
         assertThat(response.getBody().getMeta()).isNotNull();
-        // TODO - enable as part of #54
-        //assertThat(response.getBody().getLinks().getFirst().equals(callbacksUrl));
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(callbacksUrl);
     }
 
     @Test
@@ -127,6 +125,7 @@ public class CallbackUrlsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody().getData().getUrl()).isEqualTo(updatedCallbackUrl);
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
     }
 
     @Test

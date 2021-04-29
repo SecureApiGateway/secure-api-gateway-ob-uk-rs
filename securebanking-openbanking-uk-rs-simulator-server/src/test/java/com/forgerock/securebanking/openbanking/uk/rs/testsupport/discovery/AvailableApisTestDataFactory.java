@@ -53,8 +53,8 @@ public class AvailableApisTestDataFactory {
 
     public static List<AvailableApiEndpoint> generatePaymentApis() {
         List<Pair<OBApiReference, String>> content = ImmutableList.of(
-                Pair.of(OBApiReference.CREATE_DOMESTIC_PAYMENT_CONSENT, "/pisp/domestic-payment-consents"),
-                Pair.of(OBApiReference.GET_DOMESTIC_PAYMENT_CONSENT, "/pisp/domestic-payment-consents/{ConsentId}")
+                Pair.of(OBApiReference.CREATE_DOMESTIC_PAYMENT, "/pisp/domestic-payment"),
+                Pair.of(OBApiReference.GET_DOMESTIC_PAYMENT, "/pisp/domestic-payment/{PaymentId}")
         );
         return generateApi(OBGroupName.PISP, content);
     }
