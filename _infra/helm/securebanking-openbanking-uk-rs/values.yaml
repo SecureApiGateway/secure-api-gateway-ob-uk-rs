@@ -28,9 +28,11 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: 150m
     nginx.ingress.kubernetes.io/proxy-buffer-size: 100k
 
-  host: localhost
+  domain: localhost
+  subdomain: rs
   tls:
     secretName: selfSignedCert
+    subdomain: "*"
   
 service:
   apiVersion: v1
