@@ -13,7 +13,7 @@ metadata:
   name: {{ .Chart.Name }}
 spec:
   rules:
-  - host: {{ .Values.ingress.host }}
+  - host: {{ .Values.ingress.subdomain }}.{{ .Values.ingress.domain }}
     http:
       paths:
       - backend:
@@ -22,5 +22,5 @@ spec:
         path: /
   tls:
   - hosts:
-    - {{ .Values.ingress.host }}
+    - "{{ .Values.ingress.tls.subdomain }}.{{ .Values.ingress.domain }}"
     secretName: {{ .Values.ingress.tls.secretName }}
