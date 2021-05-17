@@ -19,6 +19,9 @@ deployment:
 
   resources: {}
 
+mongodb:
+  host: mongo-dev
+
 ingress:
   apiVersion: extensions/v1beta1
   class: nginx
@@ -31,7 +34,7 @@ ingress:
   domain: localhost
   subdomain: rs
   tls:
-    secretName: selfSignedCert
+    secretName: sslcert
     subdomain: "*"
   
 service:
