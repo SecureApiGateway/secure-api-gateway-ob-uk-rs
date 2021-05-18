@@ -20,7 +20,8 @@ deployment:
   resources: {}
 
 mongodb:
-  host: mongo-dev
+  argoControlled: true
+  namespace: dev
 
 ingress:
   apiVersion: extensions/v1beta1
