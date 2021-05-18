@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FROfferConverter.toOBOffer1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
 
 @Controller("OffersApiV3.0")
 @Slf4j
@@ -72,8 +72,8 @@ public class OffersApiController implements OffersApi {
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(o -> toOBOffer1(o.getOffer()))
-                        .map(o -> accountDataInternalIdFilter.apply(o))
+                        .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
+                        .map(accountDataInternalIdFilter::apply)
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
@@ -99,8 +99,8 @@ public class OffersApiController implements OffersApi {
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(o -> toOBOffer1(o.getOffer()))
-                        .map(dd -> accountDataInternalIdFilter.apply(dd))
+                        .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
+                        .map(accountDataInternalIdFilter::apply)
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));

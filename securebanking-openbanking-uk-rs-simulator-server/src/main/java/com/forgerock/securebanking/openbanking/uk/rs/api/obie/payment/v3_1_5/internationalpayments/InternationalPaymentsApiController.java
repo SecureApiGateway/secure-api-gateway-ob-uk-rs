@@ -46,6 +46,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter.toOBWriteInternationalResponse5DataRefund;
@@ -161,7 +162,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBWriteInternationalResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .debtor(toOBDebtorIdentification1(data.getInitiation().getDebtorAccount()))
+                        .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .refund(refund.isPresent() ? toOBWriteInternationalResponse5DataRefund(refund.get()) : null)
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(
                                 frPaymentSubmission.getCalculatedExchangeRate())))

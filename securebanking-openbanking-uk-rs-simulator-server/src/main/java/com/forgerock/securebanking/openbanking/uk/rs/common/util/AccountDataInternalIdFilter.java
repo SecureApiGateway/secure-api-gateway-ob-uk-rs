@@ -84,6 +84,10 @@ public class AccountDataInternalIdFilter {
         return apply(data, data::setOfferId);
     }
 
+    public OBReadOffer1DataOffer apply(OBReadOffer1DataOffer data) {
+        return apply(data, data::setOfferId);
+    }
+
     public OBReadProduct2DataProduct apply(OBReadProduct2DataProduct data) {
         return apply(data, data::setProductId);
     }
