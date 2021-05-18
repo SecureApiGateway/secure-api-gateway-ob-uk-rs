@@ -51,7 +51,11 @@ spec:
             timeoutSeconds: 5
           env:
           - name: SPRING_DATA_MONGODB_HOST
-            value: {{ .Values.mongodb.host }}
+            {{- if .Values.mongodb.argoControlled }}
+            value: mongodb-{{ .Values.mongodb.namespace }}
+            {{- else }}]
+            value: mongodb
+            {{- end }}
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
           - name: SPRING_CLOUD_CONFIG_URI
