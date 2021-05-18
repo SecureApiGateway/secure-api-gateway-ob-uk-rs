@@ -48,17 +48,17 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter.toOBWriteInternationalResponse5DataRefund;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter.toOBWriteInternationalStandingOrderResponse7DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBWriteInternationalStandingOrderResponse7DataStatus;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsentResponse7DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.*;
 
@@ -169,13 +169,13 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         return new OBWriteInternationalStandingOrderResponse7()
                 .data(new OBWriteInternationalStandingOrderResponse7Data()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
-                        .initiation(toOBWriteInternationalStandingOrder4DataInitiation(data.getInitiation()))
+                        .initiation(toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBWriteInternationalStandingOrderResponse7DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .debtor(toOBDebtorIdentification1(data.getInitiation().getDebtorAccount()))
-                        .refund(refund.isPresent() ? toOBWriteInternationalResponse5DataRefund(refund.get()) : null)
+                        .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
+                        .refund(refund.isPresent() ? toOBWriteInternationalStandingOrderResponse7DataRefund(refund.get()) : null)
                 )
                 .links(createInternationalStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());

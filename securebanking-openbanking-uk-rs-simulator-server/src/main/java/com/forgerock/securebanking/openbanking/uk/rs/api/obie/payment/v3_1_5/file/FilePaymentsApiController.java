@@ -46,12 +46,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBWriteFileResponse3DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
@@ -182,7 +182,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBWriteFileResponse3DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .debtor(toOBDebtorIdentification1(data.getInitiation().getDebtorAccount())))
+                        .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount())))
                 .links(createFilePaymentsLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

@@ -48,17 +48,17 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBDebtorIdentification1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter.toOBWriteDomesticResponse5DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.*;
 
@@ -169,12 +169,12 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         return new OBWriteDomesticStandingOrderResponse6()
                 .data(new OBWriteDomesticStandingOrderResponse6Data()
                         .domesticStandingOrderId(frPaymentSubmission.getId())
-                        .initiation(toOBWriteDomesticStandingOrder3DataInitiation(data.getInitiation()))
+                        .initiation(toOBWriteDomesticStandingOrderConsentResponse6DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBWriteDomesticStandingOrderResponse6DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .debtor(toOBDebtorIdentification1(data.getInitiation().getDebtorAccount()))
+                        .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .refund(refund.isPresent() ? toOBWriteDomesticResponse5DataRefund(refund.get()) : null))
                 .links(createDomesticStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());

@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_4.internationalstandingorders;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRReadRefundAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalStandingOrder;
@@ -48,16 +49,15 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter.toOBWriteInternationalRefundResponse1DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBWriteInternationalStandingOrderResponse6DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.FRStandingOrderDataFactory.createFRStandingOrderData;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.*;
 
@@ -171,8 +171,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBWriteInternationalStandingOrderResponse6DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .refund(refund.isPresent() ? toOBWriteInternationalRefundResponse1DataRefund(refund.get()) : null)
-                )
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse4DataRefund).orElse(null)))
                 .links(createInternationalStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

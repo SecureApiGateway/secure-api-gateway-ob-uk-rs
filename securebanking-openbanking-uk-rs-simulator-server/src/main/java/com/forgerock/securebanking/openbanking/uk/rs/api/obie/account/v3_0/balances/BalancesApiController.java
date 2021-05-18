@@ -32,7 +32,7 @@ import uk.org.openbanking.datamodel.account.OBReadBalance1Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRCashBalanceConverter.toOBCashBalance1;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
 
 @Controller("BalancesApiV3.0")
 @Slf4j
@@ -65,7 +65,7 @@ public class BalancesApiController implements BalancesApi {
 
         return ResponseEntity.ok(new OBReadBalance1()
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
-                        .map(b -> toOBCashBalance1(b.getBalance()))
+                        .map(b -> toOBReadBalance1DataBalance(b.getBalance()))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
@@ -90,7 +90,7 @@ public class BalancesApiController implements BalancesApi {
 
         return ResponseEntity.ok(new OBReadBalance1()
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
-                        .map(b -> toOBCashBalance1(b.getBalance()))
+                        .map(b -> toOBReadBalance1DataBalance(b.getBalance()))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
