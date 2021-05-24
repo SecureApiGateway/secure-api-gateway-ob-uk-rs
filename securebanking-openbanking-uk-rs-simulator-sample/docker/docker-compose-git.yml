@@ -3,7 +3,7 @@ services:
 
   securebanking-config-server:
     container_name: securebanking-config-server
-    image: eu.gcr.io/sbat-gcr-develop/securebanking/spring-config-server
+    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-spring-config-server
     environment:
       - SSH_KEY=${GIT_SSH_KEY}
       - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-spring-config.git

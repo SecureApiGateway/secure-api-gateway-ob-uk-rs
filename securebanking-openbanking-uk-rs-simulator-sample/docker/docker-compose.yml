@@ -4,7 +4,7 @@ services:
   securebanking-config-server:
     container_name: securebanking-config-server
     hostname: securebanking-config-server
-    image: eu.gcr.io/sbat-gcr-develop/securebanking/spring-config-server
+    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-spring-config-server
     environment:
       - SPRING_PROFILES_ACTIVE=native
       - CONFIG_SERVER_SEARCH_LOCATIONS=file:///home/config
