@@ -17,7 +17,7 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: rs
+          serviceName: {{ .Chart.Name }}
           servicePort: 8080
         path: /
   tls:
