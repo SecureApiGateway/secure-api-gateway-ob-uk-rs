@@ -43,6 +43,7 @@ jobs:
       - name: Build Docker Image
         run: |
           make docker repo=${{ secrets.RELEASE_REPO }}
+          make docker tag=latest
 
       - name: helm version
         id: helm

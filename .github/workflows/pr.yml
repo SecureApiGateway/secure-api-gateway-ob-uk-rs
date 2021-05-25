@@ -64,9 +64,7 @@ jobs:
       
       - name: Build Docker Image
         run: |
-          make docker tag=latest
-          docker tag eu.gcr.io/${{ secrets.DEV_REPO }}/securebanking/$SERVICE_NAME:latest eu.gcr.io/${{ secrets.DEV_REPO }}/securebanking/$SERVICE_NAME:${{ steps.tag.outputs.pr_number }}
-          docker push eu.gcr.io/${{ secrets.DEV_REPO }}/securebanking/$SERVICE_NAME:${{ steps.tag.outputs.pr_number }}
+          make docker tag=${{ steps.tag.outputs.pr_number }}
 
       - uses: codecov/codecov-action@v1
         with:
