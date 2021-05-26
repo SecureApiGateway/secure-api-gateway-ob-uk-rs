@@ -18,9 +18,13 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.domesticpayments.DomesticPaymentsApiController;
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -39,16 +43,22 @@ import static org.mockito.Mockito.mock;
  */
 public class AvailableApiEndpointsResolverTest {
 
-    private static final String BASE_URL = "http://rs";
+    private static final String BASE_URL = "http://localhost";
     private static final String VERSION = "v3.1.5";
     private static final String CREATE_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments";
     private static final String GET_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments/{DomesticPaymentId}";
+
+    @BeforeEach
+    void setup() {
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
+    }
 
     @Test
     public void shouldGetAvailableApiEndpoints() {
         // Given
         RequestMappingHandlerMapping requestHandlerMapping = requestHandlerMapping();
-        AvailableApiEndpointsResolver endpointsResolver = new AvailableApiEndpointsResolver(requestHandlerMapping, BASE_URL);
+        AvailableApiEndpointsResolver endpointsResolver = new AvailableApiEndpointsResolver(requestHandlerMapping);
 
         // When
         List<AvailableApiEndpoint> availableApiEndpoints = endpointsResolver.getAvailableApiEndpoints();

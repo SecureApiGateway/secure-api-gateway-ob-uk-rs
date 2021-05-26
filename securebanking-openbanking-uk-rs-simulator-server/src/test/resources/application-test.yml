@@ -16,7 +16,6 @@ springfox:
         path: /api-docs
 
 rs:
-  baseUrl: http://localhost:8080
   discovery:
     financialId: 0015800001041REAAY
 

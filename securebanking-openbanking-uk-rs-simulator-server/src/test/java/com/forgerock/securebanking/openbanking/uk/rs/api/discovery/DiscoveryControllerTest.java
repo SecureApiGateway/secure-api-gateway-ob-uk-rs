@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
@@ -32,6 +34,7 @@ import java.util.List;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpMethod.GET;
 
 /**
  * A SpringBoot test for the {@link DiscoveryController}.
@@ -109,6 +112,54 @@ public class DiscoveryControllerTest {
         // assert others are not filtered
         assertThat(isEndpointDisabledByVersion(accountApis, "v3.1.4", disabledEndpoint)).isFalse();
         assertThat(isEndpointDisabledByVersion(accountApis, version, GET_ACCOUNTS)).isFalse();
+    }
+
+    @Test
+    public void shouldGetDiscoveryUrlsForGivenDomain() {
+        // Given
+        String version = "v3.1.5";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Forwarded-Host", "forgerock.com");
+        headers.add("X-Forwarded-Proto", "https");
+
+        // When
+        ResponseEntity<OBDiscoveryResponse> response = restTemplate.exchange(discoveryUrl(), GET, new HttpEntity<>(headers),
+                OBDiscoveryResponse.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        OBDiscovery data = response.getBody().getData();
+        OBDiscoveryAPI<OBDiscoveryAPILinks> accountEndpointsForVersion = data.getAccountAndTransactionAPIs().stream()
+                .filter(a -> a.getVersion().equals(version))
+                .findFirst()
+                .orElseThrow();
+        String transactionsUrl = ((GenericOBDiscoveryAPILinks) accountEndpointsForVersion.getLinks())
+                .getLinks()
+                .get(GET_TRANSACTIONS.getReference());
+        String expectedUrl = "https://forgerock.com/open-banking/" + version + GET_TRANSACTIONS.getRelativePath();
+        assertThat(transactionsUrl).isEqualTo(expectedUrl);
+    }
+
+    @Test
+    public void shouldGetDiscoveryUrlsForDefaultDomain() {
+        // Given
+        String version = "v3.1.5";
+
+        // When
+        ResponseEntity<OBDiscoveryResponse> response = restTemplate.getForEntity(discoveryUrl(), OBDiscoveryResponse.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        OBDiscovery data = response.getBody().getData();
+        OBDiscoveryAPI<OBDiscoveryAPILinks> accountEndpointsForVersion = data.getAccountAndTransactionAPIs().stream()
+                .filter(a -> a.getVersion().equals(version))
+                .findFirst()
+                .orElseThrow();
+        String transactionsUrl = ((GenericOBDiscoveryAPILinks) accountEndpointsForVersion.getLinks())
+                .getLinks()
+                .get(GET_TRANSACTIONS.getReference());
+        String expectedUrl = BASE_URL + port + "/open-banking/" + version + GET_TRANSACTIONS.getRelativePath();
+        assertThat(transactionsUrl).isEqualTo(expectedUrl);
     }
 
     private boolean containsVersions(List<OBDiscoveryAPI<OBDiscoveryAPILinks>> api, String... versions) {

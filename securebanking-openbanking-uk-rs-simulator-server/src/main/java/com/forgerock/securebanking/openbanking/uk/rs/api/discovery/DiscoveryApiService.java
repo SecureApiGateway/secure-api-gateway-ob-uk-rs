@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,16 +34,18 @@ import java.util.Map;
 @Slf4j
 public class DiscoveryApiService {
 
-    private final com.forgerock.securebanking.openbanking.uk.rs.api.discovery.DiscoveryApiConfigurationProperties discoveryProperties;
+    private final DiscoveryApiConfigurationProperties discoveryProperties;
 
-    private final com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpointsResolver availableApiEndpointsResolver;
+    private final AvailableApiEndpointsResolver availableApiEndpointsResolver;
 
     private final ControllerEndpointBlacklistHandler blacklistHandler;
 
     private final Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = new HashMap<>();
 
-    public DiscoveryApiService(com.forgerock.securebanking.openbanking.uk.rs.api.discovery.DiscoveryApiConfigurationProperties discoveryProperties,
-                               com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpointsResolver availableApiEndpointsResolver,
+    private boolean blacklistInitialized = false;
+
+    public DiscoveryApiService(DiscoveryApiConfigurationProperties discoveryProperties,
+                               AvailableApiEndpointsResolver availableApiEndpointsResolver,
                                ControllerEndpointBlacklistHandler blacklistHandler) {
         this.discoveryProperties = discoveryProperties;
         this.availableApiEndpointsResolver = availableApiEndpointsResolver;
@@ -54,13 +55,14 @@ public class DiscoveryApiService {
     /**
      * Builds a {@link Map} of Open Banking APIs that both the application and customer supports. The APIs are grouped
      * by "group" name (e.g. AISP, PISP) and listed by version.
+     *
+     * @return a {@link Map} of supported Open Banking APIs.
      */
-    @PostConstruct
-    protected void init() {
-        List<com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpoint> availableEndpoints = availableApiEndpointsResolver.getAvailableApiEndpoints();
+    public Map<OBGroupName, Map<String, OBDiscoveryAPI>> getDiscoveryApis() {
+        List<AvailableApiEndpoint> availableEndpoints = availableApiEndpointsResolver.getAvailableApiEndpoints();
 
         // iterate over each API endpoint
-        for (com.forgerock.securebanking.openbanking.uk.rs.api.discovery.AvailableApiEndpoint availableEndpoint : availableEndpoints) {
+        for (AvailableApiEndpoint availableEndpoint : availableEndpoints) {
             String version = availableEndpoint.getVersion();
             OBApiReference endpointReference = availableEndpoint.getApiReference();
             String endpointUrl = availableEndpoint.getUrl();
@@ -85,23 +87,40 @@ public class DiscoveryApiService {
                         .getLinks();
                 links.addLink(endpointReference.getReference(), endpointUrl);
             }
-
-            else {
-                log.warn("Disabling endpoint: [{}], with URL: [{}]", endpointReference.getReference(), endpointUrl);
-                blacklistHandler.blacklistEndpoint(availableEndpoint.getControllerMethod());
-            }
         }
-    }
 
-    /**
-     * @return a {@link Map} of supported Open Banking APIs.
-     */
-    public Map<OBGroupName, Map<String, OBDiscoveryAPI>> getDiscoveryApis() {
         return discoveryApis;
     }
 
+    /**
+     * Returns a {@link List} of disabled endpoints for the {@link ControllerEndpointBlacklistHandler}.
+     * Lazy initialises the {@link List} since it requires a servlet request context to determine the base URL (e.g.
+     * using X-Forwarded headers).
+     */
     public ControllerEndpointBlacklistHandler getControllerBlackListHandler() {
+        if (!blacklistInitialized) {
+            initBlacklist();
+            blacklistInitialized = true;
+        }
+
         return blacklistHandler;
+    }
+
+    private void initBlacklist() {
+        List<AvailableApiEndpoint> availableEndpoints = availableApiEndpointsResolver.getAvailableApiEndpoints();
+
+        // iterate over each API endpoint
+        for (AvailableApiEndpoint availableEndpoint : availableEndpoints) {
+            String version = availableEndpoint.getVersion();
+            OBApiReference endpointReference = availableEndpoint.getApiReference();
+
+            if (!isVersionEnabled(version)
+                    || !isApiEnabled(endpointReference)
+                    || !isVersionOverrideEnabled(version, endpointReference)) {
+                log.warn("Disabling endpoint: [{}], for version: [{}]", endpointReference.getReference(), version);
+                blacklistHandler.blacklistEndpoint(availableEndpoint.getControllerMethod());
+            }
+        }
     }
 
     private boolean isVersionEnabled(String version) {

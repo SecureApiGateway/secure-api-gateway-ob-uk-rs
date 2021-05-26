@@ -62,7 +62,5 @@ spec:
             value: "http://securebanking-spring-config-server:8080"
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
-          - name: RS_BASEURL
-            value: http://rs:8080
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}

@@ -16,7 +16,9 @@
 package com.forgerock.securebanking.openbanking.uk.rs.configuration;
 
 import com.forgerock.securebanking.openbanking.uk.rs.web.DisabledEndpointInterceptor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -27,6 +29,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     public WebMvcConfig(DisabledEndpointInterceptor disabledEndpointInterceptor) {
         this.disabledEndpointInterceptor = disabledEndpointInterceptor;
+    }
+
+    @Bean
+    ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
     }
 
     @Override

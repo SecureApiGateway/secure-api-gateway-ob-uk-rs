@@ -51,10 +51,9 @@ public class DiscoveryApiServiceTest {
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
-        discoveryApiService.init();
+        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
 
         // Then
-        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
         assertThat(discoveryApis).isNotNull();
         assertThat(containsAllVersions(discoveryApis.get(OBGroupName.AISP))).isTrue();
         assertThat(containsAllVersions(discoveryApis.get(OBGroupName.PISP))).isTrue();
@@ -71,10 +70,9 @@ public class DiscoveryApiServiceTest {
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
-        discoveryApiService.init();
+        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
 
         // Then
-        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
         assertThat(discoveryApis).isNotNull();
         assertThat(containsAllVersionsExcept(discoveryApis.get(OBGroupName.AISP), 1)).isTrue();
         assertThat(containsAllVersionsExcept(discoveryApis.get(OBGroupName.PISP), 1)).isTrue();
@@ -91,10 +89,9 @@ public class DiscoveryApiServiceTest {
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
-        discoveryApiService.init();
+        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
 
         // Then
-        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
         Map<String, OBDiscoveryAPI> accountApis = discoveryApis.get(OBGroupName.AISP);
         assertThat(containsAllVersions(accountApis)).isTrue();
         Map<String, String> links = ((GenericOBDiscoveryAPILinks) accountApis.get(TEST_VERSION).getLinks()).getLinks();
@@ -114,10 +111,9 @@ public class DiscoveryApiServiceTest {
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
-        discoveryApiService.init();
+        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
 
         // Then
-        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
         Map<String, OBDiscoveryAPI> accountApis = discoveryApis.get(OBGroupName.AISP);
         String version = "v3.1.2";
         Map<String, String> links = ((GenericOBDiscoveryAPILinks) accountApis.get(version).getLinks()).getLinks();
@@ -143,10 +139,9 @@ public class DiscoveryApiServiceTest {
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(emptyList());
 
         // When
-        discoveryApiService.init();
+        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
 
         // Then
-        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
         assertThat(discoveryApis).isEmpty();
     }
 
@@ -159,10 +154,9 @@ public class DiscoveryApiServiceTest {
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
-        discoveryApiService.init();
+        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
 
         // Then
-        Map<OBGroupName, Map<String, OBDiscoveryAPI>> discoveryApis = discoveryApiService.getDiscoveryApis();
         assertThat(discoveryApis).isEmpty();
     }
 
