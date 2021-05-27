@@ -16,13 +16,13 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +46,10 @@ public class AvailableApiEndpointsResolver {
 
     private final Map<RequestMappingInfo, HandlerMethod> handlerMethods;
 
-    private final String baseUrl;
+    private List<AvailableApiEndpoint> availableApis = new ArrayList<>();
 
-    private List<AvailableApiEndpoint> availableApis = null;
-
-    public AvailableApiEndpointsResolver(RequestMappingHandlerMapping requestHandlerMapping,
-                                         @Value("${rs.baseUrl}") String baseUrl) {
+    public AvailableApiEndpointsResolver(RequestMappingHandlerMapping requestHandlerMapping) {
         this.handlerMethods = requestHandlerMapping.getHandlerMethods();
-        this.baseUrl = baseUrl;
     }
 
     /**
@@ -66,12 +62,6 @@ public class AvailableApiEndpointsResolver {
      * @return the {@link List} of {@link AvailableApiEndpoint} instances.
      */
     public List<AvailableApiEndpoint> getAvailableApiEndpoints() {
-        if (availableApis != null) {
-            return availableApis;
-        }
-
-        availableApis = new ArrayList<>();
-
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             RequestMappingInfo requestMapping = entry.getKey();
             HandlerMethod method = entry.getValue();
@@ -80,6 +70,7 @@ public class AvailableApiEndpointsResolver {
 
             if (apiReference != null) {
                 String version = getVersion(requestMapping);
+                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
                 String url = baseUrl + requestMapping.getPatternsCondition().getPatterns().iterator().next();
 
                 AvailableApiEndpoint availableApi = AvailableApiEndpoint.builder()

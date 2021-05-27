@@ -9,7 +9,6 @@ spring:
       port: 0
 
 rs:
-  baseUrl: http://localhost:8080
   discovery:
     financialId: 0015800001041REAAY
 
