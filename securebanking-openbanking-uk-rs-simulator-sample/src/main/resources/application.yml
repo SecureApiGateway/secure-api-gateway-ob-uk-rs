@@ -13,6 +13,12 @@ spring:
   profiles:
     active: NOT_SET
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+        
 #Swagger
 springfox:
   documentation:

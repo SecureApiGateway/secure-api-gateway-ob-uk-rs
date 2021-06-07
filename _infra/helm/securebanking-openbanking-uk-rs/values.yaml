@@ -39,3 +39,4 @@ ingress:
   
 service:
   apiVersion: v1
+  type: ClusterIP
