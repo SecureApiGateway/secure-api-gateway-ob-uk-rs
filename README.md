@@ -1,5 +1,5 @@
 ## SBA Toolkit's UK Open Banking RS
- 
+
 A multi-module maven project providing a UK Open Banking Resource Server, including a bank simulator, for the Secure Banking Accelerator Toolkit.
 
 ### Setting up Maven
