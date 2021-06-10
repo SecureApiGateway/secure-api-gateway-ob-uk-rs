@@ -93,7 +93,7 @@ rs:
         GetStatements: false
         GetAccountStatements: false
 ```
-
+ 
 As can be deduced from this config, Read/Write API endpoints can be disabled (resulting in a 404 error response) by one
 of three ways:
 
