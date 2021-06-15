@@ -13,6 +13,7 @@ deployment:
     enabled: true
     repo: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
     tag: latest
+    tagDelimiter: ":"
 
   server:
     port: 8080
@@ -20,8 +21,7 @@ deployment:
   resources: {}
 
 mongodb:
-  argoControlled: true
-  namespace: dev
+  host: mongodb
 
 ingress:
   apiVersion: extensions/v1beta1
