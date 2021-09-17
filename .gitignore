@@ -3,3 +3,5 @@
 .vscode/
 .classpath
 .mongo/
+.factorypath
+target/
