@@ -75,6 +75,6 @@ jobs:
         with:
           args: '-v TAG=${{ steps.tag.outputs.pr_number }} -v SERVICE_NAME=rs -v ENVIRONMENT=${{ github.actor }} -v BRANCH=${{ github.head_ref }}'
         env:
-          PIPELINE_NAME: 'sbat-infra/service-build'
+          PIPELINE_NAME: 'ForgeCloud/sbat-infra/service-build'
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
         id: run-pipeline
