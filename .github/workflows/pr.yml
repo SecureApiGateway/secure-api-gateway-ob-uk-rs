@@ -69,3 +69,12 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
+      
+      - name: 'run functional tests'
+        uses: codefresh-io/codefresh-pipeline-runner@master
+        with:
+          args: '-v TAG=${{ steps.tag.outputs.pr_number }} -v SERVICE_NAME=rs -v ENVIRONMENT=${{ github.actor }} -v BRANCH=${{ github.head_ref }}'
+        env:
+          PIPELINE_NAME: 'ForgeCloud/sbat-infra/service-build'
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        id: run-pipeline
