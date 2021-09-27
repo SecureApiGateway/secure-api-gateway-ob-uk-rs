@@ -42,25 +42,16 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          make docker repo=${{ secrets.RELEASE_REPO }}
           make docker tag=latest
-
-      - name: helm version
-        id: helm
-        run: |
-          HELM_VERSION=$(make version)
-          echo ::set-output name=version::"$HELM_VERSION"
-
-      - name: package helm
-        run: |
-          make helm version=${{ steps.helm.outputs.version }}
-
-      - name: Publish Release Chart 
-        id: upload
-        uses: google-github-actions/upload-cloud-storage@main
+      
+      - name: 'run functional tests'
+        uses: codefresh-io/codefresh-pipeline-runner@master
         with:
-          path: ${{ env.SERVICE_NAME }}-${{ steps.helm.outputs.version }}.tgz
-          destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}
+          args: '-v SERVICE_NAME=rs'
+        env:
+          PIPELINE_NAME: 'ForgeCloud/sbat-infra/service-build'
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        id: run-pipeline
 
       - uses: codecov/codecov-action@v1
         with:
