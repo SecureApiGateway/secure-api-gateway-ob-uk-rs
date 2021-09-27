@@ -52,3 +52,7 @@ jobs:
         with:
           path: ${{ env.SERVICE_NAME }}-${{ steps.helm.outputs.version }}.tgz
           destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}
+      
+      - name: Release Docker Image
+        run: |
+          make docker tag=${{ github.event.release.tag_name }} gcr-repo=${{ secrets.RELEASE_REPO }}
