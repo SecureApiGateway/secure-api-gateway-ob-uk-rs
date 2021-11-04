@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+    Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,29 +16,35 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.forgerock.securebanking</groupId>
     <artifactId>securebanking-openbanking-uk-rs-simulator-server</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>securebanking-openbanking-uk-rs-simulator-server</name>
     <description>A UK Open Banking RS simulator for the Secure Banking Accelerator Toolkit</description>
-
-    <parent>
-        <groupId>com.forgerock.securebanking</groupId>
-        <artifactId>securebanking-openbanking-uk-rs</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
+    <url>
+        https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rs/securebanking-openbanking-uk-rs-simulator-server
+    </url>
 
     <organization>
         <name>ForgeRock</name>
         <url>http://www.forgerock.org</url>
     </organization>
-    <url>http://www.forgerock.org</url>
+
+    <parent>
+        <groupId>com.forgerock.securebanking</groupId>
+        <artifactId>securebanking-openbanking-uk-rs</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <!-- property to run individualy the module with no license issues -->
+        <legal.path.header>../legal/LICENSE-HEADER.txt</legal.path.header>
+    </properties>
 
     <dependencies>
         <!-- ForgeRock dependencies -->
@@ -59,11 +65,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
+            <groupId>com.forgerock.securebanking.uk</groupId>
             <artifactId>securebanking-openbanking-uk-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
+            <groupId>com.forgerock.securebanking.uk</groupId>
             <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
         </dependency>
 
@@ -102,13 +108,13 @@
 
         <!-- ForgeRock Test dependencies -->
         <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
+            <groupId>com.forgerock.securebanking.uk</groupId>
             <artifactId>securebanking-openbanking-uk-obie-datamodel</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.forgerock.securebanking</groupId>
+            <groupId>com.forgerock.securebanking.uk</groupId>
             <artifactId>securebanking-openbanking-uk-forgerock-datamodel</artifactId>
             <type>test-jar</type>
             <scope>test</scope>

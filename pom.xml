@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+    Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,17 +16,23 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.forgerock.securebanking</groupId>
     <artifactId>securebanking-openbanking-uk-rs</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <name>securebanking-openbanking-uk-rs</name>
     <description>A UK Open Banking Resource Server for the Secure Banking Accelerator Toolkit</description>
+    <url>
+        https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git
+    </url>
+
+    <organization>
+        <name>ForgeRock</name>
+        <url>http://www.forgerock.org</url>
+    </organization>
 
     <modules>
         <module>securebanking-openbanking-uk-rs-admin-api</module>
@@ -35,20 +41,19 @@
         <module>securebanking-openbanking-uk-rs-simulator-server</module>
         <module>securebanking-openbanking-uk-rs-simulator-sample</module>
     </modules>
-
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
         <artifactId>securebanking-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.4-SNAPSHOT</version>
     </parent>
 
     <dependencyManagement>
         <dependencies>
             <!-- ForgeRock BOM -->
             <dependency>
-                <groupId>com.forgerock.securebanking</groupId>
+                <groupId>com.forgerock.securebanking.uk</groupId>
                 <artifactId>securebanking-openbanking-uk-bom</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.3-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -56,11 +61,11 @@
     </dependencyManagement>
 
     <scm>
-        <connection>scm:git:git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-uk-rs.git
+        <connection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git
         </connection>
-        <developerConnection>scm:git:git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-uk-rs.git
+        <developerConnection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git
         </developerConnection>
-        <url>https://github.com/SecureBankingAcceleratorToolkit/securebanking-openbanking-uk-rs.git</url>
+        <url>https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git</url>
         <tag>HEAD</tag>
     </scm>
 
