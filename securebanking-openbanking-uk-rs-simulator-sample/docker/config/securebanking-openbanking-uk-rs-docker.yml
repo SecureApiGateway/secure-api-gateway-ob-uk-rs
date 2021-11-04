@@ -24,9 +24,6 @@ spring:
 
 # RS config
 rs:
-  discovery:
-    financialId: 0015800001041REAAY
-
   # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
   data:
     upload:

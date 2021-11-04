@@ -54,6 +54,12 @@ spec:
             value: {{ .Values.mongodb.host }}
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
+          - name: EXPECTED_ORIGIN_ENDS
+            value: {{ .Values.deployment.cors.originEnds }}
+          - name: IG_SERVER
+            value: {{ .Values.deployment.urls.ig.server}}
+          - name: IAM_SERVER
+            value: {{ .Values.deployment.urls.authorization.server}}
           - name: SPRING_CLOUD_CONFIG_URI
             value: "http://securebanking-spring-config-server:8080"
           - name: SPRING_PROFILES_ACTIVE
