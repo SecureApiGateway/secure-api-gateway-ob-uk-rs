@@ -15,6 +15,17 @@ deployment:
     tag: latest
     tagDelimiter: ":"
 
+  urls:
+    ig:
+      server: localhost
+    authorization:
+      server: localhost
+    rs:
+      server: localhost
+
+  cors:
+    originEnds: localhost
+
   server:
     port: 8080
 
