@@ -22,16 +22,39 @@ jobs:
         with:
           java-version: "14"
           architecture: x64
-
+          server-id: maven.forgerock.org-community # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_USERNAME # env variable for username in deploy
+          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
       - name: Cache Maven packages
         uses: actions/cache@v1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
 
+      - name: prepare artifact version
+        id: prepare
+        run: |
+          echo "::set-output name=artifact-version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+
+      - name: Set up forgerock maven snapshot repository
+        if: contains(steps.prepare.outputs.artifact-version, 'SNAPSHOT')
+        uses: actions/setup-java@v1
+        with: # add snapshots repository on the settings.xml
+          java-version: '14'
+          architecture: x64
+          server-id: maven.forgerock.org-community-snapshots # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_USERNAME # env variable for username in deploy
+          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+
       - name: test
         run: |
           make verify
+
+      - name: Deploy artifact package
+        run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
+        env:
+          MAVEN_USERNAME: ${{ secrets.FR_ARTIFACTORY_USER }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.FR_ARTIFACTORY_TOKEN }}
 
       - uses: google-github-actions/setup-gcloud@master
         with:
