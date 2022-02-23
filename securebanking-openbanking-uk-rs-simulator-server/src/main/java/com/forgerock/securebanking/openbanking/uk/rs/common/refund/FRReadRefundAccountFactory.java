@@ -15,10 +15,10 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common.refund;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRReadRefundAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRReadRefundAccount.NO;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRReadRefundAccount.YES;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount.NO;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount.YES;
 
 public class FRReadRefundAccountFactory {
 

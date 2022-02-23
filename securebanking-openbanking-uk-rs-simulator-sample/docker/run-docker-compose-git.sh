@@ -15,12 +15,24 @@
 # limitations under the License.
 #
 
+BASEDIR=$(dirname $0)
+echo "Script location: ${BASEDIR}"
 
 export GIT_SSH_KEY="$(cat ~/.ssh/id_rsa)"
 
 echo "Shutting down previous containers (if applicable)"
-docker-compose -f docker-compose-git.yml down
+if [ ! -z "$1" ]
+then
+  docker-compose -f ${BASEDIR}/docker-compose-git.yml down "$1"
+else
+  docker-compose -f ${BASEDIR}/docker-compose-git.yml down
+fi
 echo ""
 
-echo "Starting up containers..."
-docker-compose -f docker-compose-git.yml up
+echo "Starting up containers...$1".
+if [ ! -z "$1" ]
+then
+  docker-compose -f ${BASEDIR}/docker-compose-git.yml up "$1"
+else
+  docker-compose -f ${BASEDIR}/docker-compose-git.yml up
+fi

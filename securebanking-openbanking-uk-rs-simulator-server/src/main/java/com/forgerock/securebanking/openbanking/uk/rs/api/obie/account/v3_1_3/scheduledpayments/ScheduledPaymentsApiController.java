@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static  com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static  com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static  com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
 
 @Controller("ScheduledPaymentsApiV3.1.3")
 @Slf4j

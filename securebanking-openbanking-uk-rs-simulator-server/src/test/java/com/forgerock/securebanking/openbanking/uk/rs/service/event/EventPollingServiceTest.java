@@ -75,7 +75,7 @@ public class EventPollingServiceTest {
         eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
 
         // Then
-        verifyZeroInteractions(mockRepo);
+        verifyNoMoreInteractions(mockRepo);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class EventPollingServiceTest {
         eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
 
         // Then
-        verifyZeroInteractions(mockRepo);
+        verifyNoMoreInteractions(mockRepo);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class EventPollingServiceTest {
         eventPollingService.recordTppEventErrors(pollingRequest, TPP_ID);
 
         // Then
-        verifyZeroInteractions(mockRepo);
+        verifyNoMoreInteractions(mockRepo);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class EventPollingServiceTest {
 
         // Then
         assertThat(eventNotifications.size()).isEqualTo(0);
-        verifyZeroInteractions(mockRepo);
+        verifyNoMoreInteractions(mockRepo);
     }
 
 

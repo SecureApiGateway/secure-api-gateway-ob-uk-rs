@@ -15,12 +15,16 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common.refund;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.*;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.*;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticDataInitiation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRInternationalDataInitiation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRInternationalResponseDataRefund;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 
 import java.util.Optional;
 
 /**
- * Factory for creating instances of {@link FRDomesticResponseDataRefund} or {@link FRInternationalResponseDataRefund}.
+ * Factory for creating instances of {@link FRResponseDataRefund} or {@link FRInternationalResponseDataRefund}.
  */
 public class FRResponseDataRefundFactory {
 
@@ -28,18 +32,34 @@ public class FRResponseDataRefundFactory {
     // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
 
     /**
-     * Creates a {@link FRDomesticResponseDataRefund}, so long as the provided {@link FRReadRefundAccount} is set
+     * Creates a {@link FRResponseDataRefund}, so long as the provided {@link FRReadRefundAccount} is set
      * to 'Yes' and the initiation's debit account is null. Otherwise returns an empty {@link Optional}.
      *
      * @param frReadRefundAccount The {@link FRReadRefundAccount} indicating if a refund should be issued.
      * @param initiation          {@link FRDomesticDataInitiation} The payment's initiation data.
-     * @return The {@link Optional} {@link FRDomesticResponseDataRefund} instance.
+     * @return The {@link Optional} {@link FRResponseDataRefund} instance.
      */
-    public static Optional<FRDomesticResponseDataRefund> frDomesticResponseDataRefund(
+    public static Optional<FRResponseDataRefund> frDomesticResponseDataRefund(
             FRReadRefundAccount frReadRefundAccount,
             FRDomesticDataInitiation initiation) {
         if (hasRefund(frReadRefundAccount) && initiation.getDebtorAccount() != null) {
-            return Optional.of(FRDomesticResponseDataRefund.builder()
+            return Optional.of(FRResponseDataRefund.builder()
+                    .account(FRAccountIdentifier.builder()
+                            .schemeName(initiation.getDebtorAccount().getSchemeName())
+                            .identification(initiation.getDebtorAccount().getIdentification())
+                            .name(initiation.getDebtorAccount().getName())
+                            .secondaryIdentification(initiation.getDebtorAccount().getSecondaryIdentification())
+                            .build())
+                    .build());
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<FRResponseDataRefund> frDomesticVrpResponseDataRefund(
+            FRReadRefundAccount frReadRefundAccount,
+            FRWriteDomesticVrpDataInitiation initiation) {
+        if (hasRefund(frReadRefundAccount) && initiation.getDebtorAccount() != null) {
+            return Optional.of(FRResponseDataRefund.builder()
                     .account(FRAccountIdentifier.builder()
                             .schemeName(initiation.getDebtorAccount().getSchemeName())
                             .identification(initiation.getDebtorAccount().getIdentification())
@@ -57,7 +77,7 @@ public class FRResponseDataRefundFactory {
      *
      * @param frReadRefundAccount The {@link FRReadRefundAccount} indicating if a refund should be issued.
      * @param initiation          {@link FRDomesticDataInitiation} The payment's initiation data.
-     * @return The {@link Optional} {@link FRDomesticResponseDataRefund} instance.
+     * @return The {@link Optional} {@link FRResponseDataRefund} instance.
      */
     public static Optional<FRInternationalResponseDataRefund> frInternationalResponseDataRefund(
             FRReadRefundAccount frReadRefundAccount,
@@ -67,23 +87,23 @@ public class FRResponseDataRefundFactory {
             FRFinancialCreditor creditor = initiation.getCreditor();
             FRFinancialAgent creditorAgent = initiation.getCreditorAgent();
             return Optional.of(FRInternationalResponseDataRefund.builder()
-                            .account(FRAccountIdentifier.builder()
-                                    .schemeName(debtorAccount.getSchemeName())
-                                    .identification(debtorAccount.getIdentification())
-                                    .name(debtorAccount.getName())
-                                    .secondaryIdentification(debtorAccount.getSecondaryIdentification())
-                                    .build())
-                            .creditor(creditor == null ? null : FRFinancialCreditor.builder()
-                                    .name(creditor.getName())
-                                    .postalAddress(creditor.getPostalAddress())
-                                    .build())
-                            .agent(creditorAgent == null ? null : FRFinancialAgent.builder()
-                                    .schemeName(creditorAgent.getSchemeName())
-                                    .identification(creditorAgent.getIdentification())
-                                    .name(creditorAgent.getName())
-                                    .postalAddress(creditorAgent.getPostalAddress())
-                                    .build())
-                            .build());
+                    .account(FRAccountIdentifier.builder()
+                            .schemeName(debtorAccount.getSchemeName())
+                            .identification(debtorAccount.getIdentification())
+                            .name(debtorAccount.getName())
+                            .secondaryIdentification(debtorAccount.getSecondaryIdentification())
+                            .build())
+                    .creditor(creditor == null ? null : FRFinancialCreditor.builder()
+                            .name(creditor.getName())
+                            .postalAddress(creditor.getPostalAddress())
+                            .build())
+                    .agent(creditorAgent == null ? null : FRFinancialAgent.builder()
+                            .schemeName(creditorAgent.getSchemeName())
+                            .identification(creditorAgent.getIdentification())
+                            .name(creditorAgent.getName())
+                            .postalAddress(creditorAgent.getPostalAddress())
+                            .build())
+                    .build());
         }
         return Optional.empty();
     }

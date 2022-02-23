@@ -29,6 +29,10 @@ deployment:
   server:
     port: 8080
 
+  java:
+    tool:
+      options: -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
+
   resources: {}
 
 mongodb:

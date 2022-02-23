@@ -20,7 +20,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
+import uk.org.openbanking.datamodel.common.OBRisk1;
 
 /**
  * Performs validation that is common across the Payments API.

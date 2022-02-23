@@ -19,7 +19,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.eve
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.event.FRCallbackUrl;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
