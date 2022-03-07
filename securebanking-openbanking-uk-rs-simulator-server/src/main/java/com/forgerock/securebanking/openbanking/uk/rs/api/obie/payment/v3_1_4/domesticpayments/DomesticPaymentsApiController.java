@@ -20,8 +20,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_4.domesticpayments;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRDomesticResponseDataRefund;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRReadRefundAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
@@ -36,7 +36,7 @@ import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse4Data;
@@ -47,11 +47,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRResponseDataRefundConverter.toOBWriteDomesticResponse4DataRefund;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRSubmissionStatusConverter.toOBWriteDomesticResponse4DataStatus;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse4DataRefund;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse4DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRSubmissionStatus.PENDING;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
@@ -152,7 +152,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private OBWriteDomesticResponse4 responseEntity(FRDomesticPaymentSubmission frPaymentSubmission,
                                                     FRReadRefundAccount readRefundAccount) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
-        Optional<FRDomesticResponseDataRefund> refund = frDomesticResponseDataRefund(readRefundAccount, data.getInitiation());
+        Optional<FRResponseDataRefund> refund = frDomesticResponseDataRefund(readRefundAccount, data.getInitiation());
         return new OBWriteDomesticResponse4()
                 .data(new OBWriteDomesticResponse4Data()
                         .domesticPaymentId(frPaymentSubmission.getId())

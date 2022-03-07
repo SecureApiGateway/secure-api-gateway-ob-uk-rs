@@ -48,8 +48,8 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toFRFinancialAccount;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FROfferConverter.toFROfferData;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRScheduledPaymentConverter.toFRScheduledPaymentData;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStandingOrderConverter.toFRStandingOrderData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRStandingOrderConverter.toFRStandingOrderData;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter.toFRStatementData;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRTransactionConverter.toFRTransactionData;
 

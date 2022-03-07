@@ -105,7 +105,13 @@ public enum OBApiReference {
 
     CREATE_FILE_PAYMENT(PISP, "CreateFilePayment", POST, "/pisp/file-payments"),
     GET_FILE_PAYMENT(PISP, "GetFilePayment", GET, "/pisp/file-payments/{FilePaymentId}"),
-    GET_FILE_PAYMENT_REPORT(PISP, "GetFilePaymentReport", GET, "/pisp/file-payments/{ConsentId}/report-file");
+    GET_FILE_PAYMENT_REPORT(PISP, "GetFilePaymentReport", GET, "/pisp/file-payments/{ConsentId}/report-file"),
+
+    // VRP payments
+    // GET_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "GetDomesticVrpPaymentFundsConfirmation", GET, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
+    CREATE_DOMESTIC_VRP_PAYMENT(PISP,"CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
+    GET_DOMESTIC_VRP_PAYMENT(PISP,"GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
+    GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP,"GetDomesticVrpPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");
 
     private static final OBApiReference[] VALUES = OBApiReference.values();
 

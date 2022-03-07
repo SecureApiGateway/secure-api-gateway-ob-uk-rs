@@ -17,8 +17,8 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.admin.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.*;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAccountIdentifier;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.dto.FRUserData;
 import com.forgerock.securebanking.openbanking.uk.rs.configuration.DataConfigurationProperties;
@@ -48,10 +48,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
 import uk.org.openbanking.datamodel.account.OBExternalStatementAmountType1Code;
 import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
-import uk.org.openbanking.datamodel.payment.OBExternalAccountIdentification2Code;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification2Code;
 
 import java.io.BufferedReader;
 import java.io.IOException;

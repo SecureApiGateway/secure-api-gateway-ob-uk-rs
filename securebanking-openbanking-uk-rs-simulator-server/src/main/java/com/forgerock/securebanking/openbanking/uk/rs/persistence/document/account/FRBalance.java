@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.accou
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCreditDebitIndicator;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRAmount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

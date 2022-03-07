@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1.stan
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStandingOrderConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRStandingOrderConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRStandingOrder;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
 import lombok.extern.slf4j.Slf4j;

@@ -102,4 +102,20 @@ public class HttpHeadersTestDataFactory {
         headers.add("x-ob-url", resourceUrl);
         return headers;
     }
+
+    /**
+     * @return an instance of {@link HttpHeaders} with the minimal set of required headers for the Payments API.
+     */
+    public static HttpHeaders requiredVrpPaymentHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth("dummyAuthToken");
+        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
+        headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
+        headers.add("x-idempotency-key", UUID.randomUUID().toString());
+        headers.add("x-jws-signature", "dummyJwsSignature");
+        headers.add("x-ob-account-id", UUID.randomUUID().toString());
+        return headers;
+    }
 }

@@ -17,8 +17,8 @@ package com.forgerock.securebanking.openbanking.uk.rs.common.util;
 
 import org.joda.time.DateTime;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.org.openbanking.datamodel.account.Links;
-import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.common.Links;
+import uk.org.openbanking.datamodel.common.Meta;
 
 public class PaginationUtil {
 

@@ -26,7 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification3Code;
 
 import java.util.Collections;
 import java.util.List;

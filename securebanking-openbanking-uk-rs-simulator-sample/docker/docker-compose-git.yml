@@ -16,10 +16,12 @@ services:
     image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
     ports:
       - 8080:8080
+      - 9096:9096
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CLOUD_CONFIG_URI=http://securebanking-config-server:8888
       - SPRING_DATA_MONGODB_HOST=rs-mongo
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:9096,server=y,suspend=n
     command: /app/wait-for.sh securebanking-config-server:8888 -- java -jar securebanking-openbanking-uk-rs.jar
     restart: on-failure
     depends_on:

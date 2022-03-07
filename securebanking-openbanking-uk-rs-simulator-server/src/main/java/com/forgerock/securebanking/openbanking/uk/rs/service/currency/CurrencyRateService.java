@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.service.currency;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRExchangeRateInformation;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
