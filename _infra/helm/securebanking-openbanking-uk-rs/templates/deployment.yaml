@@ -56,10 +56,16 @@ spec:
             value: {{ .Values.deployment.server.port | quote }}
           - name: EXPECTED_ORIGIN_ENDS
             value: {{ .Values.deployment.cors.originEnds }}
-          - name: IG_SERVER
-            value: {{ .Values.deployment.urls.ig.server}}
-          - name: IAM_SERVER
-            value: {{ .Values.deployment.urls.authorization.server}}
+          - name: IG_FQDN
+            valueFrom:
+              configMapKeyRef:
+                name: securebanking-platform-config
+                key: IG_FQDN
+          - name: IDENTITY_PLATFORM_FQDN
+            valueFrom:
+              configMapKeyRef:
+                name: securebanking-platform-config
+                key: IDENTITY_PLATFORM_FQDN
           - name: SPRING_CLOUD_CONFIG_URI
             value: "http://securebanking-spring-config-server:8080"
           - name: SPRING_PROFILES_ACTIVE
