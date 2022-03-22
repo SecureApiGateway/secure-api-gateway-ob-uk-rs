@@ -258,7 +258,7 @@ public class DataApiController implements DataApi {
         scheduledPayment1Repository.deleteFRScheduledPaymentByAccountId(account.getId());
         partyRepository.deleteFRPartyByAccountId(account.getId());
         offerRepository.deleteFROfferByAccountId(account.getId());
-        partyRepository.deleteFRPartyByAccountId(userId);
+        partyRepository.deleteFRPartyByUserId(userId);
 
     }
 
