@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy release
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
 
@@ -48,7 +48,7 @@ jobs:
 
       - name: Publish Release Chart 
         id: upload
-        uses: google-github-actions/upload-cloud-storage@main
+        uses: google-github-actions/upload-cloud-storage@v0
         with:
           path: ${{ env.SERVICE_NAME }}-${{ steps.helm.outputs.version }}.tgz
           destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}
