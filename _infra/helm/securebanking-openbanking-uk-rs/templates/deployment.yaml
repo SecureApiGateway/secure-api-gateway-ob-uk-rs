@@ -59,12 +59,12 @@ spec:
           - name: IG_FQDN
             valueFrom:
               configMapKeyRef:
-                name: platform-config
+                name: securebanking-platform-config
                 key: IG_FQDN
           - name: IDENTITY_PLATFORM_FQDN
             valueFrom:
               configMapKeyRef:
-                name: platform-config
+                name: securebanking-platform-config
                 key: IDENTITY_PLATFORM_FQDN
           - name: SPRING_CLOUD_CONFIG_URI
             value: "http://securebanking-spring-config-server:8080"
