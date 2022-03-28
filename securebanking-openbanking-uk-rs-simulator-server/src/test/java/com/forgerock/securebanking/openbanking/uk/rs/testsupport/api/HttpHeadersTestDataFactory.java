@@ -57,6 +57,26 @@ public class HttpHeadersTestDataFactory {
     }
 
     /**
+     * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Accounts API.
+     *
+     * @param resourceUrl The URL to retrieve the resource in question.
+     * @param acceptHeaderValue The value to set 'Accept' header.
+     *
+     * @return the {@link HttpHeaders} instance.
+     */
+    public static HttpHeaders requiredAccountStatementFileHttpHeaders(String resourceUrl, MediaType acceptHeader) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(acceptHeader));
+        headers.setBearerAuth("dummyAuthToken");
+        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
+        headers.add("x-idempotency-key", UUID.randomUUID().toString());
+        headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
+        headers.add("x-ob-url", resourceUrl);
+        headers.add("x-ob-permissions", ALL_NON_BASIC_PERMISSIONS);
+        return headers;
+    }
+
+    /**
      * @return an instance of {@link HttpHeaders} with the minimal set of required headers for the Payments API.
      */
     public static HttpHeaders requiredPaymentHttpHeaders() {

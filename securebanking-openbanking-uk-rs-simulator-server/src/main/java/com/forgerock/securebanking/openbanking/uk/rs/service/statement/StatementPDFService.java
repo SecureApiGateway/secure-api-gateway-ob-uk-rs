@@ -40,8 +40,8 @@ public class StatementPDFService {
 
     public StatementPDFService(@Value("${spring.profiles.active:}") String activeProfileStr) {
         if (StringUtils.isEmpty(activeProfileStr)) {
-            log.warn("No active profiles found");
-            activeProfiles = Collections.emptyList();
+            log.warn("No active profiles found, set default statement");
+            activeProfiles = Arrays.asList("default");
         } else {
             activeProfiles = Arrays.asList(activeProfileStr.split(","));
             log.debug("activeProfiles={}", activeProfileStr);
