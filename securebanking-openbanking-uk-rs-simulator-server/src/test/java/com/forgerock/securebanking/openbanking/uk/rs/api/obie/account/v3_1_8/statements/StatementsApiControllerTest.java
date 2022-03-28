@@ -17,6 +17,8 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_8.st
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStatementData;
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_6.statements.StatementsApiController;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRStatement;
@@ -34,6 +36,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
 import java.io.IOException;
 
@@ -41,7 +44,7 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.testsupport.account.FRStatementDataTestDataFactory.aValidFRStatementData;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountHttpHeaders;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountStatementFileHttpHeaders;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
@@ -158,6 +161,24 @@ public class StatementsApiControllerTest {
         assertThat(returnedStatement).isNotNull();
         assertThat(returnedStatement.contentLength()).isGreaterThan(0);
 
+    }
+
+    @Test
+    public void shouldGet_badRequest_StatementFile() {
+        // Given
+        String url = accountStatementsFileUrl(accountId, statementData.getStatementId());
+
+        // When
+        ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                new HttpEntity<>(requiredAccountStatementFileHttpHeaders(url, MediaType.ALL)),
+                OBErrorResponse1.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
+        assertThat(response.getBody().getErrors().get(0).getMessage()).isEqualTo("Invalid header 'Accept' the only supported value for this operation is 'application/pdf'");
     }
 
     private String accountStatementsUrl(String accountId) {

@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
 import java.util.List;
 
@@ -113,7 +114,7 @@ public interface StatementsApi {
     }, tags = {"v3.1.3-AccountStatementFile",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Statement File successfully retrieved", response = Resource.class),
-            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not found"),

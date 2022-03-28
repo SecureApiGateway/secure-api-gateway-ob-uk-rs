@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadStatement1;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
 import java.util.List;
 
@@ -104,7 +105,7 @@ public interface StatementsApi {
     }, tags = {})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Statement File successfully retrieved", response = Resource.class),
-            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 400, message = "Bad Request", response = OBErrorResponse1.class),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 405, message = "Method Not Allowed"),
@@ -144,7 +145,7 @@ public interface StatementsApi {
 
             @ApiParam(value = "HTTP Accept header defining what files will be accepted.", required=true)
             @RequestHeader(value="Accept", required=true) String accept
-    );
+    ) throws OBErrorResponseException;;
 
     @ApiOperation(value = "Get Statements", nickname = "getStatements", notes = "Get Statements", response = OBReadStatement1.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {

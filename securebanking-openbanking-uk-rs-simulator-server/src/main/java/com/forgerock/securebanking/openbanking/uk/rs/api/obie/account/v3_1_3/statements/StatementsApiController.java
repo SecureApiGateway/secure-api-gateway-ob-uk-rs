@@ -15,6 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.statements;
 
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRStatement;
@@ -32,9 +35,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
+import uk.org.openbanking.datamodel.account.OBEquivalentAmount;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadDataStatement2;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
+import uk.org.openbanking.datamodel.error.OBError1;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +48,7 @@ import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter.toOBStatement2;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Controller("StatementsApiV3.1.3")
 @Slf4j
@@ -92,14 +98,26 @@ public class StatementsApiController implements StatementsApi {
                                                             DateTime xFapiAuthDate,
                                                             String xFapiCustomerIpAddress,
                                                             String xFapiInteractionId,
-                                                            String accept) {
+                                                            String accept) throws OBErrorResponseException {
         log.info("Received a statement file download request for account: {} (Accept: {}). Interaction Id: {}", accountId, accept, xFapiInteractionId);
+
+        /*
+         * Issue related: https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-functional-tests/issues/17
+         * The RS endpoint '/statements/{statementId}/file' has been implemented to return a fixed PDF file for all statement file requests.
+         * A PDF file will only be returned if the "Accept: application/pdf" header is supplied in the request
+         * The pdf resource lives in 'resources/accounts/statements/${profile}/statement.pdf (profiles: default and docker)
+         */
         if (!accept.contains(MediaType.APPLICATION_PDF_VALUE)) {
-            // Mo other file type is implemented apart from PDF
-            return new ResponseEntity<Resource>(HttpStatus.NOT_IMPLEMENTED);
+            // No other file type is implemented apart from PDF
+            throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.REQUEST_INVALID_HEADER
+                            .toOBError1("Invalid header 'Accept' the only supported value for this operation is '" +
+                                    MediaType.APPLICATION_PDF_VALUE + "'"));
         }
 
-        // Check if this cusotmer has a statement file
+        // Check if this customer has a statement file
         Optional<Resource> statement = statementPDFService.getPdfStatement();
         if (statement.isPresent()) {
             return ResponseEntity.ok()
@@ -107,7 +125,7 @@ public class StatementsApiController implements StatementsApi {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(statement.get());
         }
-        return new ResponseEntity<Resource>(HttpStatus.NOT_IMPLEMENTED);
+        return ResponseEntity.notFound().build();
     }
 
     @Override
