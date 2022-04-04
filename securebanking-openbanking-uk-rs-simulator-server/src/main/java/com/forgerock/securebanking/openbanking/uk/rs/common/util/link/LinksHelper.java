@@ -25,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
  */
 public class LinksHelper {
 
+    private static final String DOMESTIC_PAYMENT_CONSENTS = "domestic-payment-consents";
     private static final String DOMESTIC_PAYMENTS = "domestic-payments";
     private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
     private static final String DOMESTIC_STANDING_ORDER = "domestic-standing-orders";
@@ -37,6 +38,17 @@ public class LinksHelper {
     private static final String EVENT_SUBSCRIPTIONS = "event-subscriptions";
     private static final String FUNDS_CONFIRMATION = "funds-confirmations";
     private static final String DOMESTIC_VRP_PAYMENTS = "domestic-vrps";
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment consent.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createDomesticPaymentConsentFundsConfirmationLink(Class<?> controllerClass, String id) {
+        return createSelfLinkPaymentsFundsConfirmation(controllerClass, DOMESTIC_PAYMENTS, id, FUNDS_CONFIRMATION);
+    }
 
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment.
@@ -197,6 +209,21 @@ public class LinksHelper {
      */
     private static Links createSelfLink(Class<?> controllerClass, String resourcePath, String id) {
         Link link = linkTo(controllerClass).slash(resourcePath).slash(id).withSelfRel();
+        return new Links().self(link.getHref());
+    }
+
+    /**
+     * Uses Spring HATEOAS to create an instance of the OB {@link Links} class with the 'self' link pointing to a
+     * specific resource (e.g. /callback-urls/{id}/parameter).
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param resourcePath The relative path of the resource to retrieve
+     * @param id The ID of the resource concerned.
+     * @param resourceName The resource to be retrieved
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    private static Links createSelfLinkPaymentsFundsConfirmation(Class<?> controllerClass, String resourcePath, String id, String resourceName) {
+        Link link = linkTo(controllerClass).slash(resourcePath).slash(id).slash(resourceName).withSelfRel();
         return new Links().self(link.getHref());
     }
 

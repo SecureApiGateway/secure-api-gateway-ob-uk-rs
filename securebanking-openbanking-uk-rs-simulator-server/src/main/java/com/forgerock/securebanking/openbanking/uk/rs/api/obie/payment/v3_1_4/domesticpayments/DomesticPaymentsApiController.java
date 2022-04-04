@@ -37,10 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse4Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -52,6 +49,7 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentConsentFundsConfirmationLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
@@ -164,5 +162,27 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                         .refund(refund.isPresent() ? toOBWriteDomesticResponse4DataRefund(refund.get()) : null))
                 .links(createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
+    }
+
+    @Override
+    public ResponseEntity<OBWriteFundsConfirmationResponse1> getDomesticPaymentConsentsConsentIdFundsConfirmation(
+            String consentId,
+            String xFapiFinancialId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        return ResponseEntity.ok(new OBWriteFundsConfirmationResponse1()
+                .data(new OBWriteFundsConfirmationResponse1Data()
+                        .fundsAvailableResult(
+                                new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
+                                        .fundsAvailable(true)
+                                        .fundsAvailableDateTime(new DateTime().plusMinutes(5))))
+                .links(createDomesticPaymentConsentFundsConfirmationLink(this.getClass(), consentId))
+                .meta(new Meta()));
     }
 }
