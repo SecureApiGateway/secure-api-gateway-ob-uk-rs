@@ -176,6 +176,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
+        // TODO: this endpoint require the proper implementation to check the funds of the user accounts related with the consent
+        log.debug("Funds Confirmation");
         return ResponseEntity.ok(new OBWriteFundsConfirmationResponse1()
                 .data(new OBWriteFundsConfirmationResponse1Data()
                         .fundsAvailableResult(
