@@ -24,7 +24,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
  * Helper class for creating the OB {@link Links} class in an HTTP response.
  */
 public class LinksHelper {
+    private static final String PISP = "pisp";
+    private static final String RS = "rs";
 
+    private static final String OPEN_BANKING = "open-banking";
+    private static final String DOMESTIC_PAYMENTS_CONSENT = "domestic-payments-consent";
     private static final String DOMESTIC_PAYMENTS = "domestic-payments";
     private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
     private static final String DOMESTIC_STANDING_ORDER = "domestic-standing-orders";
@@ -32,11 +36,23 @@ public class LinksHelper {
     private static final String INTERNATIONAL_PAYMENTS = "international-payments";
     private static final String INTERNATIONAL_SCHEDULED_PAYMENTS = "international-scheduled-payments";
     private static final String INTERNATIONAL_STANDING_ORDER = "international-standing-orders";
-
     private static final String CALLBACK_URLS = "callback-urls";
     private static final String EVENT_SUBSCRIPTIONS = "event-subscriptions";
-    private static final String FUNDS_CONFIRMATION = "funds-confirmations";
+    private static final String FUNDS_CONFIRMATION = "funds-confirmation";
+    private static final String FUNDS_CONFIRMATIONS = "funds-confirmations";
     private static final String DOMESTIC_VRP_PAYMENTS = "domestic-vrps";
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payments consent funds confirmation.
+     *
+     * @param id The version of the resource concerned.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createDomesticPaymentsConsentFundsConfirmationLink(Class<?> controllerClass, String version, String id) {
+        Link link = linkTo(controllerClass).slash(RS).slash(OPEN_BANKING).slash(version).slash(PISP).slash(DOMESTIC_PAYMENTS_CONSENT).slash(id).slash(FUNDS_CONFIRMATION).withSelfRel();
+        return new Links().self(link.getHref());
+    }
 
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment.
@@ -183,7 +199,7 @@ public class LinksHelper {
      * @return The {@link Links} instance with the populated 'self' URL.
      */
     public static Links createFundsConfirmationSelfLink(Class<?> controllerClass, String id) {
-        return createSelfLink(controllerClass, FUNDS_CONFIRMATION, id);
+        return createSelfLink(controllerClass, FUNDS_CONFIRMATIONS, id);
     }
 
     /**

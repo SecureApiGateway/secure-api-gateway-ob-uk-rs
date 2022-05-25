@@ -15,16 +15,21 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFundsConfirmationResponse;
 import com.forgerock.securebanking.openbanking.uk.rs.service.balance.FundsAvailabilityService;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1DataFundsAvailableResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentsConsentFundsConfirmationLink;
 
 @Controller
 @Slf4j
@@ -37,9 +42,13 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
     }
 
     @Override
-    public ResponseEntity<FRFundsConfirmationResponse> getPaymentFundsConfirmation(
+    public ResponseEntity<OBWriteFundsConfirmationResponse1> getPaymentFundsConfirmation(
             String accountId,
             String amount,
+            String version,
+            String authorization,
+            String xFapiFinancialId,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -51,10 +60,19 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(FRFundsConfirmationResponse.builder()
-                        .isFundsAvailable(areFundsAvailable)
-                        .fundsAvailableDateTime(DateTime.now())
-                        .build()
+                .body(
+                        new OBWriteFundsConfirmationResponse1()
+                                .data(
+                                        new OBWriteFundsConfirmationResponse1Data()
+                                                .fundsAvailableResult(
+                                                        new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
+                                                                .fundsAvailable(areFundsAvailable)
+                                                                .fundsAvailableDateTime(DateTime.now())
+                                                )
+                                                .supplementaryData(null)
+                                )
+                                .links(createDomesticPaymentsConsentFundsConfirmationLink(this.getClass(), version, accountId))
+                                .meta(new Meta())
                 );
     }
 }
