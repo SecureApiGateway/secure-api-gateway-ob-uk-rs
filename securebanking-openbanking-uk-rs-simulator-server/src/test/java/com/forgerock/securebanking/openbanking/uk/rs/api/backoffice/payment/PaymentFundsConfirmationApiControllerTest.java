@@ -19,7 +19,6 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCreditDebitIndicator;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFundsConfirmationResponse;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBalance;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
@@ -33,11 +32,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
 import java.net.URI;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.FRAccountTestDataFactory.aValidFRAccount;
-import static java.util.Collections.singletonList;
+import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentFundsConfirmationHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -47,11 +47,12 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 public class PaymentFundsConfirmationApiControllerTest {
-
+    private static final HttpHeaders HTTP_HEADERS = requiredPaymentFundsConfirmationHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
     private static final String FUNDS_CONFIRMATION_URI = "/backoffice/payment-funds-confirmation";
     private static final String CURRENCY = "GBP";
     private static final String BALANCE = "10.00";
+    private static final String VERSION = "v3.1.8";
 
     @LocalServerPort
     private int port;
@@ -82,15 +83,15 @@ public class PaymentFundsConfirmationApiControllerTest {
         URI uri = fundsConfirmationUri(accountId, BALANCE);
 
         // When
-        ResponseEntity<FRFundsConfirmationResponse> response = restTemplate.exchange(
+        ResponseEntity<OBWriteFundsConfirmationResponse1> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                new HttpEntity<>(httpHeaders()),
-                FRFundsConfirmationResponse.class);
+                new HttpEntity<>(HTTP_HEADERS),
+                OBWriteFundsConfirmationResponse1.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().isFundsAvailable()).isTrue();
+        assertThat(response.getBody().getData().getFundsAvailableResult().isFundsAvailable()).isTrue();
     }
 
     @Test
@@ -104,19 +105,19 @@ public class PaymentFundsConfirmationApiControllerTest {
         URI uri = fundsConfirmationUri(accountId, "10.01");
 
         // When
-        ResponseEntity<FRFundsConfirmationResponse> response = restTemplate.exchange(
+        ResponseEntity<OBWriteFundsConfirmationResponse1> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                new HttpEntity<>(httpHeaders()),
-                FRFundsConfirmationResponse.class);
+                new HttpEntity<>(HTTP_HEADERS),
+                OBWriteFundsConfirmationResponse1.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().isFundsAvailable()).isFalse();
+        assertThat(response.getBody().getData().getFundsAvailableResult().isFundsAvailable()).isFalse();
     }
 
     private FRBalance aValidFRBalance(String accountId) {
-        FRBalance accountBalance = FRBalance.builder()
+        return FRBalance.builder()
                 .accountId(accountId)
                 .balance(FRCashBalance.builder()
                         .accountId(accountId)
@@ -128,20 +129,13 @@ public class PaymentFundsConfirmationApiControllerTest {
                                 .build())
                         .build())
                 .build();
-        return accountBalance;
     }
 
     private URI fundsConfirmationUri(String accountId, String amount) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromHttpUrl(BASE_URL + port + FUNDS_CONFIRMATION_URI + "/" + accountId);
         builder.queryParam("amount", amount);
+        builder.queryParam("version", VERSION);
         return builder.build().encode().toUri();
-    }
-
-    public static HttpHeaders httpHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
     }
 }

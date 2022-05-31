@@ -26,6 +26,7 @@ import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -51,12 +52,24 @@ public interface PaymentFundsConfirmationApi {
     @RequestMapping(value = "/payment-funds-confirmation/{accountId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
-    ResponseEntity<FRFundsConfirmationResponse> getPaymentFundsConfirmation(
+    ResponseEntity<OBWriteFundsConfirmationResponse1> getPaymentFundsConfirmation(
             @ApiParam(value = "AccountId", required = true)
             @PathVariable("accountId") String accountId,
 
             @ApiParam(value = "Amount", required = true)
             @RequestParam("amount") String amount,
+
+            @ApiParam(value = "Version", required = true)
+            @RequestParam("version") String version,
+
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
+
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
+
+            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,

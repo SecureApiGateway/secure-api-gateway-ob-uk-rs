@@ -5,3 +5,5 @@
 .mongo/
 .factorypath
 target/
+.idea/
+*.iml
