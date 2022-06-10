@@ -11,6 +11,7 @@ env:
   HELM_DIRECTORY: _infra/helm/
   SERVICE_NAME: securebanking-openbanking-uk-rs
   PR_NUMBER: pr-${{ github.event.number }}
+  GIT_USER: 
 
 jobs:
   build:
@@ -84,10 +85,17 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
       
+      - name: Create lowercase Github Username
+        id: toLowerCase
+        run: echo "GITHUB_USER=$(echo ${{github.actor}} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_ENV}
+      
+      - name: Output GITHUB_USER env
+        run: echo "GITHUB_USER set to ${{ env.GITHUB_USER }}"
+
       - name: 'run functional tests'
         uses: codefresh-io/codefresh-pipeline-runner@master
         with:
-          args: '-v TAG=${{ env.PR_NUMBER }} -v SERVICE_NAME=rs -v ENVIRONMENT=${{ github.actor }} -v BRANCH=${{ github.head_ref }}'
+          args: '-v TAG=${{ env.PR_NUMBER }} -v SERVICE_NAME=rs -v ENVIRONMENT=${{ env.GITHUB_USER }} -v BRANCH=${{ github.head_ref }}'
         env:
           PIPELINE_NAME: 'ForgeCloud/sbat-infra/service-build'
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
