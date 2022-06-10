@@ -37,24 +37,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse3Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticScheduledResponse3DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticScheduledConverter.toFRWriteDomesticScheduled;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.factories.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticScheduledPaymentDetailsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticScheduledPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.3")
 @Slf4j
@@ -141,7 +141,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     @Override
-    public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails(
+    public ResponseEntity getDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails(
             String domesticScheduledPaymentId,
             String authorization,
             DateTime xFapiAuthDate,
@@ -151,8 +151,20 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             HttpServletRequest request,
             Principal principal
     ) {
-        // Optional endpoint - not implemented
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        Optional<FRDomesticScheduledPaymentSubmission> isPaymentSubmission = scheduledPaymentSubmissionRepository.findById(domesticScheduledPaymentId);
+        if (!isPaymentSubmission.isPresent()) {
+            return ResponseEntity.status(BAD_REQUEST).body("Payment submission '" + domesticScheduledPaymentId + "' can't be found");
+        }
+
+        FRDomesticScheduledPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        log.debug("Found The Domestic Scheduled Payment '{}' to get details.", domesticScheduledPaymentId);
+
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+
+        return ResponseEntity.ok(responseEntityDetails(frPaymentSubmission));
     }
 
     private OBWriteDomesticScheduledResponse3 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
@@ -169,4 +181,33 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .meta(new Meta());
     }
 
+    private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
+        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+                frPaymentSubmission.getStatus().getValue()
+        );
+        String localInstrument = frPaymentSubmission.getScheduledPayment().getData().getInitiation().getLocalInstrument();
+
+        // Build the response object with data to meet the expected data defined by the spec
+        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        return new OBWritePaymentDetailsResponse1()
+                .data(
+                        new OBWritePaymentDetailsResponse1Data()
+                                .addPaymentStatusItem(
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                                .status(status)
+                                                .paymentTransactionId(UUID.randomUUID().toString())
+                                                .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated()))
+                                                .statusDetail(
+                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                                .localInstrument(localInstrument)
+                                                                .status(status.getValue())
+                                                                .statusReason(statusReasonEnum)
+                                                                .statusReasonDescription(statusReasonEnum.getValue())
+                                                )
+                                )
+
+                )
+                .links(createDomesticScheduledPaymentDetailsLink(this.getClass(), frPaymentSubmission.getId()))
+                .meta(new Meta());
+    }
 }

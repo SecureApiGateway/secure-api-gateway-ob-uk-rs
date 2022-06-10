@@ -35,23 +35,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse3Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse3DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentDetailsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Controller("DomesticPaymentsApiV3.1.3")
 @Slf4j
@@ -127,7 +127,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     }
 
     @Override
-    public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticPaymentsDomesticPaymentIdPaymentDetails(
+    public ResponseEntity getDomesticPaymentsDomesticPaymentIdPaymentDetails(
             String domesticPaymentId,
             String authorization,
             DateTime xFapiAuthDate,
@@ -137,8 +137,20 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             HttpServletRequest request,
             Principal principal
     ) {
-        // Optional endpoint - not implemented
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        Optional<FRDomesticPaymentSubmission> isPaymentSubmission = paymentSubmissionRepository.findById(domesticPaymentId);
+        if (!isPaymentSubmission.isPresent()) {
+            return ResponseEntity.status(BAD_REQUEST).body("Payment submission '" + domesticPaymentId + "' can't be found");
+        }
+
+        FRDomesticPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        log.debug("Found The Domestic Scheduled Payment '{}' to get details.", domesticPaymentId);
+
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+
+        return ResponseEntity.ok(responseEntityDetails(frPaymentSubmission));
     }
 
     private OBWriteDomesticResponse3 responseEntity(FRDomesticPaymentSubmission frPaymentSubmission) {
@@ -152,6 +164,36 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                         .status(toOBWriteDomesticResponse3DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId()))
                 .links(createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
+                .meta(new Meta());
+    }
+
+    private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticPaymentSubmission frPaymentSubmission) {
+        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+                frPaymentSubmission.getStatus().getValue()
+        );
+        String localInstrument = frPaymentSubmission.getPayment().getData().getInitiation().getLocalInstrument();
+
+        // Build the response object with data to meet the expected data defined by the spec
+        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        return new OBWritePaymentDetailsResponse1()
+                .data(
+                        new OBWritePaymentDetailsResponse1Data()
+                                .addPaymentStatusItem(
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                                .status(status)
+                                                .paymentTransactionId(UUID.randomUUID().toString())
+                                                .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated()))
+                                                .statusDetail(
+                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                                .localInstrument(localInstrument)
+                                                                .status(status.getValue())
+                                                                .statusReason(statusReasonEnum)
+                                                                .statusReasonDescription(statusReasonEnum.getValue())
+                                                )
+                                )
+
+                )
+                .links(createDomesticPaymentDetailsLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }
 }
