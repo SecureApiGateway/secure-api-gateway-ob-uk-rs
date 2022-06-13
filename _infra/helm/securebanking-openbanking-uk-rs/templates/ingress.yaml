@@ -17,9 +17,12 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: {{ .Chart.Name }}
-          servicePort: 8080
+          service:
+            name: {{ .Chart.Name }}
+            port:
+              number: 8080
         path: /
+        pathType: Exact
   tls:
   - hosts:
     - "{{ .Values.ingress.tls.subdomain }}.{{ .Values.ingress.domain }}"

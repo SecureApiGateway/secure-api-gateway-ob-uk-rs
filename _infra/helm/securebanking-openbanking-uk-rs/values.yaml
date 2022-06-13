@@ -23,15 +23,20 @@ deployment:
 
   java:
     tool:
-      options: -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
-
-  resources: {}
+      options: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
+  resources:
+    requests:
+      cpu: 1
+      memory: 1024Mi
+    limits:
+      cpu: 1
+      memory: 1024Mi
 
 mongodb:
   host: mongodb
 
 ingress:
-  apiVersion: extensions/v1beta1
+  apiVersion: networking.k8s.io/v1
   class: nginx
   additionalAnnotations:
     nginx.ingress.kubernetes.io/client-body-buffer-size: 1m
@@ -47,3 +52,4 @@ ingress:
 service:
   apiVersion: v1
   type: ClusterIP
+
