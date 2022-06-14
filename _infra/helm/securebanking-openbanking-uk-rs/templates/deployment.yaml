@@ -71,6 +71,6 @@ spec:
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
           - name: JAVA_OPTS
-            value: {{ .Values.deployment.java.tool.options }}
+            value: {{ .Values.deployment.java.opts }}
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
