@@ -24,9 +24,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5Data;
+import uk.org.openbanking.datamodel.payment.*;
+
+import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,11 +96,39 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
     }
 
+    @Test
+    public void shouldGetDomesticPaymentDetailsById() {
+        // Given
+        OBWriteDomestic2 payment = aValidOBWriteDomestic2();
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+        ResponseEntity<OBWriteDomesticResponse5> persistedPayment = restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse5.class);
+        OBWriteDomesticResponse5 responsePayment = persistedPayment.getBody();
+        String url = paymentIdDetailsUrl(persistedPayment.getBody().getData().getDomesticPaymentId());
+
+        // When
+        ResponseEntity<OBWritePaymentDetailsResponse1> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBWritePaymentDetailsResponse1.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        List<OBWritePaymentDetailsResponse1DataPaymentStatus> responseData = response.getBody().getData().getPaymentStatus();
+        for (OBWritePaymentDetailsResponse1DataPaymentStatus data : responseData) {
+            assertThat(data).isNotNull();
+            assertThat(data.getStatus().getValue()).isEqualTo(responsePayment.getData().getStatus().getValue());
+            assertThat(data.getStatusDetail().getLocalInstrument()).isEqualTo(responsePayment.getData().getInitiation().getLocalInstrument());
+            assertThat(data.getStatusDetail().getStatus()).isEqualTo(responsePayment.getData().getStatus().getValue());
+        }
+        assertThat(response.getBody().getLinks().getSelf().endsWith(url)).isTrue();
+    }
+
     private String paymentsUrl() {
         return BASE_URL + port + DOMESTIC_PAYMENTS_URI;
     }
 
     private String paymentIdUrl(String id) {
         return paymentsUrl() + "/" + id;
+    }
+
+    private String paymentIdDetailsUrl(String id) {
+        return paymentsUrl() + "/" + id + "/payment-details";
     }
 }

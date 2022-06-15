@@ -26,10 +26,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class LinksHelper {
     private static final String PISP = "pisp";
     private static final String RS = "rs";
-
     private static final String OPEN_BANKING = "open-banking";
     private static final String DOMESTIC_PAYMENTS_CONSENT = "domestic-payments-consent";
     private static final String DOMESTIC_PAYMENTS = "domestic-payments";
+    private static final String DOMESTIC_PAYMENTS_DETAILS = "payment-details";
     private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
     private static final String DOMESTIC_STANDING_ORDER = "domestic-standing-orders";
     private static final String FILE_PAYMENTS = "file-payments";
@@ -66,6 +66,17 @@ public class LinksHelper {
     }
 
     /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment details.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createDomesticPaymentDetailsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_PAYMENTS, id, DOMESTIC_PAYMENTS_DETAILS);
+    }
+
+    /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic scheduled
      * payment.
      *
@@ -75,6 +86,17 @@ public class LinksHelper {
      */
     public static Links createDomesticScheduledPaymentLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, DOMESTIC_SCHEDULED_PAYMENTS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment details.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createDomesticScheduledPaymentDetailsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_SCHEDULED_PAYMENTS, id, DOMESTIC_PAYMENTS_DETAILS);
     }
 
     /**
@@ -213,6 +235,20 @@ public class LinksHelper {
      */
     private static Links createSelfLink(Class<?> controllerClass, String resourcePath, String id) {
         Link link = linkTo(controllerClass).slash(resourcePath).slash(id).withSelfRel();
+        return new Links().self(link.getHref());
+    }
+
+    /**
+     * Uses Spring HATEOAS to create an instance of the OB {@link Links} class with the 'self' link pointing to a
+     * specific resource (e.g. /callback-urls/{id}).
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param resourcePath The relative path of the resource to retrieve
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    private static Links createSelfLink(Class<?> controllerClass, String resourcePath, String id, String type) {
+        Link link = linkTo(controllerClass).slash(resourcePath).slash(id).slash(type).withSelfRel();
         return new Links().self(link.getHref());
     }
 
