@@ -83,9 +83,11 @@ public enum OBApiReference {
     /** Payments Api **/
     CREATE_DOMESTIC_PAYMENT(PISP, "CreateDomesticPayment", POST, "/pisp/domestic-payments"),
     GET_DOMESTIC_PAYMENT(PISP, "GetDomesticPayment", GET, "/pisp/domestic-payments/{DomesticPaymentId}"),
+    GET_DOMESTIC_PAYMENT_DOMESTIC_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetDomesticPaymentDomesticPaymentIdPaymentDetails", GET, "/pisp/domestic-payments/{DomesticPaymentId}/payment-details"),
 
     CREATE_DOMESTIC_SCHEDULED_PAYMENT(PISP, "CreateDomesticScheduledPayment", POST, "/pisp/domestic-scheduled-payments"),
     GET_DOMESTIC_SCHEDULED_PAYMENT(PISP, "GetDomesticScheduledPayment", GET, "/pisp/domestic-scheduled-payments/{DomesticScheduledPaymentId}"),
+    GET_DOMESTIC_SCHEDULED_PAYMENT_DOMESTIC_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetDomesticScheduledPaymentDomesticPaymentIdPaymentDetails", GET, "/pisp/domestic-scheduled-payments/{DomesticScheduledPaymentId}/payment-details"),
 
     CREATE_DOMESTIC_STANDING_ORDER(PISP, "CreateDomesticStandingOrder", POST, "/pisp/domestic-standing-orders"),
     GET_DOMESTIC_STANDING_ORDER(PISP, "GetDomesticStandingOrder", GET, "/pisp/domestic-standing-orders/{DomesticStandingOrderId}"),
