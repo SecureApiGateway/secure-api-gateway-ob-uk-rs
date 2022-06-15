@@ -43,6 +43,7 @@ import uk.org.openbanking.datamodel.payment.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,6 +70,12 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private final DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ScheduledPaymentService scheduledPaymentService;
+    private final Map<String, String> statusLinkingMap = Map.of(
+            "InitiationPending", "Pending",
+            "InitiationFailed", "Rejected",
+            "InitiationCompleted", "Accepted",
+            "Cancelled", "Cancelled"
+    );
 
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
@@ -193,7 +200,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
-                frPaymentSubmission.getStatus().getValue()
+                statusLinkingMap.get(frPaymentSubmission.getStatus().getValue())
         );
         String localInstrument = frPaymentSubmission.getScheduledPayment().getData().getInitiation().getLocalInstrument();
 
