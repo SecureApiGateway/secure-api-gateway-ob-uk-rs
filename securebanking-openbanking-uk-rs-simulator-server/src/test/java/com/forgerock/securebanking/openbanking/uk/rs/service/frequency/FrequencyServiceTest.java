@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.service.frequency;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFrequencyType;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +33,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_everyDay() {
         // Given
-        String frequency = FrequencyType.EVERYDAY.getFrequencyStr();
+        String frequency = FRFrequencyType.EVERYDAY.getFrequencyStr();
 
         // When
         DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
@@ -47,7 +48,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_everyDay() {
         // Given
-        String frequency = FrequencyType.EVERYDAY.getFrequencyStr() + "x";
+        String frequency = FRFrequencyType.EVERYDAY.getFrequencyStr() + "x";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
@@ -61,7 +62,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_everyWorkingDay() {
         // Given
-        String frequency = FrequencyType.EVERYWORKINGDAY.getFrequencyStr();
+        String frequency = FRFrequencyType.EVERYWORKINGDAY.getFrequencyStr();
 
         // When
         DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
@@ -76,7 +77,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_everyWorkingDay() {
         // Given
-        String frequency = FrequencyType.EVERYWORKINGDAY.getFrequencyStr() + "x";
+        String frequency = FRFrequencyType.EVERYWORKINGDAY.getFrequencyStr() + "x";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
@@ -90,7 +91,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_weekday() {
         // Given
-        String frequency = FrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":01:07";
+        String frequency = FRFrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":01:07";
 
         // When
         DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
@@ -105,7 +106,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_weekday() {
         // Given
-        FrequencyType frequencyType = FrequencyType.INTERVALWEEKDAY;
+        FRFrequencyType frequencyType = FRFrequencyType.INTERVALWEEKDAY;
         String frequency = frequencyType.getFrequencyStr() + ":00:07";
 
         // When
@@ -120,7 +121,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_weekInMonthDay() {
         // Given
-        String frequency = FrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":02:03";
+        String frequency = FRFrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":02:03";
 
         // When
         DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
@@ -135,7 +136,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_weekInMonthDay() {
         // Given
-        FrequencyType frequencyType = FrequencyType.WEEKINMONTHDAY;
+        FRFrequencyType frequencyType = FRFrequencyType.WEEKINMONTHDAY;
         String frequency = frequencyType.getFrequencyStr() + ":00:03";
 
         // When
@@ -150,7 +151,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_intervalMonthDay() {
         // Given
-        String frequency = FrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":01:30";
+        String frequency = FRFrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":01:30";
 
         // When
         DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
@@ -165,7 +166,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_intervalMonthDay() {
         // Given
-        FrequencyType frequencyType = FrequencyType.INTERVALMONTHDAY;
+        FRFrequencyType frequencyType = FRFrequencyType.INTERVALMONTHDAY;
         String frequency = frequencyType.getFrequencyStr() + ":01:-8";
 
         // When
@@ -180,7 +181,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_quarterDay() {
         // Given
-        String frequency = FrequencyType.QUARTERDAY.getFrequencyStr() + ":ENGLISH";
+        String frequency = FRFrequencyType.QUARTERDAY.getFrequencyStr() + ":ENGLISH";
 
         // When
         DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
@@ -195,7 +196,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_quarterDay() {
         // Given
-        FrequencyType frequencyType = FrequencyType.QUARTERDAY;
+        FRFrequencyType frequencyType = FRFrequencyType.QUARTERDAY;
         String frequency = frequencyType.getFrequencyStr() + ":SENT";
 
         // When
@@ -210,7 +211,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_intervalDay() {
         // Given
-        String frequency = FrequencyType.INTERVALDAY.getFrequencyStr() + ":02";
+        String frequency = FRFrequencyType.INTERVALDAY.getFrequencyStr() + ":02";
 
         // When
         DateTime dateTime = FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
@@ -225,7 +226,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_intervalDay() {
         // Given
-        FrequencyType frequencyType = FrequencyType.INTERVALDAY;
+        FRFrequencyType frequencyType = FRFrequencyType.INTERVALDAY;
         String frequency = frequencyType.getFrequencyStr() + ":1";
 
         // When
