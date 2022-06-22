@@ -102,7 +102,7 @@ public interface FundsConfirmationsApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = FUNDS_CONFIRMATION_PATH+"/{FundsConfirmationId}",
+    @RequestMapping(value = FUNDS_CONFIRMATION_PATH + "/{FundsConfirmationId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBFundsConfirmationResponse1> getFundsConfirmationId(

@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBHeaders.X_IDEMPOTENCY_KEY;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBHeaders.X_IDEMPOTENCY_KEY;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.IDEMPOTENCY_KEY_INVALID;
 
 /**

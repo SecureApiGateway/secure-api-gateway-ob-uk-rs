@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName;
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

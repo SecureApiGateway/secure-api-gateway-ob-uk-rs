@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 // TODO #25 - this approach is a starter for ten to get us up and running. We need to configure the logging as per the
 // requirements in https://github.com/SecureBankingAcceleratorToolkit/SecureBankingAcceleratorToolkit/issues/25
+
 /**
  * Outputs the occurrence of an event/activity to the configured default logger. Each output has a recognised prefix
  * so that is it easy to identify the analytics events in the logs.

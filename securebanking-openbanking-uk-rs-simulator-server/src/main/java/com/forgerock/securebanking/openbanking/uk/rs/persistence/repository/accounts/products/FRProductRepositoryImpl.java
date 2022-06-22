@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.products;
 
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRProduct;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRProduct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

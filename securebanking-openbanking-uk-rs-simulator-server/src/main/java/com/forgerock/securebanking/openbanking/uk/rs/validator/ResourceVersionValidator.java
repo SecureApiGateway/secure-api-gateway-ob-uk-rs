@@ -15,7 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.validator;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 
 public class ResourceVersionValidator {
 

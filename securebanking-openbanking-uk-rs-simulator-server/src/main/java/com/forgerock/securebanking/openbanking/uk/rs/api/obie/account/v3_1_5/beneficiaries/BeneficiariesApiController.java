@@ -92,11 +92,11 @@ public class BeneficiariesApiController implements BeneficiariesApi {
         int totalPages = beneficiaries.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBeneficiary5().data(new OBReadBeneficiary5Data().beneficiary(
-                beneficiaries.getContent()
-                        .stream()
-                        .map(b -> toOBBeneficiary5(b.getBeneficiary()))
-                        .map(b -> accountDataInternalIdFilter.apply(b))
-                        .collect(Collectors.toList())))
+                        beneficiaries.getContent()
+                                .stream()
+                                .map(b -> toOBBeneficiary5(b.getBeneficiary()))
+                                .map(b -> accountDataInternalIdFilter.apply(b))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Matcher;
@@ -56,7 +56,7 @@ public abstract class ApiVersionUtils {
      * @param value a String that should contain the version, with or without the 'v' prefix.
      * @return The value prefixed with v (unless it is a URL).
      */
-    private static String format(String value){
+    private static String format(String value) {
         return value.startsWith("http") || value.startsWith("v") ? value : "v".concat(value);
     }
 }

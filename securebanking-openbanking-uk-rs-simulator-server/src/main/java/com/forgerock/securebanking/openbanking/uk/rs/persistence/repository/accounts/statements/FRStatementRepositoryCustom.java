@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.statements;
 
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRStatement;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRStatement;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

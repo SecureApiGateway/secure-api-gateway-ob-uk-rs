@@ -15,9 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_1.scheduledpayments;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRScheduledPayment;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -103,12 +103,12 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
         int totalPages = scheduledPayments.getTotalPages();
 
         return ResponseEntity.ok(new OBReadScheduledPayment2().data(new OBReadScheduledPayment2Data().scheduledPayment(
-                scheduledPayments.getContent()
-                        .stream()
-                        .map(FRScheduledPayment::getScheduledPayment)
-                        .map(FRScheduledPaymentConverter::toOBScheduledPayment2)
-                        .map(dd -> accountDataInternalIdFilter.apply(dd))
-                        .collect(Collectors.toList())))
+                        scheduledPayments.getContent()
+                                .stream()
+                                .map(FRScheduledPayment::getScheduledPayment)
+                                .map(FRScheduledPaymentConverter::toOBScheduledPayment2)
+                                .map(dd -> accountDataInternalIdFilter.apply(dd))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

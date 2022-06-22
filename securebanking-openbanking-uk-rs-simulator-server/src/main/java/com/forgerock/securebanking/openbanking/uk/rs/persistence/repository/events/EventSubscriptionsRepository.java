@@ -23,5 +23,5 @@ import java.util.Collection;
 
 public interface EventSubscriptionsRepository extends MongoRepository<FREventSubscription, String> {
 
-        Collection<FREventSubscription> findByTppId(@Param("tppId") String tppId);
+    Collection<FREventSubscription> findByTppId(@Param("tppId") String tppId);
 }

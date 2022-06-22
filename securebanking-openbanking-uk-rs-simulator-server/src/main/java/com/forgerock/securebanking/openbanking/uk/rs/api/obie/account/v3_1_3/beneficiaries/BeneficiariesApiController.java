@@ -15,9 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.beneficiaries;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRAccountBeneficiaryConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRAccountBeneficiaryConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBeneficiary;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -92,12 +92,12 @@ public class BeneficiariesApiController implements BeneficiariesApi {
         int totalPages = beneficiaries.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBeneficiary4().data(new OBReadBeneficiary4Data().beneficiary(
-                beneficiaries.getContent()
-                        .stream()
-                        .map(FRBeneficiary::getBeneficiary)
-                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary4)
-                        .map(b -> accountDataInternalIdFilter.apply(b))
-                        .collect(Collectors.toList())))
+                        beneficiaries.getContent()
+                                .stream()
+                                .map(FRBeneficiary::getBeneficiary)
+                                .map(FRAccountBeneficiaryConverter::toOBBeneficiary4)
+                                .map(b -> accountDataInternalIdFilter.apply(b))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

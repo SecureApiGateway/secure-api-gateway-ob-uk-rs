@@ -15,9 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.scheduledpayments;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRScheduledPayment;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import lombok.extern.slf4j.Slf4j;

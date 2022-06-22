@@ -57,7 +57,7 @@ public class PartyApiController implements PartyApi {
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(
-                toOBParty1(party.getParty())))
+                        toOBParty1(party.getParty())))
                 .links(PaginationUtil.generateLinks(httpUrl, 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
@@ -78,7 +78,7 @@ public class PartyApiController implements PartyApi {
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(
-                toOBParty1(party.getParty())))
+                        toOBParty1(party.getParty())))
                 .links(PaginationUtil.generateLinks(httpUrl, 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

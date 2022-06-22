@@ -70,11 +70,11 @@ public class OffersApiController implements OffersApi {
         int totalPages = offers.getTotalPages();
 
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
-                offers.getContent()
-                        .stream()
-                        .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
-                        .map(accountDataInternalIdFilter::apply)
-                        .collect(Collectors.toList())))
+                        offers.getContent()
+                                .stream()
+                                .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
+                                .map(accountDataInternalIdFilter::apply)
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
@@ -97,11 +97,11 @@ public class OffersApiController implements OffersApi {
         int totalPages = offers.getTotalPages();
 
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
-                offers.getContent()
-                        .stream()
-                        .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
-                        .map(accountDataInternalIdFilter::apply)
-                        .collect(Collectors.toList())))
+                        offers.getContent()
+                                .stream()
+                                .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
+                                .map(accountDataInternalIdFilter::apply)
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

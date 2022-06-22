@@ -80,7 +80,7 @@ public class FrequencyService {
             if (candidateDate.isAfter(previous.plusYears(1))) {
                 throw new IllegalStateException("We should always find a quarter matching for date '" + previous + "'");
             }
-        } while(!quarterType.matchOneQuarter(candidateDate));
+        } while (!quarterType.matchOneQuarter(candidateDate));
         return candidateDate;
     }
 

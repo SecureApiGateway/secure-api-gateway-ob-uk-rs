@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.file;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteFile;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
@@ -44,8 +44,8 @@ import java.util.Optional;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConsentConverter.toOBFile2;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("FilePaymentsApiV3.1")
@@ -98,14 +98,14 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     @Override
     public ResponseEntity getFilePaymentsFilePaymentId(String filePaymentId,
-                                                                             String xFapiFinancialId,
-                                                                             String authorization,
-                                                                             DateTime xFapiCustomerLastLoggedTime,
-                                                                             String xFapiCustomerIpAddress,
-                                                                             String xFapiInteractionId,
-                                                                             String xCustomerUserAgent,
-                                                                             HttpServletRequest request,
-                                                                             Principal principal
+                                                       String xFapiFinancialId,
+                                                       String authorization,
+                                                       DateTime xFapiCustomerLastLoggedTime,
+                                                       String xFapiCustomerIpAddress,
+                                                       String xFapiInteractionId,
+                                                       String xCustomerUserAgent,
+                                                       HttpServletRequest request,
+                                                       Principal principal
     ) throws OBErrorResponseException {
         Optional<FRFilePaymentSubmission> isPaymentSubmission = filePaymentSubmissionRepository.findById(filePaymentId);
         if (!isPaymentSubmission.isPresent()) {

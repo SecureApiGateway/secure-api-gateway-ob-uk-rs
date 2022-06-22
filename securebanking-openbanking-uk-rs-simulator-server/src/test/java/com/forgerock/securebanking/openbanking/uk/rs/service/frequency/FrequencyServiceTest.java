@@ -114,7 +114,7 @@ public class FrequencyServiceTest {
                 FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '" + frequency + "' doesn't match regex '" + frequencyType.getPattern() + "'");
     }
 
     // WEEKINMONTHDAY("WkInMnthDay", "0?([1-5]):0?([1-7])$")
@@ -144,7 +144,7 @@ public class FrequencyServiceTest {
                 FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '" + frequency + "' doesn't match regex '" + frequencyType.getPattern() + "'");
     }
 
     // INTERVALMONTHDAY("IntrvlMnthDay", "(0?[1-6]|12|24):(-0?[1-5]|0?[1-9]|[12][0-9]|3[01])$")
@@ -174,7 +174,7 @@ public class FrequencyServiceTest {
                 FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '" + frequency + "' doesn't match regex '" + frequencyType.getPattern() + "'");
     }
 
     // QUARTERDAY("QtrDay", "(ENGLISH|SCOTTISH|RECEIVED)$")
@@ -204,7 +204,7 @@ public class FrequencyServiceTest {
                 FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '" + frequency + "' doesn't match regex '" + frequencyType.getPattern() + "'");
     }
 
     // INTERVALDAY("IntrvlDay", "(0?[2-9]|[1-2][0-9]|3[0-1])$");
@@ -234,7 +234,7 @@ public class FrequencyServiceTest {
                 FrequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '" + frequency + "' doesn't match regex '" + frequencyType.getPattern() + "'");
     }
 
 }

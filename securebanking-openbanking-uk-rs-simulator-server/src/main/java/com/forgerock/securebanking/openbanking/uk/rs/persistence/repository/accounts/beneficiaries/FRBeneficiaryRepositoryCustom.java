@@ -15,8 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.beneficiaries;
 
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBeneficiary;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBeneficiary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;

@@ -15,12 +15,12 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName;
 import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName.*;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName.*;
 import static org.springframework.http.HttpMethod.*;
 
 /**
@@ -111,9 +111,9 @@ public enum OBApiReference {
 
     // VRP payments
     // GET_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "GetDomesticVrpPaymentFundsConfirmation", GET, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
-    CREATE_DOMESTIC_VRP_PAYMENT(PISP,"CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
-    GET_DOMESTIC_VRP_PAYMENT(PISP,"GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
-    GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP,"GetDomesticVrpPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");
+    CREATE_DOMESTIC_VRP_PAYMENT(PISP, "CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
+    GET_DOMESTIC_VRP_PAYMENT(PISP, "GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
+    GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP, "GetDomesticVrpPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");
 
     private static final OBApiReference[] VALUES = OBApiReference.values();
 

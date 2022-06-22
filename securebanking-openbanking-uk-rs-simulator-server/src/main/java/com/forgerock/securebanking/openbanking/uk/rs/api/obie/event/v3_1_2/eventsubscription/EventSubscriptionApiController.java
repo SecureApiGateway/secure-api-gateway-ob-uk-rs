@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_2.eventsubscription;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.event.FREventSubscriptionData;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor.getVersionFromPath;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.*;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createEventSubscriptionResourcesLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createEventSubscriptionSelfLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("EventSubscriptionApiV3.1.2")

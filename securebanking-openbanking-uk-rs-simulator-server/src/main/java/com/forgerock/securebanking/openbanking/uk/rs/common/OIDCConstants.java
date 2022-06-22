@@ -20,15 +20,20 @@ package com.forgerock.securebanking.openbanking.uk.rs.common;
  */
 public class OIDCConstants {
 
-    private OIDCConstants() {}
+    private OIDCConstants() {
+    }
 
     public static class Endpoint {
-        private Endpoint() {}
+        private Endpoint() {
+        }
+
         public static final String WELL_KNOWN = ".well-known/openid-configuration";
     }
 
     public static class SubjectType {
-        private SubjectType() {}
+        private SubjectType() {
+        }
+
         public static final String PUBLIC = "public";
         public static final String PAIRWISE = "pairwise";
     }
@@ -57,7 +62,9 @@ public class OIDCConstants {
     }
 
     public static class ResponseType {
-        private ResponseType() {}
+        private ResponseType() {
+        }
+
         public static final String CODE = "code";
         public static final String ID_TOKEN = "id_token";
         public static final String TOKEN = "token";
@@ -87,7 +94,9 @@ public class OIDCConstants {
     }
 
     public static class OIDCClaim {
-        private OIDCClaim() {}
+        private OIDCClaim() {
+        }
+
         public static final String GRANT_TYPE = "grant_type";
         public static final String ID_TOKEN = "id_token";
         public static final String USER_INFO = "userinfo";

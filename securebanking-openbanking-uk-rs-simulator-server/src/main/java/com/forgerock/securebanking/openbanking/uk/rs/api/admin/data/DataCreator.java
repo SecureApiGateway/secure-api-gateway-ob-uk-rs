@@ -48,10 +48,10 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRFinancialAccountConverter.toFRFinancialAccount;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FROfferConverter.toFROfferData;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRStandingOrderConverter.toFRStandingOrderData;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter.toFRStatementData;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRTransactionConverter.toFRTransactionData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRStandingOrderConverter.toFRStandingOrderData;
 
 @Service
 @NoArgsConstructor
@@ -97,7 +97,7 @@ public class DataCreator {
 
     List<FROffer> createOffers(FRAccountData accountData, Set<String> accountIds) {
         List<FROffer> offers = new ArrayList<>();
-        for (OBOffer1 obOffer: accountData.getOffers()) {
+        for (OBOffer1 obOffer : accountData.getOffers()) {
             String accountId = obOffer.getAccountId() != null ? obOffer.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -119,7 +119,7 @@ public class DataCreator {
 
     List<FRScheduledPayment> createScheduledPayments(FRAccountData accountData, Set<String> accountIds) {
         List<FRScheduledPayment> scheduledPayments = new ArrayList<>();
-        for (OBScheduledPayment3 obScheduledPayment: accountData.getScheduledPayments()) {
+        for (OBScheduledPayment3 obScheduledPayment : accountData.getScheduledPayments()) {
             String accountId = obScheduledPayment.getAccountId() != null ? obScheduledPayment.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -142,7 +142,7 @@ public class DataCreator {
 
     List<FRStatement> createStatements(FRAccountData accountData, Set<String> accountIds) {
         List<FRStatement> statements = new ArrayList<>();
-        for (OBStatement2 obStatement: accountData.getStatements()) {
+        for (OBStatement2 obStatement : accountData.getStatements()) {
             String accountId = obStatement.getAccountId() != null ? obStatement.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -166,7 +166,7 @@ public class DataCreator {
 
     List<FRTransaction> createTransactions(FRAccountData accountData, Set<String> accountIds) {
         List<FRTransaction> transactions = new ArrayList<>();
-        for (OBTransaction6 obTransaction: accountData.getTransactions()) {
+        for (OBTransaction6 obTransaction : accountData.getTransactions()) {
             String accountId = obTransaction.getAccountId() != null ? obTransaction.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -189,7 +189,7 @@ public class DataCreator {
 
     List<FRStandingOrder> createStandingOrders(FRAccountData accountData, Set<String> accountIds) {
         List<FRStandingOrder> standingOrders = new ArrayList<>();
-        for (OBStandingOrder6 obStandingOrder: accountData.getStandingOrders()) {
+        for (OBStandingOrder6 obStandingOrder : accountData.getStandingOrders()) {
             String accountId = obStandingOrder.getAccountId() != null ? obStandingOrder.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -212,7 +212,7 @@ public class DataCreator {
 
     List<FRDirectDebit> createDirectDebits(FRAccountData accountData, Set<String> accountIds) {
         List<FRDirectDebit> directDebits = new ArrayList<>();
-        for (OBReadDirectDebit2DataDirectDebit obDirectDebit: accountData.getDirectDebits()) {
+        for (OBReadDirectDebit2DataDirectDebit obDirectDebit : accountData.getDirectDebits()) {
             String accountId = obDirectDebit.getAccountId() != null ? obDirectDebit.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -234,7 +234,7 @@ public class DataCreator {
 
     List<FRBeneficiary> createBeneficiaries(FRAccountData accountData, Set<String> accountIds) {
         List<FRBeneficiary> beneficiaries = new ArrayList<>();
-        for (OBBeneficiary5 obBeneficiary: accountData.getBeneficiaries()) {
+        for (OBBeneficiary5 obBeneficiary : accountData.getBeneficiaries()) {
             String accountId = obBeneficiary.getAccountId() != null ? obBeneficiary.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -286,7 +286,7 @@ public class DataCreator {
 
     List<FRBalance> createBalances(FRAccountData accountData, Set<String> accountIds) {
         List<FRBalance> balances = new ArrayList<>();
-        for (OBCashBalance1 obCashBalance: accountData.getBalances()) {
+        for (OBCashBalance1 obCashBalance : accountData.getBalances()) {
             String accountId = obCashBalance.getAccountId() != null ? obCashBalance.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -326,5 +326,5 @@ public class DataCreator {
         }
         return account;
     }
-    
+
 }

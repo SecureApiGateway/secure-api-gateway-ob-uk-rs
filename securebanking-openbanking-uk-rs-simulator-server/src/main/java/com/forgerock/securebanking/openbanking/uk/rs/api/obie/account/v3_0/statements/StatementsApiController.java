@@ -15,12 +15,12 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.statements;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRStatement;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.service.statement.StatementPDFService;
@@ -84,12 +84,12 @@ public class StatementsApiController implements StatementsApi {
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadStatement1().data(new OBReadStatement1Data().statement(
-                statements
-                        .stream()
-                        .map(FRStatement::getStatement)
-                        .map(FRStatementConverter::toOBStatement1)
-                        .map(so -> accountDataInternalIdFilter.apply(so))
-                        .collect(Collectors.toList())))
+                        statements
+                                .stream()
+                                .map(FRStatement::getStatement)
+                                .map(FRStatementConverter::toOBStatement1)
+                                .map(so -> accountDataInternalIdFilter.apply(so))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
@@ -152,12 +152,12 @@ public class StatementsApiController implements StatementsApi {
         int totalPages = statements.getTotalPages();
 
         return ResponseEntity.ok(new OBReadStatement1().data(new OBReadStatement1Data().statement(
-                statements.getContent()
-                        .stream()
-                        .map(FRStatement::getStatement)
-                        .map(FRStatementConverter::toOBStatement1)
-                        .map(so -> accountDataInternalIdFilter.apply(so))
-                        .collect(Collectors.toList())))
+                        statements.getContent()
+                                .stream()
+                                .map(FRStatement::getStatement)
+                                .map(FRStatementConverter::toOBStatement1)
+                                .map(so -> accountDataInternalIdFilter.apply(so))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
@@ -185,12 +185,12 @@ public class StatementsApiController implements StatementsApi {
         int totalPages = statements.getTotalPages();
 
         return ResponseEntity.ok(new OBReadStatement1().data(new OBReadStatement1Data().statement(
-                statements.getContent()
-                        .stream()
-                        .map(FRStatement::getStatement)
-                        .map(FRStatementConverter::toOBStatement1)
-                        .map(so -> accountDataInternalIdFilter.apply(so))
-                        .collect(Collectors.toList())))
+                        statements.getContent()
+                                .stream()
+                                .map(FRStatement::getStatement)
+                                .map(FRStatementConverter::toOBStatement1)
+                                .map(so -> accountDataInternalIdFilter.apply(so))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

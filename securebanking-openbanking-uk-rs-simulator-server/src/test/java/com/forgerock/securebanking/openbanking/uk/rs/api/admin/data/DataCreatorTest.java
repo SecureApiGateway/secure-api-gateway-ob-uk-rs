@@ -102,7 +102,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createBalances(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createBeneficiaries(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createDirectDebits(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createStandingOrders(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createTransactions(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -182,7 +182,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createStatements(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -198,7 +198,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createScheduledPayments(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class DataCreatorTest {
                 () -> dataCreator.createOffers(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -392,7 +392,7 @@ public class DataCreatorTest {
         assertThatThrownBy(() -> dataCreator.createBalances(accountDataWithBalance(interimAvailBalance), Collections.singleton(interimAvailBalance.getAccountId())))
 
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
     @Test

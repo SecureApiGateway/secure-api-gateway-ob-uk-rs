@@ -31,7 +31,7 @@ import uk.org.openbanking.datamodel.event.*;
 
 import java.util.List;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_1_2;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_1_2;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredEventHttpHeaders;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;

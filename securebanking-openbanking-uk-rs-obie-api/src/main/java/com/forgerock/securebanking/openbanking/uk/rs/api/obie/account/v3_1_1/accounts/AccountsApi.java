@@ -35,13 +35,13 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 
 @Api(tags = "v3.1.1-Accounts", description = "the accounts API")
 @RequestMapping(value = "/open-banking/v3.1.1/aisp")
-public interface AccountsApi  {
+public interface AccountsApi {
 
     @ApiOperation(value = "Get Account", notes = "Get an account", response = OBReadAccount3.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={  })
+    }, tags = {})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account resource successfully retrieved", response = OBReadAccount3.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
@@ -50,11 +50,11 @@ public interface AccountsApi  {
             @ApiResponse(code = 405, message = "Method Not Allowed", response = Void.class),
             @ApiResponse(code = 406, message = "Not Acceptable", response = Void.class),
             @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class) })
+            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class)})
 
 
     @RequestMapping(value = "/accounts/{AccountId}",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadAccount3> getAccount(
             @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
@@ -69,7 +69,7 @@ public interface AccountsApi  {
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are " +
                     "represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -91,7 +91,7 @@ public interface AccountsApi  {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={  })
+    }, tags = {})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Accounts successfully retrieved", response = OBReadAccount3.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
@@ -100,11 +100,11 @@ public interface AccountsApi  {
             @ApiResponse(code = 405, message = "Method Not Allowed", response = Void.class),
             @ApiResponse(code = 406, message = "Not Acceptable", response = Void.class),
             @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class) })
+            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class)})
 
 
     @RequestMapping(value = "/accounts",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadAccount3> getAccounts(
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
@@ -119,7 +119,7 @@ public interface AccountsApi  {
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are " +
                     "represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")

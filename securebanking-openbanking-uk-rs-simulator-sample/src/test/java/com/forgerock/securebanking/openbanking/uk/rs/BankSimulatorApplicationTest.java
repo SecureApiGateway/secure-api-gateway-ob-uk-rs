@@ -30,16 +30,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class BankSimulatorApplicationTest {
 
-        @Autowired
-        private ApplicationContext applicationContext;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-        @Test
-        public void shouldStartApplication() {
-            // Given
+    @Test
+    public void shouldStartApplication() {
+        // Given
 
-            // When
+        // When
 
-            // Then
-            assertThat(applicationContext).isNotNull();
-        }
+        // Then
+        assertThat(applicationContext).isNotNull();
+    }
 }

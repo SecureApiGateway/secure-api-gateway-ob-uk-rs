@@ -15,9 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.directdebits;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRDirectDebitConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRDirectDebitConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRDirectDebit;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.directdebits.FRDirectDebitRepository;
 import lombok.extern.slf4j.Slf4j;

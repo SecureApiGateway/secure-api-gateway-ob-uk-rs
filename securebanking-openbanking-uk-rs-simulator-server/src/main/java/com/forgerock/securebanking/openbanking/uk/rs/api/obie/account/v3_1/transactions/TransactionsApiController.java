@@ -15,9 +15,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1.transactions;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRTransactionConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRTransactionConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRTransaction;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.transactions.FRTransactionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -141,7 +141,7 @@ public class TransactionsApiController implements TransactionsApi {
         //Package the answer
         int totalPages = body.getTotalPages();
 
-        return  ResponseEntity.ok(new OBReadTransaction4().data(new OBReadTransaction4Data().transaction(transactions))
+        return ResponseEntity.ok(new OBReadTransaction4().data(new OBReadTransaction4Data().transaction(transactions))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
     }

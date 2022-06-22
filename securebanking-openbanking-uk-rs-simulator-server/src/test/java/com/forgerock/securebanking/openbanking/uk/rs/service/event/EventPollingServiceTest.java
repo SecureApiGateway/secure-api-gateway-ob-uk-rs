@@ -144,7 +144,7 @@ public class EventPollingServiceTest {
     }
 
     @Test
-    public void fetchNewEvents_getAll() throws Exception{
+    public void fetchNewEvents_getAll() throws Exception {
         // Given
         FREventNotification existingNotification1 = FREventNotification.builder()
                 .id("1")
@@ -172,7 +172,7 @@ public class EventPollingServiceTest {
     }
 
     @Test
-    public void fetchNewEvents_excludeEventsWithErrorsFromResults() throws Exception{
+    public void fetchNewEvents_excludeEventsWithErrorsFromResults() throws Exception {
         // Given
         FREventNotification existingNotificationWithoutError = FREventNotification.builder()
                 .id("1")
@@ -200,7 +200,7 @@ public class EventPollingServiceTest {
     }
 
     @Test
-    public void fetchNewEvents_zeroEventsRequested_returnNothing() throws Exception{
+    public void fetchNewEvents_zeroEventsRequested_returnNothing() throws Exception {
         // When
         FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(0)
@@ -215,7 +215,7 @@ public class EventPollingServiceTest {
 
 
     @Test
-    public void fetchNewEvents_longPollingRequest_rejectUnsupported() throws Exception{
+    public void fetchNewEvents_longPollingRequest_rejectUnsupported() throws Exception {
         // Given
         FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(10)

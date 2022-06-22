@@ -30,8 +30,11 @@ import java.util.Set;
 public interface FRBalanceRepository extends MongoRepository<FRBalance, String>, FRBalanceRepositoryCustom {
 
     Page<FRBalance> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
+
     Page<FRBalance> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
+
     Collection<FRBalance> findByAccountIdIn(@Param("accountIds") List<String> accountIds);
+
     Optional<FRBalance> findByAccountIdAndBalanceType(@Param("accountId") String accountId, @Param("type") FRBalanceType type);
 
     Long deleteBalanceByAccountId(@Param("accountId") String accountId);

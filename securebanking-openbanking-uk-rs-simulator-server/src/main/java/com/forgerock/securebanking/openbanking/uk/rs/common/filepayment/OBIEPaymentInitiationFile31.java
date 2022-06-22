@@ -18,12 +18,12 @@ package com.forgerock.securebanking.openbanking.uk.rs.common.filepayment;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAmountConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFilePayment;
 import com.forgerock.securebanking.openbanking.uk.error.FileParseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFilePayment;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAmountConverter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -81,10 +81,10 @@ public class OBIEPaymentInitiationFile31 implements PaymentFile {
 
     @Override
     public List<FRFilePayment> getPayments() {
-       return payments;
+        return payments;
     }
 
-    private List<FRFilePayment> parseJson(String fileContent)  {
+    private List<FRFilePayment> parseJson(String fileContent) {
         if (StringUtils.isEmpty(fileContent)) {
             throw new FileParseException("Unable to parse empty file content");
         }

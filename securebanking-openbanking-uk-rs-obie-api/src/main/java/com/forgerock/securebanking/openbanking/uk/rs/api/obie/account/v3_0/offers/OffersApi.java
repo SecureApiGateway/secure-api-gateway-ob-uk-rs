@@ -43,7 +43,7 @@ public interface OffersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={ })
+    }, tags = {})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Offers successfully retrieved", response = OBReadOffer1.class),
             @ApiResponse(code = 400, message = "Bad Request"),
@@ -52,9 +52,9 @@ public interface OffersApi {
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
-            @ApiResponse(code = 500, message = "Internal Server Error") })
+            @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/accounts/{AccountId}/offers",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadOffer1> getAccountOffers(
             @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
@@ -73,7 +73,7 @@ public interface OffersApi {
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
                     "Sun, 10 Sep 2017 19:43:31 UTC")
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
 
@@ -96,7 +96,7 @@ public interface OffersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={  })
+    }, tags = {})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Offers successfully retrieved", response = OBReadOffer1.class),
             @ApiResponse(code = 400, message = "Bad Request"),
@@ -105,9 +105,9 @@ public interface OffersApi {
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
-            @ApiResponse(code = 500, message = "Internal Server Error") })
+            @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/offers",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadOffer1> getOffers(
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
@@ -122,7 +122,7 @@ public interface OffersApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: " +
                     " Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")

@@ -48,10 +48,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
 import uk.org.openbanking.datamodel.account.OBExternalStatementAmountType1Code;
 import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
 import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification2Code;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -154,11 +154,10 @@ public class FakeDataApiController implements FakeDataApi {
         }
     }
 
-    private FRUserData generateRandomData(String userId, String username)
-     {
+    private FRUserData generateRandomData(String userId, String username) {
         LOGGER.debug("Generate data for user '{}'", userId);
 
-        if (accountsRepository.findByUserID(userId).size() > 0 ) {
+        if (accountsRepository.findByUserID(userId).size() > 0) {
             LOGGER.debug("User {} already have some data", userId);
         }
         {
@@ -196,41 +195,41 @@ public class FakeDataApiController implements FakeDataApi {
             generateOfferLimitIncrease(accountPremierBank);
             generateOfferBalanceTransfer(accountPremierBank);
         }
-         {
-             Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
-             Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
+        {
+            Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
+            Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
 
-             String accountId = UUID.randomUUID().toString();
-             FRAccount accountPremierBank = new FRAccount();
-             accountPremierBank.setId(accountId);
-             accountPremierBank.setCreated(new DateTime());
-             accountPremierBank.setUserID(userId);
-             accountPremierBank.setAccount(builder()
-                     .accountId(accountId)
-                     .accountType(FRAccountTypeCode.PERSONAL)
-                     .accountSubType(FRAccountSubTypeCode.CURRENTACCOUNT)
-                     .currency(EUR)
-                     .nickname("FR Bills")
-                     .status(FRAccountStatusCode.ENABLED)
-                     .statusUpdateDateTime(DateTime.now())
-                     .openingDate(DateTime.now().minusDays(1))
-                     .maturityDate(DateTime.now().plusDays(1))
-                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
-                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
-                             .identification(sortCode.toString() + accountNumber.toString())
-                             .name(username)
-                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
-                             .build()))
-                     .build()
-             );
+            String accountId = UUID.randomUUID().toString();
+            FRAccount accountPremierBank = new FRAccount();
+            accountPremierBank.setId(accountId);
+            accountPremierBank.setCreated(new DateTime());
+            accountPremierBank.setUserID(userId);
+            accountPremierBank.setAccount(builder()
+                    .accountId(accountId)
+                    .accountType(FRAccountTypeCode.PERSONAL)
+                    .accountSubType(FRAccountSubTypeCode.CURRENTACCOUNT)
+                    .currency(EUR)
+                    .nickname("FR Bills")
+                    .status(FRAccountStatusCode.ENABLED)
+                    .statusUpdateDateTime(DateTime.now())
+                    .openingDate(DateTime.now().minusDays(1))
+                    .maturityDate(DateTime.now().plusDays(1))
+                    .accounts(Collections.singletonList(FRAccountIdentifier.builder()
+                            .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
+                            .identification(sortCode.toString() + accountNumber.toString())
+                            .name(username)
+                            .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
+                            .build()))
+                    .build()
+            );
 
-             LOGGER.debug("Account '{}' generated for user '{}'", accountPremierBank, userId);
-             accountsRepository.save(accountPremierBank);
-             generateAccountData(accountPremierBank);
-             generateParty(accountPremierBank, username);
-             generateOfferLimitIncrease(accountPremierBank);
-             generateOfferBalanceTransfer(accountPremierBank);
-         }
+            LOGGER.debug("Account '{}' generated for user '{}'", accountPremierBank, userId);
+            accountsRepository.save(accountPremierBank);
+            generateAccountData(accountPremierBank);
+            generateParty(accountPremierBank, username);
+            generateOfferLimitIncrease(accountPremierBank);
+            generateOfferBalanceTransfer(accountPremierBank);
+        }
         {
             Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
             Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
@@ -267,14 +266,14 @@ public class FakeDataApiController implements FakeDataApi {
         generateGlobalParty(userId, username);
 
         return dataController.exportUserData(userId).getBody();
-     }
+    }
 
     private void generateAccountData(FRAccount account) {
         FRBalance balance = generateBalance(account, FRCreditDebitIndicator.DEBIT, null);
-        int nbBeneficiaries = ThreadLocalRandom.current().nextInt(2,8);
-        int nbDirectDebits = ThreadLocalRandom.current().nextInt(2,8);
-        int nbStandingOrders = ThreadLocalRandom.current().nextInt(2,8);
-        int nbScheduledPayment = ThreadLocalRandom.current().nextInt(2,8);
+        int nbBeneficiaries = ThreadLocalRandom.current().nextInt(2, 8);
+        int nbDirectDebits = ThreadLocalRandom.current().nextInt(2, 8);
+        int nbStandingOrders = ThreadLocalRandom.current().nextInt(2, 8);
+        int nbScheduledPayment = ThreadLocalRandom.current().nextInt(2, 8);
 
         LOGGER.debug("Generate {} beneficiaries", nbBeneficiaries);
         List<FRBeneficiary> beneficiarys = new ArrayList<>();
@@ -299,7 +298,7 @@ public class FakeDataApiController implements FakeDataApi {
         List<FRStatement> statements = new ArrayList<>();
         List<FRTransaction> transactions = new ArrayList<>();
         DateTime currentMonth = DateTime.now().dayOfMonth().withMinimumValue().minusMonths(12);
-        for (int i = 12; i > 0; i-- ) {
+        for (int i = 12; i > 0; i--) {
             LOGGER.debug("Month: {}", FORMATTER.print(currentMonth));
             FRStatement statement1 = generateStatements(account, balance, currentMonth);
             statements.add(statement1);
@@ -492,7 +491,7 @@ public class FakeDataApiController implements FakeDataApi {
     }
 
     private List<FRTransaction> generateTransactions(FRAccount account, FRStatement statement, FRBalance balance) {
-        int nbTransactions = ThreadLocalRandom.current().nextInt(7,30);
+        int nbTransactions = ThreadLocalRandom.current().nextInt(7, 30);
         List<FRTransaction> transactions = new ArrayList<>();
         LOGGER.debug("Generate {} transactions", nbTransactions);
         for (int i = 0; i < nbTransactions; i++) {
@@ -506,9 +505,9 @@ public class FakeDataApiController implements FakeDataApi {
 
         long deltaTime = (statement.getStatement().getEndDateTime().getMillis() - statement.getStatement().getStartDateTime().getMillis()) / 1000;
         DateTime bookingDate = new DateTime(statement.getStatement().getStartDateTime()).plusSeconds(ThreadLocalRandom.current().nextInt(0, Math.toIntExact(deltaTime)));
-        DateTime valueDate =  new DateTime(bookingDate).plusSeconds(ThreadLocalRandom.current().nextInt(60, 5*60));
+        DateTime valueDate = new DateTime(bookingDate).plusSeconds(ThreadLocalRandom.current().nextInt(60, 5 * 60));
 
-        FRCreditDebitIndicator creditDebitIndicator = FRCreditDebitIndicator.values() [
+        FRCreditDebitIndicator creditDebitIndicator = FRCreditDebitIndicator.values()[
                 ThreadLocalRandom.current().nextInt(0, FRCreditDebitIndicator.values().length)];
 
         Double transactionAmount = generateAmount(10.0d, 500.0d);
@@ -516,14 +515,14 @@ public class FakeDataApiController implements FakeDataApi {
         Double finalAmount;
         String transactionInformation;
         switch (creditDebitIndicator) {
-        case DEBIT:
-            finalAmount = balanceAmount - transactionAmount;
-            transactionInformation = "Cash to " + name;
-            break;
-        case CREDIT:
+            case DEBIT:
+                finalAmount = balanceAmount - transactionAmount;
+                transactionInformation = "Cash to " + name;
+                break;
+            case CREDIT:
             default:
-            finalAmount = balanceAmount + transactionAmount;
-            transactionInformation = "Cash from " + name;
+                finalAmount = balanceAmount + transactionAmount;
+                transactionInformation = "Cash from " + name;
         }
         finalAmount = round(finalAmount, 2);
         if (finalAmount <= 0) {
@@ -626,7 +625,7 @@ public class FakeDataApiController implements FakeDataApi {
     private FRParty generateGlobalParty(String userId, String username) {
         FRParty existing = partyRepository.findByUserId(username);
 
-        String partyId = (existing ==null) ? UUID.randomUUID().toString() : existing.getId();
+        String partyId = (existing == null) ? UUID.randomUUID().toString() : existing.getId();
         FRParty party = new FRParty();
         party.setId(partyId);
         party.setUserId(userId);

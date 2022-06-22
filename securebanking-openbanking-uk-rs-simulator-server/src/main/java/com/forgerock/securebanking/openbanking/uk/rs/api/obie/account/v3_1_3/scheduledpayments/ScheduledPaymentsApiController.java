@@ -15,10 +15,10 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.scheduledpayments;
 
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInternalIdFilter;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaginationUtil;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRScheduledPayment;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,8 +33,8 @@ import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static  com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static  com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
 
 @Controller("ScheduledPaymentsApiV3.1.3")
 @Slf4j
@@ -92,11 +92,11 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
         int totalPages = scheduledPayments.getTotalPages();
 
         return ResponseEntity.ok(new OBReadScheduledPayment3().data(new OBReadScheduledPayment3Data().scheduledPayment(
-                scheduledPayments.getContent()
-                        .stream()
-                        .map(sp -> toOBScheduledPayment3(sp.getScheduledPayment()))
-                        .map(sp -> accountDataInternalIdFilter.apply(sp))
-                        .collect(Collectors.toList())))
+                        scheduledPayments.getContent()
+                                .stream()
+                                .map(sp -> toOBScheduledPayment3(sp.getScheduledPayment()))
+                                .map(sp -> accountDataInternalIdFilter.apply(sp))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

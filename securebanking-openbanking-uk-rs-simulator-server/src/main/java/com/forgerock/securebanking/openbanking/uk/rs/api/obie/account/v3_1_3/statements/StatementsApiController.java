@@ -35,11 +35,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
-import uk.org.openbanking.datamodel.account.OBEquivalentAmount;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadDataStatement2;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
-import uk.org.openbanking.datamodel.error.OBError1;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,7 +46,6 @@ import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.account.FRStatementConverter.toOBStatement2;
-import static org.springframework.http.HttpStatus.CONFLICT;
 
 @Controller("StatementsApiV3.1.3")
 @Slf4j
@@ -182,11 +179,11 @@ public class StatementsApiController implements StatementsApi {
 
     private ResponseEntity<OBReadStatement2> packageResponse(int page, String httpUrl, List<FRStatement> statements, int totalPages) {
         return ResponseEntity.ok(new OBReadStatement2().data(new OBReadDataStatement2().statement(
-                statements
-                        .stream()
-                        .map(st -> toOBStatement2(st.getStatement()))
-                        .map(accountDataInternalIdFilter::apply)
-                        .collect(Collectors.toList())))
+                        statements
+                                .stream()
+                                .map(st -> toOBStatement2(st.getStatement()))
+                                .map(accountDataInternalIdFilter::apply)
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
