@@ -15,6 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.service.frequency;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFrequencyType;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRQuarterType;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 
@@ -26,7 +28,7 @@ public class FrequencyService {
 
         String[] parts = frequency.split(":", 2);
 
-        FrequencyType frequencyType = FrequencyType.fromFrequencyString(parts[0]);
+        FRFrequencyType frequencyType = FRFrequencyType.fromFrequencyString(parts[0]);
         Matcher matcher = frequencyType.getPattern().matcher(frequency);
         if (!matcher.find()) {
             throw new IllegalArgumentException("Frequency '" + frequency + "' doesn't match regex '" + frequencyType.getPattern().pattern() + "'");
@@ -69,7 +71,7 @@ public class FrequencyService {
 
     private static DateTime nextQuarterDay(DateTime previous, Matcher matcher) {
         String quarterStr = matcher.group(1);
-        QuarterType quarterType = QuarterType.fromQuarterTypeString(quarterStr);
+        FRQuarterType quarterType = FRQuarterType.fromQuarterTypeString(quarterStr);
 
         DateTime candidateDate = previous;
         do {
