@@ -15,12 +15,12 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName;
 import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName.*;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName.*;
 import static org.springframework.http.HttpMethod.*;
 
 /**

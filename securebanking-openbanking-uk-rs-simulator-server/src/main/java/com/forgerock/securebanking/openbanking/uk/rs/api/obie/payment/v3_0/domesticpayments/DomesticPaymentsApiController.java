@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticpayments;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticPaymentSubmission;

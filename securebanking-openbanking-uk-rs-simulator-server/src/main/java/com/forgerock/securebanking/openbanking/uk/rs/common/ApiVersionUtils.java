@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Matcher;

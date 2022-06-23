@@ -32,8 +32,8 @@ import uk.org.openbanking.datamodel.event.*;
 import java.util.List;
 import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_0;
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_1_2;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_0;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_1_2;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredEventHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
