@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.event;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.event.FREventSubscriptionData;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

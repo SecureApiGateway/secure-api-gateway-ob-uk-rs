@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +33,8 @@ import uk.org.openbanking.datamodel.account.OBReadAccount5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
 
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_1_5;
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_1_6;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_1_5;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_1_6;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountHttpHeaders;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;

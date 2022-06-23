@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_2.eventsubscription;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.event.FREventSubscriptionData;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;

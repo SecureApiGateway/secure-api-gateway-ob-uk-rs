@@ -15,11 +15,10 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.service.frequency;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFrequencyType;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRQuarterType;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRFrequencyType;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.forgerock.FRQuarterType;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-
 import java.util.regex.Matcher;
 
 public class FrequencyService {

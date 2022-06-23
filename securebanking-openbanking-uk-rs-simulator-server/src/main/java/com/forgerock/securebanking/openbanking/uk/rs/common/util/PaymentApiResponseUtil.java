@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common.util;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.PaymentSubmission;
 import org.springframework.http.ResponseEntity;
 

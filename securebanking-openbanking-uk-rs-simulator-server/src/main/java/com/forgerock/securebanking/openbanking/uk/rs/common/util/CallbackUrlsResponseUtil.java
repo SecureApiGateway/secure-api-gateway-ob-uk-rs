@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.common.util;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.event.FRCallbackUrlData;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.event.FRCallbackUrl;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.common.Meta;
@@ -24,11 +24,9 @@ import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion.v3_0;
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_0;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createCallbackUrlsResourcesLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createCallbackUrlsSelfLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;

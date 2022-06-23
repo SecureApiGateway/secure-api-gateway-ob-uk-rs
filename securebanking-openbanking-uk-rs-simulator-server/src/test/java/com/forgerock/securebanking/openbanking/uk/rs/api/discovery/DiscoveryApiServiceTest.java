@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
 import com.forgerock.securebanking.openbanking.uk.rs.testsupport.discovery.AvailableApisTestDataFactory;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;

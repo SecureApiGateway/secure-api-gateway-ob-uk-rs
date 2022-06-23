@@ -17,7 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payme
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import lombok.Builder;
 import lombok.Data;
 import org.joda.time.DateTime;

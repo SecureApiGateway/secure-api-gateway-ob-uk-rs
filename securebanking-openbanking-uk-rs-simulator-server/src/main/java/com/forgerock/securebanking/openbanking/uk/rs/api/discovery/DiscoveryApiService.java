@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName;
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

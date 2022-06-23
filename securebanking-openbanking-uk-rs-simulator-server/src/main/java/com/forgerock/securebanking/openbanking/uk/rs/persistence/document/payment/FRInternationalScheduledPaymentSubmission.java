@@ -18,7 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payme
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduled;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.rs.service.currency.CurrencyRateService;
 import lombok.Builder;
 import lombok.Data;

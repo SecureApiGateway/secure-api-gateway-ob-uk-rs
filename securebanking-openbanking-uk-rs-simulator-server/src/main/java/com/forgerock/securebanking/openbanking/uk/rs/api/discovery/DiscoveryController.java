@@ -15,7 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.OBGroupName;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBGroupName;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
