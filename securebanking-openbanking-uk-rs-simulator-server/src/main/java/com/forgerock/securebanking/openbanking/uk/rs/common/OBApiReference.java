@@ -91,6 +91,7 @@ public enum OBApiReference {
 
     CREATE_DOMESTIC_STANDING_ORDER(PISP, "CreateDomesticStandingOrder", POST, "/pisp/domestic-standing-orders"),
     GET_DOMESTIC_STANDING_ORDER(PISP, "GetDomesticStandingOrder", GET, "/pisp/domestic-standing-orders/{DomesticStandingOrderId}"),
+    GET_DOMESTIC_STANDING_ORDER_DOMESTIC_STANDING_ORDER_ID_PAYMENT_DETAILS(PISP, "GetDomesticStandingOrderDomesticStandingOrderIdPaymentDetails", GET, "/pisp/domestic-standing-orders/{DomesticStandingOrderId}/payment-details"),
 
     CREATE_INTERNATIONAL_PAYMENT(PISP, "CreateInternationalPayment", POST, "/pisp/international-payments"),
     GET_INTERNATIONAL_PAYMENT(PISP, "GetInternationalPayment", GET, "/pisp/international-payments/{InternationalPaymentId}"),
@@ -100,7 +101,6 @@ public enum OBApiReference {
 
     CREATE_INTERNATIONAL_STANDING_ORDER(PISP, "CreateInternationalStandingOrder", POST, "/pisp/international-standing-orders"),
     GET_INTERNATIONAL_STANDING_ORDER(PISP, "GetInternationalStandingOrder", GET, "/pisp/international-standing-orders/{InternationalStandingOrderId}"),
-
 
     CREATE_FILE_PAYMENT_FILE(PISP, "CreateFilePaymentFile", POST, "/pisp/file-payment-consents/{ConsentId}/file"),
     GET_FILE_PAYMENT_FILE(PISP, "GetFilePaymentFile", GET, "/pisp/file-payment-consents/{ConsentId}/file"),
