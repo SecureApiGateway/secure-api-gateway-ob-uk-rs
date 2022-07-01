@@ -38,15 +38,14 @@ import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse4DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticStandingOrderResponse5DataStatus;
@@ -54,6 +53,7 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.factories.FRStandingOrderDataFactory.createFRStandingOrderData;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticStandingOrderPaymentDetailsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
@@ -68,6 +68,12 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private final DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final StandingOrderService standingOrderService;
+    private final Map<String, String> statusLinkingMap = Map.of(
+            "InitiationPending", "Pending",
+            "InitiationFailed", "Rejected",
+            "InitiationCompleted", "Accepted",
+            "Cancelled", "Cancelled"
+    );
 
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
@@ -145,7 +151,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     }
 
     @Override
-    public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails(
+    public ResponseEntity getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails(
             String domesticStandingOrderId,
             String authorization,
             DateTime xFapiAuthDate,
@@ -155,8 +161,18 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             HttpServletRequest request,
             Principal principal
     ) {
-        // Optional endpoint - not implemented
-        return new ResponseEntity<>(NOT_IMPLEMENTED);
+        Optional<FRDomesticStandingOrderPaymentSubmission> isStandingOrderSubmission = standingOrderPaymentSubmissionRepository.findById(domesticStandingOrderId);
+        if (!isStandingOrderSubmission.isPresent()) {
+            return ResponseEntity.status(BAD_REQUEST).body("Standing order submission '" + domesticStandingOrderId + "' can't be found");
+        }
+
+        FRDomesticStandingOrderPaymentSubmission frStandingOrderSubmission = isStandingOrderSubmission.get();
+        log.debug("Found The Domestic Standing Order '{}' to get details.", domesticStandingOrderId);
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frStandingOrderSubmission.getObVersion())) {
+            return resourceConflictResponse(frStandingOrderSubmission, apiVersion);
+        }
+        return ResponseEntity.ok(responseEntityDetails(frStandingOrderSubmission));
     }
 
     private OBWriteDomesticStandingOrderResponse5 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission,
@@ -173,6 +189,34 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                         .consentId(data.getConsentId())
                         .refund(refund.isPresent() ? toOBWriteDomesticResponse4DataRefund(refund.get()) : null))
                 .links(createDomesticStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
+                .meta(new Meta());
+    }
+
+    private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticStandingOrderPaymentSubmission frStandingOrderSubmission) {
+        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+                statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
+        );
+
+        // Build the response object with data to meet the expected data defined by the spec
+        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        return new OBWritePaymentDetailsResponse1()
+                .data(
+                        new OBWritePaymentDetailsResponse1Data()
+                                .addPaymentStatusItem(
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                                .status(status)
+                                                .paymentTransactionId(UUID.randomUUID().toString())
+                                                .statusUpdateDateTime(new DateTime(frStandingOrderSubmission.getUpdated()))
+                                                .statusDetail(
+                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                                .status(status.getValue())
+                                                                .statusReason(statusReasonEnum)
+                                                                .statusReasonDescription(statusReasonEnum.getValue())
+                                                )
+                                )
+
+                )
+                .links(createDomesticStandingOrderPaymentDetailsLink(this.getClass(), frStandingOrderSubmission.getId()))
                 .meta(new Meta());
     }
 }
