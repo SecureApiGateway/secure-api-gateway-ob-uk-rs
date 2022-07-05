@@ -51,7 +51,7 @@ The application's swagger documentation can be obtained from the following URL:
 
 > Substitute `<host>` and `<port` as necessary
 
-This provides the full swagger specification, including the Open Banking Read/Write Apis that the application is able
+This provides the Open Banking Read/Write Apis that the application is able
 to support (regardless of whether they have been disabled in the configuration). Importantly, this reveals any
 additional headers or request parameters that are required by the simulator.
 
