@@ -41,11 +41,17 @@
         <module>securebanking-openbanking-uk-rs-simulator-server</module>
         <module>securebanking-openbanking-uk-rs-simulator-sample</module>
     </modules>
+
     <parent>
         <groupId>com.forgerock.securebanking</groupId>
         <artifactId>securebanking-parent</artifactId>
         <version>1.0.4-SNAPSHOT</version>
     </parent>
+
+    <properties>
+        <uk.bom.version>1.1.3-SNAPSHOT</uk.bom.version>
+        <common.cors.version>1.0.0-SNAPSHOT</common.cors.version>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -53,9 +59,14 @@
             <dependency>
                 <groupId>com.forgerock.securebanking.uk</groupId>
                 <artifactId>securebanking-openbanking-uk-bom</artifactId>
-                <version>1.1.3-SNAPSHOT</version>
+                <version>${uk.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.securebanking.common</groupId>
+                <artifactId>securebanking-common-cors</artifactId>
+                <version>${common.cors.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

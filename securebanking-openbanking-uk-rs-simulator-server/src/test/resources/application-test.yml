@@ -25,3 +25,14 @@ rs:
       limit:
         accounts: 100
         documents: 1000
+
+# Configuration properties entries for common libraries
+common: # root key for all common 'securebanking-common-${library-name}' libraries
+  cors: # library name
+    allowed_origins: # CORS list allowed domains, to check if the origin header domain ends with any allowed origin.
+      - localhost
+      - forgerock.financial # valid for *.forgerock.financial
+    allowed_headers: accept-api-version, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token # CORS allowed headers
+    allowed_methods: GET, PUT, POST, DELETE, OPTIONS, PATCH # Allowed methods for preflight request
+    allowed_credentials: true # Credentials accepted, default value true
+    max_age: 3600 # Expiration time of preflight request, default value 3600
