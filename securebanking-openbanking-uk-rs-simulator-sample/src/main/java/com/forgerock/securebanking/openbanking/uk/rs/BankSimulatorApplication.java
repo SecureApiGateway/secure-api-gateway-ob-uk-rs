@@ -17,13 +17,20 @@ package com.forgerock.securebanking.openbanking.uk.rs;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+@ComponentScan(basePackages =
+        {
+                "com.forgerock.securebanking.common.cors",
+                "com.forgerock.securebanking.openbanking.uk.rs"
+        }
+)
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "com.forgerock.securebanking.openbanking.uk.rs.persistence.repository")
 public class BankSimulatorApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BankSimulatorApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BankSimulatorApplication.class, args);
+    }
 }

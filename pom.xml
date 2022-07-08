@@ -63,17 +63,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.forgerock.securebanking.common</groupId>
+                <artifactId>securebanking-common-cors</artifactId>
+                <version>${common.cors.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-        <!-- sbat common dependencies -->
-        <dependency>
-            <groupId>com.forgerock.securebanking.common</groupId>
-            <artifactId>securebanking-common-cors</artifactId>
-            <version>${common.cors.version}</version>
-        </dependency>
-    </dependencies>
 
     <scm>
         <connection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git

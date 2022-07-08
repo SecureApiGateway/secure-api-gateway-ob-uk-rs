@@ -49,6 +49,11 @@
     <dependencies>
         <!-- ForgeRock dependencies -->
         <dependency>
+            <groupId>com.forgerock.securebanking.common</groupId>
+            <artifactId>securebanking-common-cors</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.forgerock.securebanking.uk</groupId>
             <artifactId>securebanking-openbanking-uk-rs-obie-api</artifactId>
             <version>${project.version}</version>
