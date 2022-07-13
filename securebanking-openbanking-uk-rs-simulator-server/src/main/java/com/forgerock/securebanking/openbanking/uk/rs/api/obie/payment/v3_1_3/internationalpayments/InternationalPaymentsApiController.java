@@ -35,24 +35,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalResponse4DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.*;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Controller("InternationalPaymentsApiV3.1.3")
 @Slf4j
@@ -128,7 +127,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
     }
 
     @Override
-    public ResponseEntity<OBWritePaymentDetailsResponse1> getInternationalPaymentsInternationalPaymentIdPaymentDetails(
+    public ResponseEntity getInternationalPaymentsInternationalPaymentIdPaymentDetails(
             String internationalPaymentId,
             String authorization,
             DateTime xFapiAuthDate,
@@ -138,8 +137,18 @@ public class InternationalPaymentsApiController implements InternationalPayments
             HttpServletRequest request,
             Principal principal
     ) {
-        // Optional endpoint - not implemented
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        Optional<FRInternationalPaymentSubmission> isInternationalPaymentSubmission = paymentSubmissionRepository.findById(internationalPaymentId);
+        if (!isInternationalPaymentSubmission.isPresent()) {
+            return ResponseEntity.status(BAD_REQUEST).body("International payment submission '" + internationalPaymentId + "' can't be found");
+        }
+
+        FRInternationalPaymentSubmission frInternationalPaymentSubmission = isInternationalPaymentSubmission.get();
+        log.debug("Found The International Payment '{}' to get details.", internationalPaymentId);
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!isAccessToResourceAllowed(apiVersion, frInternationalPaymentSubmission.getObVersion())) {
+            return resourceConflictResponse(frInternationalPaymentSubmission, apiVersion);
+        }
+        return ResponseEntity.ok(responseEntityDetails(frInternationalPaymentSubmission));
     }
 
     private OBWriteInternationalResponse4 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission) {
@@ -155,6 +164,33 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(
                                 frPaymentSubmission.getCalculatedExchangeRate())))
                 .links(createInternationalPaymentLink(this.getClass(), frPaymentSubmission.getId()))
+                .meta(new Meta());
+    }
+
+    private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalPaymentSubmission frInternationalPaymentSubmission) {
+        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+                frInternationalPaymentSubmission.getStatus().getValue()
+        );
+
+        // Build the response object with data to meet the expected data defined by the spec
+        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        return new OBWritePaymentDetailsResponse1()
+                .data(
+                        new OBWritePaymentDetailsResponse1Data()
+                                .addPaymentStatusItem(
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                                .status(status)
+                                                .paymentTransactionId(UUID.randomUUID().toString())
+                                                .statusUpdateDateTime(new DateTime(frInternationalPaymentSubmission.getUpdated()))
+                                                .statusDetail(
+                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                                .status(status.getValue())
+                                                                .statusReason(statusReasonEnum)
+                                                                .statusReasonDescription(statusReasonEnum.getValue())
+                                                )
+                                )
+                )
+                .links(createInternationalPaymentDetailsLink(this.getClass(), frInternationalPaymentSubmission.getId()))
                 .meta(new Meta());
     }
 }
