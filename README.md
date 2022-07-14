@@ -23,12 +23,12 @@ mvn clean install
 This will run any JUnit/Spring integration tests and build the required JAR file and docker image.
 
 ### How to run
-Either run the docker image created in the previous step, or run the project's SpringBoot application class:
 
-```com.forgerock.securebanking.openbanking.uk.rs.BankSimulatorApplication``` 
-
-Note that the application has a dependency on MongoDB and will not start up without it. If running locally, this can be
-achieved by simply starting up Mongo on its default port (27017) - for example by running a MongoDB docker image.
+**Run docker compose**
+> Config server profile properties location from local volume (`securebanking-openbanking-uk-rcs-sample/docker/config`)
+```shell
+./securebanking-openbanking-uk-rs-simulator-sample/docker/run-docker-compose-local.sh
+```
 
 ### Supported APIs
 Upon starting the application, a list of supported APIs can be obtained dynamically from two different endpoints:
@@ -56,7 +56,6 @@ http://<host>:<port>/swagger-ui/ # important the slash at the end
 ```
 > Substitute `<host>` and `<port` as necessary
 
-> http://localhost:8080/swagger-resources
 This provides the Open Banking Read/Write Apis that the application is able
 to support (regardless of whether they have been disabled in the configuration). Importantly, this reveals any
 additional headers or request parameters that are required by the simulator.
