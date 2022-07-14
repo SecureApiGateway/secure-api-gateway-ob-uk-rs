@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalscheduledpayments;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,7 +39,7 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
-@Api(value = "international-scheduled-payments", description = "the international-scheduled-payments API")
+@Api(tags = {"v3.0", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.0/pisp")
 public interface InternationalScheduledPaymentsApi {
 
@@ -46,7 +47,7 @@ public interface InternationalScheduledPaymentsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Scheduled Payments",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "International Scheduled Payments Created", response = OBWriteInternationalScheduledResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -106,7 +107,7 @@ public interface InternationalScheduledPaymentsApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Scheduled Payments",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "International Scheduled Payments Read", response = OBWriteInternationalScheduledResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

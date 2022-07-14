@@ -21,22 +21,13 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.statements;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
+import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
@@ -48,7 +39,7 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.ParametersFieldName.TO_STATEMENT_DATE_TIME;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.STATEMENT_TIME_DATE_FORMAT;
 
-@Api(tags = "v3.1.3-Statements", description = "the statements API")
+@Api(tags = {"v3.1.3", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.3/aisp")
 public interface StatementsApi {
 
@@ -57,7 +48,7 @@ public interface StatementsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.3-AccountStatement",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Statement successfully retrieved", response = OBReadStatement2.class),
             @ApiResponse(code = 400, message = "Bad request"),
@@ -111,7 +102,7 @@ public interface StatementsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.3-AccountStatementFile",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Statement File successfully retrieved", response = Resource.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -159,7 +150,7 @@ public interface StatementsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.3-AccountStatements",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Statements successfully retrieved", response = OBReadStatement2.class),
             @ApiResponse(code = 400, message = "Bad request"),
@@ -217,7 +208,7 @@ public interface StatementsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.3-Statements",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Statements successfully retrieved", response = OBReadStatement2.class),
             @ApiResponse(code = 400, message = "Bad request"),

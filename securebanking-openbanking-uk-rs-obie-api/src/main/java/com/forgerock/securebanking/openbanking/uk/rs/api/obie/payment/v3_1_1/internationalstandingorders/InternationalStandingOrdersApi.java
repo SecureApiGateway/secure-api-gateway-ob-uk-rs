@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_1.internationalstandingorders;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,7 +37,7 @@ import java.security.Principal;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
-@Api(value = "international-standing-orders", description = "the international-standing-orders API")
+@Api(tags = {"v3.1.1", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.1/pisp")
 public interface InternationalStandingOrdersApi {
 
@@ -44,7 +45,7 @@ public interface InternationalStandingOrdersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "International Standing Orders Created", response = OBWriteInternationalStandingOrderResponse3.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -104,7 +105,7 @@ public interface InternationalStandingOrdersApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Standing Orders",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "International Standing Orders Read", response = OBWriteInternationalStandingOrderResponse3.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

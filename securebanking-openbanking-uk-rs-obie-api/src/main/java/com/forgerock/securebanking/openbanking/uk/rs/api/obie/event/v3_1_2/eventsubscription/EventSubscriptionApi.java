@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_2.eventsubscription;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 
-@Api(value = "event-subscriptions", description = "the event subscriptions API")
+@Api(tags = {"v3.1.2", SwaggerApiTags.EVENT_NOTIFICATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.2")
 public interface EventSubscriptionApi {
 
@@ -40,7 +41,7 @@ public interface EventSubscriptionApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Event Subscription"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Event subscriptions Created", response = OBEventSubscriptionResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -85,7 +86,7 @@ public interface EventSubscriptionApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Event Subscription"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Event Subscriptiopn Read", response = OBEventSubscriptionsResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -120,7 +121,7 @@ public interface EventSubscriptionApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Event Subscription"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Event Subscription Amended", response = OBEventSubscriptionResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -167,7 +168,7 @@ public interface EventSubscriptionApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Event Subscription"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Event Subscription Deleted", response = Void.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_4.aggregatedpolling;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 
-@Api(value = "aggregated-polling", description = "the event notification aggregated polling API")
+@Api(tags = {"v3.1.4", SwaggerApiTags.EVENT_NOTIFICATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/events")
 public interface AggregatedPollingApi {
 
@@ -39,7 +40,7 @@ public interface AggregatedPollingApi {
                     @AuthorizationScope(scope = "accounts", description = "Accounts scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"event polling"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Events successfully polled", response = OBEventPollingResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

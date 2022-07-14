@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_2.internationalpayments;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(value = "international-payments", description = "the international-payments API")
+@Api(tags = {"v3.1.2", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.2/pisp")
 public interface InternationalPaymentsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_1.internationalpayments.InternationalPaymentsApi {
 }

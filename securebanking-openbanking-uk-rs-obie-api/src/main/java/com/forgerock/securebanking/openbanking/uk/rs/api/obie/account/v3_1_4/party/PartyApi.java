@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_4.party;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "v3.1.4-Party", description = "the party API")
+@Api(tags = {"v3.1.4", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/aisp")
 public interface PartyApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.party.PartyApi {
 }

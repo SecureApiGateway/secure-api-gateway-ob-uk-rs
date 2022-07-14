@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.party;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,7 +38,7 @@ import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
-@Api(tags = "v3.1.3-Party", description = "the party API")
+@Api(tags = {"v3.1.3", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.3/aisp")
 public interface PartyApi {
 
@@ -45,7 +46,7 @@ public interface PartyApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.3-AccountParty",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Party successfully retrieved", response = OBReadParty2.class),
             @ApiResponse(code = 400, message = "Bad request"),
@@ -92,7 +93,7 @@ public interface PartyApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.3-AccountParties",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Parties successfully retrieved", response = OBReadParty3.class),
             @ApiResponse(code = 400, message = "Bad request"),
@@ -142,7 +143,7 @@ public interface PartyApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.3-Party",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Party successfully retrieved", response = OBReadParty2.class),
             @ApiResponse(code = 400, message = "Bad request"),

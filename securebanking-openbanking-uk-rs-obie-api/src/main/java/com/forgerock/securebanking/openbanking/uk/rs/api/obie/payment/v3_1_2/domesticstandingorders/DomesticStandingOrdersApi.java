@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_2.domesticstandingorders;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(value = "domestic-standing-orders", description = "the domestic-standing-orders API")
+@Api(tags = {"v3.1.2", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.2/pisp")
 public interface DomesticStandingOrdersApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_1.domesticstandingorders.DomesticStandingOrdersApi {
 

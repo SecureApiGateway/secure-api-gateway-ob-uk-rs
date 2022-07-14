@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_3;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,7 +32,7 @@ import java.security.Principal;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
-@Api(value = "funds-confirmations", description = "the funds-confirmations API")
+@Api(tags = {"v3.1.3", SwaggerApiTags.CONFIRMATION_OF_FUNDS_TAG})
 @RequestMapping(value = "/open-banking/v3.1.3/cbpii")
 public interface FundsConfirmationsApi {
 
@@ -41,7 +42,7 @@ public interface FundsConfirmationsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds confirmation entitlement")
             })
-    }, tags = {"Funds Confirmations",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Funds Confirmation Created", response = OBFundsConfirmationResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -91,7 +92,7 @@ public interface FundsConfirmationsApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Funds Confirmation",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Funds Confirmation Read", response = OBFundsConfirmationResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

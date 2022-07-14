@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_1.transactions;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,7 +37,7 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME;
 
-@Api(tags = "v3.1.1-Transactions", description = "the transactions API")
+@Api(tags = {"v3.1.1", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.1/aisp")
 public interface TransactionsApi {
 
@@ -45,7 +46,7 @@ public interface TransactionsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={  })
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Transactions successfully retrieved", response = OBReadTransaction5.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
@@ -114,7 +115,7 @@ public interface TransactionsApi {
         @Authorization(value = "PSUOAuth2Security", scopes = {
             @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={  })
+    })
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Transactions successfully retrieved", response = OBReadTransaction5.class),
         @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
@@ -180,7 +181,7 @@ public interface TransactionsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={ "v3.1-Transactions" })
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Transactions successfully retrieved", response = OBReadTransaction5.class),
             @ApiResponse(code = 400, message = "Bad Request"),

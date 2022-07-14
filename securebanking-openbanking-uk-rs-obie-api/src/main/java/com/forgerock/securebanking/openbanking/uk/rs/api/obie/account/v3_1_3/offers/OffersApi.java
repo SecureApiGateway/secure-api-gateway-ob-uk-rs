@@ -21,21 +21,12 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.offers;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
-import io.swagger.annotations.AuthorizationScope;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
+import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadOffer1;
 
@@ -43,7 +34,7 @@ import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
-@Api(tags = "v3.1.3-Offers", description = "the offers API")
+@Api(tags = {"v3.1.3", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.3/aisp")
 public interface OffersApi {
 
@@ -51,7 +42,7 @@ public interface OffersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags = {"v3.1.3-AccountOffers",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Offers Read", response = OBReadOffer1.class),
             @ApiResponse(code = 400, message = "Bad request"),
@@ -101,7 +92,7 @@ public interface OffersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Account offers information")
             })
-    }, tags = {"v3.1.3-Offers",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Offers Read", response = OBReadOffer1.class),
             @ApiResponse(code = 400, message = "Bad request", response = Void.class),

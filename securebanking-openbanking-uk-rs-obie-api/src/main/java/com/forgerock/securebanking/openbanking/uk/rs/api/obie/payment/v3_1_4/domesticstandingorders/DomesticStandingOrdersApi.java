@@ -41,6 +41,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_4.domesticstandingorders;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -58,7 +59,7 @@ import java.security.Principal;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-12-19T16:47:08.987291Z[Europe/London]")
-@Api(value = "domestic-standing-orders", description = "the domestic-standing-orders API")
+@Api(tags = {"v3.1.4", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/pisp")
 public interface DomesticStandingOrdersApi {
 
@@ -66,7 +67,7 @@ public interface DomesticStandingOrdersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"Domestic Standing Orders",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Domestic Standing Orders Created", response = OBWriteDomesticStandingOrderResponse5.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -125,7 +126,7 @@ public interface DomesticStandingOrdersApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"Domestic Standing Orders",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Domestic Standing Orders Read", response = OBWriteDomesticStandingOrderResponse5.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -172,7 +173,7 @@ public interface DomesticStandingOrdersApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"Payment Details",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Payment Details Read", response = OBWritePaymentDetailsResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

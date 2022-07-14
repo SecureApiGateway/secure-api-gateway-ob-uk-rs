@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_4.directdebits;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "v3.1.4-Direct-Debits", description = "the direct-debits API")
+@Api(tags = {"v3.1.4", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/aisp")
 public interface DirectDebitsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.directdebits.DirectDebitsApi {
 }

@@ -20,12 +20,13 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_6.internationalscheduledpayments;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
-@Api(value = "international-scheduled-payments", description = "the international-scheduled-payments API")
+@Api(tags = {"v3.1.6", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.6/pisp")
 public interface InternationalScheduledPaymentsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.internationalscheduledpayments.InternationalScheduledPaymentsApi {
 }

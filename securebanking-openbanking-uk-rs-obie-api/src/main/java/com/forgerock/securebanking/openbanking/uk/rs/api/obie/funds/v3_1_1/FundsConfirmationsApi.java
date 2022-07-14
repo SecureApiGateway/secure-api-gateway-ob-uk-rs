@@ -15,11 +15,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_1;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(value = "funds-confirmation", description = "the funds-confirmation API")
-
+@Api(tags = {"v3.1.1", SwaggerApiTags.CONFIRMATION_OF_FUNDS_TAG})
 @RequestMapping(value = "/open-banking/v3.1.1/cbpii")
 public interface FundsConfirmationsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1.FundsConfirmationsApi {
 }

@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_5.standingorders;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,7 +34,7 @@ import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
-@Api(tags = "v3.1.5-Standing-Orders", description = "the standing-orders API")
+@Api(tags = {"v3.1.5", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.5/aisp")
 public interface StandingOrdersApi {
 
@@ -42,7 +43,7 @@ public interface StandingOrdersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.5-AccountStandingOrders",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Standing Orders successfully retrieved", response = OBReadStandingOrder6.class),
             @ApiResponse(code = 400, message = "Bad request", response = Void.class),
@@ -91,7 +92,7 @@ public interface StandingOrdersApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
-    }, tags = {"v3.1.5-StandingOrders",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Standing Orders successfully retrieved", response = OBReadStandingOrder6.class),
             @ApiResponse(code = 400, message = "Bad request", response = Void.class),
