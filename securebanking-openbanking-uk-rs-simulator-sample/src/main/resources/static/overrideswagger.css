@@ -1,9 +1,0 @@
-.topbar-wrapper img[alt="Swagger UI"], .topbar-wrapper span {
-    visibility: collapse;
-}
-
-.topbar-wrapper .link:after {
-    content: url('FRLogo.svg');
-    width: 240px !important;
-    display: flex;
-}
