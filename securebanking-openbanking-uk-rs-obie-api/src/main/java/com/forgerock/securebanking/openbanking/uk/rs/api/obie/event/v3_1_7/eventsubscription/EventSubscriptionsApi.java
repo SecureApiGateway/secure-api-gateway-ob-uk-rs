@@ -15,10 +15,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_7.eventsubscription;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(value = "event-subscriptions", description = "the event subscriptions API")
+@Api(tags = {"v3.1.7", SwaggerApiTags.EVENT_NOTIFICATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.7/event-subscriptions")
 public interface EventSubscriptionsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_6.eventsubscription.EventSubscriptionsApi {
 }

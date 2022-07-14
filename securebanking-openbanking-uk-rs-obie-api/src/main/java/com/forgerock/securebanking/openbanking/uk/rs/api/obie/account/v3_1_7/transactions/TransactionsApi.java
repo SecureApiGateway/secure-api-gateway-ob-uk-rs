@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_7.transactions;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "v3.1.7-Transactions", description = "the transactions API")
+@Api(tags = {"v3.1.7", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.7/aisp")
 public interface TransactionsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_6.transactions.TransactionsApi {
 }

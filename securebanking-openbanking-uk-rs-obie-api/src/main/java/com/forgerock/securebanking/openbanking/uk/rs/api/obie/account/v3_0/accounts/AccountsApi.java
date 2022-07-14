@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.accounts;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,7 +36,7 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-10-16T08:37:28.078Z")
 
-@Api(tags = "v3.0-Accounts", description = "the accounts API")
+@Api(tags = {"v3.0", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.0/aisp")
 public interface AccountsApi {
 
@@ -43,7 +44,7 @@ public interface AccountsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={  })
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account resource successfully retrieved", response = OBReadAccount2.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
@@ -93,7 +94,7 @@ public interface AccountsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags={  })
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Accounts successfully retrieved", response = OBReadAccount2.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),

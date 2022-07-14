@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_4.beneficiaries;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "v3.1.4-Beneficiaries", description = "the beneficiaries API")
+@Api(tags = {"v3.1.4", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/aisp")
 public interface BeneficiariesApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_3.beneficiaries.BeneficiariesApi {
 }

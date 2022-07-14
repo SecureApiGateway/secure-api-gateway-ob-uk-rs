@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.balances;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,7 +34,7 @@ import java.util.List;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
-@Api(tags = "v3.0-Balances", description = "the balances API")
+@Api(tags = {"v3.0", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.0/aisp")
 public interface BalancesApi {
 
@@ -42,7 +43,7 @@ public interface BalancesApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags = {"v3.0-Balances"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Account Beneficiaries successfully retrieved", response = OBReadBalance1.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
@@ -97,7 +98,7 @@ public interface BalancesApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
-    }, tags = {})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Balances successfully retrieved", response = OBReadBalance1.class),
             @ApiResponse(code = 400, message = "Bad Request", response = Void.class),

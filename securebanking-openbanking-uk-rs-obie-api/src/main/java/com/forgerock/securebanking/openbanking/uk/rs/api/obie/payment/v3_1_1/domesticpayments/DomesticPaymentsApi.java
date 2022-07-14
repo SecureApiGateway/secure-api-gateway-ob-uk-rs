@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_1.domesticpayments;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(value = "domestic-payments", description = "the domestic-payments API")
+@Api(tags = {"v3.1.1", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.1/pisp")
 public interface DomesticPaymentsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.domesticpayments.DomesticPaymentsApi {
 }

@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_3.callbackurl;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(value = "callback-urls", description = "the event notification callback urls API")
+@Api(tags = {"v3.1.3", SwaggerApiTags.EVENT_NOTIFICATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.3")
 public interface CallbackUrlsApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_2.callbackurl.CallbackUrlsApi {
 }

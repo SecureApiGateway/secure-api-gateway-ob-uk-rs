@@ -41,3 +41,15 @@ rs:
       limit:
         accounts: 100
         documents: 1000
+
+# Swagger Documentation Specification properties
+swagger:
+  title: Secure Banking Access Toolkit
+  description: Swagger for Read/Write Open Banking API Specification (UK) (https://openbankinguk.github.io/read-write-api-site3)
+  license: open-licence
+  license-url: https://www.openbanking.org.uk/open-licence
+  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
+  contact-name: ForgeRock RS Simulator
+  contact-url: https://www.forgerock.com/
+  docket-apis-basePackage: com.forgerock.securebanking.openbanking.uk.rs.api.obie
+  docket-paths-selector-regex: /open-banking/v(\d+.)?(\d+.)?(\*|\d+)

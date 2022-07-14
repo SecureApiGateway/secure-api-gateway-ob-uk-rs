@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1.file;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.core.io.Resource;
@@ -39,7 +40,7 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
-@Api(value = "file-payments", description = "the file-payments API")
+@Api(tags = {"v3.1", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 
 @RequestMapping(value = "/open-banking/v3.1/pisp")
 public interface FilePaymentsApi {
@@ -48,7 +49,7 @@ public interface FilePaymentsApi {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"File Payments",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "File Payments Created", response = OBWriteFileResponse2.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -104,7 +105,7 @@ public interface FilePaymentsApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"File Payments",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "File Payments Read", response = OBWriteFileResponse2.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -152,7 +153,7 @@ public interface FilePaymentsApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"File Payments",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "File Payments Read", response = Resource.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

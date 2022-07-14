@@ -20,10 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_7.standingorders;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "v3.1.7-Standing-Orders", description = "the standing-orders API")
+@Api(tags = {"v3.1.7", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.7/aisp")
 public interface StandingOrdersApi extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_1_6.standingorders.StandingOrdersApi {
 }

@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_4.internationalscheduledpayments;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,14 +39,14 @@ import java.security.Principal;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-12-19T16:47:08.987291Z[Europe/London]")
-@Api(value = "international-scheduled-payments", description = "the international-scheduled-payments API")
+@Api(tags = {"v3.1.4", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/pisp")
 public interface InternationalScheduledPaymentsApi {
     @ApiOperation(value = "Create International Scheduled Payments", nickname = "createInternationalScheduledPayments", notes = "", response = OBWriteInternationalScheduledResponse5.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Scheduled Payments",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "International Scheduled Payments Created", response = OBWriteInternationalScheduledResponse5.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -104,7 +105,7 @@ public interface InternationalScheduledPaymentsApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"International Scheduled Payments",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "International Scheduled Payments Read", response = OBWriteInternationalScheduledResponse5.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -151,7 +152,7 @@ public interface InternationalScheduledPaymentsApi {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
-    }, tags = {"Payment Details",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Payment Details Read", response = OBWritePaymentDetailsResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

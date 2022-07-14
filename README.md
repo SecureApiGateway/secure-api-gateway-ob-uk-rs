@@ -47,10 +47,16 @@ that the application has implemented. The Discovery Endpoint can be viewed in a 
 #### Swagger Specification Endpoint
 The application's swagger documentation can be obtained from the following URL:
 
-```http://<host>:<port>/api-docs``` 
-
+```shell
+http://<host>:<port>/api-docs
+``` 
+```shell
+http://<host>:<port>/swagger-resources
+http://<host>:<port>/swagger-ui/ # important the slash at the end
+```
 > Substitute `<host>` and `<port` as necessary
 
+> http://localhost:8080/swagger-resources
 This provides the Open Banking Read/Write Apis that the application is able
 to support (regardless of whether they have been disabled in the configuration). Importantly, this reveals any
 additional headers or request parameters that are required by the simulator.

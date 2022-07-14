@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_0;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 
-@Api(value = "callback-urls", description = "the event notification callback urls API")
+@Api(tags = {"v3.0", SwaggerApiTags.EVENT_NOTIFICATION_TAG})
 @RequestMapping(value = "/open-banking/v3.0")
 public interface CallbackUrlsApi {
 
@@ -45,7 +46,7 @@ public interface CallbackUrlsApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Callback URLs"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Callback URLs Created", response = OBCallbackUrlResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -93,7 +94,7 @@ public interface CallbackUrlsApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Callback URLs"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Callback URLs Read", response = OBCallbackUrlResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -131,7 +132,7 @@ public interface CallbackUrlsApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Callback URLs"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Callback URLs Amended", response = OBCallbackUrlResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -181,7 +182,7 @@ public interface CallbackUrlsApi {
                     @AuthorizationScope(scope = "payments", description = "Payments  scope"),
                     @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
             })
-    }, tags = {"Callback URLs"})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Callback URLs Deleted", response = OBCallbackUrlResponse1.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),

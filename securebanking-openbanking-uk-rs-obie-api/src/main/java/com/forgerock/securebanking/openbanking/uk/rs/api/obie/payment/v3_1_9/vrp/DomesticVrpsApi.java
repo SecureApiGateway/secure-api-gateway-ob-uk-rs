@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.vrp;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +37,7 @@ import java.security.Principal;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
 @Validated
-@Api(value = "domestic-vrps", description = "the domestic-vrps API")
+@Api(tags = {"v3.1.8", SwaggerApiTags.VRP_PAYMENT_TAG})
 @RequestMapping(value = "/open-banking/v3.1.9/pisp")
 public interface DomesticVrpsApi {
 
@@ -65,7 +66,7 @@ public interface DomesticVrpsApi {
             response = OBDomesticVRPResponse.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")})
-    }, tags = {"Domestic VRPs",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Default response", response = OBDomesticVRPResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -134,7 +135,7 @@ public interface DomesticVrpsApi {
     @ApiOperation(value = "Retrieve a domestic VRP", nickname = "domesticVrpPaymentDetailsGet", notes = "Retrieve a domestic VRP", response = OBDomesticVRPDetails.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")})
-    }, tags = {"Domestic VRPs",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Default response", response = OBDomesticVRPDetails.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -206,7 +207,7 @@ public interface DomesticVrpsApi {
             response = OBDomesticVRPResponse.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")})
-    }, tags = {"Domestic VRPs",})
+    })
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Default response", response = OBDomesticVRPResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
