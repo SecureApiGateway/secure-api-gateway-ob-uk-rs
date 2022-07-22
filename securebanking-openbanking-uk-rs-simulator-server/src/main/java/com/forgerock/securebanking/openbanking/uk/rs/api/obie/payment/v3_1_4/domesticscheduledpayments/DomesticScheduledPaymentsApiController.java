@@ -43,7 +43,6 @@ import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
