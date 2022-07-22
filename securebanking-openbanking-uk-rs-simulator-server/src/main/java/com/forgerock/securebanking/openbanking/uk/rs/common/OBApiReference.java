@@ -99,6 +99,7 @@ public enum OBApiReference {
 
     CREATE_INTERNATIONAL_SCHEDULED_PAYMENT(PISP, "CreateInternationalScheduledPayment", POST, "/pisp/international-scheduled-payments"),
     GET_INTERNATIONAL_SCHEDULED_PAYMENT(PISP, "GetInternationalScheduledPayment", GET, "/pisp/international-scheduled-payments/{InternationalScheduledPaymentId}"),
+    GET_INTERNATIONAL_SCHEDULED_PAYMENT_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetInternationalScheduledPaymentPaymentIdPaymentDetails", GET, "/pisp/international-scheduled-payments/{InternationalScheduledPaymentId}/payment-details"),
 
     CREATE_INTERNATIONAL_STANDING_ORDER(PISP, "CreateInternationalStandingOrder", POST, "/pisp/international-standing-orders"),
     GET_INTERNATIONAL_STANDING_ORDER(PISP, "GetInternationalStandingOrder", GET, "/pisp/international-standing-orders/{InternationalStandingOrderId}"),
