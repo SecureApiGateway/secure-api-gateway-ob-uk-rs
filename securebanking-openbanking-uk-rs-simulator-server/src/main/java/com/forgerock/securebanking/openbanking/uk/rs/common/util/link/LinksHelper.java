@@ -172,6 +172,18 @@ public class LinksHelper {
     }
 
     /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for an international scheduled payment
+     * details.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createInternationalScheduledPaymentDetailsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_SCHEDULED_PAYMENTS, id, DOMESTIC_PAYMENTS_DETAILS);
+    }
+
+    /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic standing
      * order.
      *
