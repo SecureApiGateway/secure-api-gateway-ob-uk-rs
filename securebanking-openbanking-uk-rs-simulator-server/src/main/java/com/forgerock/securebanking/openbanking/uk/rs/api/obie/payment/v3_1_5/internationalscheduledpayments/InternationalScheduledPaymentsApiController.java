@@ -62,6 +62,7 @@ import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.Lin
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalScheduledPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.*;
+import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentStatusUtils;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.5")
 @Slf4j
@@ -70,13 +71,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     private final InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ScheduledPaymentService scheduledPaymentService;
-
-    private final Map<String, String> statusLinkingMap = Map.of(
-            "InitiationPending", "Pending",
-            "InitiationFailed", "Rejected",
-            "InitiationCompleted", "Accepted",
-            "Cancelled", "Cancelled"
-    );
 
     public InternationalScheduledPaymentsApiController(
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
@@ -203,7 +197,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalScheduledPaymentSubmission frInternationalScheduledPaymentSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
-                statusLinkingMap.get(frInternationalScheduledPaymentSubmission.getStatus().getValue())
+                PaymentStatusUtils.statusLinkingMap.get(frInternationalScheduledPaymentSubmission.getStatus().getValue())
         );
 
         // Build the response object with data to meet the expected data defined by the spec

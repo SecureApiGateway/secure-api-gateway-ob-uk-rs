@@ -27,6 +27,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.pay
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentStatusUtils;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -69,12 +70,6 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private final DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final StandingOrderService standingOrderService;
-    private final Map<String, String> statusLinkingMap = Map.of(
-            "InitiationPending", "Pending",
-            "InitiationFailed", "Rejected",
-            "InitiationCompleted", "Accepted",
-            "Cancelled", "Cancelled"
-    );
 
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
@@ -198,7 +193,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticStandingOrderPaymentSubmission frStandingOrderSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
-                statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
+                PaymentStatusUtils.statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
         );
 
         // Build the response object with data to meet the expected data defined by the spec

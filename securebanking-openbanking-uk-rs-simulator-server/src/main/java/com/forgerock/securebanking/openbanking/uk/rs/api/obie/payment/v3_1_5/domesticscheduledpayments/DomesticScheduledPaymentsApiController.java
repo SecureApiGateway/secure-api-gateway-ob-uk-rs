@@ -27,6 +27,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.pay
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentStatusUtils;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticScheduledPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -70,12 +71,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private final DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ScheduledPaymentService scheduledPaymentService;
-    private final Map<String, String> statusLinkingMap = Map.of(
-            "InitiationPending", "Pending",
-            "InitiationFailed", "Rejected",
-            "InitiationCompleted", "Accepted",
-            "Cancelled", "Cancelled"
-    );
 
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
@@ -200,7 +195,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
-                statusLinkingMap.get(frPaymentSubmission.getStatus().getValue())
+                PaymentStatusUtils.statusLinkingMap.get(frPaymentSubmission.getStatus().getValue())
         );
         String localInstrument = frPaymentSubmission.getScheduledPayment().getData().getInitiation().getLocalInstrument();
 

@@ -25,6 +25,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.pay
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalScheduledData;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentStatusUtils;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalScheduledPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -64,13 +65,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     private final InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ScheduledPaymentService scheduledPaymentService;
-
-    private final Map<String, String> statusLinkingMap = Map.of(
-            "InitiationPending", "Pending",
-            "InitiationFailed", "Rejected",
-            "InitiationCompleted", "Accepted",
-            "Cancelled", "Cancelled"
-    );
 
     public InternationalScheduledPaymentsApiController(
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
@@ -192,7 +186,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalScheduledPaymentSubmission frInternationalScheduledPaymentSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
-                statusLinkingMap.get(frInternationalScheduledPaymentSubmission.getStatus().getValue())
+                PaymentStatusUtils.statusLinkingMap.get(frInternationalScheduledPaymentSubmission.getStatus().getValue())
         );
 
         // Build the response object with data to meet the expected data defined by the spec
