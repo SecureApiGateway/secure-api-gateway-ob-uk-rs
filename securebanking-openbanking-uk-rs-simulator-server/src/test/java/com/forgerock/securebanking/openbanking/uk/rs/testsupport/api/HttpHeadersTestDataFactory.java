@@ -60,7 +60,7 @@ public class HttpHeadersTestDataFactory {
      * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Accounts API.
      *
      * @param resourceUrl The URL to retrieve the resource in question.
-     * @param acceptHeaderValue The value to set 'Accept' header.
+     * @param acceptHeader The value to set 'Accept' header.
      *
      * @return the {@link HttpHeaders} instance.
      */
@@ -151,6 +151,18 @@ public class HttpHeadersTestDataFactory {
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-jws-signature", "dummyJwsSignature");
         headers.add("x-ob-account-id", UUID.randomUUID().toString());
+        return headers;
+    }
+
+    /**
+     * @return an instance of {@link HttpHeaders} with the minimal set of required headers for backoffice payments API.
+     */
+    public static HttpHeaders requiredBackofficeHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
+        headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         return headers;
     }
 }

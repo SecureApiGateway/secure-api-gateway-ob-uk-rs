@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.common;
+package com.forgerock.securebanking.openbanking.uk.rs.exceptions;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
