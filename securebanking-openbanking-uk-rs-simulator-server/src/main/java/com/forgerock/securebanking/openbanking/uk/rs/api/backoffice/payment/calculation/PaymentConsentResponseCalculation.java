@@ -30,11 +30,12 @@ public abstract class PaymentConsentResponseCalculation {
      */
     public abstract Class getResponseClass(OBVersion version);
 
+
     /**
      *
-     * @param consentRequest the consent request object
-     * @param consentResponse the consent response object
-     * @return true if the validation passed, false otherwise
+     * @param consentRequest consent request object
+     * @param consentResponse consent response object
+     * @return the consent response object with calculated elements
      * @param <T> dealing generic type
      * @param <R> dealing generic type
      */
