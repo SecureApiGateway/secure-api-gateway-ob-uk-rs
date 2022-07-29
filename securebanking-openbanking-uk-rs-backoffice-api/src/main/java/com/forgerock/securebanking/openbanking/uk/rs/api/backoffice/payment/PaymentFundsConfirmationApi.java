@@ -22,6 +22,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFundsConfirmationResponse;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
-@Api(value = "backoffice-payment-funds", description = "the Payment Funds Confirmation API")
+@Api(tags = {SwaggerApiTags.BACKOFFICE})
 @RequestMapping("/backoffice")
 public interface PaymentFundsConfirmationApi {
 
@@ -63,10 +64,10 @@ public interface PaymentFundsConfirmationApi {
             @RequestParam("version") String version,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
+            @RequestHeader(value = "Authorization") String authorization,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
+            @RequestHeader(value = "x-fapi-financial-id") String xFapiFinancialId,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,

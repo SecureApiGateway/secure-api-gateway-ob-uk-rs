@@ -15,10 +15,15 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.configuration;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 @Configuration
@@ -31,6 +36,13 @@ public class TestConfiguration {
      */
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jacksonObjectMapperCustomization() {
-        return jacksonObjectMapperBuilder -> jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
+        return (jacksonObjectMapperBuilder) -> {
+            jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
+            jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_NULL);
+            jacksonObjectMapperBuilder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+            jacksonObjectMapperBuilder.featuresToEnable(MapperFeature.USE_BASE_TYPE_AS_DEFAULT_IMPL);
+            jacksonObjectMapperBuilder.modules(new JodaModule());
+            jacksonObjectMapperBuilder.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ"));
+        };
     }
 }
