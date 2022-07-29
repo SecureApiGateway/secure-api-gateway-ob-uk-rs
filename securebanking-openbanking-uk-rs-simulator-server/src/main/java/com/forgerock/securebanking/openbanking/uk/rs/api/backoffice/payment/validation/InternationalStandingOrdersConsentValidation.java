@@ -44,14 +44,15 @@ public class InternationalStandingOrdersConsentValidation extends PaymentConsent
     }
 
     @Override
-    public <T> boolean validate(T consent) {
+    public <T> void validate(T consent) {
+        errors.clear();
         if (consent instanceof OBWriteInternationalStandingOrderConsent4) {
-            // TODO validate OBWriteInternationalStandingOrderConsent4
-            return true;
+            validateInstructedAmount(((OBWriteInternationalStandingOrderConsent4) consent).getData().getInitiation().getInstructedAmount());
+            return;
         } else if (consent instanceof OBWriteInternationalStandingOrderConsent5) {
-            // TODO validate OBWriteInternationalStandingOrderConsent5
+            validateInstructedAmount(((OBWriteInternationalStandingOrderConsent5) consent).getData().getInitiation().getInstructedAmount());
+            return;
         }
-        // TODO validate OBWriteInternationalStandingOrderConsent6
-        return true;
+        validateInstructedAmount(((OBWriteInternationalStandingOrderConsent6) consent).getData().getInitiation().getInstructedAmount());
     }
 }

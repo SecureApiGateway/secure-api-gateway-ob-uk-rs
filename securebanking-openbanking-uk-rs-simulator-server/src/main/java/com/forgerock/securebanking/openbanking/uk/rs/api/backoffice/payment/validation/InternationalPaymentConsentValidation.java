@@ -43,15 +43,19 @@ public class InternationalPaymentConsentValidation extends PaymentConsentValidat
     }
 
     @Override
-    public <T> boolean validate(T consent) {
+    public <T> void validate(T consent) {
+        errors.clear();
         if (consent instanceof OBWriteInternationalConsent3) {
-            // TODO validate OBWriteInternationalConsent3
-            return true;
+            validateInstructedAmount(((OBWriteInternationalConsent3) consent).getData().getInitiation().getInstructedAmount());
+            validateExchangeRateInformation(((OBWriteInternationalConsent3) consent).getData().getInitiation().getExchangeRateInformation());
+            return;
         } else if (consent instanceof OBWriteInternationalConsent4) {
-            // TODO validate OBWriteInternationalConsent4
-            return true;
+            validateInstructedAmount(((OBWriteInternationalConsent4) consent).getData().getInitiation().getInstructedAmount());
+            validateExchangeRateInformation(((OBWriteInternationalConsent4) consent).getData().getInitiation().getExchangeRateInformation());
+            return;
         }
-        // TODO validate OBWriteInternationalConsent5
-        return true;
+        validateInstructedAmount(((OBWriteInternationalConsent5) consent).getData().getInitiation().getInstructedAmount());
+        validateExchangeRateInformation(((OBWriteInternationalConsent5) consent).getData().getInitiation().getExchangeRateInformation());
     }
+
 }
