@@ -35,7 +35,8 @@ import uk.org.openbanking.datamodel.payment.*;
 
 import java.net.URI;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.*;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.API_VERSION_DESCRIPTION;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.INTENT_TYPE_DESCRIPTION;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredBackofficeHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -141,9 +142,11 @@ public class CalculateResponseElementsControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
         assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
-        OBError1 error = response.getBody().getErrors().get(0);
-        assertThat(error.getErrorCode()).isEqualTo(OBRIErrorType.DATA_INVALID_REQUEST.getCode().getValue());
-        assertThat(error.getMessage()).contains(String.format("It has not been possible to determine the value of '%s'", API_VERSION_DESCRIPTION));
+        assertThat(response.getBody().getErrors()).containsExactly(
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                        String.format("It has not been possible to determine the value of '%s'", API_VERSION_DESCRIPTION)
+                )
+        );
     }
 
     @Test
@@ -161,9 +164,11 @@ public class CalculateResponseElementsControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
         assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
-        OBError1 error = response.getBody().getErrors().get(0);
-        assertThat(error.getErrorCode()).isEqualTo(OBRIErrorType.DATA_INVALID_REQUEST.getCode().getValue());
-        assertThat(error.getMessage()).contains(String.format("It has not been possible to determine the value of '%s'", INTENT_TYPE_DESCRIPTION));
+        assertThat(response.getBody().getErrors()).containsExactly(
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                        String.format("It has not been possible to determine the value of '%s'", INTENT_TYPE_DESCRIPTION)
+                )
+        );
     }
 
     @Test
@@ -182,9 +187,11 @@ public class CalculateResponseElementsControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
         assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
-        OBError1 error = response.getBody().getErrors().get(0);
-        assertThat(error.getErrorCode()).isEqualTo(OBRIErrorType.DATA_INVALID_REQUEST.getCode().getValue());
-        assertThat(error.getMessage()).contains(String.format("'%s' cannot be null to be validate", "InstructedAmount"));
+        assertThat(response.getBody().getErrors()).containsExactly(
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                        String.format(String.format("'%s' cannot be null to be validate", "InstructedAmount"))
+                )
+        );
     }
 
     @Test
@@ -203,10 +210,13 @@ public class CalculateResponseElementsControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
         assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
-        OBError1 error = response.getBody().getErrors().get(0);
-        assertThat(error.getErrorCode()).isEqualTo(OBRIErrorType.DATA_INVALID_REQUEST.getCode().getValue());
-        assertThat(error.getMessage()).contains(
-                String.format("The amount %s provided must be greater than 0", consentRequest.getData().getInitiation().getInstructedAmount().getAmount())
+        assertThat(response.getBody().getErrors()).containsExactly(
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                        String.format(
+                                "The amount %s provided must be greater than 0",
+                                consentRequest.getData().getInitiation().getInstructedAmount().getAmount()
+                        )
+                )
         );
     }
 
@@ -226,10 +236,46 @@ public class CalculateResponseElementsControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
         assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
-        OBError1 error = response.getBody().getErrors().get(0);
-        assertThat(error.getErrorCode()).isEqualTo(OBRIErrorType.DATA_INVALID_REQUEST.getCode().getValue());
-        assertThat(error.getMessage()).contains(
-                String.format("The currency %s provided is not supported.", consentRequest.getData().getInitiation().getInstructedAmount().getCurrency())
+        assertThat(response.getBody().getErrors()).containsExactly(
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                        String.format(
+                                "The currency %s provided is not supported",
+                                consentRequest.getData().getInitiation().getInstructedAmount().getCurrency()
+                        )
+                )
+        );
+    }
+
+    @Test
+    public void shouldFailsInstructedAmountAmountAndCurrency() throws JsonProcessingException {
+        String intent = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
+        OBWriteDomesticConsent4 consentRequest = aValidOBWriteDomesticConsent4();
+        consentRequest.getData().getInitiation().getInstructedAmount().setAmount("0");
+        consentRequest.getData().getInitiation().getInstructedAmount().setCurrency("BITCOIN");
+        // When
+        ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                HttpMethod.POST,
+                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
+                OBErrorResponse1.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
+        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
+        assertThat(response.getBody().getErrors()).containsExactlyInAnyOrder(
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                        String.format(
+                                "The currency %s provided is not supported",
+                                consentRequest.getData().getInitiation().getInstructedAmount().getCurrency()
+                        )
+                ),
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                        String.format(
+                                "The amount %s provided must be greater than 0",
+                                consentRequest.getData().getInitiation().getInstructedAmount().getAmount()
+                        )
+                )
         );
     }
 

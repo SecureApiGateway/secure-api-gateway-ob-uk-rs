@@ -110,7 +110,7 @@ public abstract class GenericValidations {
         }
         if (!Currencies.contains(currency)) {
             errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                    String.format("The currency %s provided is not supported.", currency)
+                    String.format("The currency %s provided is not supported", currency)
             ));
         }
     }
