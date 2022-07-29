@@ -48,9 +48,6 @@ public interface CalculateResponseElements {
 
             @ApiParam(value = "Api version", required = true)
             @RequestParam(value = "version") String version,
-            // TODO delete this header when the validations are implemented (issue: https://github.com/securebankingaccesstoolkit/securebankingaccesstoolkit/issues/429)
-            @ApiParam(value = "Temporary Header for tests purposes, values 'true'/'false' to simulate a validation failure, default 'false'")
-            @RequestHeader(value = "x-validation-test-failure", defaultValue = "false", required = false) String xValidationTestFailure,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id") String xFapiFinancialId,

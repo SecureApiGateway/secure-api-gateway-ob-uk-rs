@@ -17,7 +17,8 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.val
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 
-public abstract class PaymentConsentValidation {
+public abstract class PaymentConsentValidation extends GenericValidations {
+
     /**
      *
      * @param version {@link OBVersion} is the api version to identify the request object to be validated
@@ -28,8 +29,8 @@ public abstract class PaymentConsentValidation {
     /**
      *
      * @param consent the consent request object
-     * @return true if the validation passed, false otherwise
      * @param <T> dealing generic type
      */
-    public abstract <T> boolean validate(T consent);
+    public abstract <T> void validate(T consent);
+
 }

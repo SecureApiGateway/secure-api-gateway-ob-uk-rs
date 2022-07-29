@@ -40,12 +40,13 @@ public class DomesticPaymentConsentValidation extends PaymentConsentValidation {
     }
 
     @Override
-    public <T> boolean validate(T consent) {
+    public <T> void validate(T consent) {
+        errors.clear();
         if (consent instanceof OBWriteDomesticConsent3) {
-            // TODO validate OBWriteDomesticConsent3
-            return true;
+            validateInstructedAmount(((OBWriteDomesticConsent3) consent).getData().getInitiation().getInstructedAmount());
+            return;
         }
-        // TODO validate OBWriteDomesticConsent4
-        return true;
+        validateInstructedAmount(((OBWriteDomesticConsent4) consent).getData().getInitiation().getInstructedAmount());
     }
+
 }

@@ -16,8 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.*;
 
 /**
  * Validation class for Domestic Payment consent request
@@ -39,12 +38,31 @@ public class DomesticStandingOrdersConsentValidation extends PaymentConsentValid
     }
 
     @Override
-    public <T> boolean validate(T consent) {
+    public <T> void validate(T consent) {
+        errors.clear();
         if (consent instanceof OBWriteDomesticStandingOrderConsent4) {
-            // TODO validate OBWriteDomesticStandingOrderConsent4
-            return true;
+            validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getFirstPaymentAmount());
+            validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getRecurringPaymentAmount());
+            validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getFinalPaymentAmount());
+            return;
         }
-        // TODO validate OBWriteDomesticStandingOrderConsent5
-        return true;
+        validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getFirstPaymentAmount());
+        validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getRecurringPaymentAmount());
+        validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getFinalPaymentAmount());
+    }
+
+    private void validate(OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount firstPaymentAmount) {
+        validateAmount(firstPaymentAmount.getAmount());
+        validateCurrency(firstPaymentAmount.getCurrency());
+    }
+
+    private void validate(OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount recurringPaymentAmount) {
+        validateAmount(recurringPaymentAmount.getAmount());
+        validateCurrency(recurringPaymentAmount.getCurrency());
+    }
+
+    private void validate(OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount finalPaymentAmount) {
+        validateAmount(finalPaymentAmount.getAmount());
+        validateCurrency(finalPaymentAmount.getCurrency());
     }
 }

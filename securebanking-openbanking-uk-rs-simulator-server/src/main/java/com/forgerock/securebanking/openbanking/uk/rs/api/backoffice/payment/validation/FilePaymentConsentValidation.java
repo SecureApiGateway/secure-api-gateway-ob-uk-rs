@@ -34,8 +34,9 @@ public class FilePaymentConsentValidation extends PaymentConsentValidation {
     }
 
     @Override
-    public <T> boolean validate(T consent) {
-        // TODO validate OBWriteFileConsent3
-        return true;
+    public <T> void validate(T consent) {
+        errors.clear();
+        validateNumberTransactions(((OBWriteFileConsent3) consent).getData().getInitiation().getNumberOfTransactions());
+        validateControlSum(((OBWriteFileConsent3) consent).getData().getInitiation().getControlSum());
     }
 }

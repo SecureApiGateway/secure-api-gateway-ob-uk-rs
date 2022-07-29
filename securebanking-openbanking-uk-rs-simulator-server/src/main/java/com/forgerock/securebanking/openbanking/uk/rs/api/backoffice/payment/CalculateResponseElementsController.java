@@ -30,8 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.error.OBError1;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -52,7 +54,6 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String body,
             String intent,
             String version,
-            String xValidationTestFailure,
             String xFapiFinancialId,
             String xFapiAuthDate,
             String xFapiCustomerIpAddress,
@@ -69,22 +70,26 @@ public class CalculateResponseElementsController implements CalculateResponseEle
 
             PaymentConsentValidation validation = PaymentConsentValidationFactory.getValidationInstance(intent);
             Object consentRequest = mapper.readValue(body, validation.getRequestClass(apiVersion));
+            validation.validate(consentRequest);
 
-            if (validation.validate(mapper.readValue(body, consentRequest.getClass())) && !Boolean.parseBoolean(xValidationTestFailure)) {
-                log.debug("{}, Validation passed for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
-
-                PaymentConsentResponseCalculation calculation = PaymentConsentResponseCalculationFactory.getCalculationInstance(intent);
-                Object consentResponseObject = mapper.readValue(body, calculation.getResponseClass(apiVersion));
-                Object consentEntityResponse = calculation.calculate(consentRequest, consentResponseObject);
-
-                log.debug("{}, Calculation done for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
-                log.debug("{}, Sending the response {}", xFapiFinancialId, mapper.writeValueAsString(consentEntityResponse));
-
-                return ResponseEntity.ok(consentEntityResponse);
-            } else {
-                log.error("{}, Validation failed for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
-                throw badRequestResponseException(String.format("[%s] validation failed", intentType));
+            if (haveErrorEvents(validation.getErrors(), xFapiFinancialId)) {
+                throw badRequestResponseException(validation.getErrors());
             }
+
+            log.debug("{}, Validation passed for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
+
+            PaymentConsentResponseCalculation calculation = PaymentConsentResponseCalculationFactory.getCalculationInstance(intent);
+            Object consentResponseObject = mapper.readValue(body, calculation.getResponseClass(apiVersion));
+            Object consentEntityResponse = calculation.calculate(consentRequest, consentResponseObject);
+
+            if (haveErrorEvents(calculation.getErrors(), xFapiFinancialId)) {
+                throw badRequestResponseException(calculation.getErrors());
+            }
+
+            log.debug("{}, Calculation done for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
+            log.debug("{}, Sending the response {}", xFapiFinancialId, mapper.writeValueAsString(consentEntityResponse));
+
+            return ResponseEntity.ok(consentEntityResponse);
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);
@@ -106,6 +111,22 @@ public class CalculateResponseElementsController implements CalculateResponseEle
                 OBRIErrorResponseCategory.REQUEST_INVALID,
                 OBRIErrorType.DATA_INVALID_REQUEST
                         .toOBError1(message)
+        );
+    }
+
+    private boolean haveErrorEvents(List<OBError1> errors, String xFapiFinancialId) {
+        if (!errors.isEmpty()) {
+            log.error("{}, Errors {}", xFapiFinancialId, errors);
+            return true;
+        }
+        return false;
+    }
+
+    private OBErrorResponseException badRequestResponseException(List<OBError1> errors) {
+        return new OBErrorResponseException(
+                HttpStatus.BAD_REQUEST,
+                OBRIErrorResponseCategory.REQUEST_INVALID,
+                errors
         );
     }
 }
