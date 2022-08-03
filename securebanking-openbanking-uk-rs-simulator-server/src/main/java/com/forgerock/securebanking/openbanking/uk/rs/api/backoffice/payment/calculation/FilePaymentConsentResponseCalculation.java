@@ -27,19 +27,16 @@ import java.util.List;
  * Validation class for Domestic Payment Consent response
  * <ul>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse3} from v3.1.2 to v3.1.3
+ *         Consent response {@link OBWriteFileConsentResponse3} from v3.1.2 to v3.1.4
  *     </li>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse4} for v3.1.4
- *     </li>
- *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse5} from v3.1.5 to v3.1.10
+ *         Consent response {@link OBWriteFileConsentResponse4} from v3.1.5 to v3.1.10
  *     </li>
  * </ul>
  */
 @SuppressWarnings("unchecked")
 @Slf4j
-public class DomesticPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
+public class FilePaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
 
     public static final String TYPE = "UK.OBIE.CHAPSOut";
 

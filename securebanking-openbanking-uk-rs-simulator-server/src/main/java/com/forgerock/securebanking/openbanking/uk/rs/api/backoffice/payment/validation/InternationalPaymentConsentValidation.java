@@ -47,15 +47,15 @@ public class InternationalPaymentConsentValidation extends PaymentConsentValidat
         errors.clear();
         if (consent instanceof OBWriteInternationalConsent3) {
             validateInstructedAmount(((OBWriteInternationalConsent3) consent).getData().getInitiation().getInstructedAmount());
-            validateExchangeRateInformation(((OBWriteInternationalConsent3) consent).getData().getInitiation().getExchangeRateInformation());
+            validateExchangeRateInformation(((OBWriteInternationalConsent3) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalConsent3) consent).getData().getInitiation().getCurrencyOfTransfer());
             return;
         } else if (consent instanceof OBWriteInternationalConsent4) {
             validateInstructedAmount(((OBWriteInternationalConsent4) consent).getData().getInitiation().getInstructedAmount());
-            validateExchangeRateInformation(((OBWriteInternationalConsent4) consent).getData().getInitiation().getExchangeRateInformation());
+            validateExchangeRateInformation(((OBWriteInternationalConsent4) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalConsent4) consent).getData().getInitiation().getCurrencyOfTransfer());
             return;
         }
         validateInstructedAmount(((OBWriteInternationalConsent5) consent).getData().getInitiation().getInstructedAmount());
-        validateExchangeRateInformation(((OBWriteInternationalConsent5) consent).getData().getInitiation().getExchangeRateInformation());
+        validateExchangeRateInformation(((OBWriteInternationalConsent5) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalConsent5) consent).getData().getInitiation().getCurrencyOfTransfer());
     }
 
 }

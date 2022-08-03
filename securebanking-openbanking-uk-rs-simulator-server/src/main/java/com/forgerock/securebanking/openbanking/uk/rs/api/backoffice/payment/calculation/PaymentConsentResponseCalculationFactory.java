@@ -31,28 +31,22 @@ public class PaymentConsentResponseCalculationFactory {
                 return new DomesticPaymentConsentResponseCalculation();
             }
             case PAYMENT_DOMESTIC_SCHEDULED_CONSENT -> {
-                return null;
-//                return new DomesticScheduledPaymentConsentResponseCalculation();
+                return new DomesticScheduledPaymentConsentResponseCalculation();
             }
             case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT -> {
-                return null;
-//                return new DomesticStandingOrdersConsentResponseCalculation();
+                return new DomesticStandingOrderConsentResponseCalculation();
             }
             case PAYMENT_INTERNATIONAL_CONSENT -> {
-                return null;
-//                return new InternationalPaymentConsentResponseCalculation();
+                return new InternationalPaymentConsentResponseCalculation();
             }
             case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT -> {
-                return null;
-//                return new InternationalScheduledPaymentConsentResponseCalculation();
+                return new InternationalScheduledPaymentConsentResponseCalculation();
             }
             case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT -> {
-                return null;
-//                return new InternationalStandingOrdersConsentResponseCalculation();
+                return new InternationalStandingOrderConsentResponseCalculation();
             }
             case PAYMENT_FILE_CONSENT -> {
-                return null;
-//                return new FilePaymentConsentResponseCalculation();
+                return new FilePaymentConsentResponseCalculation();
             }
             default -> {
                 String message = String.format("Invalid type for intent ID: '%s'", consentId);
