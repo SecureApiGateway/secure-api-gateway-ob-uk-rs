@@ -19,6 +19,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.common.Currencies;
 import com.google.common.base.Strings;
 import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2DataInitiationExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
@@ -39,6 +40,7 @@ public abstract class GenericValidations {
 
     /**
      * Get the error events list to build the error response
+     *
      * @return list of {@link OBError1}
      */
     public List<OBError1> getErrors() {
@@ -53,22 +55,84 @@ public abstract class GenericValidations {
         validateCurrency(instructedAmount.getCurrency());
     }
 
-    protected void validateExchangeRateInformation(OBWriteInternational2DataInitiationExchangeRateInformation exchangeRateInformation) {
-        if (isNull(exchangeRateInformation, "ExchangeRateInformation")) {
+    protected void validateExchangeRateInformation(OBWriteInternational2DataInitiationExchangeRateInformation exchangeRateInformation, String currencyOfTransfer) {
+        if (exchangeRateInformation == null) {
             return;
         }
-        // TODO the validation
-        // exchangeRateInformation.getRateType();
 
+        if (isNull(currencyOfTransfer, "CurrencyOfTransfer")) {
+            return;
+        }
+        validateCurrency(currencyOfTransfer);
+
+        if (isNull(exchangeRateInformation.getUnitCurrency(), "UnitCurrency")) {
+            return;
+        }
+        validateCurrency(exchangeRateInformation.getUnitCurrency());
+
+        if (isNull(exchangeRateInformation.getRateType(), "RateType")) {
+            return;
+        }
+        OBExchangeRateType2Code rateType = exchangeRateInformation.getRateType();
+        switch (rateType) {
+            case AGREED -> {
+                if (!exchangeRateInformation.getUnitCurrency().equals(currencyOfTransfer)) {
+                    errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("The currency of transfer should be the same with the unit currency.")
+                    ));
+                }
+            }
+            case ACTUAL, INDICATIVE -> {
+                if (!(exchangeRateInformation.getExchangeRate() == null && exchangeRateInformation.getContractIdentification() == null)) {
+                    errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("A PISP must not specify ExchangeRate and/or ContractIdentification when requesting an %s RateType.", rateType)
+                    ));
+                }
+            }
+            default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                    String.format("The rate type %s provided isn't valid", rateType)
+            ));
+        }
     }
 
-    protected void validateExchangeRateInformation(OBWriteInternational3DataInitiationExchangeRateInformation exchangeRateInformation) {
-        if (isNull(exchangeRateInformation, "ExchangeRateInformation")) {
+    protected void validateExchangeRateInformation(OBWriteInternational3DataInitiationExchangeRateInformation exchangeRateInformation, String currencyOfTransfer) {
+        if (exchangeRateInformation == null) {
             return;
         }
-        // TODO the validation
-        // exchangeRateInformation.getRateType();
 
+        if (isNull(currencyOfTransfer, "CurrencyOfTransfer")) {
+            return;
+        }
+        validateCurrency(currencyOfTransfer);
+
+        if (isNull(exchangeRateInformation.getUnitCurrency(), "UnitCurrency")) {
+            return;
+        }
+        validateCurrency(exchangeRateInformation.getUnitCurrency());
+
+        if (isNull(exchangeRateInformation.getRateType(), "RateType")) {
+            return;
+        }
+        OBExchangeRateType2Code rateType = exchangeRateInformation.getRateType();
+        switch (rateType) {
+            case AGREED -> {
+                if (!exchangeRateInformation.getUnitCurrency().equals(currencyOfTransfer)) {
+                    errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("The currency of transfer should be the same with the exchange unit currency.")
+                    ));
+                }
+            }
+            case ACTUAL, INDICATIVE -> {
+                if (!(exchangeRateInformation.getExchangeRate() == null && exchangeRateInformation.getContractIdentification() == null)) {
+                    errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("A PISP must not specify ExchangeRate and/or ContractIdentification when requesting an %s RateType.", rateType)
+                    ));
+                }
+            }
+            default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                    String.format("The rate type %s provided isn't valid", rateType)
+            ));
+        }
     }
 
     protected void validateAmount(String amount) {

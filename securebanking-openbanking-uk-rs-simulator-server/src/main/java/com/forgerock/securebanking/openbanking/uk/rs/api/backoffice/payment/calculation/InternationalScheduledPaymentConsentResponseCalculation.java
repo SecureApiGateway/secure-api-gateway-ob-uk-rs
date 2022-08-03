@@ -27,40 +27,45 @@ import java.util.List;
  * Validation class for Domestic Payment Consent response
  * <ul>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse3} from v3.1.2 to v3.1.3
+ *         Consent response {@link OBWriteInternationalScheduledConsentResponse3} for v3.1.2
  *     </li>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse4} for v3.1.4
+ *         Consent response {@link OBWriteInternationalScheduledConsentResponse4} for v3.1.3
  *     </li>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse5} from v3.1.5 to v3.1.10
+ *         Consent response {@link OBWriteInternationalScheduledConsentResponse5} for v3.1.4
+ *     </li>
+ *     <li>
+ *         Consent response {@link OBWriteInternationalScheduledConsentResponse6} from v3.1.5 to v3.1.10
  *     </li>
  * </ul>
  */
 @SuppressWarnings("unchecked")
 @Slf4j
-public class DomesticPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
+public class InternationalScheduledPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
 
     public static final String TYPE = "UK.OBIE.CHAPSOut";
 
     @Override
     public Class getResponseClass(OBVersion version) {
         log.debug("{} is the version to calculate response elements", version.getCanonicalName());
-        if (version.isBeforeVersion(OBVersion.v3_1_4)) {
-            return OBWriteDomesticConsentResponse3.class;
+        if (version.equals(OBVersion.v3_1_2)) {
+            return OBWriteInternationalScheduledConsentResponse3.class;
+        } else if (version.equals(OBVersion.v3_1_3)) {
+            return OBWriteInternationalScheduledConsentResponse4.class;
         } else if (version.equals(OBVersion.v3_1_4)) {
-            return OBWriteDomesticConsentResponse4.class;
+            return OBWriteInternationalScheduledConsentResponse5.class;
         }
-        return OBWriteDomesticConsentResponse5.class;
+        return OBWriteInternationalScheduledConsentResponse6.class;
     }
 
     @Override
     public <T, R> R calculate(T consentRequest, R consentResponse) {
         errors.clear();
 
-        if (consentResponse instanceof OBWriteDomesticConsentResponse3) {
-            log.debug("OBWriteDomesticConsentResponse3 instance");
-            ((OBWriteDomesticConsentResponse3) consentResponse)
+        if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse3) {
+            log.debug("OBWriteInternationalScheduledConsentResponse3 instance");
+            ((OBWriteInternationalScheduledConsentResponse3) consentResponse)
                     .getData()
                     .addChargesItem(
                             new OBWriteDomesticConsentResponse3DataCharges()
@@ -68,10 +73,19 @@ public class DomesticPaymentConsentResponseCalculation extends PaymentConsentRes
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
-
-        } else if (consentResponse instanceof OBWriteDomesticConsentResponse4) {
-            log.debug("OBWriteDomesticConsentResponse4 instance");
-            ((OBWriteDomesticConsentResponse4) consentResponse)
+        } else if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse4) {
+            log.debug("OBWriteInternationalScheduledConsentResponse4 instance");
+            ((OBWriteInternationalScheduledConsentResponse4) consentResponse)
+                    .getData()
+                    .addChargesItem(
+                            new OBWriteDomesticConsentResponse3DataCharges()
+                                    .chargeBearer(OBChargeBearerType1Code.BORNEBYDEBTOR)
+                                    .type(TYPE)
+                                    .amount(getDefaultAmount())
+                    );
+        } else if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse5) {
+            log.debug("OBWriteInternationalScheduledConsentResponse5 instance");
+            ((OBWriteInternationalScheduledConsentResponse5) consentResponse)
                     .getData()
                     .addChargesItem(
                             new OBWriteDomesticConsentResponse4DataCharges()
@@ -79,9 +93,10 @@ public class DomesticPaymentConsentResponseCalculation extends PaymentConsentRes
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
-        } else {
-            log.debug("OBWriteDomesticConsentResponse5 instance");
-            ((OBWriteDomesticConsentResponse5) consentResponse)
+        }
+        else {
+            log.debug("OBWriteInternationalScheduledConsentResponse6 instance");
+            ((OBWriteInternationalScheduledConsentResponse6) consentResponse)
                     .getData()
                     .addChargesItem(
                             new OBWriteDomesticConsentResponse5DataCharges().

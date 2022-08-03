@@ -24,22 +24,22 @@ import uk.org.openbanking.datamodel.payment.*;
 import java.util.List;
 
 /**
- * Validation class for Domestic Payment Consent response
+ * Validation class for Domestic Scheduled Payment Consent response
  * <ul>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse3} from v3.1.2 to v3.1.3
+ *         Consent response {@link OBWriteDomesticScheduledConsentResponse3} from v3.1.2 to v3.1.3
  *     </li>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse4} for v3.1.4
+ *         Consent response {@link OBWriteDomesticScheduledConsentResponse4} for v3.1.4
  *     </li>
  *     <li>
- *         Consent response {@link OBWriteDomesticConsentResponse5} from v3.1.5 to v3.1.10
+ *         Consent response {@link OBWriteDomesticScheduledConsentResponse5} from v3.1.5 to v3.1.10
  *     </li>
  * </ul>
  */
 @SuppressWarnings("unchecked")
 @Slf4j
-public class DomesticPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
+public class DomesticScheduledPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
 
     public static final String TYPE = "UK.OBIE.CHAPSOut";
 
@@ -47,20 +47,20 @@ public class DomesticPaymentConsentResponseCalculation extends PaymentConsentRes
     public Class getResponseClass(OBVersion version) {
         log.debug("{} is the version to calculate response elements", version.getCanonicalName());
         if (version.isBeforeVersion(OBVersion.v3_1_4)) {
-            return OBWriteDomesticConsentResponse3.class;
+            return OBWriteDomesticScheduledConsentResponse3.class;
         } else if (version.equals(OBVersion.v3_1_4)) {
-            return OBWriteDomesticConsentResponse4.class;
+            return OBWriteDomesticScheduledConsentResponse4.class;
         }
-        return OBWriteDomesticConsentResponse5.class;
+        return OBWriteDomesticScheduledConsentResponse5.class;
     }
 
     @Override
     public <T, R> R calculate(T consentRequest, R consentResponse) {
         errors.clear();
 
-        if (consentResponse instanceof OBWriteDomesticConsentResponse3) {
-            log.debug("OBWriteDomesticConsentResponse3 instance");
-            ((OBWriteDomesticConsentResponse3) consentResponse)
+        if (consentResponse instanceof OBWriteDomesticScheduledConsentResponse3) {
+            log.debug("OBWriteDomesticScheduledConsentResponse3 instance");
+            ((OBWriteDomesticScheduledConsentResponse3) consentResponse)
                     .getData()
                     .addChargesItem(
                             new OBWriteDomesticConsentResponse3DataCharges()
@@ -69,9 +69,9 @@ public class DomesticPaymentConsentResponseCalculation extends PaymentConsentRes
                                     .amount(getDefaultAmount())
                     );
 
-        } else if (consentResponse instanceof OBWriteDomesticConsentResponse4) {
-            log.debug("OBWriteDomesticConsentResponse4 instance");
-            ((OBWriteDomesticConsentResponse4) consentResponse)
+        } else if (consentResponse instanceof OBWriteDomesticScheduledConsentResponse4) {
+            log.debug("OBWriteDomesticScheduledConsentResponse4 instance");
+            ((OBWriteDomesticScheduledConsentResponse4) consentResponse)
                     .getData()
                     .addChargesItem(
                             new OBWriteDomesticConsentResponse4DataCharges()
@@ -80,8 +80,8 @@ public class DomesticPaymentConsentResponseCalculation extends PaymentConsentRes
                                     .amount(getDefaultAmount())
                     );
         } else {
-            log.debug("OBWriteDomesticConsentResponse5 instance");
-            ((OBWriteDomesticConsentResponse5) consentResponse)
+            log.debug("OBWriteDomesticScheduledConsentResponse5 instance");
+            ((OBWriteDomesticScheduledConsentResponse5) consentResponse)
                     .getData()
                     .addChargesItem(
                             new OBWriteDomesticConsentResponse5DataCharges().

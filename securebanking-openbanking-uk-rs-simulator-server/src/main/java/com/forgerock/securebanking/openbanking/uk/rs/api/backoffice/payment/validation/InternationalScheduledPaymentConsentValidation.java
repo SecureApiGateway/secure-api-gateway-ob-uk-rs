@@ -48,14 +48,14 @@ public class InternationalScheduledPaymentConsentValidation extends PaymentConse
         errors.clear();
         if (consent instanceof OBWriteInternationalScheduledConsent3) {
             validateInstructedAmount(((OBWriteInternationalScheduledConsent3) consent).getData().getInitiation().getInstructedAmount());
-            validateExchangeRateInformation(((OBWriteInternationalScheduledConsent3) consent).getData().getInitiation().getExchangeRateInformation());
+            validateExchangeRateInformation(((OBWriteInternationalScheduledConsent3) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalScheduledConsent3) consent).getData().getInitiation().getCurrencyOfTransfer());
             return;
         } else if (consent instanceof OBWriteInternationalScheduledConsent4) {
             validateInstructedAmount(((OBWriteInternationalScheduledConsent4) consent).getData().getInitiation().getInstructedAmount());
-            validateExchangeRateInformation(((OBWriteInternationalScheduledConsent4) consent).getData().getInitiation().getExchangeRateInformation());
+            validateExchangeRateInformation(((OBWriteInternationalScheduledConsent4) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalScheduledConsent4) consent).getData().getInitiation().getCurrencyOfTransfer());
             return;
         }
         validateInstructedAmount(((OBWriteInternationalScheduledConsent5) consent).getData().getInitiation().getInstructedAmount());
-        validateExchangeRateInformation(((OBWriteInternationalScheduledConsent5) consent).getData().getInitiation().getExchangeRateInformation());
+        validateExchangeRateInformation(((OBWriteInternationalScheduledConsent5) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalScheduledConsent5) consent).getData().getInitiation().getCurrencyOfTransfer());
     }
 }
