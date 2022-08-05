@@ -15,6 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.common;
 
+import com.forgerock.securebanking.openbanking.uk.rs.common.filepayment.PaymentFileType;
+
 /**
  * Enum to ISO 4217 "Codes for the representation of currencies supported by SBAT"
  */
@@ -205,5 +207,14 @@ public enum Currencies {
 
     public String getDescription() {
         return description;
+    }
+
+    public static Currencies fromCode(String value) {
+        for (Currencies currency : Currencies.values()) {
+            if (currency.code.equals(value)) {
+                return currency;
+            }
+        }
+        throw new UnsupportedOperationException("Unsupported currency code: '" + value + "'");
     }
 }

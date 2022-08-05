@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calculation;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.utils.DefaultData;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
@@ -73,6 +74,19 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
+
+            if (((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalScheduledConsentResponse3 instance uses default exchangeRate");
+                ((OBWriteInternationalScheduledConsentResponse3) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational2DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
+
         } else if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse4) {
             log.debug("OBWriteInternationalScheduledConsentResponse4 instance");
             ((OBWriteInternationalScheduledConsentResponse4) consentResponse)
@@ -83,6 +97,19 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
+
+            if (((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalScheduledConsentResponse4 instance uses default exchangeRate");
+                ((OBWriteInternationalScheduledConsentResponse4) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
+
         } else if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse5) {
             log.debug("OBWriteInternationalScheduledConsentResponse5 instance");
             ((OBWriteInternationalScheduledConsentResponse5) consentResponse)
@@ -93,6 +120,19 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
+
+            if (((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalScheduledConsentResponse5 instance uses default exchangeRate");
+                ((OBWriteInternationalScheduledConsentResponse5) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
+
         }
         else {
             log.debug("OBWriteInternationalScheduledConsentResponse6 instance");
@@ -104,6 +144,18 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
+
+            if (((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalScheduledConsentResponse6 instance uses default exchangeRate");
+                ((OBWriteInternationalScheduledConsentResponse6) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
         }
         return consentResponse;
     }
