@@ -39,7 +39,7 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 @Slf4j
-public class DomesticPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
+public class DomesticPaymentConsentResponseCalculation extends  PaymentConsentResponseCalculation {
 
     public static final String TYPE = "UK.OBIE.CHAPSOut";
 

@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calculation;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.utils.DefaultData;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
@@ -73,6 +74,18 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
+            if (((OBWriteInternationalConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalConsentResponse3 instance uses default exchangeRate");
+                ((OBWriteInternationalConsentResponse3) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational2DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalConsentResponse3) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalConsentResponse3) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
+
         } else if (consentResponse instanceof OBWriteInternationalConsentResponse4) {
             log.debug("OBWriteInternationalConsentResponse4 instance");
             ((OBWriteInternationalConsentResponse4) consentResponse)
@@ -83,6 +96,18 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
+            if (((OBWriteInternationalConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalConsentResponse4 instance uses default exchangeRate");
+                ((OBWriteInternationalConsentResponse4) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalConsentResponse4) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalConsentResponse4) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
+
         } else if (consentResponse instanceof OBWriteInternationalConsentResponse5) {
             log.debug("OBWriteInternationalConsentResponse5 instance");
             ((OBWriteInternationalConsentResponse5) consentResponse)
@@ -93,8 +118,20 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
-        }
-        else {
+
+            if (((OBWriteInternationalConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalConsentResponse5 instance uses default exchangeRate");
+                ((OBWriteInternationalConsentResponse5) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalConsentResponse5) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalConsentResponse5) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
+
+        } else {
             log.debug("OBWriteInternationalConsentResponse6 instance");
             ((OBWriteInternationalConsentResponse6) consentResponse)
                     .getData()
@@ -104,7 +141,20 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
+
+            if (((OBWriteInternationalConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
+                log.debug("OBWriteInternationalConsentResponse6 instance uses default exchangeRate");
+                ((OBWriteInternationalConsentResponse6) consentResponse)
+                        .getData().
+                        getInitiation()
+                        .setExchangeRateInformation(
+                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
+                                        ((OBWriteInternationalConsentResponse6) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency(),
+                                        ((OBWriteInternationalConsentResponse6) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+                        );
+            }
         }
+
         return consentResponse;
     }
 
