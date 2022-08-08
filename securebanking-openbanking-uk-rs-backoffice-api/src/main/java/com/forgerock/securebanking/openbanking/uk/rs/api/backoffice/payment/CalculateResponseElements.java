@@ -33,7 +33,13 @@ public interface CalculateResponseElements {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Response elements successfully calculated", response = String.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
-            @ApiResponse(code = 403, message = "Validation failed", response = OBErrorResponse1.class)
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Validation failed", response = OBErrorResponse1.class),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 406, message = "Not Acceptable"),
+            @ApiResponse(code = 429, message = "Too Many Requests"),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
     @RequestMapping(value = "/calculate-elements",
             produces = {"application/json; charset=utf-8"},

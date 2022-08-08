@@ -34,8 +34,7 @@ import uk.org.openbanking.datamodel.payment.*;
 
 import java.net.URI;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.API_VERSION_DESCRIPTION;
-import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.INTENT_TYPE_DESCRIPTION;
+import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.*;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredBackofficeHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -109,7 +108,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -127,7 +126,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -145,7 +144,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -182,7 +181,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -219,7 +218,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -275,7 +274,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -293,7 +292,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -311,7 +310,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -348,7 +347,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -385,7 +384,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -441,7 +440,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -459,7 +458,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -477,7 +476,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 

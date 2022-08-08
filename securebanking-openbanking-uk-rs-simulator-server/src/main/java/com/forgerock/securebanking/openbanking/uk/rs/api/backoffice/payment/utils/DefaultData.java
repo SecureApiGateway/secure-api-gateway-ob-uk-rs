@@ -15,11 +15,19 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.utils;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2DataInitiationExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.common.Currencies.fromCode;
 
@@ -30,7 +38,7 @@ public class DefaultData {
     {
         return new OBWriteInternational2DataInitiationExchangeRateInformation()
                 .rateType(OBExchangeRateType2Code.AGREED)
-                .exchangeRate(new BigDecimal(ExchangeRate.getConversionRateForCurrency(fromCode(instructedAmountCurrency), fromCode(currencyOfTransfer))))
+                .exchangeRate(BigDecimal.valueOf(ExchangeRate.getConversionRateForCurrency(fromCode(instructedAmountCurrency), fromCode(currencyOfTransfer))))
                 .contractIdentification(CONTRACT_IDENTIFICATION)
                 .unitCurrency(currencyOfTransfer);
     }
@@ -39,7 +47,7 @@ public class DefaultData {
     {
         return new OBWriteInternational3DataInitiationExchangeRateInformation()
                 .rateType(OBExchangeRateType2Code.AGREED)
-                .exchangeRate(new BigDecimal(ExchangeRate.getConversionRateForCurrency(fromCode(instructedAmountCurrency), fromCode(currencyOfTransfer))))
+                .exchangeRate(BigDecimal.valueOf(ExchangeRate.getConversionRateForCurrency(fromCode(instructedAmountCurrency), fromCode(currencyOfTransfer))))
                 .contractIdentification(CONTRACT_IDENTIFICATION)
                 .unitCurrency(currencyOfTransfer);
     }

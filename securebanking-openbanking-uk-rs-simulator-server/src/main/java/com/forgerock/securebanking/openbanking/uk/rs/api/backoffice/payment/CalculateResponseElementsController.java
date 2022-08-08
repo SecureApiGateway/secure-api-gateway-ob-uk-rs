@@ -16,7 +16,6 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
@@ -24,6 +23,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategor
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calculation.PaymentConsentResponseCalculation;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calculation.PaymentConsentResponseCalculationFactory;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.utils.CustomObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.PaymentConsentValidation;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.PaymentConsentValidationFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -43,10 +43,10 @@ public class CalculateResponseElementsController implements CalculateResponseEle
     public static final String VALIDATION_TEST_FAILURE_HEADER = "x-validation-test-failure";
     public static final String API_VERSION_DESCRIPTION = "Api version";
     public static final String INTENT_TYPE_DESCRIPTION = "Intent type";
-    private ObjectMapper mapper;
+    public static CustomObjectMapper customObjectMapper;
 
-    public CalculateResponseElementsController(ObjectMapper mapper) {
-        this.mapper = mapper;
+    public CalculateResponseElementsController() {
+        customObjectMapper = CustomObjectMapper.getCustomObjectMapper();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             log.debug("{}, Consent request\n {}", xFapiFinancialId, body);
 
             PaymentConsentValidation validation = PaymentConsentValidationFactory.getValidationInstance(intent);
-            Object consentRequest = mapper.readValue(body, validation.getRequestClass(apiVersion));
+            Object consentRequest = CustomObjectMapper.getObjectMapper().readValue(body, validation.getRequestClass(apiVersion));
             validation.validate(consentRequest);
 
             if (haveErrorEvents(validation.getErrors(), xFapiFinancialId)) {
@@ -79,7 +79,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             log.debug("{}, Validation passed for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
 
             PaymentConsentResponseCalculation calculation = PaymentConsentResponseCalculationFactory.getCalculationInstance(intent);
-            Object consentResponseObject = mapper.readValue(body, calculation.getResponseClass(apiVersion));
+            Object consentResponseObject = customObjectMapper.getObjectMapper().readValue(body, calculation.getResponseClass(apiVersion));
             Object consentEntityResponse = calculation.calculate(consentRequest, consentResponseObject);
 
             if (haveErrorEvents(calculation.getErrors(), xFapiFinancialId)) {
@@ -87,7 +87,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             }
 
             log.debug("{}, Calculation done for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
-            log.debug("{}, Sending the response {}", xFapiFinancialId, mapper.writeValueAsString(consentEntityResponse));
+            log.debug("{}, Sending the response {}", xFapiFinancialId, customObjectMapper.getObjectMapper().writeValueAsString(consentEntityResponse));
 
             return ResponseEntity.ok(consentEntityResponse);
         } catch (UnsupportedOperationException | JsonProcessingException e) {

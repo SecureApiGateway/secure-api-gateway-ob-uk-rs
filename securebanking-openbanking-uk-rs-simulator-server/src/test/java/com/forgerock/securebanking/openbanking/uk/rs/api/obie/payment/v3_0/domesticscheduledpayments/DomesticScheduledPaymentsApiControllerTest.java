@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticscheduledpayments;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse1;
 
 import java.util.UUID;
 
+import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.customObjectMapper;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -63,7 +65,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
     }
 
     @Test
-    public void shouldCreateDomesticScheduledPayment() {
+    public void shouldCreateDomesticScheduledPayment() throws JsonProcessingException {
         // Given
         OBWriteDomesticScheduled1 payment = aValidOBWriteDomesticScheduled1();
         HttpEntity<OBWriteDomesticScheduled1> request = new HttpEntity<>(payment, HTTP_HEADERS);
@@ -76,12 +78,12 @@ public class DomesticScheduledPaymentsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OBWriteDataDomesticScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(payment.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
     }
 
     @Test
-    public void shouldGetDomesticScheduledPaymentById() {
+    public void shouldGetDomesticScheduledPaymentById() throws JsonProcessingException {
         // Given
         OBWriteDomesticScheduled1 payment = aValidOBWriteDomesticScheduled1();
         HttpEntity<OBWriteDomesticScheduled1> request = new HttpEntity<>(payment, HTTP_HEADERS);
@@ -95,7 +97,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDataDomesticScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
+        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(payment.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
     }
 
