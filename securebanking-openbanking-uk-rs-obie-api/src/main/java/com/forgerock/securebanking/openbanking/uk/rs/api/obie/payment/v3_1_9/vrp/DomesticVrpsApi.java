@@ -37,7 +37,7 @@ import java.security.Principal;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
-@Api(tags = {"v3.1.8", SwaggerApiTags.VRP_PAYMENT_TAG})
+@Api(tags = {"v3.1.9", SwaggerApiTags.VRP_PAYMENT_TAG})
 @RequestMapping(value = "/open-banking/v3.1.9/pisp")
 public interface DomesticVrpsApi {
 
