@@ -108,7 +108,7 @@ public class ScheduledPaymentsApiControllerTest {
         OBReadScheduledPayment3 returnedPayment = response.getBody();
         assertThat(returnedPayment).isNotNull();
         assertThat(returnedPayment.getData().getScheduledPayment().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ScheduledPaymentsApiControllerTest {
         OBReadScheduledPayment3 returnedPayment = response.getBody();
         assertThat(returnedPayment).isNotNull();
         assertThat(returnedPayment.getData().getScheduledPayment().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountScheduledPaymentsUrl(String accountId) {

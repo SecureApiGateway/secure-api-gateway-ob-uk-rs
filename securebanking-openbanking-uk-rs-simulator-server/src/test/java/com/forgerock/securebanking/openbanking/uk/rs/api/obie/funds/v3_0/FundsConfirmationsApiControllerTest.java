@@ -111,7 +111,7 @@ public class FundsConfirmationsApiControllerTest {
         assertThat(responseData.getReference()).isEqualTo(fundsConfirmation.getData().getReference());
         assertThat(responseData.getInstructedAmount()).isEqualTo(fundsConfirmation.getData().getInstructedAmount());
         assertThat(response.getBody().getMeta()).isNotNull();
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(fundsConfirmationsIdUrl(responseData.getFundsConfirmationId()));
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(fundsConfirmationsIdUrl(responseData.getFundsConfirmationId()));
     }
 
     @Test

@@ -108,7 +108,7 @@ public class StandingOrdersApiControllerTest {
         OBReadStandingOrder6 returnedStandingOrder = response.getBody();
         assertThat(returnedStandingOrder).isNotNull();
         assertThat(returnedStandingOrder.getData().getStandingOrder().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class StandingOrdersApiControllerTest {
         OBReadStandingOrder6 returnedStandingOrder = response.getBody();
         assertThat(returnedStandingOrder).isNotNull();
         assertThat(returnedStandingOrder.getData().getStandingOrder().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountStandingOrdersUrl(String accountId) {

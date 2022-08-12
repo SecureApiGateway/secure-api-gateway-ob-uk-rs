@@ -77,7 +77,7 @@ public class InternationalScheduledPaymentsApiControllerTest {
         OBWriteDataInternationalScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-scheduled-payments/" + responseData.getInternationalScheduledPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-scheduled-payments/" + responseData.getInternationalScheduledPaymentId())).isTrue();
     }
 
     @Test
@@ -96,7 +96,7 @@ public class InternationalScheduledPaymentsApiControllerTest {
         OBWriteDataInternationalScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-scheduled-payments/" + responseData.getInternationalScheduledPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-scheduled-payments/" + responseData.getInternationalScheduledPaymentId())).isTrue();
     }
 
     private String scheduledPaymentsUrl() {

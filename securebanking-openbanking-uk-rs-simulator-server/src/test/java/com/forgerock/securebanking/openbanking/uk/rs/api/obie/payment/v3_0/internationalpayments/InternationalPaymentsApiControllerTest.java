@@ -76,7 +76,7 @@ public class InternationalPaymentsApiControllerTest {
         OBWriteDataInternationalResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
     }
 
     @Test
@@ -95,7 +95,7 @@ public class InternationalPaymentsApiControllerTest {
         OBWriteDataInternationalResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
     }
 
     private String paymentsUrl() {

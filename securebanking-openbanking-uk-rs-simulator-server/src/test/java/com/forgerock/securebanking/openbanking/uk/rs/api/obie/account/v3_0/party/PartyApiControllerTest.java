@@ -108,7 +108,7 @@ public class PartyApiControllerTest {
         assertThat(returnedParty).isNotNull();
         assertThat(returnedParty.getData().getParty().getPartyId()).isEqualTo(partyData.getPartyId());
         assertThat(returnedParty.getData().getParty().getPartyNumber()).isEqualTo(partyData.getPartyNumber());
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class PartyApiControllerTest {
         assertThat(returnedParty).isNotNull();
         assertThat(returnedParty.getData().getParty().getPartyId()).isEqualTo(partyData.getPartyId());
         assertThat(returnedParty.getData().getParty().getPartyNumber()).isEqualTo(partyData.getPartyNumber());
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountPartyUrl(String accountId) {

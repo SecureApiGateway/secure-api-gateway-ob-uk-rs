@@ -20,6 +20,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.org.openbanking.datamodel.common.Links;
 import uk.org.openbanking.datamodel.common.Meta;
 
+import java.net.URI;
+
 public class PaginationUtil {
 
     public static final String PAGE = "page";
@@ -33,9 +35,9 @@ public class PaginationUtil {
     public static Links generateLinks(UriComponentsBuilder uriComponentsBuilder, int page, int totalPages) {
         Links links = new Links();
 
-        String resourceUrl = uriComponentsBuilder.build().encode().toUriString();
+        URI resourceURI = uriComponentsBuilder.build().encode().toUri();
         if (isFirstPage(page)) {
-            links.setSelf(resourceUrl);
+            links.setSelf(resourceURI);
             if (totalPages > 1) {
                 links.setFirst(getUrlWithPage(0, uriComponentsBuilder));
                 //no previous
@@ -59,7 +61,7 @@ public class PaginationUtil {
     }
 
     public static Links generateLinksOnePager(String httpUrl) {
-        String resourceUrl = UriComponentsBuilder.fromHttpUrl(httpUrl).toUriString();
+        URI resourceUrl = UriComponentsBuilder.fromHttpUrl(httpUrl).build().encode().toUri();
 
         Links links = new Links();
         links.setSelf(resourceUrl);
@@ -82,8 +84,8 @@ public class PaginationUtil {
         return metaData;
     }
 
-    private static String getUrlWithPage(int page, UriComponentsBuilder builder) {
-        return builder.replaceQueryParam(PAGE, page).build().encode().toUriString();
+    private static URI getUrlWithPage(int page, UriComponentsBuilder builder) {
+        return builder.replaceQueryParam(PAGE, page).build().encode().toUri();
     }
 
     private static boolean isLastPage(int page, int totalPages) {

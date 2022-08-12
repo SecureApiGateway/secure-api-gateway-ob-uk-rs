@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.event.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -104,7 +105,7 @@ public class CallbackUrlsApiControllerTest {
         assertThat(callbackUrlResponse.getUrl()).isEqualTo(obCallbackUrl1.getData().getUrl());
         assertThat(callbackUrlResponse.getVersion()).isEqualTo(obCallbackUrl1.getData().getVersion());
         assertThat(response.getBody().getMeta()).isNotNull();
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(callbacksUrl);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(callbacksUrl);
     }
 
     @Test
@@ -117,7 +118,7 @@ public class CallbackUrlsApiControllerTest {
         String updatedCallbackUrl = "http://updatedcallbackurl.com";
         obCallbackUrl1.getData().setUrl(updatedCallbackUrl);
         HttpEntity<OBCallbackUrl1> updateRequest = new HttpEntity<>(obCallbackUrl1, headers);
-        String url = callbackIdUrl(persistedCallback.getBody().getData().getCallbackUrlId());
+        URI url = callbackIdUrl(persistedCallback.getBody().getData().getCallbackUrlId());
 
         // When
         ResponseEntity<OBCallbackUrlResponse1> response = restTemplate.exchange(url, PUT, updateRequest, OBCallbackUrlResponse1.class);
@@ -139,7 +140,7 @@ public class CallbackUrlsApiControllerTest {
         obCallbackUrl1.getData().setVersion(v3_0.getCanonicalName());
         HttpEntity<OBCallbackUrl1> updateRequest = new HttpEntity<>(obCallbackUrl1, headers);
         String callbackUrlId = persistedCallback.getBody().getData().getCallbackUrlId();
-        String url = callbackIdUrl(callbackUrlId).replace(v3_1_2.getCanonicalName(), v3_0.getCanonicalName());
+        String url = callbackIdUrl(callbackUrlId).toString().replace(v3_1_2.getCanonicalName(), v3_0.getCanonicalName());
 
         // When
         ResponseEntity<String> response = restTemplate.exchange(url, PUT, updateRequest, String.class);
@@ -156,7 +157,7 @@ public class CallbackUrlsApiControllerTest {
         HttpHeaders headers = requiredEventHttpHeaders(callbacksUrl(), UUID.randomUUID().toString());
         HttpEntity<OBCallbackUrl1> request = new HttpEntity<>(obCallbackUrl1, headers);
         ResponseEntity<OBCallbackUrlResponse1> persistedCallback = restTemplate.postForEntity(callbacksUrl(), request, OBCallbackUrlResponse1.class);
-        String deleteUrl = callbackIdUrl(persistedCallback.getBody().getData().getCallbackUrlId());
+        URI deleteUrl = callbackIdUrl(persistedCallback.getBody().getData().getCallbackUrlId());
 
         // When
         restTemplate.exchange(deleteUrl, DELETE, new HttpEntity<>(headers), Void.class);
@@ -170,8 +171,8 @@ public class CallbackUrlsApiControllerTest {
         return BASE_URL + port + CALLBACK_URI;
     }
 
-    private String callbackIdUrl(String id) {
-        return callbacksUrl() + "/" + id;
+    private URI callbackIdUrl(String id) {
+        return URI.create(callbacksUrl() + "/" + id);
     }
 
     private OBCallbackUrl1 aValidOBCallbackUrl1() {

@@ -108,7 +108,7 @@ public class DirectDebitsApiControllerTest {
         OBReadDirectDebit2 returnedDirectDebit = response.getBody();
         assertThat(returnedDirectDebit).isNotNull();
         assertThat(returnedDirectDebit.getData().getDirectDebit().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class DirectDebitsApiControllerTest {
         OBReadDirectDebit2 returnedDirectDebit = response.getBody();
         assertThat(returnedDirectDebit).isNotNull();
         assertThat(returnedDirectDebit.getData().getDirectDebit().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountDirectDebitsUrl(String accountId) {

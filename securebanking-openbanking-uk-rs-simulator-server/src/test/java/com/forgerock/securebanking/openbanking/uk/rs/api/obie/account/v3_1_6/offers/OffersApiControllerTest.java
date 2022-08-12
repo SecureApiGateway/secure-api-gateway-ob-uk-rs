@@ -108,7 +108,7 @@ public class OffersApiControllerTest {
         OBReadOffer1 returnedOffer = response.getBody();
         assertThat(returnedOffer).isNotNull();
         assertThat(returnedOffer.getData().getOffer().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class OffersApiControllerTest {
         OBReadOffer1 returnedOffer = response.getBody();
         assertThat(returnedOffer).isNotNull();
         assertThat(returnedOffer.getData().getOffer().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountOffersUrl(String accountId) {

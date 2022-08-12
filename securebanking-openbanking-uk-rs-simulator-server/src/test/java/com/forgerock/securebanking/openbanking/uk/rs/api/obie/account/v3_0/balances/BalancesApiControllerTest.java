@@ -108,7 +108,7 @@ public class BalancesApiControllerTest {
         OBReadBalance1 returnedBalance = response.getBody();
         assertThat(returnedBalance).isNotNull();
         assertThat(returnedBalance.getData().getBalance().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class BalancesApiControllerTest {
         OBReadBalance1 returnedBalance = response.getBody();
         assertThat(returnedBalance).isNotNull();
         assertThat(returnedBalance.getData().getBalance().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountBalancesUrl(String accountId) {

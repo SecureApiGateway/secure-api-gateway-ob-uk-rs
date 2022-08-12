@@ -120,7 +120,7 @@ public class StatementsApiControllerTest {
         OBReadStatement2 returnedStatement = response.getBody();
         assertThat(returnedStatement).isNotNull();
         assertThat(returnedStatement.getData().getStatement().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class StatementsApiControllerTest {
         OBReadStatement2 returnedStatement = response.getBody();
         assertThat(returnedStatement).isNotNull();
         assertThat(returnedStatement.getData().getStatement().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
