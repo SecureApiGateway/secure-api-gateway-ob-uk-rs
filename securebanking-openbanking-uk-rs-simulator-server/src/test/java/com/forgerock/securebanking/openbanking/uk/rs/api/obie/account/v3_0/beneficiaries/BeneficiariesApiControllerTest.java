@@ -108,7 +108,7 @@ public class BeneficiariesApiControllerTest {
         OBReadBeneficiary2 returnedBeneficiary = response.getBody();
         assertThat(returnedBeneficiary).isNotNull();
         assertThat(returnedBeneficiary.getData().getBeneficiary().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class BeneficiariesApiControllerTest {
         OBReadBeneficiary2 returnedBeneficiary = response.getBody();
         assertThat(returnedBeneficiary).isNotNull();
         assertThat(returnedBeneficiary.getData().getBeneficiary().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountBeneficiariesUrl(String accountId) {

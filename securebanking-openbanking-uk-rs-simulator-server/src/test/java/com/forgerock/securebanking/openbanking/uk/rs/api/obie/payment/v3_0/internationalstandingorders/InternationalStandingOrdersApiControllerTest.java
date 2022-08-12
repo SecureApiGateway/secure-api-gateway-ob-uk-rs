@@ -77,7 +77,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteDataInternationalStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(standingOrder.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
     }
 
     @Test
@@ -96,7 +96,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteDataInternationalStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(standingOrder.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
     }
 
     private String standingOrderUrl() {

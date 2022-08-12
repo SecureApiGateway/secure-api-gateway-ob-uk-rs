@@ -77,7 +77,7 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDataDomesticStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(standingOrder.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDataDomesticStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(standingOrder.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
     }
 
     private String standingOrderUrl() {

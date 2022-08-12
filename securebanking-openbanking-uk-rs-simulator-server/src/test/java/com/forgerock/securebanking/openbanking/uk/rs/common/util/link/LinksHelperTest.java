@@ -29,6 +29,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse1;
 
+import java.net.URI;
 import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
@@ -80,7 +81,7 @@ public class LinksHelperTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDataDomesticResponse1 responseData = response.getBody().getData();
-        String expectedUrl = "http://localhost:" + port + "/open-banking/v3.0/pisp/domestic-payments/" + responseData.getDomesticPaymentId();
+        URI expectedUrl = URI.create("http://localhost:" + port + "/open-banking/v3.0/pisp/domestic-payments/" + responseData.getDomesticPaymentId());
         assertThat(response.getBody().getLinks().getSelf()).isEqualTo(expectedUrl);
     }
 
@@ -101,7 +102,7 @@ public class LinksHelperTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDataDomesticResponse1 responseData = response.getBody().getData();
-        String expectedUrl = "https://forgerock.com/open-banking/v3.0/pisp/domestic-payments/" + responseData.getDomesticPaymentId();
+        URI expectedUrl = URI.create("https://forgerock.com/open-banking/v3.0/pisp/domestic-payments/" + responseData.getDomesticPaymentId());
         assertThat(response.getBody().getLinks().getSelf()).isEqualTo(expectedUrl);
     }
 

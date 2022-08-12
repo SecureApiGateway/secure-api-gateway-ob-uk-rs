@@ -112,7 +112,7 @@ public class ProductsApiControllerTest {
         OBReadProduct2 returnedProduct = response.getBody();
         assertThat(returnedProduct).isNotNull();
         assertThat(returnedProduct.getData().getProduct().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class ProductsApiControllerTest {
         OBReadProduct2 returnedProduct = response.getBody();
         assertThat(returnedProduct).isNotNull();
         assertThat(returnedProduct.getData().getProduct().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountProductUrl(String accountId) {

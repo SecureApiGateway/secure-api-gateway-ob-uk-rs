@@ -109,7 +109,7 @@ public class TransactionsApiControllerTest {
         OBReadTransaction3 returnedTransaction = response.getBody();
         assertThat(returnedTransaction).isNotNull();
         assertThat(returnedTransaction.getData().getTransaction().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class TransactionsApiControllerTest {
         OBReadTransaction3 returnedTransaction = response.getBody();
         assertThat(returnedTransaction).isNotNull();
         assertThat(returnedTransaction.getData().getTransaction().get(0).getAccountId()).isEqualTo(accountId);
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     private String accountTransactionsUrl(String accountId) {
