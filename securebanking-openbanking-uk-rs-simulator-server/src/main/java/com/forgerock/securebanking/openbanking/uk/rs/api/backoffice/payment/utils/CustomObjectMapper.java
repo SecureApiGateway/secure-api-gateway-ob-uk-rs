@@ -23,19 +23,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import uk.org.openbanking.jackson.DateTimeDeserializer;
+import uk.org.openbanking.jackson.DateTimeSerializer;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import static org.joda.time.format.ISODateTimeFormat.dateTimeNoMillis;
 
 public class CustomObjectMapper {
     private static CustomObjectMapper customObjectMapper;
@@ -45,8 +43,8 @@ public class CustomObjectMapper {
         Jackson2ObjectMapperBuilderCustomizer customizer =
                 jacksonObjectMapperBuilder -> {
                     jacksonObjectMapperBuilder.featuresToEnable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-                    jacksonObjectMapperBuilder.serializerByType(BigDecimal.class, new BigDecimalSerializer(BigDecimal.class));
-                    jacksonObjectMapperBuilder.deserializerByType(BigDecimal.class, new BigDecimalDeserializer());
+                    jacksonObjectMapperBuilder.serializerByType(BigDecimal.class, new Min2DecimalPlacesBigDecimalSerializer(BigDecimal.class));
+                    jacksonObjectMapperBuilder.deserializerByType(BigDecimal.class, new Min2DecimalPlacesBigDecimalDeserializer());
                     jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
                     jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
                     jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
@@ -71,9 +69,9 @@ public class CustomObjectMapper {
         return objectMapper;
     }
 
-    public static class BigDecimalSerializer extends StdSerializer<BigDecimal> {
+    public static class Min2DecimalPlacesBigDecimalSerializer extends StdSerializer<BigDecimal> {
 
-        public BigDecimalSerializer(Class<BigDecimal> t) {
+        public Min2DecimalPlacesBigDecimalSerializer(Class<BigDecimal> t) {
             super(t);
         }
 
@@ -83,14 +81,14 @@ public class CustomObjectMapper {
         }
 
         private String setScale(BigDecimal bigDecimal) {
-            if (bigDecimal.scale() > 2) {
+            if (bigDecimal.scale() < 2) {
                 return bigDecimal.setScale(2, RoundingMode.HALF_EVEN).toString();
             }
             return bigDecimal.toString();
         }
     }
 
-    public static class BigDecimalDeserializer extends NumberDeserializers.BigDecimalDeserializer {
+    public static class Min2DecimalPlacesBigDecimalDeserializer extends NumberDeserializers.BigDecimalDeserializer {
 
         @Override
         public BigDecimal deserialize(JsonParser parser, DeserializationContext context) throws IOException {
@@ -98,36 +96,10 @@ public class CustomObjectMapper {
         }
 
         private BigDecimal setScale(BigDecimal bigDecimal) {
-            if (bigDecimal.scale() > 2) {
+            if (bigDecimal.scale() < 2) {
                 return bigDecimal.setScale(2, RoundingMode.HALF_EVEN);
             }
             return bigDecimal;
         }
-    }
-
-    public static class DateTimeSerializer extends StdSerializer<DateTime> {
-
-        public DateTimeSerializer(Class<DateTime> t) {
-            super(t);
-        }
-
-        @Override
-        public void serialize(DateTime dateTime, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            generator.writeString(dateTime.toDateTimeISO().toString(dateTimeNoMillis()));
-        }
-    }
-
-    public static class DateTimeDeserializer extends StdDeserializer<DateTime> {
-
-        public DateTimeDeserializer() {
-            super(DateTime.class);
-        }
-
-        @Override
-        public DateTime deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-            String date = parser.getValueAsString();
-            return DateTime.parse(date, dateTimeNoMillis());
-        }
-
     }
 }

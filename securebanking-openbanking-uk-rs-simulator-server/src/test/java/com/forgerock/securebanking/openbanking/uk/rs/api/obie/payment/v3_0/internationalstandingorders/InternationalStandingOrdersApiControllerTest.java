@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalstandingorders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrde
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
-
 import java.util.UUID;
-
-import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.customObjectMapper;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -59,6 +57,9 @@ public class InternationalStandingOrdersApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @AfterEach
     void removeData() {
         standingOrderRepository.deleteAll();
@@ -78,7 +79,7 @@ public class InternationalStandingOrdersApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OBWriteDataInternationalStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(standingOrder.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
     }
 
@@ -97,7 +98,7 @@ public class InternationalStandingOrdersApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDataInternationalStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(standingOrder.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
     }
 

@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.internationalscheduledpayments;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse1;
-
 import java.util.UUID;
-
-import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.customObjectMapper;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -59,6 +57,9 @@ public class InternationalScheduledPaymentsApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @AfterEach
     void removeData() {
         scheduledPaymentRepository.deleteAll();
@@ -78,7 +79,7 @@ public class InternationalScheduledPaymentsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OBWriteDataInternationalScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(payment.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(payment.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/international-scheduled-payments/" + responseData.getInternationalScheduledPaymentId())).isTrue();
     }
 
@@ -97,7 +98,7 @@ public class InternationalScheduledPaymentsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDataInternationalScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(payment.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(payment.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/international-scheduled-payments/" + responseData.getInternationalScheduledPaymentId())).isTrue();
     }
 

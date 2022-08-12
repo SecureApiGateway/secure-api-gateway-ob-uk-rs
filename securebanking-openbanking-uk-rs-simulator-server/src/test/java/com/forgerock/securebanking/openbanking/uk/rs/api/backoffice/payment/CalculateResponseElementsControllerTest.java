@@ -108,7 +108,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -126,7 +126,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -218,7 +218,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -274,7 +274,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -292,7 +292,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -384,7 +384,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -440,7 +440,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -458,7 +458,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 

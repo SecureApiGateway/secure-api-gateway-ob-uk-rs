@@ -16,6 +16,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticscheduledpayments;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,6 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse1;
 
 import java.util.UUID;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.customObjectMapper;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -59,6 +59,9 @@ public class DomesticScheduledPaymentsApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @AfterEach
     void removeData() {
         scheduledPaymentRepository.deleteAll();
@@ -78,7 +81,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OBWriteDataDomesticScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(payment.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(payment.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
     }
 
@@ -97,7 +100,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDataDomesticScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        assertThat(customObjectMapper.getObjectMapper().writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(customObjectMapper.getObjectMapper().writeValueAsString(payment.getData().getInitiation()));
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(payment.getData().getInitiation()));
         assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
     }
 

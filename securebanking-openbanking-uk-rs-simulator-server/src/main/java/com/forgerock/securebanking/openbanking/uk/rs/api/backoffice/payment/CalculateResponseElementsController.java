@@ -43,7 +43,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
     public static final String VALIDATION_TEST_FAILURE_HEADER = "x-validation-test-failure";
     public static final String API_VERSION_DESCRIPTION = "Api version";
     public static final String INTENT_TYPE_DESCRIPTION = "Intent type";
-    public static CustomObjectMapper customObjectMapper;
+    private final CustomObjectMapper customObjectMapper;
 
     public CalculateResponseElementsController() {
         customObjectMapper = CustomObjectMapper.getCustomObjectMapper();
@@ -69,7 +69,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             log.debug("{}, Consent request\n {}", xFapiFinancialId, body);
 
             PaymentConsentValidation validation = PaymentConsentValidationFactory.getValidationInstance(intent);
-            Object consentRequest = CustomObjectMapper.getObjectMapper().readValue(body, validation.getRequestClass(apiVersion));
+            Object consentRequest = customObjectMapper.getObjectMapper().readValue(body, validation.getRequestClass(apiVersion));
             validation.validate(consentRequest);
 
             if (haveErrorEvents(validation.getErrors(), xFapiFinancialId)) {
@@ -89,7 +89,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             log.debug("{}, Calculation done for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
             log.debug("{}, Sending the response {}", xFapiFinancialId, customObjectMapper.getObjectMapper().writeValueAsString(consentEntityResponse));
 
-            return ResponseEntity.ok(consentEntityResponse);
+            return ResponseEntity.ok(customObjectMapper.getObjectMapper().writeValueAsString(consentEntityResponse));
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);
