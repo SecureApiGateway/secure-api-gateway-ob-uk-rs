@@ -44,7 +44,7 @@ public class CustomObjectMapper {
                 jacksonObjectMapperBuilder -> {
                     jacksonObjectMapperBuilder.featuresToEnable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
                     jacksonObjectMapperBuilder.serializerByType(BigDecimal.class, new Min2DecimalPlacesBigDecimalSerializer(BigDecimal.class));
-                    jacksonObjectMapperBuilder.deserializerByType(BigDecimal.class, new Min2DecimalPlacesBigDecimalDeserializer());
+                    jacksonObjectMapperBuilder.deserializerByType(BigDecimal.class, new BigDecimalDeserializer());
                     jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
                     jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
                     jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
@@ -77,29 +77,15 @@ public class CustomObjectMapper {
 
         @Override
         public void serialize(BigDecimal bigDecimal, JsonGenerator generator, SerializerProvider provider) throws IOException {
-            generator.writeString(setScale(bigDecimal));
-        }
-
-        private String setScale(BigDecimal bigDecimal) {
-            if (bigDecimal.scale() < 2) {
-                return bigDecimal.setScale(2, RoundingMode.HALF_EVEN).toString();
-            }
-            return bigDecimal.toString();
+            generator.writeString(String.valueOf(bigDecimal));
         }
     }
 
-    public static class Min2DecimalPlacesBigDecimalDeserializer extends NumberDeserializers.BigDecimalDeserializer {
-
+    public static class BigDecimalDeserializer extends NumberDeserializers.BigDecimalDeserializer {
         @Override
         public BigDecimal deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-            return setScale(super.deserialize(parser, context));
+            return super.deserialize(parser, context);
         }
 
-        private BigDecimal setScale(BigDecimal bigDecimal) {
-            if (bigDecimal.scale() < 2) {
-                return bigDecimal.setScale(2, RoundingMode.HALF_EVEN);
-            }
-            return bigDecimal;
-        }
     }
 }
