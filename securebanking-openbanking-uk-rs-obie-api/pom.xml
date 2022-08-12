@@ -108,6 +108,7 @@
                                     <generateModels>false</generateModels>
                                     <configOptions>
                                         <dateLibrary>joda</dateLibrary>
+                                        <openApiNullable>false</openApiNullable>
                                     </configOptions>
                                     <addCompileSourceRoot>false</addCompileSourceRoot>
                                 </configuration>
