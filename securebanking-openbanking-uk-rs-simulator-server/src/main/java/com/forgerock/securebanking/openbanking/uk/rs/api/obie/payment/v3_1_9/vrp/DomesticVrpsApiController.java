@@ -48,7 +48,6 @@ import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRRead
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frDomesticVrpResponseDataRefund;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticVrpPaymentLink;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
 @Controller("DomesticVrpsApiV3.1.9")
 @Slf4j
 public class DomesticVrpsApiController implements DomesticVrpsApi {

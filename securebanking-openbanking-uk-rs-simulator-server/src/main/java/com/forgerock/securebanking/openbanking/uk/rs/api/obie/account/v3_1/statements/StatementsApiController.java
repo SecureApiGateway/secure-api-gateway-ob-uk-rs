@@ -20,8 +20,6 @@ import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.acco
 import com.forgerock.securebanking.openbanking.uk.rs.service.statement.StatementPDFService;
 import org.springframework.stereotype.Controller;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-25T23:06:46.214+01:00")
-
 @Controller("StatementsApiV3.1")
 public class StatementsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.statements.StatementsApiController implements StatementsApi {
 
