@@ -19,6 +19,7 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.error.OBError1;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public abstract class PaymentConsentResponseCalculation {
 
     protected static final String DEFAULT_CHARGE_AMOUNT = "1.5";
     protected static final String DEFAULT_CHARGE_CURRENCY = "GBP";
+
+    public static final BigDecimal EXCHANGE_RATE = BigDecimal.valueOf(1.25);
+
 
     /**
      *

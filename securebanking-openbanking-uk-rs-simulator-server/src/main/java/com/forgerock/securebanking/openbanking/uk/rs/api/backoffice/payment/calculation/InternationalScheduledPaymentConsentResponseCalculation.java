@@ -48,8 +48,6 @@ import java.util.List;
 public class InternationalScheduledPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
 
     public static final String TYPE = "UK.OBIE.CHAPSOut";
-    public static final BigDecimal EXCHANGE_RATE = BigDecimal.valueOf(1.25);
-
     @Override
     public Class getResponseClass(OBVersion version) {
         log.debug("{} is the version to calculate response elements", version.getCanonicalName());
