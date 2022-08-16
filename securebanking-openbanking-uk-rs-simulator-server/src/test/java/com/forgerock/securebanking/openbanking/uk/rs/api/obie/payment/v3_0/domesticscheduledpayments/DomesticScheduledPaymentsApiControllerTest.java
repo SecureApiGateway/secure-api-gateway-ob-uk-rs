@@ -82,7 +82,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
         OBWriteDataDomesticScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(payment.getData().getInitiation()));
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
     }
 
     @Test
@@ -101,7 +101,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
         OBWriteDataDomesticScheduledResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(payment.getData().getInitiation()));
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
     }
 
     private String scheduledPaymentsUrl() {

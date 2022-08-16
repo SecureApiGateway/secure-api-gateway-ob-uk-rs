@@ -82,7 +82,7 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDataDomesticStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
     }
 
     @Test
@@ -101,7 +101,7 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDataDomesticStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
     }
 
     private String standingOrderUrl() {

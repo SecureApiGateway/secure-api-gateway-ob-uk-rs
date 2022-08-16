@@ -80,7 +80,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteDataInternationalStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
     }
 
     @Test
@@ -99,7 +99,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteDataInternationalStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
         assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/international-standing-orders/" + responseData.getInternationalStandingOrderId())).isTrue();
     }
 
     private String standingOrderUrl() {
