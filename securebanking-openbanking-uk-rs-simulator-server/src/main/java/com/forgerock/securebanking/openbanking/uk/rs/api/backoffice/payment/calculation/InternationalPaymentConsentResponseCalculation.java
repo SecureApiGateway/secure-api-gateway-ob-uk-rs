@@ -96,7 +96,7 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .exchangeRate(EXCHANGE_RATE)
                                     .rateType(rateType)
                                     .unitCurrency(((OBWriteInternationalConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .expirationDateTime(DateTime.now().plusMinutes(10))
+                                    .expirationDateTime(DateTime.now().plusMinutes(5))
                     );
                 }
                 case INDICATIVE -> {
