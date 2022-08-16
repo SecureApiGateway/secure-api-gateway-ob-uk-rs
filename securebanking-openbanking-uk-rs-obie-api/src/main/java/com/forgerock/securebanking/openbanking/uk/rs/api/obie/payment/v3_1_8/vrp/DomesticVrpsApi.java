@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
 @Api(tags = {"v3.1.8", SwaggerApiTags.VRP_PAYMENT_TAG})
 @RequestMapping(value = "/open-banking/v3.1.8/pisp")

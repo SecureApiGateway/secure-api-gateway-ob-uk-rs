@@ -109,6 +109,7 @@
                                     <configOptions>
                                         <dateLibrary>joda</dateLibrary>
                                         <openApiNullable>false</openApiNullable>
+                                        <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                     </configOptions>
                                     <addCompileSourceRoot>false</addCompileSourceRoot>
                                 </configuration>
