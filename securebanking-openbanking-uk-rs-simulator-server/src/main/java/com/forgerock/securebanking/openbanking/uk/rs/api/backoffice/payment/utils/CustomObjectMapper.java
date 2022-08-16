@@ -33,7 +33,6 @@ import uk.org.openbanking.jackson.DateTimeSerializer;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public class CustomObjectMapper {
     private static CustomObjectMapper customObjectMapper;

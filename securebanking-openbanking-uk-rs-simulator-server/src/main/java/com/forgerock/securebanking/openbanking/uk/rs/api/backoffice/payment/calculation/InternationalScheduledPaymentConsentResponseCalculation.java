@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.*;
-import java.math.BigDecimal;
+
 import java.util.List;
 
 /**
@@ -48,6 +48,7 @@ import java.util.List;
 public class InternationalScheduledPaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
 
     public static final String TYPE = "UK.OBIE.CHAPSOut";
+
     @Override
     public Class getResponseClass(OBVersion version) {
         log.debug("{} is the version to calculate response elements", version.getCanonicalName());

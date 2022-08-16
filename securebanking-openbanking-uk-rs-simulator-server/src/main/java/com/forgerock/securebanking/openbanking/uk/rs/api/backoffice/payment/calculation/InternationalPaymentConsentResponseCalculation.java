@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.*;
-import java.math.BigDecimal;
+
 import java.util.List;
 
 /**

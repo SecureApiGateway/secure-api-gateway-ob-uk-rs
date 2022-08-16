@@ -93,8 +93,7 @@ public class InternationalStandingOrderConsentResponseCalculation extends Paymen
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
-        }
-        else {
+        } else {
             log.debug("OBWriteInternationalStandingOrderConsentResponse7 instance");
             ((OBWriteInternationalStandingOrderConsentResponse7) consentResponse)
                     .getData()

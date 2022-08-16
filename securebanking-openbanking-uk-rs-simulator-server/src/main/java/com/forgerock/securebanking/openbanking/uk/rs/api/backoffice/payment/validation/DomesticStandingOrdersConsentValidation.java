@@ -21,7 +21,7 @@ import uk.org.openbanking.datamodel.payment.*;
 /**
  * Validation class for Domestic Payment consent request
  * <li>
- *     Domestic Standing Order
+ * Domestic Standing Order
  *     <ul>
  *         <li>For 3.1.2 {@link OBWriteDomesticStandingOrderConsent4}</li>
  *         <li>From 3.1.3 to 3.1.10 {@link OBWriteDomesticStandingOrderConsent5}</li>

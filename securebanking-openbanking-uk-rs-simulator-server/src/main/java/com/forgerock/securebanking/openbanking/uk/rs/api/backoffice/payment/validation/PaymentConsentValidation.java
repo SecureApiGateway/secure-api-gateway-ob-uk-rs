@@ -20,16 +20,14 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion
 public abstract class PaymentConsentValidation extends GenericValidations {
 
     /**
-     *
      * @param version {@link OBVersion} is the api version to identify the request object to be validated
      * @return the request consent class by version
      */
     public abstract Class getRequestClass(OBVersion version);
 
     /**
-     *
      * @param consent the consent request object
-     * @param <T> dealing generic type
+     * @param <T>     dealing generic type
      */
     public abstract <T> void validate(T consent);
 

@@ -23,7 +23,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 /**
  * Validation class for Domestic Payment consent request
  * <li>
- *     International Payment
+ * International Payment
  *     <ul>
  *         <li>For 3.1.2 {@link OBWriteInternationalConsent3}</li>
  *         <li>For 3.1.3 {@link OBWriteInternationalConsent4}</li>

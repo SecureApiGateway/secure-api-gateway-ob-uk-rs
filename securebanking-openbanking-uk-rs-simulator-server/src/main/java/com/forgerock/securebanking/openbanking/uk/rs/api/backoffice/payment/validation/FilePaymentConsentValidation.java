@@ -21,7 +21,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 /**
  * Validation class for Domestic Payment consent request
  * <li>
- *     File Payment
+ * File Payment
  *     <ul>
  *         <li>From 3.1.2 to 3.1.10 {@link OBWriteFileConsent3}</li>
  *     </ul>
