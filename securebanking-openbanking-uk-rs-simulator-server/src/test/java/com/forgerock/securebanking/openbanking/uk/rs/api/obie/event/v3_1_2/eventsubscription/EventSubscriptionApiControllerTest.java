@@ -1,5 +1,5 @@
-/**
- * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class EventSubscriptionApiControllerTest {
         assertThat(responseData.getVersion()).isEqualTo(eventSubscription.getData().getVersion());
         assertThat(responseData.getEventTypes()).isEqualTo(eventSubscription.getData().getEventTypes());
         assertThat(response.getBody().getMeta()).isNotNull();
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(eventSubscriptionsIdUrl(responseData.getEventSubscriptionId()));
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(eventSubscriptionsIdUrl(responseData.getEventSubscriptionId()));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class EventSubscriptionApiControllerTest {
         assertThat(eventSubscriptions.get(0).getVersion()).isEqualTo(eventSubscription.getData().getVersion());
         assertThat(eventSubscriptions.get(0).getEventTypes()).isEqualTo(eventSubscription.getData().getEventTypes());
         assertThat(response.getBody().getMeta()).isNotNull();
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(eventSubscriptionsUrl());
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(eventSubscriptionsUrl());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class EventSubscriptionApiControllerTest {
         OBEventSubscriptionResponse1Data responseData = response.getBody().getData();
         assertThat(responseData.getCallbackUrl()).isEqualTo("http://updatedcallbackurl.com");
         assertThat(response.getBody().getMeta()).isNotNull();
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(updateUrl);
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(updateUrl);
     }
 
     @Test

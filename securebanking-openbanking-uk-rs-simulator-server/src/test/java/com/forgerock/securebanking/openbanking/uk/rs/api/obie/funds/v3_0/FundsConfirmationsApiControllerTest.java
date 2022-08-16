@@ -1,5 +1,5 @@
-/**
- * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ public class FundsConfirmationsApiControllerTest {
         assertThat(responseData.getReference()).isEqualTo(fundsConfirmation.getData().getReference());
         assertThat(responseData.getInstructedAmount()).isEqualTo(fundsConfirmation.getData().getInstructedAmount());
         assertThat(response.getBody().getMeta()).isNotNull();
-        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(fundsConfirmationsIdUrl(responseData.getFundsConfirmationId()));
+        assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(fundsConfirmationsIdUrl(responseData.getFundsConfirmationId()));
     }
 
     @Test

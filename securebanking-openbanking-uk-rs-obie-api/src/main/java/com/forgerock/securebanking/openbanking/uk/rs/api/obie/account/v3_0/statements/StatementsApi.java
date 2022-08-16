@@ -1,5 +1,5 @@
-/**
- * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstant
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.ParametersFieldName.FROM_STATEMENT_DATE_TIME;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.ApiConstants.ParametersFieldName.TO_STATEMENT_DATE_TIME;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-25T23:06:46.214+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 
 @Api(tags = {"v3.0", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.0/aisp")

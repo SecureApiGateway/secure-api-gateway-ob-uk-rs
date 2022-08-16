@@ -1,5 +1,5 @@
-/**
- * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import com.forgerock.securebanking.openbanking.uk.rs.common.util.AccountDataInte
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.service.statement.StatementPDFService;
 import org.springframework.stereotype.Controller;
-
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-25T23:06:46.214+01:00")
 
 @Controller("StatementsApiV3.1")
 public class StatementsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.account.v3_0.statements.StatementsApiController implements StatementsApi {

@@ -1,5 +1,5 @@
-/**
- * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class InternationalPaymentsApiControllerTest {
         OBWriteDataInternationalResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
     }
 
     @Test
@@ -95,7 +95,7 @@ public class InternationalPaymentsApiControllerTest {
         OBWriteDataInternationalResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
+        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/international-payments/" + responseData.getInternationalPaymentId())).isTrue();
     }
 
     private String paymentsUrl() {

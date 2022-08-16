@@ -1,5 +1,5 @@
-/**
- * Copyright © 2020-2021 ForgeRock AS (obst@forgerock.com)
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class LinksHelper {
      */
     public static Links createDomesticPaymentsConsentFundsConfirmationLink(Class<?> controllerClass, String version, String id) {
         Link link = linkTo(controllerClass).slash(RS).slash(OPEN_BANKING).slash(version).slash(PISP).slash(DOMESTIC_PAYMENTS_CONSENT).slash(id).slash(FUNDS_CONFIRMATION).withSelfRel();
-        return new Links().self(link.getHref());
+        return new Links().self(link.toUri());
     }
 
     /**
@@ -202,8 +202,8 @@ public class LinksHelper {
      * @param id The ID of the resource concerned.
      * @return The {@link Links} instance with the populated 'self' URL.
      */
-    public static uk.org.openbanking.datamodel.vrp.Links createDomesticVrpPaymentLink(Class<?> controllerClass, String id) {
-        return createVrpSelfLink(controllerClass, DOMESTIC_VRP_PAYMENTS, id);
+    public static Links createDomesticVrpPaymentLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_VRP_PAYMENTS, id);
     }
 
     /**
@@ -272,7 +272,7 @@ public class LinksHelper {
      */
     private static Links createSelfLink(Class<?> controllerClass, String resourcePath, String id) {
         Link link = linkTo(controllerClass).slash(resourcePath).slash(id).withSelfRel();
-        return new Links().self(link.getHref());
+        return new Links().self(link.toUri());
     }
 
     /**
@@ -286,21 +286,7 @@ public class LinksHelper {
      */
     private static Links createSelfLink(Class<?> controllerClass, String resourcePath, String id, String type) {
         Link link = linkTo(controllerClass).slash(resourcePath).slash(id).slash(type).withSelfRel();
-        return new Links().self(link.getHref());
-    }
-
-    /**
-     * Uses Spring HATEOAS to create an instance of the OB {@link Links} class with the 'self' link pointing to a
-     * specific resource (e.g. /callback-urls/{id}).
-     *
-     * @param controllerClass The controller class that is responsible for handling the self link.
-     * @param resourcePath The relative path of the resource to retrieve
-     * @param id The ID of the resource concerned.
-     * @return The {@link Links} instance with the populated 'self' URL.
-     */
-    private static uk.org.openbanking.datamodel.vrp.Links createVrpSelfLink(Class<?> controllerClass, String resourcePath, String id) {
-        Link link = linkTo(controllerClass).slash(resourcePath).slash(id).withSelfRel();
-        return new uk.org.openbanking.datamodel.vrp.Links().self(link.toUri());
+        return new Links().self(link.toUri());
     }
 
     /**
@@ -313,6 +299,6 @@ public class LinksHelper {
      */
     private static Links createResourcesLink(Class<?> controllerClass, String resourcePath) {
         Link link = linkTo(controllerClass).slash(resourcePath).withSelfRel();
-        return new Links().self(link.getHref());
+        return new Links().self(link.toUri());
     }
 }
