@@ -21,6 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.vali
 public class PaymentConsentResponseCalculationFactory {
     /**
      * Get the calculation instance by consent type
+     *
      * @param consentId
      * @return a {@link PaymentConsentValidation} implementation instance
      */

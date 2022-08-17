@@ -23,14 +23,13 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderCon
 /**
  * Validation class for Domestic Payment consent request
  * <li>
- *     International Standing Order
+ * International Standing Order
  *     <ul>
  *         <li>For 3.1.2 {@link OBWriteInternationalStandingOrderConsent4}</li>
  *         <li>For 3.1.3 {@link OBWriteInternationalStandingOrderConsent5}</li>
  *         <li>From 3.1.4 to 3.1.10 {@link OBWriteInternationalStandingOrderConsent6}</li>
  *     </ul>
  * </li>
- *
  */
 public class InternationalStandingOrdersConsentValidation extends PaymentConsentValidation {
     @Override

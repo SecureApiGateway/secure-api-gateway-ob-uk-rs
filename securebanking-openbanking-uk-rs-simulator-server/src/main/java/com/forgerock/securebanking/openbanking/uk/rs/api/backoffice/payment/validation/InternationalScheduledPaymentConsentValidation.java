@@ -23,14 +23,13 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent
 /**
  * Validation class for Domestic Payment consent request
  * <li>
- *     International Scheduled Payment
+ * International Scheduled Payment
  *     <ul>
  *         <li>For 3.1.2 {@link OBWriteInternationalScheduledConsent3}</li>
  *         <li>For 3.1.3 {@link OBWriteInternationalScheduledConsent4}</li>
  *         <li>From 3.1.4 to 3.1.10 {@link OBWriteInternationalScheduledConsent5}</li>
  *     </ul>
  * </li>
- *
  */
 public class InternationalScheduledPaymentConsentValidation extends PaymentConsentValidation {
     @Override

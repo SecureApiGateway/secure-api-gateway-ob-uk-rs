@@ -19,28 +19,16 @@ import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2DataInitiationExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
-import java.math.BigDecimal;
-
-import static com.forgerock.securebanking.openbanking.uk.rs.common.Currencies.fromCode;
-
 public class DefaultData {
-    private static final String CONTRACT_IDENTIFICATION = "/tbill/2018/T102993";
-
-    public static OBWriteInternational2DataInitiationExchangeRateInformation defaultOBWriteInternational2DataInitiationExchangeRateInformation(String instructedAmountCurrency, String currencyOfTransfer)
-    {
+    public static OBWriteInternational2DataInitiationExchangeRateInformation defaultOBWriteInternational2DataInitiationExchangeRateInformation(String currencyOfTransfer) {
         return new OBWriteInternational2DataInitiationExchangeRateInformation()
-                .rateType(OBExchangeRateType2Code.AGREED)
-                .exchangeRate(new BigDecimal(ExchangeRate.getConversionRateForCurrency(fromCode(instructedAmountCurrency), fromCode(currencyOfTransfer))))
-                .contractIdentification(CONTRACT_IDENTIFICATION)
+                .rateType(OBExchangeRateType2Code.ACTUAL)
                 .unitCurrency(currencyOfTransfer);
     }
 
-    public static OBWriteInternational3DataInitiationExchangeRateInformation defaultOBWriteInternational3DataInitiationExchangeRateInformation(String instructedAmountCurrency, String currencyOfTransfer)
-    {
+    public static OBWriteInternational3DataInitiationExchangeRateInformation defaultOBWriteInternational3DataInitiationExchangeRateInformation(String currencyOfTransfer) {
         return new OBWriteInternational3DataInitiationExchangeRateInformation()
-                .rateType(OBExchangeRateType2Code.AGREED)
-                .exchangeRate(new BigDecimal(ExchangeRate.getConversionRateForCurrency(fromCode(instructedAmountCurrency), fromCode(currencyOfTransfer))))
-                .contractIdentification(CONTRACT_IDENTIFICATION)
+                .rateType(OBExchangeRateType2Code.ACTUAL)
                 .unitCurrency(currencyOfTransfer);
     }
 }

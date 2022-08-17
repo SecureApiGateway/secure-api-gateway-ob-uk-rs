@@ -22,7 +22,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 /**
  * Validation class for Domestic Payment consent request
  * <li>
- *     Domestic Scheduled Payment
+ * Domestic Scheduled Payment
  *     <ul>
  *         <li>From 3.1.2 to 3.1.3 {@link OBWriteDomesticScheduledConsent3}</li>
  *         <li>From 3.1.4 to 3.1.10 {@link OBWriteDomesticScheduledConsent4}</li>

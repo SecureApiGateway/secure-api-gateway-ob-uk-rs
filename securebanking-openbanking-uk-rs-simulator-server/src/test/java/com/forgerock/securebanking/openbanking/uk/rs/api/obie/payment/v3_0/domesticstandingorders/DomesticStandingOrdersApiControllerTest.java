@@ -15,6 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_0.domesticstandingorders;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -57,13 +59,16 @@ public class DomesticStandingOrdersApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @AfterEach
     void removeData() {
         standingOrderRepository.deleteAll();
     }
 
     @Test
-    public void shouldCreateDomesticStandingOrder() {
+    public void shouldCreateDomesticStandingOrder() throws JsonProcessingException {
         // Given
         OBWriteDomesticStandingOrder1 standingOrder = aValidOBWriteDomesticStandingOrder1();
         HttpEntity<OBWriteDomesticStandingOrder1> request = new HttpEntity<>(standingOrder, HTTP_HEADERS);
@@ -76,12 +81,12 @@ public class DomesticStandingOrdersApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OBWriteDataDomesticStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
-        assertThat(responseData.getInitiation()).isEqualTo(standingOrder.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
     }
 
     @Test
-    public void shouldGetDomesticStandingOrderById() {
+    public void shouldGetDomesticStandingOrderById() throws JsonProcessingException {
         // Given
         OBWriteDomesticStandingOrder1 standingOrder = aValidOBWriteDomesticStandingOrder1();
         HttpEntity<OBWriteDomesticStandingOrder1> request = new HttpEntity<>(standingOrder, HTTP_HEADERS);
@@ -95,8 +100,8 @@ public class DomesticStandingOrdersApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDataDomesticStandingOrderResponse1 responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(standingOrder.getData().getConsentId());
-        assertThat(responseData.getInitiation()).isEqualTo(standingOrder.getData().getInitiation());
-        assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(standingOrder.getData().getInitiation()));
+        assertThat(response.getBody().getLinks().getSelf().getPath().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
     }
 
     private String standingOrderUrl() {

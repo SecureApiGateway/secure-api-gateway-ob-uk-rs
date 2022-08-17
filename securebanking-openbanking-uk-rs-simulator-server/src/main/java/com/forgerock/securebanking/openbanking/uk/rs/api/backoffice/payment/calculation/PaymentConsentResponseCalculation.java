@@ -19,6 +19,7 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.error.OBError1;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +30,10 @@ public abstract class PaymentConsentResponseCalculation {
     protected static final String DEFAULT_CHARGE_AMOUNT = "1.5";
     protected static final String DEFAULT_CHARGE_CURRENCY = "GBP";
 
+    public static final BigDecimal EXCHANGE_RATE = BigDecimal.valueOf(1.25);
+
+
     /**
-     *
      * @param version {@link OBVersion} is the api version to identify the response object to be built
      * @return the request consent class by version
      */
@@ -38,23 +41,24 @@ public abstract class PaymentConsentResponseCalculation {
 
 
     /**
-     *
-     * @param consentRequest consent request object
+     * @param consentRequest  consent request object
      * @param consentResponse consent response object
+     * @param <T>             dealing generic type
+     * @param <R>             dealing generic type
      * @return the consent response object with calculated elements
-     * @param <T> dealing generic type
-     * @param <R> dealing generic type
      */
     public abstract <T, R> R calculate(T consentRequest, R consentResponse);
 
     /**
      * Get the error events list to build the error response
+     *
      * @return list of {@link OBError1}
      */
     public abstract List<OBError1> getErrors();
 
     /**
      * Get defaults amount of charges
+     *
      * @return {@link OBActiveOrHistoricCurrencyAndAmount}
      */
     protected OBActiveOrHistoricCurrencyAndAmount getDefaultAmount() {

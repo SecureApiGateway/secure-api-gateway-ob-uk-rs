@@ -24,6 +24,7 @@ public class PaymentConsentValidationFactory {
 
     /**
      * Get the validation instance by consent type
+     *
      * @param consentId
      * @return a {@link PaymentConsentValidation} implementation instance
      */

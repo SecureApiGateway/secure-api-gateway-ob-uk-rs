@@ -21,7 +21,7 @@ import uk.org.openbanking.datamodel.payment.*;
 /**
  * Validation class for Domestic Payment consent request
  * <li>
- *     Domestic Standing order
+ * Domestic Standing Order
  *     <ul>
  *         <li>For 3.1.2 {@link OBWriteDomesticStandingOrderConsent4}</li>
  *         <li>From 3.1.3 to 3.1.10 {@link OBWriteDomesticStandingOrderConsent5}</li>
@@ -44,25 +44,31 @@ public class DomesticStandingOrdersConsentValidation extends PaymentConsentValid
             validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getFirstPaymentAmount());
             validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getRecurringPaymentAmount());
             validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getFinalPaymentAmount());
-            return;
+        } else if (consent instanceof OBWriteDomesticStandingOrderConsent5) {
+            validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getFirstPaymentAmount());
+            validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getRecurringPaymentAmount());
+            validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getFinalPaymentAmount());
         }
-        validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getFirstPaymentAmount());
-        validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getRecurringPaymentAmount());
-        validate(((OBWriteDomesticStandingOrderConsent5) consent).getData().getInitiation().getFinalPaymentAmount());
     }
 
     private void validate(OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount firstPaymentAmount) {
-        validateAmount(firstPaymentAmount.getAmount());
-        validateCurrency(firstPaymentAmount.getCurrency());
+        if (!isNull(firstPaymentAmount, "FirstPaymentAmount")) {
+            validateAmount(firstPaymentAmount.getAmount());
+            validateCurrency(firstPaymentAmount.getCurrency());
+        }
     }
 
     private void validate(OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount recurringPaymentAmount) {
-        validateAmount(recurringPaymentAmount.getAmount());
-        validateCurrency(recurringPaymentAmount.getCurrency());
+        if (recurringPaymentAmount != null) {
+            validateAmount(recurringPaymentAmount.getAmount());
+            validateCurrency(recurringPaymentAmount.getCurrency());
+        }
     }
 
     private void validate(OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount finalPaymentAmount) {
-        validateAmount(finalPaymentAmount.getAmount());
-        validateCurrency(finalPaymentAmount.getCurrency());
+        if (finalPaymentAmount != null) {
+            validateAmount(finalPaymentAmount.getAmount());
+            validateCurrency(finalPaymentAmount.getCurrency());
+        }
     }
 }

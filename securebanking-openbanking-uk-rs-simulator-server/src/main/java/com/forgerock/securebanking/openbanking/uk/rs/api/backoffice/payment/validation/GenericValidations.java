@@ -179,7 +179,7 @@ public abstract class GenericValidations {
         }
     }
 
-    private boolean isNull(String value, String valueName) {
+    public boolean isNull(String value, String valueName) {
         if (Strings.isNullOrEmpty(value)) {
             errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                     String.format("'%s' cannot be null to be validate", valueName)
@@ -189,7 +189,7 @@ public abstract class GenericValidations {
         return false;
     }
 
-    private boolean isNull(Object object, String objectName) {
+    public boolean isNull(Object object, String objectName) {
         if (Objects.isNull(object)) {
             errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                     String.format("'%s' cannot be null to be validate", objectName)
