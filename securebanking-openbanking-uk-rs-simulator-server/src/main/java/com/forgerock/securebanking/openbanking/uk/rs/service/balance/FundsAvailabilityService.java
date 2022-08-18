@@ -57,6 +57,8 @@ public class FundsAvailabilityService {
 
         log.debug("Check if balance: '{}' from accountId: '{}' is sufficient to cover the amount: '{}'",
                 currentBalance.toPlainString(), accountId, amount);
+
+        // amount x exchange + charge
         return (currentBalance.compareTo(requestAmount) >= 0);
     }
 }
