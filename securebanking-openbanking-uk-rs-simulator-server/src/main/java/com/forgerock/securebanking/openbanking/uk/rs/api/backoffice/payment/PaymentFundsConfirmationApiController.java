@@ -121,7 +121,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
 
     private Double calculateDomesticPaymentCharges(ArrayNode charges) {
         log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges Start");
-        if (!charges.isNull() && !charges.isEmpty()) {
+        if (charges.isNull() || charges.isEmpty()) {
             log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges. No charges found.");
             return 0.0;
         } else {
@@ -137,7 +137,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
 
     private Double calculateInternationalPaymentCharges(ArrayNode charges, Double exchangeRate, String instructedAmountCurrency) {
         log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges Start");
-        if (!charges.isNull() && !charges.isEmpty()) {
+        if (charges.isNull() || charges.isEmpty()) {
             log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges. No charges found.");
             return 0.0;
         } else {
