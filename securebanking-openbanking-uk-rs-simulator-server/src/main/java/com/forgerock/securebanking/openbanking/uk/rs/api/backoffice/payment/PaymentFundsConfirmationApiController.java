@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
 import com.forgerock.securebanking.openbanking.uk.rs.service.balance.FundsAvailabilityService;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +69,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
             consent = objectMapper.readTree(requestBody);
         } catch (JsonProcessingException e) {
             log.error("PaymentFundsConfirmationApiController - JsonProcessingException: '{}'", e);
+            //TODO - Error handling
         }
 
 
@@ -91,6 +91,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
         } else if (intentType.equals(IntentType.PAYMENT_INTERNATIONAL_CONSENT)) {
             String instructedAmountCurrency = consent.get("Data").get("Initiation").get("InstructedAmount").get("Currency").asText();
             exchangeRate = consent.get("Data").get("ExchangeRateInformation").get("ExchangeRate").asDouble();
+            log.error("PaymentFundsConfirmationApiController - exchangeRate: {}", exchangeRate);
             charges = calculateInternationalPaymentCharges((ArrayNode) consent.get("Data").get("Charges"), exchangeRate, instructedAmountCurrency);
             amount = amount * exchangeRate;
         } else {
@@ -98,7 +99,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
         }
 
         // Check if funds are available on the account
-        boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(accountId,  String.valueOf(amount + charges));
+        boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(accountId, String.valueOf(amount + charges));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -119,12 +120,15 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
     }
 
     private Double calculateDomesticPaymentCharges(ArrayNode charges) {
+        log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges Start");
         if (!charges.isNull() && !charges.isEmpty()) {
+            log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges. No charges found.");
             return 0.0;
         } else {
             Double amount = 0.0;
             for (JsonNode charge : charges) {
                 Double chargeAmount = charge.get("Amount").get("Amount").asDouble();
+                log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges. chargeAmount: {}", chargeAmount);
                 amount += chargeAmount;
             }
             return amount;
@@ -132,7 +136,9 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
     }
 
     private Double calculateInternationalPaymentCharges(ArrayNode charges, Double exchangeRate, String instructedAmountCurrency) {
+        log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges Start");
         if (!charges.isNull() && !charges.isEmpty()) {
+            log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges. No charges found.");
             return 0.0;
         } else {
             Double amount = 0.0;
@@ -140,6 +146,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
                 String currency = charge.get("Amount").get("Currency").asText();
                 if (currency.equals(instructedAmountCurrency)) {
                     Double chargeAmount = charge.get("Amount").get("Amount").asDouble();
+                    log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges. chargeAmount: {}", chargeAmount);
                     amount += chargeAmount;
                 } else {
                     Double chargeAmount = charge.get("Amount").get("Amount").asDouble();

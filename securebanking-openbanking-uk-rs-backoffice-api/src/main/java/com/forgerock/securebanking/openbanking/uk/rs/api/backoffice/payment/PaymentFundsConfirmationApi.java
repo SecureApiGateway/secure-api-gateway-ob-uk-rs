@@ -20,11 +20,9 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRFundsConfirmationResponse;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.swagger.SwaggerApiTags;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +30,6 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.security.Principal;
 
 @Api(tags = {SwaggerApiTags.BACKOFFICE})
