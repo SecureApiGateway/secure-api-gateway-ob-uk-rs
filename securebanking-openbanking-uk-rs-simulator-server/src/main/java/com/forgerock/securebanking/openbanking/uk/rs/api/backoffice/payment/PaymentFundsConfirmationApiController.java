@@ -63,14 +63,14 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
             HttpServletRequest request,
             Principal principal) throws OBErrorResponseException {
 
-        log.debug("PaymentFundsConfirmationApiController - request consent: '{}'",
+        log.info("PaymentFundsConfirmationApiController - request consent: '{}'",
                 requestBody);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode consent = null;
         try {
             consent = objectMapper.readTree(requestBody);
         } catch (JsonProcessingException e) {
-            log.debug("PaymentFundsConfirmationApiController - JsonProcessingException: '{}'", e);
+            log.warn("PaymentFundsConfirmationApiController - JsonProcessingException: '{}'", e);
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -82,7 +82,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
         try {
             amount = consent.get("Data").get("Initiation").get("InstructedAmount").get("Amount").asDouble();
         } catch (Exception e) {
-            log.debug("PaymentFundsConfirmationApiController - Error while getting amount from consent: '{}'", e);
+            log.warn("PaymentFundsConfirmationApiController - Error while getting amount from consent: '{}'", e);
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -96,8 +96,9 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
         double charges = 0.0;
         double exchangeRate;
         switch (intentType) {
-            case PAYMENT_DOMESTIC_CONSENT ->
-                    charges = calculateDomesticPaymentCharges((ArrayNode) consent.get("Data").get("Charges"));
+            case PAYMENT_DOMESTIC_CONSENT -> {
+                charges = calculateDomesticPaymentCharges((ArrayNode) consent.get("Data").get("Charges"));
+            }
             case PAYMENT_INTERNATIONAL_CONSENT, PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT -> {
                 String instructedAmountCurrency = consent.get("Data").get("Initiation").get("InstructedAmount").get("Currency").asText();
                 exchangeRate = consent.get("Data").get("ExchangeRateInformation").get("ExchangeRate").asDouble();
@@ -105,11 +106,14 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
                 charges = calculateInternationalPaymentCharges((ArrayNode) consent.get("Data").get("Charges"), exchangeRate, instructedAmountCurrency);
                 amount = amount * exchangeRate;
             }
-            default -> throw new OBErrorResponseException(
-                    HttpStatus.BAD_REQUEST,
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.DATA_INVALID_REQUEST
-                            .toOBError1("Request not supported for this intent type."));
+            default -> {
+                log.warn("PaymentFundsConfirmationApiController - Request not supported for this intent type.");
+                throw new OBErrorResponseException(
+                        HttpStatus.BAD_REQUEST,
+                        OBRIErrorResponseCategory.REQUEST_INVALID,
+                        OBRIErrorType.DATA_INVALID_REQUEST
+                                .toOBError1("Request not supported for this intent type."));
+            }
         }
 
         // Check if funds are available on the account
