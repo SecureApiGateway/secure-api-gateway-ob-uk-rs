@@ -20,6 +20,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
+import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.service.balance.FundsAvailabilityService;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -58,44 +61,55 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
             String xFapiInteractionId,
             String xCustomerUserAgent,
             HttpServletRequest request,
-            Principal principal) {
+            Principal principal) throws OBErrorResponseException {
 
-
-        log.error("PaymentFundsConfirmationApiController - request consent: '{}'",
+        log.debug("PaymentFundsConfirmationApiController - request consent: '{}'",
                 requestBody);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode consent = null;
         try {
             consent = objectMapper.readTree(requestBody);
         } catch (JsonProcessingException e) {
-            log.error("PaymentFundsConfirmationApiController - JsonProcessingException: '{}'", e);
-            //TODO - Error handling
+            log.debug("PaymentFundsConfirmationApiController - JsonProcessingException: '{}'", e);
+            throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.DATA_INVALID_REQUEST
+                            .toOBError1("The request body should have a json format."));
         }
 
-
-        Double amount = 0.0;
+        double amount = 0.0;
         try {
             amount = consent.get("Data").get("Initiation").get("InstructedAmount").get("Amount").asDouble();
         } catch (Exception e) {
-            log.error("PaymentFundsConfirmationApiController - Error while getting amount from consent: '{}'", e);
-            //TODO - Error handling
+            log.debug("PaymentFundsConfirmationApiController - Error while getting amount from consent: '{}'", e);
+            throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.DATA_INVALID_REQUEST
+                            .toOBError1("Couldn't get the InstructedAmount from the Initiation."));
         }
 
         IntentType intentType = IntentType.identify(consent.get("Data").get("ConsentId").asText());
-        log.error("PaymentFundsConfirmationApiController - intentType: '{}'", intentType);
+        log.debug("PaymentFundsConfirmationApiController - intentType: '{}'", intentType);
 
-        Double charges = 0.0;
-        Double exchangeRate = 0.0;
-        if (intentType.equals(IntentType.PAYMENT_DOMESTIC_CONSENT)) {
-            charges = calculateDomesticPaymentCharges((ArrayNode) consent.get("Data").get("Charges"));
-        } else if (intentType.equals(IntentType.PAYMENT_INTERNATIONAL_CONSENT)) {
-            String instructedAmountCurrency = consent.get("Data").get("Initiation").get("InstructedAmount").get("Currency").asText();
-            exchangeRate = consent.get("Data").get("ExchangeRateInformation").get("ExchangeRate").asDouble();
-            log.error("PaymentFundsConfirmationApiController - exchangeRate: {}", exchangeRate);
-            charges = calculateInternationalPaymentCharges((ArrayNode) consent.get("Data").get("Charges"), exchangeRate, instructedAmountCurrency);
-            amount = amount * exchangeRate;
-        } else {
-            // TODO - Error handling
+        double charges = 0.0;
+        double exchangeRate;
+        switch (intentType) {
+            case PAYMENT_DOMESTIC_CONSENT ->
+                    charges = calculateDomesticPaymentCharges((ArrayNode) consent.get("Data").get("Charges"));
+            case PAYMENT_INTERNATIONAL_CONSENT, PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT -> {
+                String instructedAmountCurrency = consent.get("Data").get("Initiation").get("InstructedAmount").get("Currency").asText();
+                exchangeRate = consent.get("Data").get("ExchangeRateInformation").get("ExchangeRate").asDouble();
+                log.debug("PaymentFundsConfirmationApiController - exchangeRate: {}", exchangeRate);
+                charges = calculateInternationalPaymentCharges((ArrayNode) consent.get("Data").get("Charges"), exchangeRate, instructedAmountCurrency);
+                amount = amount * exchangeRate;
+            }
+            default -> throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.DATA_INVALID_REQUEST
+                            .toOBError1("Request not supported for this intent type."));
         }
 
         // Check if funds are available on the account
@@ -119,37 +133,36 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
                 );
     }
 
-    private Double calculateDomesticPaymentCharges(ArrayNode charges) {
-        log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges Start");
+    private double calculateDomesticPaymentCharges(ArrayNode charges) {
+        log.debug("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges Start");
         if (charges.isNull() || charges.isEmpty()) {
-            log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges. No charges found.");
+            log.debug("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges. No charges found.");
             return 0.0;
         } else {
-            Double amount = 0.0;
+            double amount = 0.0;
             for (JsonNode charge : charges) {
-                Double chargeAmount = charge.get("Amount").get("Amount").asDouble();
-                log.error("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges. chargeAmount: {}", chargeAmount);
+                double chargeAmount = charge.get("Amount").get("Amount").asDouble();
+                log.debug("PaymentFundsConfirmationApiController - calculateDomesticPaymentCharges. chargeAmount: {}", chargeAmount);
                 amount += chargeAmount;
             }
             return amount;
         }
     }
 
-    private Double calculateInternationalPaymentCharges(ArrayNode charges, Double exchangeRate, String instructedAmountCurrency) {
-        log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges Start");
+    private double calculateInternationalPaymentCharges(ArrayNode charges, double exchangeRate, String instructedAmountCurrency) {
+        log.debug("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges Start");
         if (charges.isNull() || charges.isEmpty()) {
-            log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges. No charges found.");
+            log.debug("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges. No charges found.");
             return 0.0;
         } else {
-            Double amount = 0.0;
+            double amount = 0.0;
             for (JsonNode charge : charges) {
                 String currency = charge.get("Amount").get("Currency").asText();
+                double chargeAmount = charge.get("Amount").get("Amount").asDouble();
                 if (currency.equals(instructedAmountCurrency)) {
-                    Double chargeAmount = charge.get("Amount").get("Amount").asDouble();
-                    log.error("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges. chargeAmount: {}", chargeAmount);
+                    log.debug("PaymentFundsConfirmationApiController - calculateInternationalPaymentCharges. chargeAmount: {}", chargeAmount);
                     amount += chargeAmount;
                 } else {
-                    Double chargeAmount = charge.get("Amount").get("Amount").asDouble();
                     amount += chargeAmount * exchangeRate;
                 }
             }
