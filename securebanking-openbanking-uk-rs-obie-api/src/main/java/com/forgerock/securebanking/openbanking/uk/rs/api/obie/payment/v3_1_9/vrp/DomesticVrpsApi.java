@@ -37,7 +37,7 @@ import java.security.Principal;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
-@Api(tags = {"v3.1.8", SwaggerApiTags.VRP_PAYMENT_TAG})
+@Api(tags = {"v3.1.9", SwaggerApiTags.VRP_PAYMENT_TAG})
 @RequestMapping(value = "/open-banking/v3.1.9/pisp")
 public interface DomesticVrpsApi {
 
@@ -199,6 +199,7 @@ public interface DomesticVrpsApi {
      *         or Forbidden (status code 403)
      *         or Method Not Allowed (status code 405)
      *         or Not Acceptable (status code 406)
+     *         or Conflict (status code 409)
      *         or Unsupported Media Type (status code 415)
      *         or Too Many Requests (status code 429)
      *         or Internal Server Error (status code 500)
@@ -215,6 +216,7 @@ public interface DomesticVrpsApi {
             @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
+            @ApiResponse(code = 409, message = "Conflict"),
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
