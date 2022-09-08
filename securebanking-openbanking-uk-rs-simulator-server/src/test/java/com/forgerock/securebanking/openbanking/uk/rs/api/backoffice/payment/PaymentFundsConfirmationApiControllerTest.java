@@ -91,7 +91,7 @@ public class PaymentFundsConfirmationApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getFundsAvailableResult().isFundsAvailable()).isTrue();
+        assertThat(response.getBody().getData().getFundsAvailableResult().getFundsAvailable()).isTrue();
     }
 
     @Test
@@ -113,7 +113,7 @@ public class PaymentFundsConfirmationApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getFundsAvailableResult().isFundsAvailable()).isFalse();
+        assertThat(response.getBody().getData().getFundsAvailableResult().getFundsAvailable()).isFalse();
     }
 
     private FRBalance aValidFRBalance(String accountId) {

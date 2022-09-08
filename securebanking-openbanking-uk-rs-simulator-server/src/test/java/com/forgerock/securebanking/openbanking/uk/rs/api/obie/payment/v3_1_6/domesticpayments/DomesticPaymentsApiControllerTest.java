@@ -73,7 +73,7 @@ public class DomesticPaymentsApiControllerTest {
         OBWriteDomesticResponse5Data responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         // convert from new to old before comparing (due to missing fields on older versions)
-        assertThat(responseData.getInitiation()).isEqualTo(toOBWriteDomestic2DataInitiation(payment.getData().getInitiation()));
+        assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
     }
 
@@ -92,7 +92,7 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBWriteDomesticResponse5Data responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        assertThat(responseData.getInitiation()).isEqualTo(toOBWriteDomestic2DataInitiation(payment.getData().getInitiation()));
+        assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
     }
 
