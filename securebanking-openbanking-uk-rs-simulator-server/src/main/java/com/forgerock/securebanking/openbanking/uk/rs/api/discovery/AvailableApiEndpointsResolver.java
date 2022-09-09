@@ -42,7 +42,7 @@ public class AvailableApiEndpointsResolver {
      * Matches /open-banking/{version}/{endpoint} where {version} is prefixed with 'v' and has either 2 or 3 digits
      * separated by fullstops - e.g. 'v3.0' or 'v3.1.1'.
      */
-    private final Pattern OB_URI_PATTERN = Pattern.compile("^\\/open-banking\\/(v\\d\\.\\d(?:.\\d)?)(\\/.+?)$");
+    private final Pattern OB_URI_PATTERN = Pattern.compile("^\\/open-banking\\/(v\\d+\\.\\d+(?:.\\d+)?)(\\/.+?)$");
 
     private final Map<RequestMappingInfo, HandlerMethod> handlerMethods;
 
@@ -91,7 +91,7 @@ public class AvailableApiEndpointsResolver {
         Set<String> patterns = requestMapping.getPatternsCondition().getPatterns();
         if (!patterns.isEmpty()) {
             String urlPattern = patterns.iterator().next();
-            Matcher matcher = OB_URI_PATTERN.matcher(urlPattern);
+            Matcher matcher = matchUrlPattern(urlPattern);
             if (matcher.matches()) {
                 String relativePath = matcher.group(2);
                 RequestMethod method = requestMapping.getMethodsCondition().getMethods().iterator().next();
@@ -105,11 +105,16 @@ public class AvailableApiEndpointsResolver {
         Set<String> patterns = requestMapping.getPatternsCondition().getPatterns();
         if (!patterns.isEmpty()) {
             String urlPattern = patterns.iterator().next();
-            Matcher matcher = OB_URI_PATTERN.matcher(urlPattern);
+            Matcher matcher = matchUrlPattern(urlPattern);
             if (matcher.matches()) {
                 return matcher.group(1);
             }
         }
         return null;
+    }
+
+    Matcher matchUrlPattern(String urlPattern) {
+        Matcher matcher = OB_URI_PATTERN.matcher(urlPattern);
+        return matcher;
     }
 }
