@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk14:jre-14.0.2_12
+FROM gcr.io/forgerock-io/java-17:latest
 
 ARG JAR_FILE
 
