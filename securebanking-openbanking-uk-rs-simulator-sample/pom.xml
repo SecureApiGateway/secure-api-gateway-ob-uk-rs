@@ -22,7 +22,7 @@
     <groupId>com.forgerock.securebanking.uk</groupId>
     <artifactId>securebanking-openbanking-uk-rs-simulator-sample</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.3-SNAPSHOT</version>
     <name>securebanking-openbanking-uk-rs-simulator-sample</name>
     <description>A Spring Boot application for the Secure Banking Accelerator Toolkit's Open Banking RS simulator</description>
     <url>
@@ -37,7 +37,7 @@
     <parent>
         <groupId>com.forgerock.securebanking.uk</groupId>
         <artifactId>securebanking-openbanking-uk-rs</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
