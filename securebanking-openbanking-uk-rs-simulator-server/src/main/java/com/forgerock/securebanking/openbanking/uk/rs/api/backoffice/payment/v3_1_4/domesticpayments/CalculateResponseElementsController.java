@@ -23,6 +23,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calc
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.utils.PaymentConsentGeneral;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse4;
@@ -40,7 +41,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
     }
 
     @Override
-    public OBWriteDomesticConsentResponse4 calculateElements(
+    public ResponseEntity<OBWriteDomesticConsentResponse4> calculateElements(
             OBWriteDomesticConsent4 body,
             String intent,
             String xFapiFinancialId,
@@ -49,7 +50,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            return (OBWriteDomesticConsentResponse4) PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request);
+            return ResponseEntity.status(HttpStatus.OK).body((OBWriteDomesticConsentResponse4)PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request));
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);

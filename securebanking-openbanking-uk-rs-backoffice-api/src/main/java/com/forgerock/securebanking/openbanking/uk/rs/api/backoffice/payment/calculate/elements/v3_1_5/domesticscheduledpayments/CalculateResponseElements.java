@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.cal
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
@@ -45,7 +46,7 @@ public interface CalculateResponseElements {
     @RequestMapping(value = "/calculate-elements",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    OBWriteDomesticScheduledConsentResponse5 calculateElements(
+    ResponseEntity<OBWriteDomesticScheduledConsentResponse5> calculateElements(
             @ApiParam(value = "Create an Account Access Consents", required = true)
             @Valid
             @RequestBody OBWriteDomesticScheduledConsent4 body,

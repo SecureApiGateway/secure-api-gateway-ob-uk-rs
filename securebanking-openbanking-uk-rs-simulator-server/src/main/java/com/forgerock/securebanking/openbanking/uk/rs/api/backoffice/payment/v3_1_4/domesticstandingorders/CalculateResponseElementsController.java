@@ -23,6 +23,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calc
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.utils.PaymentConsentGeneral;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse5;
@@ -40,7 +41,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
     }
 
     @Override
-    public OBWriteDomesticStandingOrderConsentResponse5 calculateElements(
+    public ResponseEntity<OBWriteDomesticStandingOrderConsentResponse5> calculateElements(
             OBWriteDomesticStandingOrderConsent5 body,
             String intent,
             String xFapiFinancialId,
@@ -49,7 +50,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            return (OBWriteDomesticStandingOrderConsentResponse5) PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request);
+            return ResponseEntity.status(HttpStatus.OK).body((OBWriteDomesticStandingOrderConsentResponse5) PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request));
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);
