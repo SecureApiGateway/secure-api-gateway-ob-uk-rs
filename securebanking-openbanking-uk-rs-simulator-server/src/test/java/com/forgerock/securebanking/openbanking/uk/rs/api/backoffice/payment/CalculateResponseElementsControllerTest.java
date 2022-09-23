@@ -34,35 +34,39 @@ import uk.org.openbanking.datamodel.payment.*;
 
 import java.net.URI;
 
-import static com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.CalculateResponseElementsController.*;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredBackofficeHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent3;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent3;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent4;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent5;
-import static uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3;
-import static uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent3;
 import static uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5;
-import static uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent3;
 import static uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5;
-import static uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent4;
 import static uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent6;
 
-/**
- * Unit test for {@link CalculateResponseElementsController}
- */
+
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 public class CalculateResponseElementsControllerTest {
 
+    public static final String API_VERSION_DESCRIPTION = "Api version";
+    public static final String INTENT_TYPE_DESCRIPTION = "Intent type";
+
     private static final HttpHeaders HTTP_HEADERS = requiredBackofficeHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
     private static final String INVALID_CURRENCY = "Invalid currency";
-    private static final String REST_CONTEXT = "/backoffice/payment-consent/calculate-elements";
+    private static final String REST_CONTEXT = "/backoffice/{0}/{1}/calculate-elements";
+
+    private static final String PDC_CONTEXT = "domestic-payment-consents";
+    private static final String PDSC_CONTEXT = "domestic-scheduled-payment-consents";
+    private static final String PDSOC_CONTEXT = "domestic-standing-order-consents";
+    private static final String PIC_CONTEXT = "international-payment-consents";
+    private static final String PISC_CONTEXT = "international-scheduled-payment-consents";
+    private static final String PISOC_CONTEXT = "international-standing-order-consents";
+    private static final String PFC_CONTEXT = "file-payment-consents";
+    private static final String FCC_CONTEXT = "funds-confirmation-consents";
+    private static final String DVRP_CONTEXT = "domestic-vrp-consents";
+
 
     @LocalServerPort
     private int port;
@@ -74,172 +78,6 @@ public class CalculateResponseElementsControllerTest {
     private ObjectMapper mapper;
 
     /*
-    Domestic payments v3.1.2
-     */
-    @Test
-    public void shouldCalculateResponseElements4PDC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
-        OBWriteDomesticConsent3 consentRequest = aValidOBWriteDomesticConsent3();
-
-        // When
-        ResponseEntity<OBWriteDomesticConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteDomesticConsentResponse3.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElements4PDSC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId();
-        OBWriteDomesticScheduledConsent3 consentRequest = aValidOBWriteDomesticScheduledConsent3();
-
-        // When
-        ResponseEntity<OBWriteDomesticScheduledConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteDomesticScheduledConsentResponse3.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElements4PDSOC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId();
-        OBWriteDomesticStandingOrderConsent4 consentRequest = aValidOBWriteDomesticStandingOrderConsent4();
-
-        // When
-        ResponseEntity<OBWriteDomesticStandingOrderConsentResponse4> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteDomesticStandingOrderConsentResponse4.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElements4PIC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
-        OBWriteInternationalConsent3 consentRequest = aValidOBWriteInternationalConsent3();
-
-        // When
-        ResponseEntity<OBWriteInternationalConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteInternationalConsentResponse3.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElementsWithoutExchangeRateInformation4PIC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
-        OBWriteInternationalConsent3 consentRequest = aValidOBWriteInternationalConsent3();
-        consentRequest.getData().getInitiation().setExchangeRateInformation(null);
-
-        // When
-        ResponseEntity<OBWriteInternationalConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteInternationalConsentResponse3.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNotNull();
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElements4PISC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT.generateIntentId();
-        OBWriteInternationalScheduledConsent3 consentRequest = aValidOBWriteInternationalScheduledConsent3();
-
-        // When
-        ResponseEntity<OBWriteInternationalScheduledConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteInternationalScheduledConsentResponse3.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElementsWithoutExchangeRateInformation4PISC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT.generateIntentId();
-        OBWriteInternationalScheduledConsent3 consentRequest = aValidOBWriteInternationalScheduledConsent3();
-        consentRequest.getData().getInitiation().setExchangeRateInformation(null);
-
-        // When
-        ResponseEntity<OBWriteInternationalScheduledConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteInternationalScheduledConsentResponse3.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNotNull();
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElements4PISOC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId();
-        OBWriteInternationalStandingOrderConsent4 consentRequest = aValidOBWriteInternationalStandingOrderConsent4();
-
-        // When
-        ResponseEntity<OBWriteInternationalStandingOrderConsentResponse4> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteInternationalStandingOrderConsentResponse4.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(mapper.writeValueAsString(response.getBody().getData().getInitiation())).isEqualTo(mapper.writeValueAsString(consentRequest.getData().getInitiation()));
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    @Test
-    public void shouldCalculateResponseElements4PFC_v3_1_2() throws JsonProcessingException {
-        String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
-        OBWriteFileConsent3 consentRequest = aValidOBWriteFileConsent3();
-
-        // When
-        ResponseEntity<OBWriteFileConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_2.getCanonicalName()),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBWriteFileConsentResponse3.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
-
-    /*
     Domestic payments v3.1.4
      */
     @Test
@@ -249,7 +87,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteDomesticConsentResponse4> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_4.getCanonicalName(), PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteDomesticConsentResponse4.class);
@@ -267,7 +105,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteDomesticScheduledConsentResponse4> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PDSC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteDomesticScheduledConsentResponse4.class);
@@ -285,7 +123,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteDomesticStandingOrderConsentResponse5> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PDSOC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteDomesticStandingOrderConsentResponse5.class);
@@ -303,7 +141,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalConsentResponse5> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalConsentResponse5.class);
@@ -322,7 +160,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalConsentResponse5> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalConsentResponse5.class);
@@ -340,7 +178,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalScheduledConsentResponse5> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PISC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalScheduledConsentResponse5.class);
@@ -359,7 +197,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalScheduledConsentResponse5> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PISC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalScheduledConsentResponse5.class);
@@ -377,7 +215,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalStandingOrderConsentResponse6> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PISOC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalStandingOrderConsentResponse6.class);
@@ -388,14 +226,14 @@ public class CalculateResponseElementsControllerTest {
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
-    @Test
+    /*@Test
     public void shouldCalculateResponseElements4PFC_v3_1_4() throws JsonProcessingException {
         String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
         OBWriteFileConsent3 consentRequest = aValidOBWriteFileConsent3();
 
         // When
         ResponseEntity<OBWriteFileConsentResponse3> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_4.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_4.getCanonicalName(), PFC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteFileConsentResponse3.class);
@@ -403,7 +241,7 @@ public class CalculateResponseElementsControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
+    }*/
 
     /*
     Domestic payments v3.1.8
@@ -415,7 +253,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteDomesticConsentResponse5> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteDomesticConsentResponse5.class);
@@ -433,7 +271,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteDomesticScheduledConsentResponse5> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PDSC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteDomesticScheduledConsentResponse5.class);
@@ -451,7 +289,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteDomesticStandingOrderConsentResponse6> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PDSOC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteDomesticStandingOrderConsentResponse6.class);
@@ -469,7 +307,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalConsentResponse6> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalConsentResponse6.class);
@@ -488,7 +326,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalConsentResponse6> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalConsentResponse6.class);
@@ -506,7 +344,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalScheduledConsentResponse6> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PISC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalScheduledConsentResponse6.class);
@@ -525,7 +363,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalScheduledConsentResponse6> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PISC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalScheduledConsentResponse6.class);
@@ -543,7 +381,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBWriteInternationalStandingOrderConsentResponse7> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PISOC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteInternationalStandingOrderConsentResponse7.class);
@@ -554,14 +392,14 @@ public class CalculateResponseElementsControllerTest {
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
-    @Test
+    /*@Test
     public void shouldCalculateResponseElements4PFC_v3_1_8() throws JsonProcessingException {
         String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
         OBWriteFileConsent3 consentRequest = aValidOBWriteFileConsent3();
 
         // When
         ResponseEntity<OBWriteFileConsentResponse4> response = restTemplate.exchange(
-                getUri(consentId, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(consentId, OBVersion.v3_1_8.getCanonicalName(), PFC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBWriteFileConsentResponse4.class);
@@ -569,7 +407,7 @@ public class CalculateResponseElementsControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
-    }
+    }*/
 
     @Test
     public void cannotDetermineTheVersion() throws JsonProcessingException {
@@ -578,20 +416,14 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, "v99.00.334"),
+                getUri(intent, "v99.00.334", PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
 
         // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
-        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
-        assertThat(response.getBody().getErrors()).containsExactly(
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("It has not been possible to determine the value of '%s'", API_VERSION_DESCRIPTION)
-                )
-        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
     }
 
     @Test
@@ -600,7 +432,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri("WRONG_INTENT", OBVersion.v3_1_8.getCanonicalName()),
+                getUri("WRONG_INTENT", OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -623,7 +455,7 @@ public class CalculateResponseElementsControllerTest {
         consentRequest.getData().getInitiation().setInstructedAmount(null);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -646,7 +478,7 @@ public class CalculateResponseElementsControllerTest {
         consentRequest.getData().getInitiation().getInstructedAmount().setAmount("0");
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -672,7 +504,7 @@ public class CalculateResponseElementsControllerTest {
         consentRequest.getData().getInitiation().getInstructedAmount().setCurrency(INVALID_CURRENCY);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -699,7 +531,7 @@ public class CalculateResponseElementsControllerTest {
         consentRequest.getData().getInitiation().getInstructedAmount().setCurrency(INVALID_CURRENCY);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -731,7 +563,7 @@ public class CalculateResponseElementsControllerTest {
         consentRequest.getData().getInitiation().getExchangeRateInformation().setRateType(null);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -754,7 +586,7 @@ public class CalculateResponseElementsControllerTest {
         consentRequest.getData().getInitiation().getExchangeRateInformation().setUnitCurrency(null);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -778,7 +610,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -802,7 +634,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -824,7 +656,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -848,7 +680,7 @@ public class CalculateResponseElementsControllerTest {
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName()),
+                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
                 HttpMethod.POST,
                 new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
                 OBErrorResponse1.class);
@@ -864,9 +696,12 @@ public class CalculateResponseElementsControllerTest {
         );
     }
 
-    private URI getUri(String intent, String version) {
+    private URI getUri(String intent, String version, String intentPath) {
+
+        String restContext = java.text.MessageFormat.format(REST_CONTEXT, version, intentPath);
+
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(BASE_URL + port + REST_CONTEXT);
+                .fromHttpUrl(BASE_URL + port + restContext);
         builder.queryParam("intent", intent);
         builder.queryParam("version", version);
         return builder.build().encode().toUri();

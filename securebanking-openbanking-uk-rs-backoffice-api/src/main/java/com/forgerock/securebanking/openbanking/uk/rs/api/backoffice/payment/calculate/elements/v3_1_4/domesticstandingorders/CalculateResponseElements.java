@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
+package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calculate.elements.v3_1_4.domesticstandingorders;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.swagger.SwaggerApiTags;
@@ -21,12 +21,14 @@ import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse5;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-@Api(tags = {SwaggerApiTags.BACKOFFICE})
-@RequestMapping({"/backoffice/payment-consent"})
+@Api(tags = {"v3.1.4", SwaggerApiTags.BACKOFFICE})
+@RequestMapping({"/backoffice/v3.1.4/domestic-standing-order-consents"})
 public interface CalculateResponseElements {
 
     @ApiOperation(value = "Calculate payment consent response elements", response = String.class)
@@ -36,24 +38,21 @@ public interface CalculateResponseElements {
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Validation failed", response = OBErrorResponse1.class),
             @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 404, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)
+            @ApiResponse(code = 400, message = "Internal Server Error", response = OBErrorResponse1.class)
     })
     @RequestMapping(value = "/calculate-elements",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity calculateElements(
+    ResponseEntity<OBWriteDomesticStandingOrderConsentResponse5> calculateElements(
             @ApiParam(value = "Create an Account Access Consents", required = true)
             @Valid
-            @RequestBody String body,
+            @RequestBody OBWriteDomesticStandingOrderConsent5 body,
 
             @ApiParam(value = "Consent type", required = true)
             @RequestParam(value = "intent") String intent,
-
-            @ApiParam(value = "Api version", required = true)
-            @RequestParam(value = "version") String version,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id") String xFapiFinancialId,
