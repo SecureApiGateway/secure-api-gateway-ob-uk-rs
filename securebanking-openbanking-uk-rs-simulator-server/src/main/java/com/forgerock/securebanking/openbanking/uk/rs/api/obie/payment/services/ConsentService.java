@@ -28,7 +28,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 /**
- * Service to retrieve Calculated elements from intent stored in IDM
+ * Service to get the consent/intent retrieved from the cloud platform as OB object
  */
 @Slf4j
 @Service
@@ -43,6 +43,14 @@ public class ConsentService {
         this.platformClientService = platformClientService;
     }
 
+    /**
+     *
+     * @param targetClass The class to deserialize the {@link JsonObject} consent/intent retrieved from cloud platform
+     * @param authorization the authorization token as JWT to extract the 'aud' claim to identify the apiClient
+     * @param intentId the consent/intent id
+     * @return OB Object
+     * @param <T> The parametrized type of the class returned by this method.
+     */
     public <T> T getOBConsent(Class<T> targetClass, String authorization, String intentId) {
         try {
             // deserialize the consent

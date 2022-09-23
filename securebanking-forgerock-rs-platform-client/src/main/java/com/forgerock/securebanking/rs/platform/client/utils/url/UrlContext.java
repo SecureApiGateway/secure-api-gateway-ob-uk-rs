@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 @Slf4j
 public class UrlContext {
 
-    public static final String INTENT_ID = "@IntentId";
+    public static final String INTENT_ID = "@IntentId@";
     public static String replaceParameterContextIntentId(String context, String intentId) throws ExceptionClient {
 
         try {
