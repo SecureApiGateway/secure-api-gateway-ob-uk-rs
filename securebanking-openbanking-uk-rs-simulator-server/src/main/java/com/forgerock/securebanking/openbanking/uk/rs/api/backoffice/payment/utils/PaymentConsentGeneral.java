@@ -40,7 +40,7 @@ public class PaymentConsentGeneral {
     public static final String INTENT_TYPE_DESCRIPTION = "Intent type";
     private static final CustomObjectMapper customObjectMapper = CustomObjectMapper.getCustomObjectMapper();
 
-    public static <T> Object calculate(T consentRequest, String intent, String xFapiFinancialId, HttpServletRequest request) throws OBErrorResponseException, JsonProcessingException {
+    public static <T, R> R calculate(T consentRequest, String intent, String xFapiFinancialId, HttpServletRequest request) throws OBErrorResponseException, JsonProcessingException {
 
         OBVersion apiVersion = ApiVersionUtils.getOBVersion(request.getRequestURI());
         isNull(apiVersion, API_VERSION_DESCRIPTION);
@@ -69,7 +69,7 @@ public class PaymentConsentGeneral {
         log.debug("{}, Calculation done for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
         log.debug("{}, Sending the response {}", xFapiFinancialId, customObjectMapper.getObjectMapper().writeValueAsString(consentEntityResponse));
 
-        return consentEntityResponse;
+        return (R) consentEntityResponse;
     }
 
     private static boolean haveErrorEvents(List<OBError1> errors, String xFapiFinancialId) {

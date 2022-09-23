@@ -49,7 +49,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body((OBWriteDomesticScheduledConsentResponse5) PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request));
+            return ResponseEntity.status(HttpStatus.OK).body(PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request));
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);
