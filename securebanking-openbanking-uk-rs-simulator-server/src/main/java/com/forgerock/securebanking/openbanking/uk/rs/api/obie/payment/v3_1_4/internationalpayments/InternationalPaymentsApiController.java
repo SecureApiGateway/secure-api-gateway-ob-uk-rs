@@ -20,12 +20,14 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_4.internationalpayments;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternational;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteInternationalData;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRInternationalPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -42,20 +44,19 @@ import uk.org.openbanking.datamodel.payment.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteInternationalResponse4DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalResponse4DataStatus;
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalPaymentDetailsLink;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalPaymentDetailsLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createInternationalPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -66,10 +67,16 @@ public class InternationalPaymentsApiController implements InternationalPayments
     private final InternationalPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
-    public InternationalPaymentsApiController(InternationalPaymentSubmissionRepository paymentSubmissionRepository,
-                                              PaymentSubmissionValidator paymentSubmissionValidator) {
+    private final ConsentService consentService;
+
+    public InternationalPaymentsApiController(
+            InternationalPaymentSubmissionRepository paymentSubmissionRepository,
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ConsentService consentService
+    ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.consentService = consentService;
     }
 
     @Override
@@ -106,7 +113,15 @@ public class InternationalPaymentsApiController implements InternationalPayments
         // Save the international payment
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteInternationalConsentResponse5 obConsent = consentService.getOBConsent(
+                OBWriteInternationalConsentResponse5.class,
+                authorization,
+                obWriteInternational3.getData().getConsentId()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -131,7 +146,15 @@ public class InternationalPaymentsApiController implements InternationalPayments
         if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
-        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteInternationalConsentResponse5 obConsent = consentService.getOBConsent(
+                OBWriteInternationalConsentResponse5.class,
+                authorization,
+                internationalPaymentId
+        );
+        return ResponseEntity.ok(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -159,25 +182,59 @@ public class InternationalPaymentsApiController implements InternationalPayments
         return ResponseEntity.ok(responseEntityDetails(frInternationalPaymentSubmission));
     }
 
-    private OBWriteInternationalResponse4 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission,
-                                                         FRReadRefundAccount readRefundAccount) {
+    private OBWriteInternationalResponse4 responseEntity(
+            FRInternationalPaymentSubmission frPaymentSubmission,
+            FRReadRefundAccount readRefundAccount,
+            OBWriteInternationalConsentResponse5 obConsent
+    ) {
         FRWriteInternationalData data = frPaymentSubmission.getPayment().getData();
         Optional<FRInternationalResponseDataRefund> refund = frInternationalResponseDataRefund(readRefundAccount, data.getInitiation());
+
         return new OBWriteInternationalResponse4()
                 .data(new OBWriteInternationalResponse4Data()
+                        .charges(toOBWriteDomesticConsentResponse3DataCharges(obConsent.getData().getCharges()))
                         .internationalPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternational3DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBWriteInternationalResponse4DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .refund(refund.isPresent() ? toOBWriteInternationalResponse4DataRefund(refund.get()) : null)
-                        .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(
-                                frPaymentSubmission.getCalculatedExchangeRate())))
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse4DataRefund).orElse(null))
+                        .exchangeRateInformation(
+                                to4DataExchangeRateInformation(obConsent.getData().getExchangeRateInformation())
+                        )
+                )
                 .links(createInternationalPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }
 
+    private List<OBWriteDomesticConsentResponse3DataCharges> toOBWriteDomesticConsentResponse3DataCharges(
+            List<OBWriteDomesticConsentResponse4DataCharges> charges
+    ) {
+        List<OBWriteDomesticConsentResponse3DataCharges> chargesList = new ArrayList<>();
+        if (Objects.nonNull(charges)) {
+            for (OBWriteDomesticConsentResponse4DataCharges charge : charges) {
+                chargesList.add(
+                        new OBWriteDomesticConsentResponse3DataCharges()
+                                .chargeBearer(charge.getChargeBearer())
+                                .amount(charge.getAmount())
+                                .type(charge.getType())
+                );
+            }
+        }
+        return chargesList.isEmpty() ? null : chargesList;
+    }
+
+    private OBWriteInternationalConsentResponse4DataExchangeRateInformation to4DataExchangeRateInformation(
+            OBWriteInternationalConsentResponse5DataExchangeRateInformation rateInformation
+    ) {
+        return Objects.isNull(rateInformation) ? null : new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
+                .unitCurrency(rateInformation.getUnitCurrency())
+                .exchangeRate(rateInformation.getExchangeRate())
+                .rateType(rateInformation.getRateType())
+                .contractIdentification(rateInformation.getContractIdentification())
+                .expirationDateTime(rateInformation.getExpirationDateTime());
+    }
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalPaymentSubmission frInternationalPaymentSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
                 frInternationalPaymentSubmission.getStatus().getValue()

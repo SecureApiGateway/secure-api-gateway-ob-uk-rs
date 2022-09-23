@@ -25,6 +25,7 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRFilePaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -36,21 +37,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFileResponse2;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConsentConverter.toOBFile2;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createFilePaymentsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 
 @Controller("FilePaymentsApiV3.1.3")
@@ -60,10 +61,16 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     private final FilePaymentSubmissionRepository filePaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
-    public FilePaymentsApiController(FilePaymentSubmissionRepository filePaymentSubmissionRepository,
-                                     PaymentSubmissionValidator paymentSubmissionValidator) {
+    private final ConsentService consentService;
+
+    public FilePaymentsApiController(
+            FilePaymentSubmissionRepository filePaymentSubmissionRepository,
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ConsentService consentService
+    ) {
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.consentService = consentService;
     }
 
     @Override
@@ -98,7 +105,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         // Save the file payment(s)
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission));
+        // Get the consent to update the response
+        OBWriteFileConsentResponse3 obConsent = consentService.getOBConsent(
+                OBWriteFileConsentResponse3.class,
+                authorization,
+                obWriteFile2.getData().getConsentId()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, obConsent));
     }
 
     @Override
@@ -126,7 +139,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
-        return ResponseEntity.ok(responseEntity(frPaymentSubmission));
+        // Get the consent to update the response
+        OBWriteFileConsentResponse3 obConsent = consentService.getOBConsent(
+                OBWriteFileConsentResponse3.class,
+                authorization,
+                filePaymentId
+        );
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, obConsent));
     }
 
     @Override
@@ -174,9 +193,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 //        return ResponseEntity.ok(reportFile);
     }
 
-    private OBWriteFileResponse2 responseEntity(FRFilePaymentSubmission frPaymentSubmission) {
+    private OBWriteFileResponse2 responseEntity(
+            FRFilePaymentSubmission frPaymentSubmission,
+            OBWriteFileConsentResponse3 obConsent
+    ) {
         return new OBWriteFileResponse2()
                 .data(new OBWriteDataFileResponse2()
+                        .charges(toOBCharge1(obConsent.getData().getCharges()))
                         .filePaymentId(frPaymentSubmission.getId())
                         .initiation(toOBFile2(frPaymentSubmission.getFilePayment().getData().getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
@@ -185,5 +208,20 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                         .consentId(frPaymentSubmission.getFilePayment().getData().getConsentId()))
                 .links(createFilePaymentsLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
+    }
+
+    private List<OBCharge1> toOBCharge1(List<OBWriteDomesticConsentResponse3DataCharges> charges) {
+        List<OBCharge1> obCharge1List = new ArrayList<>();
+        if (Objects.nonNull(charges)) {
+            for (OBWriteDomesticConsentResponse3DataCharges charge : charges) {
+                obCharge1List.add(
+                        new OBCharge1()
+                                .chargeBearer(charge.getChargeBearer())
+                                .amount(charge.getAmount())
+                                .type(charge.getType())
+                );
+            }
+        }
+        return obCharge1List.isEmpty() ? null : obCharge1List;
     }
 }

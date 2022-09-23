@@ -16,11 +16,17 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.securebanking.rs.platform.client.exceptions.ExceptionClient;
+import com.forgerock.securebanking.rs.platform.client.services.PlatformClientService;
+import com.forgerock.securebanking.rs.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory;
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -33,11 +39,15 @@ import uk.org.openbanking.datamodel.account.OBReadAccount5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
 
+import java.util.UUID;
+
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_1_5;
 import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion.v3_1_6;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountHttpHeaders;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
@@ -66,15 +76,23 @@ public class ControllerEndpointBlacklistHandlerTest {
     @Autowired
     private DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository;
 
+    @MockBean
+    private PlatformClientService platformClientService;
+
     @AfterEach
     void removeData() {
         domesticPaymentSubmissionRepository.deleteAll();
     }
 
     @Test
-    public void shouldCreateDomesticPaymentGivenApiVersionIsEnabled() {
+    public void shouldCreateDomesticPaymentGivenApiVersionIsEnabled() throws ExceptionClient {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
+        JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
+                payment.getData().getConsentId(),
+                UUID.randomUUID().toString()
+        );
+        given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         String url = paymentsUrl(ENABLED_VERSION);
 
@@ -100,9 +118,15 @@ public class ControllerEndpointBlacklistHandlerTest {
     }
 
     @Test
-    public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() {
+    public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() throws ExceptionClient {
         // Given
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(aValidOBWriteDomestic2(), PAYMENT_HEADERS);
+        OBWriteDomestic2 payment = aValidOBWriteDomestic2();
+        JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
+                payment.getData().getConsentId(),
+                UUID.randomUUID().toString()
+        );
+        given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         ResponseEntity<OBWriteDomesticResponse5> persistedPayment = restTemplate.postForEntity(
                 paymentsUrl(ENABLED_VERSION),
                 request,

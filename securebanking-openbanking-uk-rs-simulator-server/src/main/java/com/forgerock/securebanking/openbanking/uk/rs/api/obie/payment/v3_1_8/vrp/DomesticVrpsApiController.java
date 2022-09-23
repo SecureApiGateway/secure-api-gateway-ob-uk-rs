@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_8.vr
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
@@ -51,6 +52,9 @@ import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.Lin
 @Controller("DomesticVrpsApiV3.1.8")
 @Slf4j
 public class DomesticVrpsApiController implements DomesticVrpsApi {
+
+    protected static final String DEFAULT_CHARGE_AMOUNT = "1.00";
+    protected static final String DEFAULT_CHARGE_CURRENCY = "GBP";
 
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
 
@@ -185,7 +189,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .debtorAccount(obDomesticVRPRequest.getData().getInitiation().getDebtorAccount())
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
                                 .instruction(obDomesticVRPRequest.getData().getInstruction())
-                                .refund(refund.isPresent() ? toOBCashAccountDebtorWithName(refund.get()) : null)
+                                .refund(refund.map(FRResponseDataRefundConverter::toOBCashAccountDebtorWithName).orElse(null))
                 ).links(createDomesticVrpPaymentLink(this.getClass(), paymentSubmission.getId())
                 ).meta(new Meta())
                 .risk(obDomesticVRPRequest.getRisk());
@@ -202,8 +206,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR)
                                 .amount(
                                         new OBActiveOrHistoricCurrencyAndAmount()
-                                                .amount("1.00")
-                                                .currency("GBP")
+                                                .amount(DEFAULT_CHARGE_AMOUNT)
+                                                .currency(DEFAULT_CHARGE_CURRENCY)
                                 )
                 ));
 

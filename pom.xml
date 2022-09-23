@@ -40,6 +40,7 @@
         <module>securebanking-openbanking-uk-rs-obie-api</module>
         <module>securebanking-openbanking-uk-rs-simulator-server</module>
         <module>securebanking-openbanking-uk-rs-simulator-sample</module>
+        <module>securebanking-forgerock-rs-platform-client</module>
     </modules>
 
     <parent>

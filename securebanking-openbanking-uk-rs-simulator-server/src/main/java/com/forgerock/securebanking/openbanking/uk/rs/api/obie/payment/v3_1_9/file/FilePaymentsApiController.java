@@ -20,16 +20,19 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.file;
 
-import org.springframework.stereotype.Controller;
-
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
+import org.springframework.stereotype.Controller;
 
 @Controller("FilePaymentsApiV3.1.9")
 public class FilePaymentsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_8.file.FilePaymentsApiController implements FilePaymentsApi {
 
-    public FilePaymentsApiController(FilePaymentSubmissionRepository filePaymentSubmissionRepository,
-                                     PaymentSubmissionValidator paymentSubmissionValidator) {
-        super(filePaymentSubmissionRepository, paymentSubmissionValidator);
+    public FilePaymentsApiController(
+            FilePaymentSubmissionRepository filePaymentSubmissionRepository,
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ConsentService consentService
+    ) {
+        super(filePaymentSubmissionRepository, paymentSubmissionValidator, consentService);
     }
 }
