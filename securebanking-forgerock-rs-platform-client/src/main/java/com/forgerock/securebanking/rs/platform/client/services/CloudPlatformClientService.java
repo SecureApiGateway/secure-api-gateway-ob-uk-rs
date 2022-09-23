@@ -26,10 +26,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -60,7 +57,7 @@ class CloudPlatformClientService implements PlatformClient {
         String apiClientId = clientRequest.getApiClientId();
         log.debug("=> The client id: '{}'", apiClientId);
 
-        JsonObject consentDetails = request(intentId, GET, null);
+        JsonObject consentDetails = request(intentId, GET);
         String errorMessage;
         if (consentDetails == null) {
             errorMessage = String.format("The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist", apiClientId, intentId);
@@ -79,7 +76,7 @@ class CloudPlatformClientService implements PlatformClient {
         return consentDetails;
     }
 
-    private JsonObject request(String intentId, HttpMethod httpMethod, HttpEntity httpEntity) throws ExceptionClient {
+    private JsonObject request(String intentId, HttpMethod httpMethod) throws ExceptionClient {
         String consentURL;
         IntentType intentType = IntentType.identify(intentId);
         if (intentType == null) {
@@ -99,13 +96,12 @@ class CloudPlatformClientService implements PlatformClient {
                         intentId
                 );
 
-        log.debug("(ConsentService#request) {} the consent details from platform: {}", httpMethod.name(), consentURL);
-        log.debug("Entity To {}: {}", httpMethod.name(), httpEntity != null ? httpEntity.getBody().toString() : "null");
+        log.debug("(ConsentService#request) {} the consent from platform: {}", httpMethod.name(), consentURL);
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(
                     consentURL,
                     httpMethod,
-                    httpEntity,
+                    null,
                     String.class);
             log.debug("(ConsentService#request) response entity: " + responseEntity);
 
