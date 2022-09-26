@@ -20,12 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.domesticpayments;
 
-import org.springframework.stereotype.Controller;
-
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
 
 @Controller("DomesticPaymentsApiV3.1.9")
 @Slf4j
@@ -33,8 +32,11 @@ public class DomesticPaymentsApiController
         extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_8.domesticpayments.DomesticPaymentsApiController
         implements DomesticPaymentsApi {
 
-    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository paymentSubmissionRepository,
-                                         PaymentSubmissionValidator paymentSubmissionValidator) {
-        super(paymentSubmissionRepository, paymentSubmissionValidator);
+    public DomesticPaymentsApiController(
+            DomesticPaymentSubmissionRepository paymentSubmissionRepository,
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ConsentService consentService
+    ) {
+        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService);
     }
 }

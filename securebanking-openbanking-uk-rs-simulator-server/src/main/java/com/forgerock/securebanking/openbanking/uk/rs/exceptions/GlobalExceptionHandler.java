@@ -305,4 +305,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ),
                 request);
     }
+
+    @ExceptionHandler(value = {InvalidConsentException.class})
+    protected ResponseEntity<Object> handleInvalidConsentException(InvalidConsentException ex, WebRequest request) {
+        HttpStatus httpStatus = ex.getObriErrorType().getHttpStatus();
+        return ResponseEntity.status(httpStatus).body(
+                new OBErrorResponse1()
+                        .code(httpStatus.name())
+                        .id(request.getHeader("x-fapi-interaction-id"))
+                        .message(httpStatus.getReasonPhrase())
+                        .errors(
+                                Collections.singletonList(new OBError1().message(ex.getMessage()))
+                        )
+        );
+    }
 }

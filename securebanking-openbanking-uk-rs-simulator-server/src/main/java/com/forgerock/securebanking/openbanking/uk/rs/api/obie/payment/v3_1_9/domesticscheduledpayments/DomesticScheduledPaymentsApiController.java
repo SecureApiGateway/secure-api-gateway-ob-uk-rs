@@ -20,6 +20,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.domesticscheduledpayments;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
@@ -32,7 +33,9 @@ public class DomesticScheduledPaymentsApiController extends com.forgerock.secure
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ScheduledPaymentService scheduledPaymentService) {
-        super(scheduledPaymentSubmissionRepository, paymentSubmissionValidator, scheduledPaymentService);
+            ScheduledPaymentService scheduledPaymentService,
+            ConsentService consentService
+    ) {
+        super(scheduledPaymentSubmissionRepository, paymentSubmissionValidator, scheduledPaymentService, consentService);
     }
 }

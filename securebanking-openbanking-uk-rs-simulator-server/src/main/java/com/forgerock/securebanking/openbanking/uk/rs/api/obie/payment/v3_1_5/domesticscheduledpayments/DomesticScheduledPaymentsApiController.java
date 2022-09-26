@@ -23,10 +23,12 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.do
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomesticScheduled;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticScheduled;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentStatusUtils;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticScheduledPaymentSubmission;
@@ -71,13 +73,18 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ScheduledPaymentService scheduledPaymentService;
 
+    private final ConsentService consentService;
+
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ScheduledPaymentService scheduledPaymentService) {
+            ScheduledPaymentService scheduledPaymentService,
+            ConsentService consentService
+    ) {
         this.scheduledPaymentSubmissionRepository = scheduledPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.scheduledPaymentService = scheduledPaymentService;
+        this.consentService = consentService;
     }
 
     @Override
@@ -118,8 +125,15 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Save the scheduled payment data for the Accounts API
         FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment, xAccountId);
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
-
-        return ResponseEntity.status(CREATED).body(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteDomesticScheduledConsentResponse5 obConsent = consentService.getOBConsent(
+                OBWriteDomesticScheduledConsentResponse5.class,
+                authorization,
+                obWriteDomesticScheduled2.getData().getConsentId()
+        );
+        return ResponseEntity.status(CREATED).body(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -145,7 +159,15 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
-        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteDomesticScheduledConsentResponse5 obConsent = consentService.getOBConsent(
+                OBWriteDomesticScheduledConsentResponse5.class,
+                authorization,
+                domesticScheduledPaymentId
+        );
+        return ResponseEntity.ok(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -174,12 +196,16 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         return ResponseEntity.ok(responseEntityDetails(frPaymentSubmission));
     }
 
-    private OBWriteDomesticScheduledResponse5 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission,
-                                                             FRReadRefundAccount readRefundAccount) {
+    private OBWriteDomesticScheduledResponse5 responseEntity(
+            FRDomesticScheduledPaymentSubmission frPaymentSubmission,
+            FRReadRefundAccount readRefundAccount,
+            OBWriteDomesticScheduledConsentResponse5 obConsent
+    ) {
         FRWriteDataDomesticScheduled data = frPaymentSubmission.getScheduledPayment().getData();
         Optional<FRResponseDataRefund> refund = frDomesticResponseDataRefund(readRefundAccount, data.getInitiation());
         return new OBWriteDomesticScheduledResponse5()
                 .data(new OBWriteDomesticScheduledResponse5Data()
+                        .charges(obConsent.getData().getCharges())
                         .domesticScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteDomesticScheduled2DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
@@ -187,7 +213,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                         .status(toOBWriteDomesticScheduledResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
-                        .refund(refund.isPresent() ? toOBWriteDomesticResponse5DataRefund(refund.get()) : null))
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null)))
                 .links(createDomesticScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

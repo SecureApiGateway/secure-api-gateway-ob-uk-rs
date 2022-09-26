@@ -26,6 +26,7 @@ import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRFilePaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -37,10 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -63,10 +61,16 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     private final FilePaymentSubmissionRepository filePaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
-    public FilePaymentsApiController(FilePaymentSubmissionRepository filePaymentSubmissionRepository,
-                                     PaymentSubmissionValidator paymentSubmissionValidator) {
+    private final ConsentService consentService;
+
+    public FilePaymentsApiController(
+            FilePaymentSubmissionRepository filePaymentSubmissionRepository,
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ConsentService consentService
+    ) {
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.consentService = consentService;
     }
 
     public ResponseEntity<OBWriteFileResponse3> createFilePayments(
@@ -100,7 +104,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         // Save the file payment(s)
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(CREATED).body(responseEntity(frPaymentSubmission));
+        // Get the consent to update the response
+        OBWriteFileConsentResponse4 obConsent = consentService.getOBConsent(
+                OBWriteFileConsentResponse4.class,
+                authorization,
+                obWriteFile2.getData().getConsentId()
+        );
+        return ResponseEntity.status(CREATED).body(responseEntity(frPaymentSubmission, obConsent));
     }
 
     public ResponseEntity getFilePaymentsFilePaymentId(
@@ -127,7 +137,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
-        return ResponseEntity.ok(responseEntity(frPaymentSubmission));
+        // Get the consent to update the response
+        OBWriteFileConsentResponse4 obConsent = consentService.getOBConsent(
+                OBWriteFileConsentResponse4.class,
+                authorization,
+                filePaymentId
+        );
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, obConsent));
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
@@ -172,10 +188,14 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 //        return ResponseEntity.ok(reportFile);
     }
 
-    private OBWriteFileResponse3 responseEntity(FRFilePaymentSubmission frPaymentSubmission) {
+    private OBWriteFileResponse3 responseEntity(
+            FRFilePaymentSubmission frPaymentSubmission,
+            OBWriteFileConsentResponse4 obConsent
+    ) {
         FRWriteDataFile data = frPaymentSubmission.getFilePayment().getData();
         return new OBWriteFileResponse3()
                 .data(new OBWriteFileResponse3Data()
+                        .charges(obConsent.getData().getCharges())
                         .filePaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteFile2DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())

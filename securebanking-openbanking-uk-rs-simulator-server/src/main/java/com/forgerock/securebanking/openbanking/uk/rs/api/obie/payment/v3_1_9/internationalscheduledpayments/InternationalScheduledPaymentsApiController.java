@@ -20,11 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.internationalscheduledpayments;
 
-import org.springframework.stereotype.Controller;
-
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
+import org.springframework.stereotype.Controller;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.9")
 public class InternationalScheduledPaymentsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_8.internationalscheduledpayments.InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
@@ -32,7 +32,9 @@ public class InternationalScheduledPaymentsApiController extends com.forgerock.s
     public InternationalScheduledPaymentsApiController(
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ScheduledPaymentService scheduledPaymentService) {
-        super(scheduledPaymentSubmissionRepository, paymentSubmissionValidator, scheduledPaymentService);
+            ScheduledPaymentService scheduledPaymentService,
+            ConsentService consentService
+    ) {
+        super(scheduledPaymentSubmissionRepository, paymentSubmissionValidator, scheduledPaymentService, consentService);
     }
 }

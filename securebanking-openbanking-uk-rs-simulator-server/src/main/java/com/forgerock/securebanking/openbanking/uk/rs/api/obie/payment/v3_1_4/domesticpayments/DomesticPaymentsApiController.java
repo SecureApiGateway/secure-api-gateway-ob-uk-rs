@@ -20,12 +20,14 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_4.domesticpayments;
 
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomestic;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -45,19 +47,20 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse4DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse4DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentDetailsLink;
-import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentApiResponseUtil.resourceConflictResponse;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentDetailsLink;
+import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
+import static uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
 
 @Controller("DomesticPaymentsApiV3.1.4")
 @Slf4j
@@ -66,10 +69,16 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
-    public DomesticPaymentsApiController(DomesticPaymentSubmissionRepository paymentSubmissionRepository,
-                                         PaymentSubmissionValidator paymentSubmissionValidator) {
+    private final ConsentService consentService;
+
+    public DomesticPaymentsApiController(
+            DomesticPaymentSubmissionRepository paymentSubmissionRepository,
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            ConsentService consentService
+    ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.consentService = consentService;
     }
 
     @Override
@@ -106,7 +115,15 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         // Save the payment
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(CREATED).body(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteDomesticConsentResponse4 obConsent = consentService.getOBConsent(
+                OBWriteDomesticConsentResponse4.class,
+                authorization,
+                obWriteDomestic2.getData().getConsentId()
+        );
+        return ResponseEntity.status(CREATED).body(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -131,7 +148,15 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
-        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteDomesticConsentResponse4 obConsent = consentService.getOBConsent(
+                OBWriteDomesticConsentResponse4.class,
+                authorization,
+                domesticPaymentId
+        );
+        return ResponseEntity.ok(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -161,31 +186,35 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         return ResponseEntity.ok(responseEntityDetails(frPaymentSubmission));
     }
 
-    private OBWriteDomesticResponse4 responseEntity(FRDomesticPaymentSubmission frPaymentSubmission,
-                                                    FRReadRefundAccount readRefundAccount) {
+    private OBWriteDomesticResponse4 responseEntity(
+            FRDomesticPaymentSubmission frPaymentSubmission,
+            FRReadRefundAccount readRefundAccount,
+            OBWriteDomesticConsentResponse4 obConsent
+    ) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
         Optional<FRResponseDataRefund> refund = frDomesticResponseDataRefund(readRefundAccount, data.getInitiation());
         return new OBWriteDomesticResponse4()
                 .data(new OBWriteDomesticResponse4Data()
+                        .charges(obConsent.getData().getCharges())
                         .domesticPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .status(toOBWriteDomesticResponse4DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .refund(refund.isPresent() ? toOBWriteDomesticResponse4DataRefund(refund.get()) : null))
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse4DataRefund).orElse(null)))
                 .links(createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticPaymentSubmission frPaymentSubmission) {
-        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
-                frPaymentSubmission.getStatus().getValue()
-        );
-        String localInstrument = frPaymentSubmission.getPayment().getData().getInitiation().getLocalInstrument();
 
-        // Build the response object with data to meet the expected data defined by the spec
-        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus
+                .StatusEnum
+                .fromValue(
+                        frPaymentSubmission.getStatus().getValue()
+                );
+
         return new OBWritePaymentDetailsResponse1()
                 .data(
                         new OBWritePaymentDetailsResponse1Data()
@@ -196,10 +225,14 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                                                 .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated()))
                                                 .statusDetail(
                                                         new OBWritePaymentDetailsResponse1DataStatusDetail()
-                                                                .localInstrument(localInstrument)
+                                                                .localInstrument(
+                                                                        frPaymentSubmission.getPayment().getData()
+                                                                                .getInitiation().getLocalInstrument()
+                                                                )
                                                                 .status(status.getValue())
-                                                                .statusReason(statusReasonEnum)
-                                                                .statusReasonDescription(statusReasonEnum.getValue())
+                                                                // Build the response object with data to meet the expected data defined by the spec
+                                                                .statusReason(PENDINGSETTLEMENT)
+                                                                .statusReasonDescription(PENDINGSETTLEMENT.getValue())
                                                 )
                                 )
 

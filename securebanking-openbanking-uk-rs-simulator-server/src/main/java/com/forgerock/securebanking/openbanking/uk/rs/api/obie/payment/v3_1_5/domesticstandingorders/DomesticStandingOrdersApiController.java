@@ -21,12 +21,14 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_5.domesticstandingorders;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRStandingOrderData;
-import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRReadRefundAccount;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDataDomesticStandingOrder;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentStatusUtils;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticStandingOrderPaymentSubmission;
@@ -47,12 +49,12 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse5DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.factories.FRStandingOrderDataFactory.createFRStandingOrderData;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
@@ -60,7 +62,8 @@ import static com.forgerock.securebanking.openbanking.uk.rs.common.util.PaymentA
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticStandingOrderPaymentDetailsLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.util.link.LinksHelper.createDomesticStandingOrderPaymentLink;
 import static com.forgerock.securebanking.openbanking.uk.rs.validator.ResourceVersionValidator.isAccessToResourceAllowed;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @Controller("DomesticStandingOrdersApiV3.1.5")
 @Slf4j
@@ -70,13 +73,18 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final StandingOrderService standingOrderService;
 
+    private final ConsentService consentService;
+
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            StandingOrderService standingOrderService) {
+            StandingOrderService standingOrderService,
+            ConsentService consentService
+    ) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.standingOrderService = standingOrderService;
+        this.consentService = consentService;
     }
 
     @Override
@@ -118,8 +126,15 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         // Save the standing order data for the Accounts API
         FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder, xAccountId);
         standingOrderService.createStandingOrder(standingOrderData);
-
-        return ResponseEntity.status(CREATED).body(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteDomesticStandingOrderConsentResponse6 obConsent = consentService.getOBConsent(
+                OBWriteDomesticStandingOrderConsentResponse6.class,
+                authorization,
+                obWriteDomesticStandingOrder3.getData().getConsentId()
+        );
+        return ResponseEntity.status(CREATED).body(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -144,7 +159,15 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         if (!isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
-        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount)));
+        // Get the consent to update the response
+        OBWriteDomesticStandingOrderConsentResponse6 obConsent = consentService.getOBConsent(
+                OBWriteDomesticStandingOrderConsentResponse6.class,
+                authorization,
+                domesticStandingOrderId
+        );
+        return ResponseEntity.ok(
+                responseEntity(frPaymentSubmission, frReadRefundAccount(xReadRefundAccount), obConsent)
+        );
     }
 
     @Override
@@ -172,12 +195,16 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         return ResponseEntity.ok(responseEntityDetails(frStandingOrderSubmission));
     }
 
-    private OBWriteDomesticStandingOrderResponse6 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission,
-                                                                 FRReadRefundAccount readRefundAccount) {
+    private OBWriteDomesticStandingOrderResponse6 responseEntity(
+            FRDomesticStandingOrderPaymentSubmission frPaymentSubmission,
+            FRReadRefundAccount readRefundAccount,
+            OBWriteDomesticStandingOrderConsentResponse6 obConsent
+    ) {
         FRWriteDataDomesticStandingOrder data = frPaymentSubmission.getStandingOrder().getData();
         Optional<FRResponseDataRefund> refund = frDomesticResponseDataRefund(readRefundAccount, data.getInitiation());
         return new OBWriteDomesticStandingOrderResponse6()
                 .data(new OBWriteDomesticStandingOrderResponse6Data()
+                        .charges(obConsent.getData().getCharges())
                         .domesticStandingOrderId(frPaymentSubmission.getId())
                         .initiation(toOBWriteDomesticStandingOrderConsentResponse6DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
@@ -185,7 +212,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                         .status(toOBWriteDomesticStandingOrderResponse6DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
-                        .refund(refund.isPresent() ? toOBWriteDomesticResponse5DataRefund(refund.get()) : null))
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null)))
                 .links(createDomesticStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

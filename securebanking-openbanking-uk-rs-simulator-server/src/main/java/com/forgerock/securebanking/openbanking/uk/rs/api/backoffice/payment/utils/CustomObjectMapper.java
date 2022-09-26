@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.jackson.DateTimeDeserializerConverter;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.jackson.DateTimeSerializerConverter;
 import org.joda.time.DateTime;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -33,8 +35,8 @@ public class CustomObjectMapper {
         Jackson2ObjectMapperBuilderCustomizer customizer =
                 jacksonObjectMapperBuilder -> {
                     jacksonObjectMapperBuilder.featuresToEnable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-                    jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
-                    jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
+                    jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializerConverter(DateTime.class));
+                    jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializerConverter());
                     jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
                 };
 

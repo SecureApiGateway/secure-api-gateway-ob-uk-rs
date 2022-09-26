@@ -20,6 +20,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_6.internationalstandingorders;
 
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.service.standingorder.StandingOrderService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
@@ -31,7 +32,9 @@ public class InternationalStandingOrdersApiController extends com.forgerock.secu
     public InternationalStandingOrdersApiController(
             InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            StandingOrderService standingOrderService) {
-        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService);
+            StandingOrderService standingOrderService,
+            ConsentService consentService
+    ) {
+        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService, consentService);
     }
 }

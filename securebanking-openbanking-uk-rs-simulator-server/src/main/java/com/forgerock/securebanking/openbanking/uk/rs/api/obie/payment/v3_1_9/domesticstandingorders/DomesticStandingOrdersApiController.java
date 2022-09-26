@@ -20,11 +20,11 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.domesticstandingorders;
 
-import org.springframework.stereotype.Controller;
-
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.service.standingorder.StandingOrderService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
+import org.springframework.stereotype.Controller;
 
 @Controller("DomesticStandingOrdersApiV3.1.9")
 public class DomesticStandingOrdersApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_8.domesticstandingorders.DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
@@ -32,7 +32,9 @@ public class DomesticStandingOrdersApiController extends com.forgerock.secureban
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            StandingOrderService standingOrderService) {
-        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService);
+            StandingOrderService standingOrderService,
+            ConsentService consentService
+    ) {
+        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService, consentService);
     }
 }
