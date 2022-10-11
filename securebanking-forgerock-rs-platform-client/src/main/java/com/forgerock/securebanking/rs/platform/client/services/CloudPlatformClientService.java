@@ -42,7 +42,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @ComponentScan(basePackages = {"com.forgerock.securebanking.rs.platform.client.configuration"})
 class CloudPlatformClientService implements PlatformClient {
 
-    public static final String IDM_RESPOND_OB_INTENT_OBJECT_FIELD = "OBIntentObject";
+    private static final String IDM_RESPOND_OB_INTENT_OBJECT_FIELD = "OBIntentObject";
     private final RestTemplate restTemplate;
     private final ConfigurationPropertiesClient configurationProperties;
 
