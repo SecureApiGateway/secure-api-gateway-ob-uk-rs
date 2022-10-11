@@ -64,7 +64,9 @@ public class DomesticPaymentConsentDetailsTestFactory {
     public static JsonObject aValidDomesticPaymentConsentDetailsBuilder(String consentId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
-        consent.add("data", aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        final JsonObject obIntentObject = new JsonObject();
+        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -76,7 +78,9 @@ public class DomesticPaymentConsentDetailsTestFactory {
     public static JsonObject aValidOBDomesticPaymentConsentDetailsBuilder(String consentId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
-        consent.add("Data", aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        final JsonObject obIntentObject = new JsonObject();
+        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -88,7 +92,9 @@ public class DomesticPaymentConsentDetailsTestFactory {
     public static JsonObject aValidDomesticPaymentConsentDetailsBuilder(String consentId, String clientId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
-        consent.add("Data", aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        final JsonObject obIntentObject = new JsonObject();
+        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
@@ -99,7 +105,9 @@ public class DomesticPaymentConsentDetailsTestFactory {
     public static JsonObject aValidOBDomesticPaymentConsentDetailsBuilder(String consentId, String clientId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
-        consent.add("Data", aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        final JsonObject obIntentObject = new JsonObject();
+        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");

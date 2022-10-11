@@ -99,7 +99,7 @@ public class PlatformClientServiceTest {
 
         // Then
         assertThat(idmIntent).isNotNull();
-        assertThat(idmIntent).isEqualTo(intentResponse);
+        assertThat(idmIntent).isEqualTo(intentResponse.getAsJsonObject("OBIntentObject"));
     }
 
     @Test

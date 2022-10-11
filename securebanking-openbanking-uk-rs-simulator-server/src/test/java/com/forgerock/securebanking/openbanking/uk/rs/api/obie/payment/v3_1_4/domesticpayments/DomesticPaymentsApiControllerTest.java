@@ -79,7 +79,7 @@ public class DomesticPaymentsApiControllerTest {
         JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
                 IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId(),
                 UUID.randomUUID().toString()
-        );
+        ).getAsJsonObject("OBIntentObject");
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
         given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
 
