@@ -21,10 +21,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.util
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.*;
-
-import java.util.List;
 
 /**
  * Validation class for Domestic Payment Consent response
@@ -64,8 +61,6 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
 
     @Override
     public <T, R> R calculate(T consentRequest, R consentResponse) {
-        errors.clear();
-
         if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse3) {
             log.debug("OBWriteInternationalScheduledConsentResponse3 instance");
             ((OBWriteInternationalScheduledConsentResponse3) consentResponse)
@@ -291,10 +286,5 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
             }
         }
         return consentResponse;
-    }
-
-    @Override
-    public List<OBError1> getErrors() {
-        return errors;
     }
 }

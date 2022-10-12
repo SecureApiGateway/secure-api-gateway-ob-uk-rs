@@ -40,6 +40,18 @@ public class PaymentConsentGeneral {
     public static final String INTENT_TYPE_DESCRIPTION = "Intent type";
     private static final CustomObjectMapper customObjectMapper = CustomObjectMapper.getCustomObjectMapper();
 
+    /**
+     *
+     * @param consentRequest OB consent request object
+     * @param intent intent Id prefix (ex. 'PDC_') to identify the intent type
+     * @param xFapiFinancialId fapi financial id for trace purposes
+     * @param request http request object to obtain the api version
+     * @return OB consent object response
+     * @param <T> parametrized type for an instance of OB consent request object
+     * @param <R> parametrized type for an instance of OB consent response object
+     * @throws OBErrorResponseException
+     * @throws JsonProcessingException
+     */
     public static <T, R> R calculate(T consentRequest, String intent, String xFapiFinancialId, HttpServletRequest request) throws OBErrorResponseException, JsonProcessingException {
 
         OBVersion apiVersion = ApiVersionUtils.getOBVersion(request.getRequestURI());
@@ -50,7 +62,7 @@ public class PaymentConsentGeneral {
         log.info("{}, Calculate elements for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
         log.debug("{}, Consent request\n {}", xFapiFinancialId, customObjectMapper.getObjectMapper().writeValueAsString(consentRequest));
         PaymentConsentValidation validation = PaymentConsentValidationFactory.getValidationInstance(intent);
-        validation.validate(consentRequest);
+        validation.clearErrors().validate(consentRequest);
 
         if (haveErrorEvents(validation.getErrors(), xFapiFinancialId)) {
             throw badRequestResponseException(validation.getErrors());
@@ -59,8 +71,11 @@ public class PaymentConsentGeneral {
         log.debug("{}, Validation passed for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
 
         PaymentConsentResponseCalculation calculation = PaymentConsentResponseCalculationFactory.getCalculationInstance(intent);
-        Object consentResponseObject = customObjectMapper.getObjectMapper().readValue(customObjectMapper.getObjectMapper().writeValueAsString(consentRequest), calculation.getResponseClass(apiVersion));
-        Object consentEntityResponse = calculation.calculate(consentRequest, consentResponseObject);
+        Object consentResponseObject = customObjectMapper.getObjectMapper().readValue(
+                customObjectMapper.getObjectMapper().writeValueAsString(consentRequest),
+                calculation.getResponseClass(apiVersion)
+        );
+        Object consentEntityResponse = calculation.clearErrors().calculate(consentRequest, consentResponseObject);
 
         if (haveErrorEvents(calculation.getErrors(), xFapiFinancialId)) {
             throw badRequestResponseException(calculation.getErrors());

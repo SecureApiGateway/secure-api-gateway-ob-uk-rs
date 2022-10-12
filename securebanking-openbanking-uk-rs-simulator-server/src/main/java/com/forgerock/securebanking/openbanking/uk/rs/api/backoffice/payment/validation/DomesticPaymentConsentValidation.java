@@ -41,7 +41,6 @@ public class DomesticPaymentConsentValidation extends PaymentConsentValidation {
 
     @Override
     public <T> void validate(T consent) {
-        errors.clear();
         if (consent instanceof OBWriteDomesticConsent3) {
             validateInstructedAmount(((OBWriteDomesticConsent3) consent).getData().getInitiation().getInstructedAmount());
             return;

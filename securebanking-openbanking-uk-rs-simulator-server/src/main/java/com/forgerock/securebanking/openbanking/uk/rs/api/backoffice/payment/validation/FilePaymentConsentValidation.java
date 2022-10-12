@@ -35,8 +35,6 @@ public class FilePaymentConsentValidation extends PaymentConsentValidation {
 
     @Override
     public <T> void validate(T consent) {
-        errors.clear();
-        validateNumberTransactions(((OBWriteFileConsent3) consent).getData().getInitiation().getNumberOfTransactions());
-        validateControlSum(((OBWriteFileConsent3) consent).getData().getInitiation().getControlSum());
+        // No validations
     }
 }

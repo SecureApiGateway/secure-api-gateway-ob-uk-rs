@@ -44,7 +44,6 @@ public class InternationalStandingOrdersConsentValidation extends PaymentConsent
 
     @Override
     public <T> void validate(T consent) {
-        errors.clear();
         if (consent instanceof OBWriteInternationalStandingOrderConsent4) {
             validateInstructedAmount(((OBWriteInternationalStandingOrderConsent4) consent).getData().getInitiation().getInstructedAmount());
             return;

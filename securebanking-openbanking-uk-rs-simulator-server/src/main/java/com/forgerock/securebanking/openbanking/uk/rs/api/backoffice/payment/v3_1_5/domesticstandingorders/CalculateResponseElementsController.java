@@ -34,11 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController("CalculateDomesticStandingOrderResponseElements_v3.1.5")
 @Slf4j
 public class CalculateResponseElementsController implements CalculateResponseElements {
-    public static final String VALIDATION_TEST_FAILURE_HEADER = "x-validation-test-failure";
 
-    public CalculateResponseElementsController() {
-
-    }
 
     @Override
     public ResponseEntity<OBWriteDomesticStandingOrderConsentResponse6> calculateElements(

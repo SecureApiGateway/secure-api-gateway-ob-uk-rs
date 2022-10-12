@@ -18,10 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.cal
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.*;
-
-import java.util.List;
 
 /**
  * Validation class for Domestic Payment Consent response
@@ -56,8 +53,6 @@ public class DomesticPaymentConsentResponseCalculation extends  PaymentConsentRe
 
     @Override
     public <T, R> R calculate(T consentRequest, R consentResponse) {
-        errors.clear();
-
         if (consentResponse instanceof OBWriteDomesticConsentResponse3) {
             log.debug("OBWriteDomesticConsentResponse3 instance");
             ((OBWriteDomesticConsentResponse3) consentResponse)
@@ -91,10 +86,5 @@ public class DomesticPaymentConsentResponseCalculation extends  PaymentConsentRe
                     );
         }
         return consentResponse;
-    }
-
-    @Override
-    public List<OBError1> getErrors() {
-        return errors;
     }
 }

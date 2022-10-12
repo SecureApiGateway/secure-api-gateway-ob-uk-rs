@@ -24,8 +24,6 @@ import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.jack
 import org.joda.time.DateTime;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import uk.org.openbanking.jackson.DateTimeDeserializer;
-import uk.org.openbanking.jackson.DateTimeSerializer;
 
 public class CustomObjectMapper {
     private static CustomObjectMapper customObjectMapper;
