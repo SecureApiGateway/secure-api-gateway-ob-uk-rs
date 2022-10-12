@@ -84,14 +84,18 @@ public class ControllerEndpointBlacklistHandlerTest {
         domesticPaymentSubmissionRepository.deleteAll();
     }
 
+    private JsonObject getIntentResponse(OBWriteDomestic2 payment) {
+        return DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
+                payment.getData().getConsentId(),
+                UUID.randomUUID().toString()
+        ).getAsJsonObject("OBIntentObject");
+    }
+
     @Test
     public void shouldCreateDomesticPaymentGivenApiVersionIsEnabled() throws ExceptionClient {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
-                payment.getData().getConsentId(),
-                UUID.randomUUID().toString()
-        );
+        JsonObject intentResponse = getIntentResponse(payment);
         given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         String url = paymentsUrl(ENABLED_VERSION);
@@ -121,10 +125,7 @@ public class ControllerEndpointBlacklistHandlerTest {
     public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() throws ExceptionClient {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
-                payment.getData().getConsentId(),
-                UUID.randomUUID().toString()
-        );
+        JsonObject intentResponse = getIntentResponse(payment);
         given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         ResponseEntity<OBWriteDomesticResponse5> persistedPayment = restTemplate.postForEntity(

@@ -42,6 +42,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @ComponentScan(basePackages = {"com.forgerock.securebanking.rs.platform.client.configuration"})
 class CloudPlatformClientService implements PlatformClient {
 
+    private static final String IDM_RESPOND_OB_INTENT_OBJECT_FIELD = "OBIntentObject";
     private final RestTemplate restTemplate;
     private final ConfigurationPropertiesClient configurationProperties;
 
@@ -73,7 +74,10 @@ class CloudPlatformClientService implements PlatformClient {
             throw new ExceptionClient(clientRequest, ErrorType.INVALID_REQUEST, errorMessage);
         }
 
-        return consentDetails;
+        if (!consentDetails.has(IDM_RESPOND_OB_INTENT_OBJECT_FIELD)) {
+            throw new ExceptionClient(clientRequest, ErrorType.NOT_FOUND, "Server responded with invalid consent response, missing OBIntentObject field");
+        }
+        return consentDetails.getAsJsonObject(IDM_RESPOND_OB_INTENT_OBJECT_FIELD);
     }
 
     private JsonObject request(String intentId, HttpMethod httpMethod) throws ExceptionClient {
