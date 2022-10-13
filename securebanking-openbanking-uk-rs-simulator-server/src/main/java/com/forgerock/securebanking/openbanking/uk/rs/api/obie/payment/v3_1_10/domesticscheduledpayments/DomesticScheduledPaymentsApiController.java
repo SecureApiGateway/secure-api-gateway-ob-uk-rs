@@ -18,10 +18,9 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_10.domesticscheduledpayments;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.domesticscheduledpayments;
 
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.domesticscheduledpayments.DomesticScheduledPaymentsApi;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;

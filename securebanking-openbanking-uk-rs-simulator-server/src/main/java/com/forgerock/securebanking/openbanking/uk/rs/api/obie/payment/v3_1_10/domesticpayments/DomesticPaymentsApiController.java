@@ -18,19 +18,22 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_10.internationalpayments;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.domesticpayments;
 
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.internationalpayments.InternationalPaymentsApi;
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
-@Controller("InternationalPaymentsApiV3.1.10")
-public class InternationalPaymentsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.internationalpayments.InternationalPaymentsApiController implements InternationalPaymentsApi {
+@Controller("DomesticPaymentsApiV3.1.10")
+@Slf4j
+public class DomesticPaymentsApiController
+        extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.domesticpayments.DomesticPaymentsApiController
+        implements DomesticPaymentsApi {
 
-    public InternationalPaymentsApiController(
-            InternationalPaymentSubmissionRepository paymentSubmissionRepository,
+    public DomesticPaymentsApiController(
+            DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ConsentService consentService
     ) {

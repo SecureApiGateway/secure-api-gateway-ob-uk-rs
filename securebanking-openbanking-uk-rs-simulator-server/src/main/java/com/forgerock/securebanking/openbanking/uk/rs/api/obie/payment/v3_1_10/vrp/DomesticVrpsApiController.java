@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_10.vrp;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.vrp;
 
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.vrp.DomesticVrpsApi;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import lombok.extern.slf4j.Slf4j;
 

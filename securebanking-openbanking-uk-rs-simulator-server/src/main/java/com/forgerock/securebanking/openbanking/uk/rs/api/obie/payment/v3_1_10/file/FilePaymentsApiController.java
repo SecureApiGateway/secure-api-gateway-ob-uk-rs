@@ -18,24 +18,21 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_10.internationalstandingorders;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.file;
 
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.internationalstandingorders.InternationalStandingOrdersApi;
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
-import com.forgerock.securebanking.openbanking.uk.rs.service.standingorder.StandingOrderService;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import org.springframework.stereotype.Controller;
 
-@Controller("InternationalStandingOrdersApiV3.1.10")
-public class InternationalStandingOrdersApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.internationalstandingorders.InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
+@Controller("FilePaymentsApiV3.1.10")
+public class FilePaymentsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.file.FilePaymentsApiController implements FilePaymentsApi {
 
-    public InternationalStandingOrdersApiController(
-            InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
+    public FilePaymentsApiController(
+            FilePaymentSubmissionRepository filePaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            StandingOrderService standingOrderService,
             ConsentService consentService
     ) {
-        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService, consentService);
+        super(filePaymentSubmissionRepository, paymentSubmissionValidator, consentService);
     }
 }

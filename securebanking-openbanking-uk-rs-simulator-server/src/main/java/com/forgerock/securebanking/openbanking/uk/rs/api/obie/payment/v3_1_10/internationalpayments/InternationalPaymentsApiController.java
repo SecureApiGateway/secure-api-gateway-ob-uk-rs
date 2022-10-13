@@ -18,24 +18,21 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_10.internationalscheduledpayments;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.internationalpayments;
 
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.internationalscheduledpayments.InternationalScheduledPaymentsApi;
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalScheduledPaymentSubmissionRepository;
-import com.forgerock.securebanking.openbanking.uk.rs.service.scheduledpayment.ScheduledPaymentService;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import org.springframework.stereotype.Controller;
 
-@Controller("InternationalScheduledPaymentsApiV3.1.10")
-public class InternationalScheduledPaymentsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.internationalscheduledpayments.InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
+@Controller("InternationalPaymentsApiV3.1.10")
+public class InternationalPaymentsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.internationalpayments.InternationalPaymentsApiController implements InternationalPaymentsApi {
 
-    public InternationalScheduledPaymentsApiController(
-            InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
+    public InternationalPaymentsApiController(
+            InternationalPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ScheduledPaymentService scheduledPaymentService,
             ConsentService consentService
     ) {
-        super(scheduledPaymentSubmissionRepository, paymentSubmissionValidator, scheduledPaymentService, consentService);
+        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService);
     }
 }
