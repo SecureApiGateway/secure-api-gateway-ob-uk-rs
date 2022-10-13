@@ -30,11 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static java.math.BigDecimal.ZERO;
+
 public abstract class PaymentConsentValidation {
 
     protected List<OBError1> errors = new ArrayList<>();
-
-    private static final BigDecimal ZERO = new BigDecimal(0);
 
     /**
      * @param version {@link OBVersion} is the api version to identify the request object to be validated
@@ -96,10 +96,13 @@ public abstract class PaymentConsentValidation {
         OBExchangeRateType2Code rateType = exchangeRateInformation.getRateType();
         switch (rateType) {
             case AGREED -> {
-                if (!exchangeRateInformation.getUnitCurrency().equals(currencyOfTransfer)) {
-                    errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                            String.format("The currency of transfer should be the same with the unit currency.")
-                    ));
+                // validate only mandatory fields for agreed rate type
+                if (Objects.isNull(exchangeRateInformation.getContractIdentification()) || Objects.isNull(exchangeRateInformation.getExchangeRate())) {
+                    errors.add(
+                            OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                                    "ExchangeRate and ContractIdentification must be specify when requesting an Agreed RateType."
+                            )
+                    );
                 }
             }
             case ACTUAL, INDICATIVE -> {
@@ -137,9 +140,11 @@ public abstract class PaymentConsentValidation {
         switch (rateType) {
             case AGREED -> {
                 if (!exchangeRateInformation.getUnitCurrency().equals(currencyOfTransfer)) {
-                    errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                            String.format("The currency of transfer should be the same with the exchange unit currency.")
-                    ));
+                    errors.add(
+                            OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                                    "The currency of transfer should be the same with the exchange unit currency."
+                            )
+                    );
                 }
             }
             case ACTUAL, INDICATIVE -> {
