@@ -44,7 +44,6 @@ public class InternationalPaymentConsentValidation extends PaymentConsentValidat
 
     @Override
     public <T> void validate(T consent) {
-        errors.clear();
         if (consent instanceof OBWriteInternationalConsent3) {
             validateInstructedAmount(((OBWriteInternationalConsent3) consent).getData().getInitiation().getInstructedAmount());
             validateExchangeRateInformation(((OBWriteInternationalConsent3) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalConsent3) consent).getData().getInitiation().getCurrencyOfTransfer());

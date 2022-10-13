@@ -50,18 +50,29 @@ public abstract class PaymentConsentResponseCalculation {
     public abstract <T, R> R calculate(T consentRequest, R consentResponse);
 
     /**
-     * Get the error events list to build the error response
-     *
-     * @return list of {@link OBError1}
-     */
-    public abstract List<OBError1> getErrors();
-
-    /**
      * Get defaults amount of charges
      *
      * @return {@link OBActiveOrHistoricCurrencyAndAmount}
      */
     protected OBActiveOrHistoricCurrencyAndAmount getDefaultAmount() {
         return new OBActiveOrHistoricCurrencyAndAmount().amount(DEFAULT_CHARGE_AMOUNT).currency(DEFAULT_CHARGE_CURRENCY);
+    }
+
+    /**
+     * Clear error event list
+     * @return this
+     */
+    public PaymentConsentResponseCalculation clearErrors(){
+        this.errors.clear();
+        return this;
+    }
+
+    /**
+     * Get the error event list to build the error response
+     *
+     * @return list of {@link OBError1}
+     */
+    public List<OBError1> getErrors() {
+        return this.errors;
     }
 }

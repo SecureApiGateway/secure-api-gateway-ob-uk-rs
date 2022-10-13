@@ -39,7 +39,6 @@ public class DomesticStandingOrdersConsentValidation extends PaymentConsentValid
 
     @Override
     public <T> void validate(T consent) {
-        errors.clear();
         if (consent instanceof OBWriteDomesticStandingOrderConsent4) {
             validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getFirstPaymentAmount());
             validate(((OBWriteDomesticStandingOrderConsent4) consent).getData().getInitiation().getRecurringPaymentAmount());

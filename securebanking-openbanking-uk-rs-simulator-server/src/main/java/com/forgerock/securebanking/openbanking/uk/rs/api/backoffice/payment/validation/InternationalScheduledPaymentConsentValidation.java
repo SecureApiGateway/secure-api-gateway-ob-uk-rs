@@ -44,7 +44,6 @@ public class InternationalScheduledPaymentConsentValidation extends PaymentConse
 
     @Override
     public <T> void validate(T consent) {
-        errors.clear();
         if (consent instanceof OBWriteInternationalScheduledConsent3) {
             validateInstructedAmount(((OBWriteInternationalScheduledConsent3) consent).getData().getInitiation().getInstructedAmount());
             validateExchangeRateInformation(((OBWriteInternationalScheduledConsent3) consent).getData().getInitiation().getExchangeRateInformation(), ((OBWriteInternationalScheduledConsent3) consent).getData().getInitiation().getCurrencyOfTransfer());

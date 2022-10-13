@@ -47,7 +47,7 @@ public interface CalculateResponseElements {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<OBWriteInternationalStandingOrderConsentResponse6> calculateElements(
-            @ApiParam(value = "Create an Account Access Consents", required = true)
+            @ApiParam(value = "Payment Consent OB object request body", required = true)
             @Valid
             @RequestBody OBWriteInternationalStandingOrderConsent6 body,
 

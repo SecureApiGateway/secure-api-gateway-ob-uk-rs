@@ -17,7 +17,6 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.v3_
 
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calculate.elements.v3_1_10.domesticpayments.CalculateResponseElements;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 

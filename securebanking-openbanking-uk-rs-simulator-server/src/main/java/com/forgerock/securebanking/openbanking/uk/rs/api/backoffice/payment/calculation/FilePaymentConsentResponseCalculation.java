@@ -18,10 +18,10 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.cal
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.*;
-
-import java.util.List;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse3DataCharges;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse3;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
 
 /**
  * Validation class for Domestic Payment Consent response
@@ -34,30 +34,26 @@ import java.util.List;
  *     </li>
  * </ul>
  */
-@SuppressWarnings("unchecked")
 @Slf4j
 public class FilePaymentConsentResponseCalculation extends PaymentConsentResponseCalculation {
 
     public static final String TYPE = "UK.OBIE.CHAPSOut";
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Class getResponseClass(OBVersion version) {
         log.debug("{} is the version to calculate response elements", version.getCanonicalName());
-        if (version.isBeforeVersion(OBVersion.v3_1_4)) {
-            return OBWriteDomesticConsentResponse3.class;
-        } else if (version.equals(OBVersion.v3_1_4)) {
-            return OBWriteDomesticConsentResponse4.class;
+        if (version.isBeforeVersion(OBVersion.v3_1_5)) {
+            return OBWriteFileConsentResponse3.class;
         }
-        return OBWriteDomesticConsentResponse5.class;
+        return OBWriteFileConsentResponse4.class;
     }
 
     @Override
     public <T, R> R calculate(T consentRequest, R consentResponse) {
-        errors.clear();
-
-        if (consentResponse instanceof OBWriteDomesticConsentResponse3) {
+        if (consentResponse instanceof OBWriteFileConsentResponse3) {
             log.debug("OBWriteDomesticConsentResponse3 instance");
-            ((OBWriteDomesticConsentResponse3) consentResponse)
+            ((OBWriteFileConsentResponse3) consentResponse)
                     .getData()
                     .addChargesItem(
                             new OBWriteDomesticConsentResponse3DataCharges()
@@ -66,23 +62,13 @@ public class FilePaymentConsentResponseCalculation extends PaymentConsentRespons
                                     .amount(getDefaultAmount())
                     );
 
-        } else if (consentResponse instanceof OBWriteDomesticConsentResponse4) {
-            log.debug("OBWriteDomesticConsentResponse4 instance");
-            ((OBWriteDomesticConsentResponse4) consentResponse)
-                    .getData()
-                    .addChargesItem(
-                            new OBWriteDomesticConsentResponse4DataCharges()
-                                    .chargeBearer(OBChargeBearerType1Code.BORNEBYDEBTOR)
-                                    .type(TYPE)
-                                    .amount(getDefaultAmount())
-                    );
         } else {
-            log.debug("OBWriteDomesticConsentResponse5 instance");
-            ((OBWriteDomesticConsentResponse5) consentResponse)
+            log.debug("OBWriteDomesticConsentResponse4 instance");
+            ((OBWriteFileConsentResponse4) consentResponse)
                     .getData()
                     .addChargesItem(
-                            new OBWriteDomesticConsentResponse5DataCharges().
-                                    chargeBearer(OBChargeBearerType1Code.BORNEBYDEBTOR)
+                            new OBWriteDomesticConsentResponse5DataCharges()
+                                    .chargeBearer(OBChargeBearerType1Code.BORNEBYDEBTOR)
                                     .type(TYPE)
                                     .amount(getDefaultAmount())
                     );
@@ -90,8 +76,4 @@ public class FilePaymentConsentResponseCalculation extends PaymentConsentRespons
         return consentResponse;
     }
 
-    @Override
-    public List<OBError1> getErrors() {
-        return errors;
-    }
 }
