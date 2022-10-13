@@ -18,26 +18,23 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_10.domesticpayments;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.domesticstandingorders;
 
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.domesticpayments.DomesticPaymentsApi;
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.service.standingorder.StandingOrderService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
-@Controller("DomesticPaymentsApiV3.1.10")
-@Slf4j
-public class DomesticPaymentsApiController
-        extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.domesticpayments.DomesticPaymentsApiController
-        implements DomesticPaymentsApi {
+@Controller("DomesticStandingOrdersApiV3.1.10")
+public class DomesticStandingOrdersApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.domesticstandingorders.DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
 
-    public DomesticPaymentsApiController(
-            DomesticPaymentSubmissionRepository paymentSubmissionRepository,
+    public DomesticStandingOrdersApiController(
+            DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
+            StandingOrderService standingOrderService,
             ConsentService consentService
     ) {
-        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService);
+        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService, consentService);
     }
 }

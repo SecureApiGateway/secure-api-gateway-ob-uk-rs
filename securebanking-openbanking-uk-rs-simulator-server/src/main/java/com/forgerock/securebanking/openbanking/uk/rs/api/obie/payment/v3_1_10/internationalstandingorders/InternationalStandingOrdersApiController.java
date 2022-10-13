@@ -18,20 +18,19 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.funds.v3_1_10.domesticstandingorders;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.internationalstandingorders;
 
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.domesticstandingorders.DomesticStandingOrdersApi;
-import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.service.standingorder.StandingOrderService;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import org.springframework.stereotype.Controller;
 
-@Controller("DomesticStandingOrdersApiV3.1.10")
-public class DomesticStandingOrdersApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.domesticstandingorders.DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
+@Controller("InternationalStandingOrdersApiV3.1.10")
+public class InternationalStandingOrdersApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.internationalstandingorders.InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
 
-    public DomesticStandingOrdersApiController(
-            DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
+    public InternationalStandingOrdersApiController(
+            InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             StandingOrderService standingOrderService,
             ConsentService consentService
