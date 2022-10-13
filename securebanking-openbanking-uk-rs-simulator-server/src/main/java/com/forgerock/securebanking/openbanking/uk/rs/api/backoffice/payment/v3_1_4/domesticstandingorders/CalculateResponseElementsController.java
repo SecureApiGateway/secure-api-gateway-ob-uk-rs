@@ -30,6 +30,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentR
 
 import javax.servlet.http.HttpServletRequest;
 
+import static uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse5Data.StatusEnum.AWAITINGAUTHORISATION;
+
 
 @RestController("CalculateDomesticStandingOrderResponseElements_v3.1.4")
 @Slf4j
@@ -46,7 +48,11 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request));
+            OBWriteDomesticStandingOrderConsentResponse5 response = PaymentConsentGeneral.calculate(
+                    body, intent, xFapiFinancialId, request
+            );
+            response.getData().setStatus(AWAITINGAUTHORISATION);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);
