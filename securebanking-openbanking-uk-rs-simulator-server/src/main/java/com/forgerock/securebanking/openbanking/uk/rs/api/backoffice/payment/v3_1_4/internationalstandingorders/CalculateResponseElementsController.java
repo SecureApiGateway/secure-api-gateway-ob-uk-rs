@@ -27,8 +27,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse6;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse6Data;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse6Data.StatusEnum.AWAITINGAUTHORISATION;
 
 
 @RestController("CalculateInternationalStandingOrdersResponseElements_v3.1.4")
@@ -46,7 +49,11 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request));
+            OBWriteInternationalStandingOrderConsentResponse6 response = PaymentConsentGeneral.calculate(
+                    body, intent, xFapiFinancialId, request
+            );
+            response.getData().setStatus(AWAITINGAUTHORISATION);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);

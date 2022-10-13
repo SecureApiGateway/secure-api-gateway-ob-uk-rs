@@ -30,6 +30,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum.AWAITINGUPLOAD;
+
 
 @RestController("CalculateFilePaymentsResponseElements_v3.1.5")
 @Slf4j
@@ -45,7 +47,11 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(PaymentConsentGeneral.calculate(body, intent, xFapiFinancialId, request));
+            OBWriteFileConsentResponse4 response = PaymentConsentGeneral.calculate(
+                    body, intent, xFapiFinancialId, request
+            );
+            response.getData().setStatus(AWAITINGUPLOAD);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());
             log.error(message);
