@@ -66,26 +66,33 @@ public class DiscoveryApiService {
             String version = availableEndpoint.getVersion();
             OBApiReference endpointReference = availableEndpoint.getApiReference();
             String endpointUrl = availableEndpoint.getUrl();
-
+            log.error("endpointUrl: " + endpointUrl);
             if (isVersionEnabled(version)
                     && isApiEnabled(endpointReference)
                     && isVersionOverrideEnabled(version, endpointReference)) {
+                log.error("Version is enabled for: " + endpointUrl);
 
                 // Init map
                 if (!discoveryApis.containsKey(availableEndpoint.getGroupName())) {
                     discoveryApis.put(availableEndpoint.getGroupName(), new HashMap<>());
+                    log.error("Putting group in available endpoints: " + endpointUrl);
                 }
+
                 if (!discoveryApis.get(availableEndpoint.getGroupName()).containsKey(availableEndpoint.getVersion())) {
                     discoveryApis.get(availableEndpoint.getGroupName())
                             .put(availableEndpoint.getVersion(), new OBDiscoveryAPI<GenericOBDiscoveryAPILinks>()
                                     .version(availableEndpoint.getVersion())
                                     .links(new GenericOBDiscoveryAPILinks()));
+                    log.error("Putting endpoints because no version was foundd for current endpoint: " + endpointUrl);
                 }
                 GenericOBDiscoveryAPILinks links = (GenericOBDiscoveryAPILinks) discoveryApis
                         .get(availableEndpoint.getGroupName())
                         .get(availableEndpoint.getVersion())
                         .getLinks();
+                log.error("Adding URL: " + endpointUrl);
                 links.addLink(endpointReference.getReference(), endpointUrl);
+            } else {
+                log.error("Version is not enabled for: " + endpointUrl);
             }
         }
 
