@@ -96,6 +96,7 @@ public class DiscoveryController {
                 }
             }
         }
+        log.error("DiscoveryController response: " + discovery.toString());
         return ResponseEntity.ok(response.data(discovery));
     }
 }
