@@ -70,12 +70,12 @@ public class DiscoveryApiService {
             if (isVersionEnabled(version)
                     && isApiEnabled(endpointReference)
                     && isVersionOverrideEnabled(version, endpointReference)) {
-                log.error("Version is enabled for: " + endpointUrl);
+                log.error("Version is enabled for: {}, {}", endpointUrl, availableEndpoint.getGroupName());
 
                 // Init map
                 if (!discoveryApis.containsKey(availableEndpoint.getGroupName())) {
                     discoveryApis.put(availableEndpoint.getGroupName(), new HashMap<>());
-                    log.error("Putting group in available endpoints: " + endpointUrl);
+                    log.error("Putting group in available endpoints: {}, {}", endpointUrl, availableEndpoint.getGroupName());
                 }
 
                 if (!discoveryApis.get(availableEndpoint.getGroupName()).containsKey(availableEndpoint.getVersion())) {
@@ -83,7 +83,7 @@ public class DiscoveryApiService {
                             .put(availableEndpoint.getVersion(), new OBDiscoveryAPI<GenericOBDiscoveryAPILinks>()
                                     .version(availableEndpoint.getVersion())
                                     .links(new GenericOBDiscoveryAPILinks()));
-                    log.error("Putting endpoints because no version was foundd for current endpoint: " + endpointUrl);
+                    log.error("Putting endpoints because no version was found for current endpoint: {}, {}", endpointUrl, availableEndpoint.getGroupName());
                 }
                 GenericOBDiscoveryAPILinks links = (GenericOBDiscoveryAPILinks) discoveryApis
                         .get(availableEndpoint.getGroupName())
@@ -92,7 +92,7 @@ public class DiscoveryApiService {
                 log.error("Adding URL: " + endpointUrl);
                 links.addLink(endpointReference.getReference(), endpointUrl);
             } else {
-                log.error("Version is not enabled for: " + endpointUrl);
+                log.error("Version is not enabled for: {}, {}", endpointUrl, availableEndpoint.getGroupName());
             }
         }
 
