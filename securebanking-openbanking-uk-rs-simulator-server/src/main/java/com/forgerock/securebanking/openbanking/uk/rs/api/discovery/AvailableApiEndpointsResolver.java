@@ -18,6 +18,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 import com.forgerock.securebanking.openbanking.uk.rs.common.OBApiReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -36,6 +37,7 @@ import java.util.regex.Pattern;
  * application has implemented.
  */
 @Component
+@Slf4j
 public class AvailableApiEndpointsResolver {
 
     /**
@@ -92,12 +94,15 @@ public class AvailableApiEndpointsResolver {
         if (!patterns.isEmpty()) {
             String urlPattern = patterns.iterator().next();
             Matcher matcher = matchUrlPattern(urlPattern);
+            log.error("AvailableApiEndpointsResolver - getMatchingApiReference:urlPattern: {}", urlPattern);
             if (matcher.matches()) {
+                log.error("AvailableApiEndpointsResolver - getMatchingApiReference:matcher: {}", true);
                 String relativePath = matcher.group(2);
                 RequestMethod method = requestMapping.getMethodsCondition().getMethods().iterator().next();
                 return OBApiReference.fromMethodAndPath(HttpMethod.resolve(method.name()), relativePath);
             }
         }
+        log.error("AvailableApiEndpointsResolver - getMatchingApiReference exit null");
         return null;
     }
 
