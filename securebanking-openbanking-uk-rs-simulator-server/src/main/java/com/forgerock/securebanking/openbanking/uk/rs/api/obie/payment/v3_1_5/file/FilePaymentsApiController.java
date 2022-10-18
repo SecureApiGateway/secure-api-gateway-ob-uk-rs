@@ -105,7 +105,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         // Get the consent to update the response
-        OBWriteFileConsentResponse4 obConsent = consentService.getOBConsent(
+        OBWriteFileConsentResponse4 obConsent = consentService.getOBIntentObject(
                 OBWriteFileConsentResponse4.class,
                 authorization,
                 obWriteFile2.getData().getConsentId()
@@ -138,7 +138,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteFileConsentResponse4 obConsent = consentService.getOBConsent(
+        OBWriteFileConsentResponse4 obConsent = consentService.getOBIntentObject(
                 OBWriteFileConsentResponse4.class,
                 authorization,
                 filePaymentId

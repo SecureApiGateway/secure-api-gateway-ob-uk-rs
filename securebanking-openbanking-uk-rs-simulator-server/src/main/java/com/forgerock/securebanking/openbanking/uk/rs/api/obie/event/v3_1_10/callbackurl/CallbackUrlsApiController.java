@@ -15,9 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_10.callbackurl;
 
-import org.springframework.stereotype.Controller;
-
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.events.CallbackUrlsRepository;
+import org.springframework.stereotype.Controller;
 
 @Controller("CallbackUrlsApiV3.1.10")
 public class CallbackUrlsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_9.callbackurl.CallbackUrlsApiController implements CallbackUrlsApi {

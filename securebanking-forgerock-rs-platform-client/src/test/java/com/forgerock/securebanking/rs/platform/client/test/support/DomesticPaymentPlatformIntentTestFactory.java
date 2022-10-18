@@ -37,35 +37,35 @@ import static java.util.UUID.randomUUID;
 /**
  * Test data factory for Domestic Payment Consent Details
  */
-public class DomesticPaymentConsentDetailsTestFactory {
+public class DomesticPaymentPlatformIntentTestFactory {
 
     public static final Gson gson = new Gson();
 
-    public static JsonObject aValidDomesticPaymentConsentDetails() {
-        return aValidDomesticPaymentConsentDetailsBuilder(randomUUID().toString());
+    public static JsonObject aValidDomesticPaymentPlatformIntent() {
+        return aValidDomesticPaymentPlatformIntentBuilder(randomUUID().toString());
     }
 
-    public static JsonObject aValidDomesticPaymentConsentDetails(String consentId) {
-        return aValidDomesticPaymentConsentDetailsBuilder(consentId);
+    public static JsonObject aValidDomesticPaymentPlatformIntent(String consentId) {
+        return aValidDomesticPaymentPlatformIntentBuilder(consentId);
     }
 
-    public static JsonObject aValidOBDomesticPaymentConsentDetails(String consentId) {
-        return aValidOBDomesticPaymentConsentDetailsBuilder(consentId);
+    public static JsonObject aValidOBDomesticPaymentPlatformIntent(String consentId) {
+        return aValidOBDomesticPaymentPlatformIntentBuilder(consentId);
     }
 
-    public static JsonObject aValidDomesticPaymentConsentDetails(String consentId, String clientId) {
-        return aValidDomesticPaymentConsentDetailsBuilder(consentId, clientId);
+    public static JsonObject aValidDomesticPaymentPlatformIntent(String consentId, String clientId) {
+        return aValidDomesticPaymentPlatformIntentBuilder(consentId, clientId);
     }
 
-    public static JsonObject aValidOBDomesticPaymentConsentDetails(String consentId, String clientId) {
-        return aValidOBDomesticPaymentConsentDetailsBuilder(consentId, clientId);
+    public static JsonObject aValidOBDomesticPaymentPlatformIntent(String consentId, String clientId) {
+        return aValidOBDomesticPaymentPlatformIntentBuilder(consentId, clientId);
     }
 
-    public static JsonObject aValidDomesticPaymentConsentDetailsBuilder(String consentId) {
+    public static JsonObject aValidDomesticPaymentPlatformIntentBuilder(String consentId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
@@ -75,11 +75,11 @@ public class DomesticPaymentConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidOBDomesticPaymentConsentDetailsBuilder(String consentId) {
+    public static JsonObject aValidOBDomesticPaymentPlatformIntentBuilder(String consentId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
@@ -89,11 +89,11 @@ public class DomesticPaymentConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidDomesticPaymentConsentDetailsBuilder(String consentId, String clientId) {
+    public static JsonObject aValidDomesticPaymentPlatformIntentBuilder(String consentId, String clientId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
@@ -102,11 +102,11 @@ public class DomesticPaymentConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidOBDomesticPaymentConsentDetailsBuilder(String consentId, String clientId) {
+    public static JsonObject aValidOBDomesticPaymentPlatformIntentBuilder(String consentId, String clientId) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentConsentDataDetailsBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
@@ -115,7 +115,7 @@ public class DomesticPaymentConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidDomesticPaymentConsentDataDetailsBuilder(String consentId) {
+    public static JsonObject aValidDomesticPaymentPlatformIntentDataBuilder(String consentId) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());

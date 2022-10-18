@@ -20,7 +20,7 @@ import com.forgerock.securebanking.rs.platform.client.configuration.Configuratio
 import com.forgerock.securebanking.rs.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.rs.platform.client.model.ClientRequest;
-import com.forgerock.securebanking.rs.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory;
+import com.forgerock.securebanking.rs.platform.client.test.support.DomesticPaymentPlatformIntentTestFactory;
 import com.forgerock.securebanking.rs.platform.client.utils.url.UrlContext;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
@@ -76,13 +76,13 @@ public class PlatformClientServiceTest {
     }
 
     @Test
-    public void shouldGetIntentFromPlatform() throws ExceptionClient {
+    public void shouldGetIntentObjectFromPlatform() throws ExceptionClient {
         // Given
         ClientRequest clientRequest = ClientRequest.builder()
                 .intentId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .apiClientId(UUID.randomUUID().toString())
                 .build();
-        JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails(
+        JsonObject intentResponse = DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent(
                 clientRequest.getIntentId(),
                 clientRequest.getApiClientId()
         );
@@ -95,7 +95,34 @@ public class PlatformClientServiceTest {
         ).thenReturn(ResponseEntity.ok(intentResponse.toString()));
 
         // When
-        JsonObject idmIntent = consentService.getIntentAsJsonObject(clientRequest);
+        JsonObject idmIntent = consentService.getIntentAsJsonObject(clientRequest, false);
+
+        // Then
+        assertThat(idmIntent).isNotNull();
+        assertThat(idmIntent).isEqualTo(intentResponse.getAsJsonObject());
+    }
+
+    @Test
+    public void shouldGetUnderlyingOBIntentObjectFromPlatform() throws ExceptionClient {
+        // Given
+        ClientRequest clientRequest = ClientRequest.builder()
+                .intentId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
+                .apiClientId(UUID.randomUUID().toString())
+                .build();
+        JsonObject intentResponse = DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent(
+                clientRequest.getIntentId(),
+                clientRequest.getApiClientId()
+        );
+        when(restTemplate.exchange(
+                        anyString(),
+                        eq(GET),
+                        isNull(),
+                        eq(String.class)
+                )
+        ).thenReturn(ResponseEntity.ok(intentResponse.toString()));
+
+        // When
+        JsonObject idmIntent = consentService.getIntentAsJsonObject(clientRequest, true);
 
         // Then
         assertThat(idmIntent).isNotNull();
@@ -109,7 +136,7 @@ public class PlatformClientServiceTest {
                 .intentId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .apiClientId(UUID.randomUUID().toString())
                 .build();
-        JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidDomesticPaymentConsentDetails(
+        JsonObject intentResponse = DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent(
                 clientRequest.getIntentId(),
                 UUID.randomUUID().toString()
         );
@@ -122,7 +149,7 @@ public class PlatformClientServiceTest {
         ).thenReturn(ResponseEntity.ok(intentResponse.toString()));
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> consentService.getIntentAsJsonObject(clientRequest), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> consentService.getIntentAsJsonObject(clientRequest, true), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.INVALID_REQUEST);
@@ -146,7 +173,7 @@ public class PlatformClientServiceTest {
         ).thenReturn(null);
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> consentService.getIntentAsJsonObject(clientRequest), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> consentService.getIntentAsJsonObject(clientRequest, true), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.NOT_FOUND);

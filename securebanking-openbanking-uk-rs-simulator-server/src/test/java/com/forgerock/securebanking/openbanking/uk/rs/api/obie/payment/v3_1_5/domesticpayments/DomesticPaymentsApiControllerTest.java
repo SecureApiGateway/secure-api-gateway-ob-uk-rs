@@ -20,7 +20,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_6.dom
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.rs.platform.client.services.PlatformClientService;
-import com.forgerock.securebanking.rs.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory;
+import com.forgerock.securebanking.rs.platform.client.test.support.DomesticPaymentPlatformIntentTestFactory;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +39,7 @@ import java.util.UUID;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -76,12 +77,12 @@ public class DomesticPaymentsApiControllerTest {
     void setup() throws ExceptionClient {
         // Given
         payment = aValidOBWriteDomestic2();
-        JsonObject intentResponse = DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
+        JsonObject intentResponse = DomesticPaymentPlatformIntentTestFactory.aValidOBDomesticPaymentPlatformIntent(
                 IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId(),
                 UUID.randomUUID().toString()
         ).getAsJsonObject("OBIntentObject");
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
-        given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
+        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(intentResponse);
 
         // When
         paymentSubmitted = restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse5.class);

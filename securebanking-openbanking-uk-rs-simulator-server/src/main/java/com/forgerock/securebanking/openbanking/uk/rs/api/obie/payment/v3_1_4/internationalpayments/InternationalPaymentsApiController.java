@@ -47,9 +47,7 @@ import java.security.Principal;
 import java.util.*;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteInternationalResponse4DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalResponse4DataStatus;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static com.forgerock.securebanking.openbanking.uk.rs.common.refund.FRReadRefundAccountFactory.frReadRefundAccount;
@@ -114,7 +112,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         // Get the consent to update the response
-        OBWriteInternationalConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteInternationalConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalConsentResponse5.class,
                 authorization,
                 obWriteInternational3.getData().getConsentId()
@@ -147,7 +145,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteInternationalConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteInternationalConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalConsentResponse5.class,
                 authorization,
                 internationalPaymentId

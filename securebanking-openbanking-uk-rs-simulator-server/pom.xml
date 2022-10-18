@@ -22,7 +22,7 @@
     <groupId>com.forgerock.securebanking.uk</groupId>
     <artifactId>securebanking-openbanking-uk-rs-simulator-server</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.4-SNAPSHOT</version>
+    <version>1.1.5-SNAPSHOT</version>
     <name>securebanking-openbanking-uk-rs-simulator-server</name>
     <description>A UK Open Banking RS simulator for the Secure Banking Accelerator Toolkit</description>
     <url>
@@ -37,7 +37,7 @@
     <parent>
         <groupId>com.forgerock.securebanking.uk</groupId>
         <artifactId>securebanking-openbanking-uk-rs</artifactId>
-        <version>1.1.4-SNAPSHOT</version>
+        <version>1.1.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -121,7 +121,14 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
         <!-- ForgeRock Test dependencies -->
         <dependency>
             <groupId>com.forgerock.securebanking.clients</groupId>
@@ -170,8 +177,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>com.adelean</groupId>
+            <artifactId>inject-resources-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+        <groupId>com.adelean</groupId>
+        <artifactId>inject-resources-junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

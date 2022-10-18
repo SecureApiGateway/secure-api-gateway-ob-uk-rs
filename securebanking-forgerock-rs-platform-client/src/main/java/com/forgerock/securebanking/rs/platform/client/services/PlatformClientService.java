@@ -36,14 +36,20 @@ public class PlatformClientService implements PlatformClient {
         this.cloudPlatformClientService = cloudPlatformClientService;
     }
 
+    /**
+     *
+     * @param clientRequest  {@link ClientRequest} required information to provide the consent details.
+     * @return {@link JsonObject}
+     * @throws ExceptionClient
+     */
     @Override
-    public JsonObject getIntentAsJsonObject(ClientRequest clientRequest) throws ExceptionClient {
+    public JsonObject getIntentAsJsonObject(ClientRequest clientRequest, boolean underlyingOBIntentObject) throws ExceptionClient {
         String intentId = clientRequest.getIntentId();
         log.debug("Retrieving the intent Id '{}", intentId);
 
         if (IntentType.identify(intentId) != null) {
             log.debug("Intent type: '{}' with ID '{}'", IntentType.identify(intentId), intentId);
-            return cloudPlatformClientService.getIntentAsJsonObject(clientRequest);
+            return cloudPlatformClientService.getIntentAsJsonObject(clientRequest, underlyingOBIntentObject);
         } else {
             String message = String.format("Invalid type for intent ID: '%s'", intentId);
             log.error(message);
@@ -51,7 +57,14 @@ public class PlatformClientService implements PlatformClient {
         }
     }
 
-    public JsonObject getIntent(String jwtAuthorization, String intentId) throws ExceptionClient {
+    /**
+     *
+     * @param jwtAuthorization bearer token to extract the clientId
+     * @param intentId consentId to find
+     * @return {@link JsonObject}
+     * @throws ExceptionClient
+     */
+    public JsonObject getIntent(String jwtAuthorization, String intentId, boolean underlyingOBIntentObject) throws ExceptionClient {
         // get the apiClientId from audience claim ('aud')
         List<String> audiences = JwtUtil.getAudiences(jwtAuthorization);
         log.debug("Building client request object with intentId={} and apiClientId={}", audiences.get(0), intentId);
@@ -59,6 +72,6 @@ public class PlatformClientService implements PlatformClient {
                 .intentId(intentId)
                 .apiClientId(audiences.get(0))
                 .build();
-        return getIntentAsJsonObject(clientRequest);
+        return getIntentAsJsonObject(clientRequest, underlyingOBIntentObject);
     }
 }

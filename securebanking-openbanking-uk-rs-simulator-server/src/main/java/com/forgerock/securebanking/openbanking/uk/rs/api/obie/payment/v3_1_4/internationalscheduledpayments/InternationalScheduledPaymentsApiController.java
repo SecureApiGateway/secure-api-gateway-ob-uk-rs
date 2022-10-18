@@ -125,7 +125,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment, xAccountId);
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
         // Get the consent to update the response
-        OBWriteInternationalScheduledConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteInternationalScheduledConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalScheduledConsentResponse5.class,
                 authorization,
                 obWriteInternationalScheduled3.getData().getConsentId()
@@ -158,7 +158,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteInternationalScheduledConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteInternationalScheduledConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalScheduledConsentResponse5.class,
                 authorization,
                 internationalScheduledPaymentId

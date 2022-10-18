@@ -15,9 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_10.eventsubscription;
 
-import org.springframework.stereotype.Controller;
-
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.events.EventSubscriptionsRepository;
+import org.springframework.stereotype.Controller;
 
 @Controller("EventSubscriptionApiV3.1.10")
 public class EventSubscriptionsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_9.eventsubscription.EventSubscriptionsApiController implements EventSubscriptionsApi {

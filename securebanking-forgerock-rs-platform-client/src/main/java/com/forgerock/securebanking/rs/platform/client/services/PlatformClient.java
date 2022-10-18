@@ -28,8 +28,9 @@ interface PlatformClient {
      * Retrieves the specific consent for the type of the consent from the platform.
      *
      * @param clientRequest  {@link ClientRequest} required information to provide the consent details.
+     * @param underlyingOBIntentObject true to return only the underlying 'OBIntentObject', false to return all intent object
      * @return The underlying Consent, depending on the type of the consent.
      * @throws ExceptionClient if an error occurs.
      */
-    JsonObject getIntentAsJsonObject(ClientRequest clientRequest) throws ExceptionClient;
+    JsonObject getIntentAsJsonObject(ClientRequest clientRequest, boolean underlyingOBIntentObject) throws ExceptionClient;
 }

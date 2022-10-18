@@ -48,7 +48,6 @@ import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse5DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse5DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
@@ -113,7 +112,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         // Get the consent to update the response
-        OBWriteDomesticConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteDomesticConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticConsentResponse5.class,
                 authorization,
                 obWriteDomestic2.getData().getConsentId()
@@ -147,7 +146,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteDomesticConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteDomesticConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticConsentResponse5.class,
                 authorization,
                 domesticPaymentId

@@ -51,7 +51,6 @@ import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse5DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
@@ -127,7 +126,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder, xAccountId);
         standingOrderService.createStandingOrder(standingOrderData);
         // Get the consent to update the response
-        OBWriteDomesticStandingOrderConsentResponse6 obConsent = consentService.getOBConsent(
+        OBWriteDomesticStandingOrderConsentResponse6 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticStandingOrderConsentResponse6.class,
                 authorization,
                 obWriteDomesticStandingOrder3.getData().getConsentId()
@@ -160,7 +159,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteDomesticStandingOrderConsentResponse6 obConsent = consentService.getOBConsent(
+        OBWriteDomesticStandingOrderConsentResponse6 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticStandingOrderConsentResponse6.class,
                 authorization,
                 domesticStandingOrderId
