@@ -102,8 +102,8 @@ public enum OBApiReference {
     GET_INTERNATIONAL_SCHEDULED_PAYMENT_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetInternationalScheduledPaymentPaymentIdPaymentDetails", GET, "/pisp/international-scheduled-payments/{InternationalScheduledPaymentId}/payment-details"),
 
     CREATE_INTERNATIONAL_STANDING_ORDER(PISP, "CreateInternationalStandingOrder", POST, "/pisp/international-standing-orders"),
-    GET_INTERNATIONAL_STANDING_ORDER(PISP, "GetInternationalStandingOrder", GET, "/pisp/international-standing-orders/{InternationalStandingOrderId}"),
-    GET_INTERNATIONAL_STANDING_ORDER_ID_PAYMENT_DETAILS(PISP, "GetInternationalStandingOrderInternationalStandingOrderIdPaymentDetails", GET, "/pisp/international-standing-orders/{InternationalStandingOrderId}/payment-details"),
+    GET_INTERNATIONAL_STANDING_ORDER(PISP, "GetInternationalStandingOrder", GET, "/pisp/international-standing-orders/{InternationalStandingOrderPaymentId}"),
+    GET_INTERNATIONAL_STANDING_ORDER_ID_PAYMENT_DETAILS(PISP, "GetInternationalStandingOrderInternationalStandingOrderIdPaymentDetails", GET, "/pisp/international-standing-orders/{InternationalStandingOrderPaymentId}/payment-details"),
 
     CREATE_FILE_PAYMENT_FILE(PISP, "CreateFilePaymentFile", POST, "/pisp/file-payment-consents/{ConsentId}/file"),
     GET_FILE_PAYMENT_FILE(PISP, "GetFilePaymentFile", GET, "/pisp/file-payment-consents/{ConsentId}/file"),
