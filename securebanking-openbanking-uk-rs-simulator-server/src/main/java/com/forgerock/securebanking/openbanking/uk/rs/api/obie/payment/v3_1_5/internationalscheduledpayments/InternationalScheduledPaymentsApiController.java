@@ -51,9 +51,7 @@ import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteInternationalResponse5DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalScheduledResponse6DataStatus;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
 import static com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.factories.FRScheduledPaymentDataFactory.createFRScheduledPaymentData;
@@ -128,7 +126,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment, xAccountId);
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
         // Get the consent to update the response
-        OBWriteInternationalScheduledConsentResponse6 obConsent = consentService.getOBConsent(
+        OBWriteInternationalScheduledConsentResponse6 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalScheduledConsentResponse6.class,
                 authorization,
                 obWriteInternationalScheduled3.getData().getConsentId()
@@ -163,7 +161,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteInternationalScheduledConsentResponse6 obConsent = consentService.getOBConsent(
+        OBWriteInternationalScheduledConsentResponse6 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalScheduledConsentResponse6.class,
                 authorization,
                 internationalScheduledPaymentId

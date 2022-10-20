@@ -47,7 +47,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ){
+    ) {
         return previousVersionController.createFundsConfirmation(
                 obFundsConfirmation1,
                 accountId,
@@ -71,7 +71,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ){
+    ) {
         return previousVersionController.getFundsConfirmationId(
                 fundsConfirmationId,
                 DUMMY_FINANCIAL_ID,

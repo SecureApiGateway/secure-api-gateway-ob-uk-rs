@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.utils.CustomObjectMapper;
 import com.forgerock.securebanking.openbanking.uk.rs.exceptions.InvalidConsentException;
@@ -45,17 +46,77 @@ public class ConsentService {
 
     /**
      *
+     * @param authorization the authorization token as JWT to extract the 'aud' claim to identify the apiClient
+     * @param intentId the consent/intent id
+     * @return {@link JsonObject}
+     */
+    public JsonObject getIDMIntent(String authorization, String intentId) {
+        try {
+            return getOBConsentAsJsonObject(authorization, intentId, false);
+        } catch (Exception exception) {
+            String errorMessage = String.format("%s %s", exception, exception.getMessage());
+            log.error(errorMessage);
+            ExceptionClient exceptionClient = (exception instanceof ExceptionClient) ? (ExceptionClient) exception :
+                    new ExceptionClient(
+                            ErrorClient.builder()
+                                    .errorType(ErrorType.REQUEST_BINDING_FAILED)
+                                    .intentId(intentId)
+                                    .apiClientId("")
+                                    .build(), errorMessage);
+
+            throw new InvalidConsentException(exceptionClient.getErrorClient().getErrorType(),
+                    OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage,
+                    exceptionClient.getErrorClient().getApiClientId(),
+                    exceptionClient.getErrorClient().getIntentId());
+        }
+    }
+
+    /**
+     *
+     * @param targetClass The class to deserialize the {@link JsonObject} passed
+     * @param intent {@link JsonObject} to be deserialized
+     * @param intentId the consent/intent id
+     * @return Object deserialized
+     * @param <T> The parametrized type of the class returned by this method.
+     */
+    public <T> T deserialize(Class<T> targetClass, JsonObject intent, String intentId) {
+        try {
+            // deserialize the consent
+            return customObjectMapper.getObjectMapper().readValue(
+                    intent.toString(),
+                    targetClass
+            );
+        } catch (JsonProcessingException exception) {
+            String errorMessage = String.format("%s %s", exception, exception.getMessage());
+            log.error(errorMessage);
+            ExceptionClient exceptionClient =
+                    new ExceptionClient(
+                            ErrorClient.builder()
+                                    .errorType(ErrorType.REQUEST_BINDING_FAILED)
+                                    .intentId(intentId)
+                                    .apiClientId("")
+                                    .build(), errorMessage);
+//
+            throw new InvalidConsentException(exceptionClient.getErrorClient().getErrorType(),
+                    OBRIErrorType.REQUEST_BINDING_FAILED, errorMessage,
+                    exceptionClient.getErrorClient().getApiClientId(),
+                    exceptionClient.getErrorClient().getIntentId());
+        }
+    }
+
+    /**
+     *
      * @param targetClass The class to deserialize the {@link JsonObject} consent/intent retrieved from cloud platform
      * @param authorization the authorization token as JWT to extract the 'aud' claim to identify the apiClient
      * @param intentId the consent/intent id
      * @return OB Object
      * @param <T> The parametrized type of the class returned by this method.
      */
-    public <T> T getOBConsent(Class<T> targetClass, String authorization, String intentId) {
+    public <T> T getOBIntentObject(Class<T> targetClass, String authorization, String intentId) {
         try {
             // deserialize the consent
             return customObjectMapper.getObjectMapper().readValue(
-                    getOBConsentAsJsonObject(authorization, intentId).toString(),
+                    getOBConsentAsJsonObject(authorization, intentId, true).toString(),
                     targetClass
             );
         } catch (Exception exception) {
@@ -76,10 +137,19 @@ public class ConsentService {
         }
     }
 
-    private JsonObject getOBConsentAsJsonObject(String authorization, String intentId) throws ExceptionClient {
+    /**
+     *
+     * @param authorization the authorization token as JWT to extract the 'aud' claim to identify the apiClient
+     * @param intentId the consent/intent id
+     * @param underlyingOBIntentObject true to return only the underlying 'OBIntentObject', false to return all intent object
+     * @return {@link JsonObject}
+     * @throws ExceptionClient
+     */
+    private JsonObject getOBConsentAsJsonObject(String authorization, String intentId, boolean underlyingOBIntentObject) throws ExceptionClient {
         return platformClientService.getIntent(
                 authorization.replace("Bearer", "").trim(),
-                intentId
+                intentId,
+                underlyingOBIntentObject
         );
     }
 

@@ -26,7 +26,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -52,7 +54,7 @@ class CloudPlatformClientService implements PlatformClient {
     }
 
     @Override
-    public JsonObject getIntentAsJsonObject(ClientRequest clientRequest) throws ExceptionClient {
+    public JsonObject getIntentAsJsonObject(ClientRequest clientRequest, boolean underlyingOBIntentObject) throws ExceptionClient {
         String intentId = clientRequest.getIntentId();
         log.debug("=> The consent detailsRequest id: '{}'", intentId);
         String apiClientId = clientRequest.getApiClientId();
@@ -77,7 +79,10 @@ class CloudPlatformClientService implements PlatformClient {
         if (!consentDetails.has(IDM_RESPOND_OB_INTENT_OBJECT_FIELD)) {
             throw new ExceptionClient(clientRequest, ErrorType.NOT_FOUND, "Server responded with invalid consent response, missing OBIntentObject field");
         }
-        return consentDetails.getAsJsonObject(IDM_RESPOND_OB_INTENT_OBJECT_FIELD);
+        if(underlyingOBIntentObject) {
+            return consentDetails.getAsJsonObject(IDM_RESPOND_OB_INTENT_OBJECT_FIELD);
+        }
+        return consentDetails.getAsJsonObject();
     }
 
     private JsonObject request(String intentId, HttpMethod httpMethod) throws ExceptionClient {
@@ -109,7 +114,7 @@ class CloudPlatformClientService implements PlatformClient {
                     String.class);
             log.debug("(ConsentService#request) response entity: " + responseEntity);
 
-            return responseEntity != null && responseEntity.getBody() != null ? new JsonParser().parse(responseEntity.getBody()).getAsJsonObject() : null;
+            return responseEntity != null && responseEntity.getBody() != null ? JsonParser.parseString(responseEntity.getBody()).getAsJsonObject() : null;
         } catch (RestClientException e) {
             log.error(ErrorType.SERVER_ERROR.getDescription(), e);
             throw new ExceptionClient(

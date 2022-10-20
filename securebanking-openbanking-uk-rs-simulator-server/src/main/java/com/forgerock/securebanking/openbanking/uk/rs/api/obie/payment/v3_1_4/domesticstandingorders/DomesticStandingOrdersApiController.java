@@ -50,7 +50,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse4DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticStandingOrderResponse5DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
@@ -124,7 +123,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder, xAccountId);
         standingOrderService.createStandingOrder(standingOrderData);
         // Get the consent to update the response
-        OBWriteDomesticStandingOrderConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteDomesticStandingOrderConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticStandingOrderConsentResponse5.class,
                 authorization,
                 obWriteDomesticStandingOrder3.getData().getConsentId()
@@ -156,7 +155,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteDomesticStandingOrderConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteDomesticStandingOrderConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticStandingOrderConsentResponse5.class,
                 authorization,
                 domesticStandingOrderId

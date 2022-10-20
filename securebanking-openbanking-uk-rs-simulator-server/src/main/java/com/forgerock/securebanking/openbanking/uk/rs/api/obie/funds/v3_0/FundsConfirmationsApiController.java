@@ -75,7 +75,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
                                 .created(DateTime.now())
                                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                                 .build()
-        );
+                );
 
         // Check if funds are available on the account selected in consent
         boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(

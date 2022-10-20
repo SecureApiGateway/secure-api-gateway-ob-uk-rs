@@ -50,7 +50,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalStandingOrderResponse7DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsentResponse7DataInitiation;
@@ -125,7 +124,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         FRStandingOrderData standingOrderData = createFRStandingOrderData(frStandingOrder, xAccountId);
         standingOrderService.createStandingOrder(standingOrderData);
         // Get the consent to update the response
-        OBWriteInternationalStandingOrderConsentResponse7 obConsent = consentService.getOBConsent(
+        OBWriteInternationalStandingOrderConsentResponse7 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalStandingOrderConsentResponse7.class,
                 authorization,
                 obWriteInternationalStandingOrder4.getData().getConsentId()
@@ -158,7 +157,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteInternationalStandingOrderConsentResponse7 obConsent = consentService.getOBConsent(
+        OBWriteInternationalStandingOrderConsentResponse7 obConsent = consentService.getOBIntentObject(
                 OBWriteInternationalStandingOrderConsentResponse7.class,
                 authorization,
                 internationalStandingOrderPaymentId

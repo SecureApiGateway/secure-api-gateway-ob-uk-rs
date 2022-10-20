@@ -51,7 +51,6 @@ import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse5DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticScheduledResponse5DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticScheduledConverter.toFRWriteDomesticScheduled;
@@ -126,7 +125,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         FRScheduledPaymentData scheduledPaymentData = createFRScheduledPaymentData(frScheduledPayment, xAccountId);
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
         // Get the consent to update the response
-        OBWriteDomesticScheduledConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteDomesticScheduledConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticScheduledConsentResponse5.class,
                 authorization,
                 obWriteDomesticScheduled2.getData().getConsentId()
@@ -160,7 +159,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteDomesticScheduledConsentResponse5 obConsent = consentService.getOBConsent(
+        OBWriteDomesticScheduledConsentResponse5 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticScheduledConsentResponse5.class,
                 authorization,
                 domesticScheduledPaymentId

@@ -15,9 +15,8 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_9.aggregatedpolling;
 
-import org.springframework.stereotype.Controller;
-
 import com.forgerock.securebanking.openbanking.uk.rs.service.event.EventPollingService;
+import org.springframework.stereotype.Controller;
 
 @Controller("AggregatedPollingApi3.1.9")
 public class AggregatedPollingApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.event.v3_1_8.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {

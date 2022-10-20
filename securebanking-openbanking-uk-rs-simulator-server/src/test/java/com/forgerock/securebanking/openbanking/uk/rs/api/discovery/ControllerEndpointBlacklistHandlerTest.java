@@ -16,11 +16,10 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.discovery;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OBVersion;
-import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.rs.platform.client.services.PlatformClientService;
-import com.forgerock.securebanking.rs.platform.client.test.support.DomesticPaymentConsentDetailsTestFactory;
+import com.forgerock.securebanking.rs.platform.client.test.support.DomesticPaymentPlatformIntentTestFactory;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +45,7 @@ import static com.forgerock.securebanking.openbanking.uk.common.api.meta.obie.OB
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredAccountHttpHeaders;
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -85,7 +85,7 @@ public class ControllerEndpointBlacklistHandlerTest {
     }
 
     private JsonObject getIntentResponse(OBWriteDomestic2 payment) {
-        return DomesticPaymentConsentDetailsTestFactory.aValidOBDomesticPaymentConsentDetails(
+        return DomesticPaymentPlatformIntentTestFactory.aValidOBDomesticPaymentPlatformIntent(
                 payment.getData().getConsentId(),
                 UUID.randomUUID().toString()
         ).getAsJsonObject("OBIntentObject");
@@ -96,7 +96,7 @@ public class ControllerEndpointBlacklistHandlerTest {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
         JsonObject intentResponse = getIntentResponse(payment);
-        given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
+        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(intentResponse);
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         String url = paymentsUrl(ENABLED_VERSION);
 
@@ -126,7 +126,7 @@ public class ControllerEndpointBlacklistHandlerTest {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
         JsonObject intentResponse = getIntentResponse(payment);
-        given(platformClientService.getIntent(anyString(), anyString())).willReturn(intentResponse);
+        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(intentResponse);
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
         ResponseEntity<OBWriteDomesticResponse5> persistedPayment = restTemplate.postForEntity(
                 paymentsUrl(ENABLED_VERSION),

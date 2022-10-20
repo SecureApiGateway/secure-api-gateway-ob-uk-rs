@@ -48,7 +48,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.PENDING;
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBWriteDomesticResponse4DataRefund;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse4DataStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
@@ -116,7 +115,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
         // Get the consent to update the response
-        OBWriteDomesticConsentResponse4 obConsent = consentService.getOBConsent(
+        OBWriteDomesticConsentResponse4 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticConsentResponse4.class,
                 authorization,
                 obWriteDomestic2.getData().getConsentId()
@@ -149,7 +148,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             return resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
         // Get the consent to update the response
-        OBWriteDomesticConsentResponse4 obConsent = consentService.getOBConsent(
+        OBWriteDomesticConsentResponse4 obConsent = consentService.getOBIntentObject(
                 OBWriteDomesticConsentResponse4.class,
                 authorization,
                 domesticPaymentId
