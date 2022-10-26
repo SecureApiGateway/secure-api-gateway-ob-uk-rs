@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBExternalStatus1Code;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConsentConverter.toOBFile2;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
@@ -98,6 +99,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .filePayment(frWriteFile)
                 .created(new DateTime())
                 .updated(new DateTime())
+                .status(INITIATIONPENDING)
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
