@@ -17,11 +17,11 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.val
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.OBRisk1Validator;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.vrp.*;
@@ -52,7 +52,10 @@ public class DomesticVrpValidationService {
         return errors;
     }
 
+    private OBRisk1Validator riskValidator;
+
     public void validate(OBDomesticVRPInitiation initiation, OBDomesticVRPInstruction instruction, OBRisk1 risk) {
+        this.riskValidator = riskValidator;
 
         //checkRequestAndConsentInitiationMatch();
         //checkRequestAndConsentRiskMatch();
@@ -82,8 +85,17 @@ public class DomesticVrpValidationService {
 
     //risk - validation
     public void validateRisk(OBRisk1 risk) throws OBErrorException {
-
+        if (riskValidator != null) {
+            riskValidator.validate(risk);
+        } else {
+            String errorString = "No validator!";
+            log.error(errorString);
+            throw new NullPointerException(errorString);
+        }
     }
+
+    //controlParameters - validation
+    
 
 
 }
