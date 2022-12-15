@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
 
 import com.adelean.inject.resources.junit.jupiter.GivenTextResource;
@@ -143,7 +144,9 @@ public class FilePaymentFileValidationsControllerTest {
         String fileContent = getFileContent(paymentFileType);
         String intentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
         PaymentFile paymentFile = PaymentFileFactory.createPaymentFile(paymentFileType, fileContent);
-        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsentResponse4(intentId);
+        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsentResponse4*/
+/**//*
+(intentId);
         OBWriteFile2DataInitiation initiation = consentResponse4.getData().getInitiation();
         initiation.setFileHash(wrongFileHash);
         initiation.setControlSum(BigDecimal.ONE);
@@ -261,3 +264,4 @@ public class FilePaymentFileValidationsControllerTest {
         return builder.build().encode().toUri();
     }
 }
+*/
