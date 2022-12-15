@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation;
+
+/*package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,11 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3;
 
+*/
 /**
  * Unit test for {@link FilePaymentConsentValidation}
- */
+ *//*
+
 public class FilePaymentConsentValidationTest {
 
     private PaymentConsentValidation validation;
@@ -42,3 +45,4 @@ public class FilePaymentConsentValidationTest {
         assertThat(validation.getErrors()).isEmpty();
     }
 }
+*/
