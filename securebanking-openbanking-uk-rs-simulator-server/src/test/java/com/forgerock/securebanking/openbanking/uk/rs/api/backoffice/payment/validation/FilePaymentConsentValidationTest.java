@@ -15,9 +15,12 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation;
 
+import com.forgerock.securebanking.openbanking.uk.rs.common.filepayment.PaymentFileType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+
+import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3;
@@ -33,7 +36,7 @@ public class FilePaymentConsentValidationTest {
     @BeforeEach
     public void setup() {
         validation = new FilePaymentConsentValidation();
-        consent3 = aValidOBWriteFileConsent3();
+        consent3 = aValidOBWriteFileConsent3(PaymentFileType.UK_OBIE_PAIN_001.getFileType(), "fileHash", "3", BigDecimal.ONE);
     }
 
     @Test
