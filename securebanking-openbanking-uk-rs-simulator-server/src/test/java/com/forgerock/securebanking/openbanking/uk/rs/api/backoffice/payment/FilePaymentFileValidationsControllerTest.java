@@ -12,9 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
+ */
 
-package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
+/*package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment;
 
 import com.adelean.inject.resources.junit.jupiter.GivenTextResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
