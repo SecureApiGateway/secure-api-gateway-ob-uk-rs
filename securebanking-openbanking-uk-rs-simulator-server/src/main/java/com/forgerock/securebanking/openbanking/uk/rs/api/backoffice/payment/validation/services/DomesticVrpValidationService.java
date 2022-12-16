@@ -26,12 +26,10 @@ import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.vrp.*;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.*;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRRiskConverter.toOBRisk1;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPInitiation;
@@ -61,6 +59,7 @@ public class DomesticVrpValidationService {
         //checkRequestAndConsentRiskMatch();
         //validateRisk(Request.getRisk());
         //checkControlParameters();
+        //checkCreditorAccountExistence();
     }
 
     //initiation - request vs consent
@@ -95,6 +94,39 @@ public class DomesticVrpValidationService {
     }
 
     //controlParameters - validation
+    public void checkControlParameters(OBDomesticVRPRequest request, FRDomesticVrpRequest consent) throws OBErrorException {
+        validateMaximumIndividualAmount(request, consent);
+        Object limit = new Object();//when a payment would breach a limitation set by one or more ControlParameters case
+        if (limit != null) {
+            //checkLimitations.makeRequest(limit, consent);
+        }
+    }
 
+    private void validateMaximumIndividualAmount(OBDomesticVRPRequest request, FRDomesticVrpRequest consent) throws OBErrorException {
+        String instructionAmount = String.valueOf(request.getData().getInstruction().getInstructedAmount().getAmount());
+        String instructionCurrency = String.valueOf(request.getData().getInstruction().getInstructedAmount().getCurrency());
+        validateMaximumIndividualAmount(consent, Double.valueOf(instructionAmount), Double.valueOf(instructionCurrency));
+    }
 
+    private void validateMaximumIndividualAmount(FRDomesticVrpRequest consent, Double instructionAmount, Double instructionCurrency) {
+        /*get controlParameters
+        String consentAmount = String.valueOf(consent.controlParameters.getMaximumIndividualAmount().getAmount());
+        String currencyAmount = String.valueOf(consent.controlParameters.getMaximumIndividualAmount().getCurrency());
+        if (instructionAmount.compareTo(consentAmount)) {
+            throw new OBErrorException(
+                    OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,
+                    pass in the control parameter field that caused the error in the Field field of the error message;
+        );
+        }
+    }*/
+    }
+
+    //if the CreditorAccount was not specified in the the consent, the CreditorAccount must be specified in the instruction
+    public void checkCreditorAccountExistence(OBDomesticVRPRequest request, FRDomesticVrpRequest consent) throws OBErrorException {
+        if (consent.getData().getInitiation().getCreditorAccount() == null) {
+            if (request.getData().getInstruction().getCreditorAccount() == null) {
+                throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
+            }
+        }
+    }
 }
