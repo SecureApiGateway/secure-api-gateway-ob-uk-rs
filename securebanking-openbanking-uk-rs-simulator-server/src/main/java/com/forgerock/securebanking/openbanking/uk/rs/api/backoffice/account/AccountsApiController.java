@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBalance;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
@@ -74,6 +75,25 @@ public class AccountsApiController implements AccountsApi {
                 .collect(toList())
         );
 
+    }
+
+    @Override
+    public ResponseEntity<FRAccountIdentifier> getAccountIdentifier(
+            String userId,
+            String accountIdentifierName,
+            String accountIdentifierIdentification,
+            String accountIdentifierSchemaName
+    ) {
+        log.info(
+                "Read all account identifier for user ID '{}', with name: {}, identification {} and schema name {}",
+                userId, accountIdentifierName, accountIdentifierIdentification, accountIdentifierSchemaName
+        );
+
+        FRAccountIdentifier accountIdentifierFound = accountsRepository.byUserIdAndAccountIdentifiers(
+                userId, accountIdentifierName, accountIdentifierIdentification, accountIdentifierSchemaName
+        );
+
+        return ResponseEntity.ok(accountIdentifierFound);
     }
 
     private FRAccountWithBalance toFRAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {

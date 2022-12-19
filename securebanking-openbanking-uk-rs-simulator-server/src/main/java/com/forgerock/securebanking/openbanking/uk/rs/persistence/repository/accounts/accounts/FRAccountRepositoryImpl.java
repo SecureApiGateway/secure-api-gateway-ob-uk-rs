@@ -137,6 +137,30 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
         return groupResults.getMappedResults().stream().map(UserIds::getUserID).collect(Collectors.toList());
     }
 
+    @Override
+    public FRAccountIdentifier byUserIdAndAccountIdentifiers(
+            String userID,
+            String accountIdentifierName,
+            String accountIdentifierIdentification,
+            String accountIdentifierSchemaName
+    ) {
+        Collection<FRAccount> accounts = accountsRepository.findByUserID(userID);
+        FRAccountIdentifier frAccountIdentifier = null;
+        for (FRAccount account : accounts) {
+            Optional<FRAccountIdentifier> optionalFRAccountIdentifier = account.getAccount().getAccounts().stream().filter(
+                    identifier -> identifier.getName().equals(accountIdentifierName) &&
+                            identifier.getIdentification().equals(accountIdentifierIdentification) &&
+                            identifier.getSchemeName().equals(accountIdentifierSchemaName)
+            ).findFirst();
+
+            if (optionalFRAccountIdentifier.isPresent()) {
+                frAccountIdentifier = optionalFRAccountIdentifier.get();
+                break;
+            }
+        }
+        return frAccountIdentifier;
+    }
+
     @Builder
     @Data
     @EqualsAndHashCode
