@@ -22,9 +22,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
-import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services.DomesticVrpValidationService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services.FilePaymentFileValidationService;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticVrpPaymentSubmission;
@@ -40,18 +38,14 @@ import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
 import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBCashAccountDebtorWithName;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
@@ -70,7 +64,6 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
     private final DomesticVrpValidationService domesticVrpValidationService;
     private final ConsentService consentService;
-    private String consentId;
 
 
     public DomesticVrpsApiController(DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository, DomesticVrpValidationService domesticVrpValidationService, ConsentService consentService) {
@@ -162,14 +155,11 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     ) throws OBErrorResponseException {
         log.debug("Received VRP payment submission: '{}'", obDomesticVRPRequest);
 
-
-        /*OBDomesticVRPResponse obConsent = consentService.getOBIntentObject(
-                OBDomesticVRPResponse.class,
-                authorization,
-                obDomesticVRPRequest.getData().getConsentId()
-        );*/
+        String consentId = obDomesticVRPRequest.getData().getConsentId();
         //get the consent
         JsonObject intent = consentService.getIDMIntent(authorization, consentId);
+
+        log.debug("Retrieved consent from IDM");
 
         //deserialize the intent to ob response object
         OBDomesticVRPResponse consent = consentService.deserialize(
@@ -178,23 +168,30 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 consentId
         );
 
+        log.debug("Deserialized consent from IDM");
+
         //get mandatory objects
         OBDomesticVRPInitiation initiation = consent.getData().getInitiation();
         OBDomesticVRPInstruction instruction = consent.getData().getInstruction();
         OBRisk1 risk = consent.getRisk();
 
-        // validate the consent against the instruction
-        domesticVrpValidationService.clearErrors().validate(initiation, instruction, risk);
-
-        /*if (domesticVrpValidationService.getErrors().isEmpty()) {
-            return ResponseEntity.ok().build();
-            throw badRequestResponseException(
-                    new OBErrorException(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT)
-            );
-        }*/
-
+        log.debug("Validating VRP submission");
 
         FRDomesticVrpRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
+
+        // validate the consent against the instruction
+        try {
+            domesticVrpValidationService.clearErrors().validate(initiation, instruction, risk, frDomesticVRPRequest);
+        } catch (OBErrorException e) {
+            log.error("Got error during VRP validation: '{}'", e.getMessage());
+            throw new OBErrorResponseException(
+                    e.getObriErrorType().getHttpStatus(),
+                    OBRIErrorResponseCategory.REQUEST_FILTER,
+                    e.getOBError());
+        }
+
+        log.debug("VRP validation successful! Creating the payment.");
+
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()
                 .id(frDomesticVRPRequest.data.consentId)
                 .payment(frDomesticVRPRequest)
@@ -203,6 +200,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .updated(new DateTime())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
+
         //save the domestic vrp
         vrpPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(vrpPaymentSubmission);
@@ -211,10 +209,6 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 responseEntity(obDomesticVRPRequest, vrpPaymentSubmission, frReadRefundAccount(xReadRefundAccount))
         );
     }
-
-    /*private OBErrorResponseException badRequestResponseException(OBErrorException e) {
-        return
-    }*/
 
     private OBDomesticVRPResponse responseEntity(
             FRDomesticVrpPaymentSubmission paymentSubmission,

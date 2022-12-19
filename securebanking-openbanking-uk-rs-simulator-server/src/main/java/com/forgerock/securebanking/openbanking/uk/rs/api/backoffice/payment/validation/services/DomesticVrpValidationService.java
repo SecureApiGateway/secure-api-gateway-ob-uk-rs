@@ -52,13 +52,14 @@ public class DomesticVrpValidationService {
 
     private OBRisk1Validator riskValidator;
 
-    public void validate(OBDomesticVRPInitiation initiation, OBDomesticVRPInstruction instruction, OBRisk1 risk) {
+    public void validate(OBDomesticVRPInitiation initiation, OBDomesticVRPInstruction instruction, OBRisk1 risk, FRDomesticVrpRequest frDomesticVRPRequest) throws OBErrorException {
         this.riskValidator = riskValidator;
 
-        //checkRequestAndConsentInitiationMatch();
-        //checkRequestAndConsentRiskMatch();
-        //validateRisk(Request.getRisk());
-        //checkControlParameters();
+        checkRequestAndConsentInitiationMatch(initiation, frDomesticVRPRequest);
+        checkRequestAndConsentRiskMatch(risk, frDomesticVRPRequest);
+        validateRisk(risk);
+        checkControlParameters(instruction, frDomesticVRPRequest);
+        // TODO - implement check on creditor account
         //checkCreditorAccountExistence();
     }
 
@@ -73,9 +74,8 @@ public class DomesticVrpValidationService {
     }
 
     //risk - request vs consent
-    public void checkRequestAndConsentRiskMatch(OBDomesticVRPRequest request, FRDomesticVrpRequest consent)
+    public void checkRequestAndConsentRiskMatch(OBRisk1 requestRisk, FRDomesticVrpRequest consent)
             throws OBErrorException {
-        OBRisk1 requestRisk = request.getRisk();
         OBRisk1 consentRisk = toOBRisk1(consent.getRisk());
         if (!requestRisk.equals(consentRisk)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_DOESNT_MATCH_CONSENT);
@@ -94,17 +94,15 @@ public class DomesticVrpValidationService {
     }
 
     //controlParameters - validation
-    public void checkControlParameters(OBDomesticVRPRequest request, FRDomesticVrpRequest consent) throws OBErrorException {
-        validateMaximumIndividualAmount(request, consent);
-        Object limit = new Object();//when a payment would breach a limitation set by one or more ControlParameters case
-        if (limit != null) {
-            //checkLimitations.makeRequest(limit, consent);
-        }
+    public void checkControlParameters(OBDomesticVRPInstruction instruction, FRDomesticVrpRequest consent) throws OBErrorException {
+        validateMaximumIndividualAmount(instruction, consent);
     }
 
-    private void validateMaximumIndividualAmount(OBDomesticVRPRequest request, FRDomesticVrpRequest consent) throws OBErrorException {
-        String instructionAmount = String.valueOf(request.getData().getInstruction().getInstructedAmount().getAmount());
-        String instructionCurrency = String.valueOf(request.getData().getInstruction().getInstructedAmount().getCurrency());
+    private void validateMaximumIndividualAmount(OBDomesticVRPInstruction instruction, FRDomesticVrpRequest consent) throws OBErrorException {
+        String instructionAmount = String.valueOf(instruction.getInstructedAmount().getAmount());
+        String instructionCurrency = String.valueOf(instruction.getInstructedAmount().getCurrency());
+        // TODO - next method must be implemented correctly depending on the control parameters rules set for the payment periodic limits and maximum
+        // individual ammount
         validateMaximumIndividualAmount(consent, Double.valueOf(instructionAmount), Double.valueOf(instructionCurrency));
     }
 
