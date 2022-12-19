@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/*package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation;
+package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation;
 
 import com.adelean.inject.resources.junit.jupiter.GivenTextResource;
 import com.adelean.inject.resources.junit.jupiter.TestWithResources;
@@ -225,4 +225,3 @@ public class FilePaymentFileValidationServiceTest {
         return content;
     }
 }
-*/
