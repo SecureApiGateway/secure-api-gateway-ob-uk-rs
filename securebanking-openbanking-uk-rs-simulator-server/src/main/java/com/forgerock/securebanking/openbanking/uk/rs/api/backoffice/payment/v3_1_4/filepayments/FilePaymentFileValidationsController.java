@@ -99,6 +99,7 @@ public class FilePaymentFileValidationsController implements FilePaymentFileVali
         if (filePaymentFileValidationService.getErrors().isEmpty()) {
             return ResponseEntity.ok().build();
         } else {
+            log.error("Errors: {}", filePaymentFileValidationService.getErrors());
             throw badRequestResponseException(xFapiFinancialId, filePaymentFileValidationService.getErrors());
         }
     }

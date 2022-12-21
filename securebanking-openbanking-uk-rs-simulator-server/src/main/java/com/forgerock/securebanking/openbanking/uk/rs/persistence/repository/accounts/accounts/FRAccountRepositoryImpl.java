@@ -85,6 +85,15 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
     }
 
     @Override
+    public FRAccount byAccountId(String accountId) {
+        Optional<FRAccount> isAccount = accountsRepository.findById(accountId);
+        if (!isAccount.isPresent()) {
+            return null;
+        }
+        return isAccount.get();
+    }
+
+    @Override
     public List<FRAccount> byAccountIds(List<String> accountIds, List<FRExternalPermissionsCode> permissions) {
         Iterable<FRAccount> accounts = accountsRepository.findAllById(accountIds);
         try {
@@ -135,30 +144,6 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
         AggregationResults<UserIds> groupResults
                 = mongoTemplate.aggregate(aggregation, FRAccount.class, UserIds.class);
         return groupResults.getMappedResults().stream().map(UserIds::getUserID).collect(Collectors.toList());
-    }
-
-    @Override
-    public FRAccountIdentifier byUserIdAndAccountIdentifiers(
-            String userID,
-            String accountIdentifierName,
-            String accountIdentifierIdentification,
-            String accountIdentifierSchemaName
-    ) {
-        Collection<FRAccount> accounts = accountsRepository.findByUserID(userID);
-        FRAccountIdentifier frAccountIdentifier = null;
-        for (FRAccount account : accounts) {
-            Optional<FRAccountIdentifier> optionalFRAccountIdentifier = account.getAccount().getAccounts().stream().filter(
-                    identifier -> identifier.getName().equals(accountIdentifierName) &&
-                            identifier.getIdentification().equals(accountIdentifierIdentification) &&
-                            identifier.getSchemeName().equals(accountIdentifierSchemaName)
-            ).findFirst();
-
-            if (optionalFRAccountIdentifier.isPresent()) {
-                frAccountIdentifier = optionalFRAccountIdentifier.get();
-                break;
-            }
-        }
-        return frAccountIdentifier;
     }
 
     @Builder

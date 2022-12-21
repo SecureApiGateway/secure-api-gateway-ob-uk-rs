@@ -36,16 +36,12 @@ public interface FRAccountRepositoryCustom {
             @Param("accountId") String accountId,
             @Param("permissions") List<FRExternalPermissionsCode> permissions);
 
+    FRAccount byAccountId(
+            @Param("accountId") String accountId);
+
     List<FRAccount> byAccountIds(
             @Param("accountId") List<String> accountIds,
             @Param("permissions") List<FRExternalPermissionsCode> permissions);
 
     List<String> getUserIds(DateTime from, DateTime to);
-
-    FRAccountIdentifier byUserIdAndAccountIdentifiers(
-            @Param("userID") String userID,
-            String accountIdentifierName,
-            String accountIdentifierIdentification,
-            String accountIdentifierSchemaName
-    );
 }

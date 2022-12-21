@@ -77,11 +77,11 @@ public interface AccountsApi {
      *         Indicates the name of account identifier to filter the account identifiers. Defaults to false.
      * @param accountIdentifierIdentification
      *         Indicates the identification of account identifier to filter the account identifiers. Defaults to false.
-     * @param accountIdentifierSchemaName
+     * @param accountIdentifierSchemeName
      *         Indicates the schema name of account identifier to filter the account identifiers. Defaults to false.
      * @return a {@link FRAccountIdentifier} instance if found, or void otherwise.
      */
-    @ApiOperation(value = "Get User Account identifier filtered by name, identification and schema name",
+    @ApiOperation(value = "Get User Account with balance filtered by name, identification and schema name",
             nickname = "getUserAccountIdentifier",
             notes = "", response = FRAccountIdentifier.class,
             tags = {"Get User Account identifier",})
@@ -98,14 +98,15 @@ public interface AccountsApi {
     @RequestMapping(value = "/search/findByAccountIdentifiers",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<FRAccountIdentifier> getAccountIdentifier(
-            @ApiParam(value = "The ID of the PSU who owns the account.")
-            @RequestParam(value = "userId") String userId,
+    ResponseEntity<FRAccountWithBalance> getAccountWithBalanceByIdentifiers(
+            @ApiParam(value = "The ID of the PSU who owns the account. (non mandatory)")
+            @RequestParam(value = "userId", required = false) String userId,
             @ApiParam(value = "Indicates the name of account identifier to filter the account identifiers. Defaults to false.")
             @RequestParam(value = "name", defaultValue = "false") String accountIdentifierName,
             @ApiParam(value = "Indicates the identification of account identifier to filter the account identifiers. Defaults to false.")
             @RequestParam(value = "identification", defaultValue = "false") String accountIdentifierIdentification,
             @ApiParam(value = "Indicates the schema name of account identifier to filter the account identifiers. Defaults to false.")
-            @RequestParam(value = "schemaName", defaultValue = "false") String accountIdentifierSchemaName
+            @RequestParam(value = "schemeName", defaultValue = "false") String accountIdentifierSchemeName
     );
+
 }
