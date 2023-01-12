@@ -172,6 +172,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         //get mandatory objects
         OBDomesticVRPInitiation initiation = consent.getData().getInitiation();
+        OBDomesticVRPControlParameters controlParameters = consent.getData().getControlParameters();
         //OBDomesticVRPInstruction instruction = consent.getData().getInstruction();
         OBRisk1 risk = consent.getRisk();
 
@@ -181,7 +182,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         // validate the consent against the instruction
         try {
-            domesticVrpValidationService.clearErrors().validate(initiation, obDomesticVRPRequest.getData().getInstruction(), risk, frDomesticVRPRequest);
+            domesticVrpValidationService.clearErrors().validate(initiation, obDomesticVRPRequest.getData().getInstruction(), risk, frDomesticVRPRequest, controlParameters);
         } catch (OBErrorException e) {
             log.error("Got error during VRP validation: '{}'", e.getMessage());
             throw new OBErrorResponseException(
