@@ -58,7 +58,7 @@ public class DomesticVrpValidationService {
     private OBRisk1Validator riskValidator;
 
     public void validate(OBDomesticVRPInitiation initiation, OBDomesticVRPInstruction instruction, OBRisk1 risk, FRDomesticVrpRequest frDomesticVRPRequest) throws OBErrorException {
-        this.riskValidator = riskValidator;
+        this.riskValidator = new OBRisk1Validator(true);
 
         checkRequestAndConsentInitiationMatch(initiation, frDomesticVRPRequest);
         checkRequestAndConsentRiskMatch(risk, frDomesticVRPRequest);
