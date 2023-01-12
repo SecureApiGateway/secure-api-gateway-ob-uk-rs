@@ -162,8 +162,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         log.debug("Retrieved consent from IDM");
 
         //deserialize the intent to ob response object
-        OBDomesticVRPResponse consent = consentService.deserialize(
-                OBDomesticVRPResponse.class,
+        OBDomesticVRPConsentResponse consent = consentService.deserialize(
+                OBDomesticVRPConsentResponse.class,
                 intent.getAsJsonObject("OBIntentObject"),
                 consentId
         );
@@ -172,7 +172,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         //get mandatory objects
         OBDomesticVRPInitiation initiation = consent.getData().getInitiation();
-        OBDomesticVRPInstruction instruction = consent.getData().getInstruction();
+        //OBDomesticVRPInstruction instruction = consent.getData().getInstruction();
         OBRisk1 risk = consent.getRisk();
 
         log.debug("Validating VRP submission");
@@ -181,7 +181,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         // validate the consent against the instruction
         try {
-            domesticVrpValidationService.clearErrors().validate(initiation, instruction, risk, frDomesticVRPRequest);
+            domesticVrpValidationService.clearErrors().validate(initiation, obDomesticVRPRequest.getData().getInstruction(), risk, frDomesticVRPRequest);
         } catch (OBErrorException e) {
             log.error("Got error during VRP validation: '{}'", e.getMessage());
             throw new OBErrorResponseException(
