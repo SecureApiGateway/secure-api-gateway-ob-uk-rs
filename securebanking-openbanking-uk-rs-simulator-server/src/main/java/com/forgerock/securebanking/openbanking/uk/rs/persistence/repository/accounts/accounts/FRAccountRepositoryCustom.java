@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRExternalPermissionsCode;
 import org.joda.time.DateTime;
@@ -34,6 +35,9 @@ public interface FRAccountRepositoryCustom {
     FRAccount byAccountId(
             @Param("accountId") String accountId,
             @Param("permissions") List<FRExternalPermissionsCode> permissions);
+
+    FRAccount byAccountId(
+            @Param("accountId") String accountId);
 
     List<FRAccount> byAccountIds(
             @Param("accountId") List<String> accountIds,

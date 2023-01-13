@@ -19,6 +19,7 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.acc
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRBalanceType;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCreditDebitIndicator;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAmount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBalance;
@@ -37,6 +38,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 import static com.forgerock.securebanking.openbanking.uk.rs.testsupport.FRAccountTestDataFactory.aValidFRAccount;
 import static java.util.Collections.singletonList;
@@ -52,6 +54,7 @@ public class AccountsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
     private static final String FIND_USER_ACCOUNTS_URI = "/backoffice/accounts/search/findByUserId";
+    private static final String FIND_USER_ACCOUNTS_URI_BY_IDENTIFIERS = "/backoffice/accounts/search/findByAccountIdentifiers";
 
     @LocalServerPort
     private int port;
@@ -161,6 +164,64 @@ public class AccountsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
+    @Test
+    public void shouldFindAccountWithBalanceByAccountIdentifiers(){
+        // Given
+        FRAccount account = aValidFRAccount();
+        frAccountRepository.save(account);
+        FRBalance accountBalance = aValidFRBalance(account.getId());
+        frBalanceRepository.save(accountBalance);
+        URI uri = findAccountUriByAccountIdentifiers(account.getUserID(), account.getAccount().getFirstAccount());
+        ParameterizedTypeReference<FRAccountWithBalance> typeReference = new ParameterizedTypeReference<>() {
+        };
+
+        // When
+        ResponseEntity<FRAccountWithBalance> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                new HttpEntity<>(httpHeaders()),
+                typeReference);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        FRAccountWithBalance accountWithBalance = response.getBody();
+        assertThat(accountWithBalance.getId()).isEqualTo(account.getId());
+        assertThat(accountWithBalance.getUserId()).isEqualTo(account.getUserID());
+        assertThat(accountWithBalance.getAccount().getAccountId()).isEqualTo(account.getAccount().getAccountId());
+        assertThat(accountWithBalance.getBalances()).isNotEmpty();
+        assertThat(accountWithBalance.getBalances().get(0)).isEqualTo(accountBalance.getBalance());
+    }
+
+    @Test
+    public void shouldFindAccountWithBalanceByAccountIdentifiersNoUserId(){
+        // Given
+        FRAccount account = aValidFRAccount();
+        frAccountRepository.save(account);
+        FRBalance accountBalance = aValidFRBalance(account.getId());
+        frBalanceRepository.save(accountBalance);
+        URI uri = findAccountUriByAccountIdentifiers(null, account.getAccount().getFirstAccount());
+        ParameterizedTypeReference<FRAccountWithBalance> typeReference = new ParameterizedTypeReference<>() {
+        };
+
+        // When
+        ResponseEntity<FRAccountWithBalance> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                new HttpEntity<>(httpHeaders()),
+                typeReference);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        FRAccountWithBalance accountWithBalance = response.getBody();
+        assertThat(accountWithBalance.getId()).isEqualTo(account.getId());
+        assertThat(accountWithBalance.getUserId()).isEqualTo(account.getUserID());
+        assertThat(accountWithBalance.getAccount().getAccountId()).isEqualTo(account.getAccount().getAccountId());
+        assertThat(accountWithBalance.getBalances()).isNotEmpty();
+        assertThat(accountWithBalance.getBalances().get(0)).isEqualTo(accountBalance.getBalance());
+    }
+
     private FRBalance aValidFRBalance(String accountId) {
         FRBalance accountBalance = FRBalance.builder()
                 .accountId(accountId)
@@ -186,6 +247,17 @@ public class AccountsApiControllerTest {
 
     private URI findUserAccountsUriWithBalance(String userId) {
         return findUserAccountsUri(userId, true);
+    }
+
+    private URI findAccountUriByAccountIdentifiers(String userId, FRAccountIdentifier accountIdentifier){
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL + port + FIND_USER_ACCOUNTS_URI_BY_IDENTIFIERS);
+        if(Objects.nonNull(userId)) {
+            builder.queryParam("userId", userId);
+        }
+        builder.queryParam("identification", accountIdentifier.getIdentification());
+        builder.queryParam("name", accountIdentifier.getName());
+        builder.queryParam("schemeName", accountIdentifier.getSchemeName());
+        return builder.build().encode().toUri();
     }
 
     public static HttpHeaders httpHeaders() {

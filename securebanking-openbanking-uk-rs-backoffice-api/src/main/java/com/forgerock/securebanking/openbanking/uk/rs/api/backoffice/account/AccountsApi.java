@@ -21,6 +21,7 @@
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,4 +68,45 @@ public interface AccountsApi {
             @ApiParam(value = "Indicates if the account's balance(s) should be returned. Defaults to false.")
             @RequestParam(value = "withBalance", required = false, defaultValue = "false") boolean withBalance
     );
+
+    /**
+     * Retrieves a user's bank account details, including it's associated balance(s) (if requested).
+     * @param userId
+     *         The ID of the user who owns the account
+     * @param accountIdentifierName
+     *         Indicates the name of account identifier to filter the account identifiers. Defaults to false.
+     * @param accountIdentifierIdentification
+     *         Indicates the identification of account identifier to filter the account identifiers. Defaults to false.
+     * @param accountIdentifierSchemeName
+     *         Indicates the schema name of account identifier to filter the account identifiers. Defaults to false.
+     * @return a {@link FRAccountIdentifier} instance if found, or void otherwise.
+     */
+    @ApiOperation(value = "Get User Account with balance filtered by name, identification and schema name",
+            nickname = "getUserAccountIdentifier",
+            notes = "", response = FRAccountIdentifier.class,
+            tags = {"Get User Account identifier",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User Accounts With Balance", response = FRAccountWithBalance.class),
+            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
+            @ApiResponse(code = 401, message = "Unauthorized"),
+            @ApiResponse(code = 403, message = "Forbidden", response = OBErrorResponse1.class),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 406, message = "Not Acceptable"),
+            @ApiResponse(code = 429, message = "Too Many Requests"),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
+    @RequestMapping(value = "/search/findByAccountIdentifiers",
+            produces = {"application/json; charset=utf-8"},
+            method = RequestMethod.GET)
+    ResponseEntity<FRAccountWithBalance> getAccountWithBalanceByIdentifiers(
+            @ApiParam(value = "The ID of the PSU who owns the account. (non mandatory)")
+            @RequestParam(value = "userId", required = false) String userId,
+            @ApiParam(value = "Indicates the name of account identifier to filter the account identifiers. Defaults to false.")
+            @RequestParam(value = "name", defaultValue = "false") String accountIdentifierName,
+            @ApiParam(value = "Indicates the identification of account identifier to filter the account identifiers. Defaults to false.")
+            @RequestParam(value = "identification", defaultValue = "false") String accountIdentifierIdentification,
+            @ApiParam(value = "Indicates the schema name of account identifier to filter the account identifiers. Defaults to false.")
+            @RequestParam(value = "schemeName", defaultValue = "false") String accountIdentifierSchemeName
+    );
+
 }

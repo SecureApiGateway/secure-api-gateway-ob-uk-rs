@@ -16,12 +16,31 @@
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts;
 
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
+import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRScheduledPayment;
+import org.joda.time.DateTime;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface FRAccountRepository extends MongoRepository<FRAccount, String>, FRAccountRepositoryCustom {
 
     Collection<FRAccount> findByUserID(@Param("userID") String userID);
+
+    @Query("{ 'userID': ?0 , 'account.accounts.name' : ?1, 'account.accounts.identification' : ?2, 'account.accounts.schemeName': ?3}")
+    FRAccount findByUserIdAndAccountIdentifiers(
+            @Param("userID") String userID,
+            @Param("account.accounts.name") String accountIdentifierName,
+            @Param("account.accounts.identification") String accountIdentifierIdentification,
+            @Param("account.accounts.schemeName") String accountIdentifierSchemeName
+    );
+
+    @Query("{ 'account.accounts.name' : ?0, 'account.accounts.identification' : ?1, 'account.accounts.schemeName': ?2}")
+    FRAccount findByAccountIdentifiers(
+            @Param("account.accounts.name") String accountIdentifierName,
+            @Param("account.accounts.identification") String accountIdentifierIdentification,
+            @Param("account.accounts.schemeName") String accountIdentifierSchemeName
+    );
 }

@@ -85,6 +85,15 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
     }
 
     @Override
+    public FRAccount byAccountId(String accountId) {
+        Optional<FRAccount> isAccount = accountsRepository.findById(accountId);
+        if (!isAccount.isPresent()) {
+            return null;
+        }
+        return isAccount.get();
+    }
+
+    @Override
     public List<FRAccount> byAccountIds(List<String> accountIds, List<FRExternalPermissionsCode> permissions) {
         Iterable<FRAccount> accounts = accountsRepository.findAllById(accountIds);
         try {

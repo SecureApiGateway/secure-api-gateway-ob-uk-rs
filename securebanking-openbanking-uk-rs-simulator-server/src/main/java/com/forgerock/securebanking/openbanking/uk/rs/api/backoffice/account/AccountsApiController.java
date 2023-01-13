@@ -17,12 +17,15 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.account;
 
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRAccountWithBalance;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRCashBalance;
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRAccountIdentifier;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRBalance;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.balances.FRBalanceRepository;
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -74,6 +77,45 @@ public class AccountsApiController implements AccountsApi {
                 .collect(toList())
         );
 
+    }
+
+    @Override
+    public ResponseEntity<FRAccountWithBalance> getAccountWithBalanceByIdentifiers(
+            String userId,
+            String accountIdentifierName,
+            String accountIdentifierIdentification,
+            String accountIdentifierSchemeName
+    ) {
+        log.info(
+                "Read all account identifier for user ID '{}', with name: {}, identification {} and schema name {}",
+                userId, accountIdentifierName, accountIdentifierIdentification, accountIdentifierSchemeName
+        );
+
+        FRAccount account;
+        if(Objects.isNull(userId)) {
+            account = accountsRepository.findByAccountIdentifiers(
+                    accountIdentifierName,
+                    accountIdentifierIdentification,
+                    accountIdentifierSchemeName
+            );
+        } else {
+            account = accountsRepository.findByUserIdAndAccountIdentifiers(
+                    userId,
+                    accountIdentifierName,
+                    accountIdentifierIdentification,
+                    accountIdentifierSchemeName
+            );
+        }
+
+        if(account!=null) {
+            FRBalance balance = balanceRepository.findByAccountId(account.getId());
+            log.debug("Balance by accountId: {}", balance);
+            if(balance!=null) {
+                return ResponseEntity.ok(new FRAccountWithBalance(toFRAccountDto(account), List.of(balance.getBalance())));
+            }
+            return ResponseEntity.ok(new FRAccountWithBalance(toFRAccountDto(account), Collections.EMPTY_LIST));
+        }
+        return ResponseEntity.ok(null);
     }
 
     private FRAccountWithBalance toFRAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {
