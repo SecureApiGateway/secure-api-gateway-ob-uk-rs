@@ -96,8 +96,10 @@ public class DomesticVrpValidationService {
 
     //if the CreditorAccount was not specified in the the consent, the CreditorAccount must be specified in the instruction
     public void checkCreditorAccountPresentInInstructionIfNotPresentInConsent(OBCashAccountCreditor3 requestCreditorAccount, FRDomesticVrpRequest consent) throws OBErrorException {
-        if (consent.getData().getInitiation().getCreditorAccount() == null) {
-            if ((requestCreditorAccount.getIdentification() == null) && (requestCreditorAccount.getName() == null) && (requestCreditorAccount.getSchemeName() == null) && (requestCreditorAccount.getSecondaryIdentification() == null)) {
+        if (requestCreditorAccount == null) {
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
+        } else {
+            if (requestCreditorAccount.getIdentification() == null || requestCreditorAccount.getName() == null || requestCreditorAccount.getSchemeName() == null) {
                 throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
             }
         }
