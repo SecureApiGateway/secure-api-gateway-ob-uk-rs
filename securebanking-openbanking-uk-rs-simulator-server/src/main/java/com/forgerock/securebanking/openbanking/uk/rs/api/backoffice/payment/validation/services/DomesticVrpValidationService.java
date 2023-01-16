@@ -22,6 +22,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.org.openbanking.datamodel.common.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.vrp.*;
@@ -52,13 +53,13 @@ public class DomesticVrpValidationService {
 
     private OBRisk1Validator riskValidator;
 
-    public void validate(OBDomesticVRPInitiation initiation, OBDomesticVRPInstruction instruction, OBRisk1 risk, FRDomesticVrpRequest frDomesticVRPRequest, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
+    public void validate(OBDomesticVRPInitiation initiation, OBDomesticVRPInstruction instruction, OBRisk1 risk, FRDomesticVrpRequest frDomesticVRPRequest, OBDomesticVRPControlParameters controlParameters, OBCashAccountCreditor3 requestCreditorAccount) throws OBErrorException {
         this.riskValidator = new OBRisk1Validator(true);
 
         checkRequestAndConsentInitiationMatch(initiation, frDomesticVRPRequest);
         checkRequestAndConsentRiskMatch(risk, frDomesticVRPRequest);
         validateRisk(risk);
-        //checkCreditorAccountPresentInInstructionIfNotPresentInConsent(requestCreditorAccount, frDomesticVRPRequest);
+        checkCreditorAccountPresentInInstructionIfNotPresentInConsent(requestCreditorAccount, frDomesticVRPRequest);
         checkControlParameters(instruction, frDomesticVRPRequest, controlParameters);
         // TODO - implement check on creditor account
     }
@@ -94,13 +95,13 @@ public class DomesticVrpValidationService {
     }
 
     //if the CreditorAccount was not specified in the the consent, the CreditorAccount must be specified in the instruction
-    /*public void checkCreditorAccountPresentInInstructionIfNotPresentInConsent(OBDomesticVRPRequest requestCreditorAccount, FRDomesticVrpRequest consent) throws OBErrorException {
+    public void checkCreditorAccountPresentInInstructionIfNotPresentInConsent(OBCashAccountCreditor3 requestCreditorAccount, FRDomesticVrpRequest consent) throws OBErrorException {
         if (consent.getData().getInitiation().getCreditorAccount() == null) {
-            if (requestCreditorAccount.getData().getInstruction().getCreditorAccount() == null) {
+            if ((requestCreditorAccount.getIdentification() == null) && (requestCreditorAccount.getName() == null) && (requestCreditorAccount.getSchemeName() == null) && (requestCreditorAccount.getSecondaryIdentification() == null)) {
                 throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
             }
         }
-    }*/
+    }
 
     //controlParameters - validation
     public void checkControlParameters(OBDomesticVRPInstruction instruction, FRDomesticVrpRequest consent, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
@@ -119,9 +120,9 @@ public class DomesticVrpValidationService {
     private void validateMaximumIndividualAmount(FRDomesticVrpRequest consent, Double instructionAmount, String instructionCurrency, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
         Double consentAmount = Double.valueOf(controlParameters.getMaximumIndividualAmount().getAmount());
         String consentCurrency = controlParameters.getMaximumIndividualAmount().getCurrency();
-            if (!(instructionAmount.compareTo(consentAmount) == 0) || !(instructionCurrency.compareTo(consentCurrency) == 0)) {
-                throw new OBErrorException(
-                OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES);
+        if (!(instructionAmount.compareTo(consentAmount) == 0) || !(instructionCurrency.compareTo(consentCurrency) == 0)) {
+            throw new OBErrorException(
+                    OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES);
         }
     }
 }

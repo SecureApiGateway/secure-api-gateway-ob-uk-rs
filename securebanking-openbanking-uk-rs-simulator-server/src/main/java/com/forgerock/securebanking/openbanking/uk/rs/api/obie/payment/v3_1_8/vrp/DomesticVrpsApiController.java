@@ -38,6 +38,7 @@ import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
+import uk.org.openbanking.datamodel.common.*;
 import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -175,6 +176,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         OBDomesticVRPControlParameters controlParameters = consent.getData().getControlParameters();
         //OBDomesticVRPInstruction instruction = consent.getData().getInstruction();
         OBRisk1 risk = consent.getRisk();
+        OBCashAccountCreditor3 requestCreditorAccount = consent.getData().getInitiation().getCreditorAccount();
 
         log.debug("Validating VRP submission");
 
@@ -182,7 +184,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         // validate the consent against the instruction
         try {
-            domesticVrpValidationService.clearErrors().validate(initiation, obDomesticVRPRequest.getData().getInstruction(), risk, frDomesticVRPRequest, controlParameters);
+            domesticVrpValidationService.clearErrors().validate(initiation, obDomesticVRPRequest.getData().getInstruction(), risk, frDomesticVRPRequest, controlParameters, requestCreditorAccount);
         } catch (OBErrorException e) {
             log.error("Got error during VRP validation: '{}'", e.getMessage());
             throw new OBErrorResponseException(
