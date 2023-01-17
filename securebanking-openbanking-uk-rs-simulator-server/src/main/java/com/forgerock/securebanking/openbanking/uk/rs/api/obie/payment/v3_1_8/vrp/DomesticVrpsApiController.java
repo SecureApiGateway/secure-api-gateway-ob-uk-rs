@@ -174,7 +174,6 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         //get mandatory objects
         OBDomesticVRPInitiation initiation = consent.getData().getInitiation();
         OBDomesticVRPControlParameters controlParameters = consent.getData().getControlParameters();
-        //OBDomesticVRPInstruction instruction = consent.getData().getInstruction();
         OBRisk1 risk = consent.getRisk();
         OBCashAccountCreditor3 requestCreditorAccount = consent.getData().getInitiation().getCreditorAccount();
 
