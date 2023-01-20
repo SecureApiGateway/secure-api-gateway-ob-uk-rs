@@ -15,6 +15,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpInstruction;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.OBRisk1Validator;
@@ -24,12 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.common.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.vrp.*;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.lang.*;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRRiskConverter.toOBRisk1;
@@ -40,31 +38,45 @@ import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamo
 @Slf4j
 public class DomesticVrpValidationService {
 
-    protected List<OBError1> errors = new ArrayList<>();
-
-    public DomesticVrpValidationService clearErrors() {
-        this.errors.clear();
-        return this;
-    }
-
-    public List<OBError1> getErrors() {
-        return errors;
-    }
-
+    private static final String MAX_INDIVIDUAL_AMOUNT = "MaximumIndividualAmount";
     private OBRisk1Validator riskValidator;
 
-    public void validate(OBDomesticVRPInitiation initiation, OBDomesticVRPInstruction instruction, OBRisk1 risk, FRDomesticVrpRequest frDomesticVRPRequest, OBDomesticVRPControlParameters controlParameters, OBCashAccountCreditor3 requestCreditorAccount) throws OBErrorException {
+    /**
+     * Validate the submit Domestic VRP request parameters
+     *
+     * @param consent              the consent as saved during the consent creation step
+     * @param frDomesticVRPRequest the current submit domestic VRP request
+     * @throws OBErrorException
+     */
+    public void validate(OBDomesticVRPConsentResponse consent, FRDomesticVrpRequest frDomesticVRPRequest) throws OBErrorException {
         this.riskValidator = new OBRisk1Validator(true);
 
+        // Initiation validation
+        OBDomesticVRPInitiation initiation = consent.getData().getInitiation();
         checkRequestAndConsentInitiationMatch(initiation, frDomesticVRPRequest);
-        checkRequestAndConsentRiskMatch(risk, frDomesticVRPRequest);
+
+        // Control parameters validation
+        OBDomesticVRPControlParameters controlParameters = consent.getData().getControlParameters();
+        checkControlParameters(frDomesticVRPRequest.getData().getInstruction(), controlParameters);
+
+        // Risk validation
+        OBRisk1 risk = consent.getRisk();
         validateRisk(risk);
-        checkCreditorAccountPresentInInstructionIfNotPresentInConsent(requestCreditorAccount, frDomesticVRPRequest);
-        checkControlParameters(instruction, frDomesticVRPRequest, controlParameters);
-        // TODO - implement check on creditor account
+        checkRequestAndConsentRiskMatch(risk, frDomesticVRPRequest);
+
+        // Creditor account validation
+        OBCashAccountCreditor3 requestCreditorAccount = consent.getData().getInitiation().getCreditorAccount();
+        checkCreditorAccountPresentInInstructionIfNotPresentInConsent(requestCreditorAccount);
+
     }
 
-    //initiation - request vs consent
+    /**
+     * Validate the initiation from the request against the parameters from the consent
+     *
+     * @param requestInitiation the initiation from the current submit domestic vrp request
+     * @param consent           the consent as saved during the consent creation step
+     * @throws OBErrorException
+     */
     public void checkRequestAndConsentInitiationMatch(OBDomesticVRPInitiation requestInitiation, FRDomesticVrpRequest consent)
             throws OBErrorException {
         FRWriteDomesticVrpDataInitiation consentFRInitiation = consent.getData().getInitiation();
@@ -74,7 +86,13 @@ public class DomesticVrpValidationService {
         }
     }
 
-    //risk - request vs consent
+    /**
+     * Validate the risk object from the request against the risk from the consent
+     *
+     * @param requestRisk the risk from the current submit domestic vrp request
+     * @param consent     the consent as saved during the consent creation step
+     * @throws OBErrorException
+     */
     public void checkRequestAndConsentRiskMatch(OBRisk1 requestRisk, FRDomesticVrpRequest consent)
             throws OBErrorException {
         OBRisk1 consentRisk = toOBRisk1(consent.getRisk());
@@ -84,6 +102,13 @@ public class DomesticVrpValidationService {
     }
 
     //risk - validation
+
+    /**
+     * Check if the risk object is valid
+     *
+     * @param risk the risk from the current submit domestic vrp request
+     * @throws OBErrorException
+     */
     public void validateRisk(OBRisk1 risk) throws OBErrorException {
         if (riskValidator != null) {
             riskValidator.validate(risk);
@@ -95,7 +120,15 @@ public class DomesticVrpValidationService {
     }
 
     //if the CreditorAccount was not specified in the the consent, the CreditorAccount must be specified in the instruction
-    public void checkCreditorAccountPresentInInstructionIfNotPresentInConsent(OBCashAccountCreditor3 requestCreditorAccount, FRDomesticVrpRequest consent) throws OBErrorException {
+
+    /**
+     * Check if the CreditorAccount was specified or not in the consent. If the CreditorAccount was
+     * not specified in the consent, the CreditorAccount must be specified in the instruction
+     *
+     * @param requestCreditorAccount
+     * @throws OBErrorException
+     */
+    public void checkCreditorAccountPresentInInstructionIfNotPresentInConsent(OBCashAccountCreditor3 requestCreditorAccount) throws OBErrorException {
         if (requestCreditorAccount == null) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
         } else {
@@ -105,26 +138,28 @@ public class DomesticVrpValidationService {
         }
     }
 
-    //controlParameters - validation
-    public void checkControlParameters(OBDomesticVRPInstruction instruction, FRDomesticVrpRequest consent, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
-        validateMaximumIndividualAmount(instruction, consent, controlParameters);
+    /**
+     * Validates the payment submission control parameters
+     *
+     * @param instruction       the instruction object for the current submit payment request
+     * @param controlParameters the controlParameters from the consent
+     * @throws OBErrorException
+     */
+    public void checkControlParameters(FRDomesticVrpInstruction instruction, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
+        validateMaximumIndividualAmount(instruction, controlParameters);
     }
 
-    private void validateMaximumIndividualAmount(OBDomesticVRPInstruction instruction, FRDomesticVrpRequest consent, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
-        String instructionAmount = String.valueOf(instruction.getInstructedAmount().getAmount());
-        String instructionCurrency = String.valueOf(instruction.getInstructedAmount().getCurrency());
-        // TODO - next method must be implemented correctly depending on the control parameters rules set for the payment periodic limits and maximum
-        // individual ammount
-        validateMaximumIndividualAmount(consent, Double.valueOf(instructionAmount), instructionCurrency, controlParameters);
-    }
+    private void validateMaximumIndividualAmount(FRDomesticVrpInstruction instruction, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
+        String instructionAmount = instruction.getInstructedAmount().getAmount();
+        String instructionCurrency = instruction.getInstructedAmount().getCurrency();
 
-    //MaximumIndividualAmount - validation
-    private void validateMaximumIndividualAmount(FRDomesticVrpRequest consent, Double instructionAmount, String instructionCurrency, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
         Double consentAmount = Double.valueOf(controlParameters.getMaximumIndividualAmount().getAmount());
         String consentCurrency = controlParameters.getMaximumIndividualAmount().getCurrency();
-        if (!(instructionAmount.compareTo(consentAmount) == 0) || !(instructionCurrency.compareTo(consentCurrency) == 0)) {
+        if (!(Double.valueOf(instructionAmount).compareTo(consentAmount) == 0) || !(instructionCurrency.compareTo(consentCurrency) == 0)) {
             throw new OBErrorException(
-                    OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES);
+                    OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,
+                    MAX_INDIVIDUAL_AMOUNT, MAX_INDIVIDUAL_AMOUNT);
         }
     }
+
 }

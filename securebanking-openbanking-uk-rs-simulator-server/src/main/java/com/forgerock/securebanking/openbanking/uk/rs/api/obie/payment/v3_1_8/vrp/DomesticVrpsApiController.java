@@ -21,7 +21,6 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.con
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
-import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorResponseCategory;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services.DomesticVrpValidationService;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
@@ -37,8 +36,6 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.common.*;
 import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -153,7 +150,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received VRP payment submission: '{}'", obDomesticVRPRequest);
 
         String consentId = obDomesticVRPRequest.getData().getConsentId();
@@ -171,26 +168,12 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         log.debug("Deserialized consent from IDM");
 
-        //get mandatory objects
-        OBDomesticVRPInitiation initiation = consent.getData().getInitiation();
-        OBDomesticVRPControlParameters controlParameters = consent.getData().getControlParameters();
-        OBRisk1 risk = consent.getRisk();
-        OBCashAccountCreditor3 requestCreditorAccount = consent.getData().getInitiation().getCreditorAccount();
-
-        log.debug("Validating VRP submission");
-
         FRDomesticVrpRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
 
         // validate the consent against the instruction
-        try {
-            domesticVrpValidationService.clearErrors().validate(initiation, obDomesticVRPRequest.getData().getInstruction(), risk, frDomesticVRPRequest, controlParameters, requestCreditorAccount);
-        } catch (OBErrorException e) {
-            log.error("Got error during VRP validation: '{}'", e.getMessage());
-            throw new OBErrorResponseException(
-                    e.getObriErrorType().getHttpStatus(),
-                    OBRIErrorResponseCategory.REQUEST_FILTER,
-                    e.getOBError());
-        }
+        log.debug("Validating VRP submission");
+
+        domesticVrpValidationService.validate(consent, frDomesticVRPRequest);
 
         log.debug("VRP validation successful! Creating the payment.");
 
