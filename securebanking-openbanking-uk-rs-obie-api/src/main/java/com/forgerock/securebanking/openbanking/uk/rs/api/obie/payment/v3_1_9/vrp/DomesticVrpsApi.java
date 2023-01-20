@@ -20,6 +20,7 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.vrp;
 
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.*;
@@ -257,6 +258,6 @@ public interface DomesticVrpsApi {
             HttpServletRequest request,
 
             Principal principal
-    ) throws OBErrorResponseException;
+    ) throws OBErrorResponseException, OBErrorException;
 
 }

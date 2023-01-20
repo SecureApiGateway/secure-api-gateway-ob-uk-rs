@@ -19,11 +19,15 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.com
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.common.FRResponseDataRefund;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpRequest;
+import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services.DomesticVrpValidationService;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -40,7 +44,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRResponseDataRefundConverter.toOBCashAccountDebtorWithName;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
@@ -57,9 +60,14 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     protected static final String DEFAULT_CHARGE_CURRENCY = "GBP";
 
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
+    private final DomesticVrpValidationService domesticVrpValidationService;
+    private final ConsentService consentService;
 
-    public DomesticVrpsApiController(DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository) {
+
+    public DomesticVrpsApiController(DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository, DomesticVrpValidationService domesticVrpValidationService, ConsentService consentService) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
+        this.domesticVrpValidationService = domesticVrpValidationService;
+        this.consentService = consentService;
     }
 
     @Override
@@ -73,7 +81,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         Optional<FRDomesticVrpPaymentSubmission> optionalVrpPayment = paymentSubmissionRepository.findById(domesticVRPId);
         if (!optionalVrpPayment.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
@@ -94,7 +102,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         Optional<FRDomesticVrpPaymentSubmission> optionalVrpPayment = paymentSubmissionRepository.findById(domesticVRPId);
         if (!optionalVrpPayment.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
@@ -142,10 +150,33 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received VRP payment submission: '{}'", obDomesticVRPRequest);
 
+        String consentId = obDomesticVRPRequest.getData().getConsentId();
+        //get the consent
+        JsonObject intent = consentService.getIDMIntent(authorization, consentId);
+
+        log.debug("Retrieved consent from IDM");
+
+        //deserialize the intent to ob response object
+        OBDomesticVRPConsentResponse consent = consentService.deserialize(
+                OBDomesticVRPConsentResponse.class,
+                intent.getAsJsonObject("OBIntentObject"),
+                consentId
+        );
+
+        log.debug("Deserialized consent from IDM");
+
         FRDomesticVrpRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
+
+        // validate the consent against the instruction
+        log.debug("Validating VRP submission");
+
+        domesticVrpValidationService.validate(consent, frDomesticVRPRequest);
+
+        log.debug("VRP validation successful! Creating the payment.");
+
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()
                 .id(frDomesticVRPRequest.data.consentId)
                 .payment(frDomesticVRPRequest)
@@ -154,13 +185,14 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .updated(new DateTime())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
+
+        //save the domestic vrp
         vrpPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(vrpPaymentSubmission);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 responseEntity(obDomesticVRPRequest, vrpPaymentSubmission, frReadRefundAccount(xReadRefundAccount))
         );
-
     }
 
     private OBDomesticVRPResponse responseEntity(

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation;
 
 import com.forgerock.securebanking.openbanking.uk.rs.common.filepayment.PaymentFileType;
@@ -25,9 +26,11 @@ import java.math.BigDecimal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3;
 
+
 /**
  * Unit test for {@link FilePaymentConsentValidation}
  */
+
 public class FilePaymentConsentValidationTest {
 
     private PaymentConsentValidation validation;
@@ -45,3 +48,4 @@ public class FilePaymentConsentValidationTest {
         assertThat(validation.getErrors()).isEmpty();
     }
 }
+
