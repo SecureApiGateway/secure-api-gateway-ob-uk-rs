@@ -81,7 +81,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         Optional<FRDomesticVrpPaymentSubmission> optionalVrpPayment = paymentSubmissionRepository.findById(domesticVRPId);
         if (!optionalVrpPayment.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
@@ -102,7 +102,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         Optional<FRDomesticVrpPaymentSubmission> optionalVrpPayment = paymentSubmissionRepository.findById(domesticVRPId);
         if (!optionalVrpPayment.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
