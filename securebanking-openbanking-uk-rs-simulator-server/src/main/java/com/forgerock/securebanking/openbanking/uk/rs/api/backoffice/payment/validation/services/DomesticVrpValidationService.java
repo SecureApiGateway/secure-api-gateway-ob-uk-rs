@@ -15,20 +15,20 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services;
 
+import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRAccountIdentifierConverter;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpInstruction;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
-import com.forgerock.securebanking.openbanking.uk.rs.validator.OBRisk1Validator;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.OBRisk1Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.common.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.vrp.*;
-
-
-import java.lang.*;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRRiskConverter.toOBRisk1;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPInitiation;
@@ -52,50 +52,53 @@ public class DomesticVrpValidationService {
         this.riskValidator = new OBRisk1Validator(true);
 
         // Initiation validation
-        OBDomesticVRPInitiation initiation = consent.getData().getInitiation();
-        checkRequestAndConsentInitiationMatch(initiation, frDomesticVRPRequest);
+        OBDomesticVRPInitiation consentInitiation = consent.getData().getInitiation();
+        OBDomesticVRPInitiation requestInitiation = toOBDomesticVRPInitiation(frDomesticVRPRequest.getData().getInitiation());
+        checkInitiationMatch(consentInitiation, requestInitiation);
 
         // Control parameters validation
         OBDomesticVRPControlParameters controlParameters = consent.getData().getControlParameters();
         checkControlParameters(frDomesticVRPRequest.getData().getInstruction(), controlParameters);
 
         // Risk validation
-        OBRisk1 risk = consent.getRisk();
-        validateRisk(risk);
-        checkRequestAndConsentRiskMatch(risk, frDomesticVRPRequest);
+        OBRisk1 requestRisk = toOBRisk1(frDomesticVRPRequest.getRisk());
+        validateRisk(requestRisk);
+        checkRequestAndConsentRiskMatch(consent.getRisk(), requestRisk);
 
-        // Creditor account validation
-        OBCashAccountCreditor3 requestCreditorAccount = consent.getData().getInitiation().getCreditorAccount();
-        checkCreditorAccountPresentInInstructionIfNotPresentInConsent(requestCreditorAccount);
+        // Creditor account validation:
+        // If the CreditorAccount was not specified in the consent, the CreditorAccount must be specified in the instruction
+        OBCashAccountCreditor3 consentCreditorAccount = consent.getData().getInitiation().getCreditorAccount();
+        if (consentCreditorAccount == null) {
+            checkCreditorAccount(
+                    FRAccountIdentifierConverter.toOBCashAccountCreditor3(
+                            frDomesticVRPRequest.getData().getInstruction().getCreditorAccount()
+                    )
+            );
+        }
 
     }
 
     /**
-     * Validate the initiation from the request against the parameters from the consent
-     *
-     * @param requestInitiation the initiation from the current submit domestic vrp request
-     * @param consent           the consent as saved during the consent creation step
+     * Validate if initiation from consent match with the initiation from the vrp payment submission request
+     * @param initiation
+     * @param initiationToCompare
      * @throws OBErrorException
      */
-    public void checkRequestAndConsentInitiationMatch(OBDomesticVRPInitiation requestInitiation, FRDomesticVrpRequest consent)
+    public void checkInitiationMatch(OBDomesticVRPInitiation initiation, OBDomesticVRPInitiation initiationToCompare)
             throws OBErrorException {
-        FRWriteDomesticVrpDataInitiation consentFRInitiation = consent.getData().getInitiation();
-        OBDomesticVRPInitiation consentOBInitiation = toOBDomesticVRPInitiation(consentFRInitiation);
-        if (!consentOBInitiation.equals(requestInitiation)) {
+        if (!initiation.equals(initiationToCompare)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT);
         }
     }
 
     /**
      * Validate the risk object from the request against the risk from the consent
-     *
+     * @param consentRisk the consent as saved during the consent creation step
      * @param requestRisk the risk from the current submit domestic vrp request
-     * @param consent     the consent as saved during the consent creation step
      * @throws OBErrorException
      */
-    public void checkRequestAndConsentRiskMatch(OBRisk1 requestRisk, FRDomesticVrpRequest consent)
+    public void checkRequestAndConsentRiskMatch(OBRisk1 consentRisk, OBRisk1 requestRisk)
             throws OBErrorException {
-        OBRisk1 consentRisk = toOBRisk1(consent.getRisk());
         if (!requestRisk.equals(consentRisk)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_DOESNT_MATCH_CONSENT);
         }
@@ -119,20 +122,17 @@ public class DomesticVrpValidationService {
         }
     }
 
-    //if the CreditorAccount was not specified in the the consent, the CreditorAccount must be specified in the instruction
-
     /**
-     * Check if the CreditorAccount was specified or not in the consent. If the CreditorAccount was
-     * not specified in the consent, the CreditorAccount must be specified in the instruction
+     * Validate Creditor account
      *
-     * @param requestCreditorAccount
+     * @param creditorAccount creditor account {@link OBCashAccountCreditor3}
      * @throws OBErrorException
      */
-    public void checkCreditorAccountPresentInInstructionIfNotPresentInConsent(OBCashAccountCreditor3 requestCreditorAccount) throws OBErrorException {
-        if (requestCreditorAccount == null) {
+    public void checkCreditorAccount(OBCashAccountCreditor3 creditorAccount) throws OBErrorException {
+        if (creditorAccount == null) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
         } else {
-            if (requestCreditorAccount.getIdentification() == null || requestCreditorAccount.getName() == null || requestCreditorAccount.getSchemeName() == null) {
+            if (creditorAccount.getIdentification() == null || creditorAccount.getName() == null || creditorAccount.getSchemeName() == null) {
                 throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
             }
         }
