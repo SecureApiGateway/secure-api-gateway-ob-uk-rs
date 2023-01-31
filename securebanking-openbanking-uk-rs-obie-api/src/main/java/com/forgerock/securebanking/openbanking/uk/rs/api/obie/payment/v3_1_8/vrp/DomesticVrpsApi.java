@@ -253,6 +253,9 @@ public interface DomesticVrpsApi {
             @ApiParam(value = "Indicates if 'ReadRefundAccount' was set to 'Yes' or 'No' in the consent. Defaults to 'No'", required = false)
             @RequestHeader(value = "x-read-refund-account", required = false) String xReadRefundAccount,
 
+            @ApiParam(value = "Custom header used to simulate a PeriodicLimit breach response for testing purposes. Values should be of the form PeriodType-PeriodAlignment e.g. Year-Calendar.")
+            @RequestHeader(value = "x-vrp-limit-breach-response-simulation", required = false) String xVrpLimitBreachResponseSimulation,
+
             HttpServletRequest request,
 
             Principal principal

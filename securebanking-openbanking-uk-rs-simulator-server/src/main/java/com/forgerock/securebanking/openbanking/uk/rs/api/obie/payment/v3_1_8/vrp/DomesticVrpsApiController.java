@@ -23,6 +23,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services.DomesticVrpValidationService;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulator;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -64,7 +65,11 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final ConsentService consentService;
 
 
-    public DomesticVrpsApiController(DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository, DomesticVrpValidationService domesticVrpValidationService, ConsentService consentService) {
+    public DomesticVrpsApiController(
+            DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
+            DomesticVrpValidationService domesticVrpValidationService,
+            ConsentService consentService
+    ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.domesticVrpValidationService = domesticVrpValidationService;
         this.consentService = consentService;
@@ -148,6 +153,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xFapiInteractionId,
             String xCustomerUserAgent,
             String xReadRefundAccount,
+            String xVrpLimitBreachResponseSimulation,
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException, OBErrorException {
@@ -168,13 +174,18 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         log.debug("Deserialized consent from IDM");
 
+        if (xVrpLimitBreachResponseSimulation != null) {
+            log.warn("Executing Limit breach simulation, value of header: {}", xVrpLimitBreachResponseSimulation);
+            PeriodicLimitBreachResponseSimulator.processRequest(xVrpLimitBreachResponseSimulation, consent);
+        }
+
         FRDomesticVrpRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
+
+
 
         // validate the consent against the instruction
         log.debug("Validating VRP submission");
-
         domesticVrpValidationService.validate(consent, frDomesticVRPRequest);
-
         log.debug("VRP validation successful! Creating the payment.");
 
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()

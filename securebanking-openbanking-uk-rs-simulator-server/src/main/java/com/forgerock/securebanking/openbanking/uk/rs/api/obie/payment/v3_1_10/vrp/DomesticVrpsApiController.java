@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_10.vrp;
-
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services.DomesticVrpValidationService;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,11 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class DomesticVrpsApiController extends com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.vrp.DomesticVrpsApiController implements DomesticVrpsApi {
 
-    public DomesticVrpsApiController(DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository) {
-        super(paymentSubmissionRepository);
+    public DomesticVrpsApiController(
+            DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
+            DomesticVrpValidationService domesticVrpValidationService,
+            ConsentService consentService
+    ) {
+        super(paymentSubmissionRepository, domesticVrpValidationService, consentService);
     }
 }
