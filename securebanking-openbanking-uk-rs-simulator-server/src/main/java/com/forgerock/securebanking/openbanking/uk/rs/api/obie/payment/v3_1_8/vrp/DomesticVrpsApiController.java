@@ -23,7 +23,7 @@ import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.validation.services.DomesticVrpValidationService;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
-import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulator;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
 import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtractor;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
@@ -63,16 +63,17 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
     private final DomesticVrpValidationService domesticVrpValidationService;
     private final ConsentService consentService;
-
-
+    private final PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService;
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
             DomesticVrpValidationService domesticVrpValidationService,
-            ConsentService consentService
+            ConsentService consentService,
+            PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.domesticVrpValidationService = domesticVrpValidationService;
         this.consentService = consentService;
+        this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
     }
 
     @Override
@@ -176,7 +177,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         if (xVrpLimitBreachResponseSimulation != null) {
             log.info("Executing Limit breach simulation, value of header: {}", xVrpLimitBreachResponseSimulation);
-            PeriodicLimitBreachResponseSimulator.processRequest(xVrpLimitBreachResponseSimulation, consent);
+            limitBreachResponseSimulatorService.processRequest(xVrpLimitBreachResponseSimulation, consent);
         }
 
         FRDomesticVrpRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);

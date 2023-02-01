@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_8.vrp;
+package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_9.vrp;
 
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
 import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.services.ConsentService;
+import com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.v3_1_8.vrp.DomesticVrpsApiController;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
@@ -45,7 +46,7 @@ import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentResponseTes
 import static uk.org.openbanking.testsupport.vrp.OBDomesticVrpCommonTestDataFactory.aValidOBCashAccountDebtorWithName;
 
 /**
- * A SpringBoot test for the {@link DomesticVrpsApiController}.
+ * A SpringBoot test for the {@link DomesticVrpsApiController} v[3.1.9, 3.1.10].
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")

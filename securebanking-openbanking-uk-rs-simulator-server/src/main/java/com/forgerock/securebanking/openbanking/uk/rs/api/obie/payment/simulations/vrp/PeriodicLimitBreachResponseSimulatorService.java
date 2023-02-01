@@ -17,6 +17,7 @@ package com.forgerock.securebanking.openbanking.uk.rs.api.obie.payment.simulatio
 
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType;
+import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits.PeriodAlignmentEnum;
@@ -33,7 +34,8 @@ import java.util.Set;
  * This allows TPPs to test their error handling for this condition, the simulator can be triggered by specifying
  * a custom header on the payment request.
  */
-public class PeriodicLimitBreachResponseSimulator {
+@Service
+public class PeriodicLimitBreachResponseSimulatorService {
     private static final Set<String> LIMIT_BREACH_HEADER_VALUES;
 
     static {
@@ -46,7 +48,7 @@ public class PeriodicLimitBreachResponseSimulator {
         LIMIT_BREACH_HEADER_VALUES = Collections.unmodifiableSet(limitBreaches);
     }
 
-    public static void processRequest(String xVrpLimitBreachResponseSimulation, OBDomesticVRPConsentResponse consent) throws OBErrorException {
+    public void processRequest(String xVrpLimitBreachResponseSimulation, OBDomesticVRPConsentResponse consent) throws OBErrorException {
         if (LIMIT_BREACH_HEADER_VALUES.contains(xVrpLimitBreachResponseSimulation)) {
             final OBDomesticVRPControlParametersPeriodicLimits periodicLimits = findPeriodicLimitsForHeader(xVrpLimitBreachResponseSimulation, consent);
             simulateLimitBreachResponse(periodicLimits);
@@ -56,7 +58,7 @@ public class PeriodicLimitBreachResponseSimulator {
         }
     }
 
-    private static OBDomesticVRPControlParametersPeriodicLimits findPeriodicLimitsForHeader(String xVrpLimitBreachResponseSimulation,
+    private OBDomesticVRPControlParametersPeriodicLimits findPeriodicLimitsForHeader(String xVrpLimitBreachResponseSimulation,
                                                                                             OBDomesticVRPConsentResponse consent) throws OBErrorException {
         final List<OBDomesticVRPControlParametersPeriodicLimits> periodicLimits = consent.getData().getControlParameters().getPeriodicLimits();
         if (periodicLimits != null) {
@@ -74,7 +76,7 @@ public class PeriodicLimitBreachResponseSimulator {
                 xVrpLimitBreachResponseSimulation);
     }
 
-    private static void simulateLimitBreachResponse(OBDomesticVRPControlParametersPeriodicLimits periodicLimits) throws OBErrorException {
+    private void simulateLimitBreachResponse(OBDomesticVRPControlParametersPeriodicLimits periodicLimits) throws OBErrorException {
         throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_PAYMENT_PERIODIC_LIMIT_BREACH,
                 periodicLimits.getAmount(), periodicLimits.getCurrency(),
                 periodicLimits.getPeriodType(), periodicLimits.getPeriodAlignment());

@@ -30,11 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Unit tests for {@link PeriodicLimitBreachResponseSimulator}
+ * Unit tests for {@link PeriodicLimitBreachResponseSimulatorService}
  */
-public class PeriodicLimitBreachResponseSimulatorTest {
+public class PeriodicLimitBreachResponseSimulatorServiceTest {
 
-    private final PeriodicLimitBreachResponseSimulator limitBreachSimulator = new PeriodicLimitBreachResponseSimulator();
+    private final PeriodicLimitBreachResponseSimulatorService limitBreachSimulator = new PeriodicLimitBreachResponseSimulatorService();
 
     @Test
     public void testSimulateLimitBreach() {
