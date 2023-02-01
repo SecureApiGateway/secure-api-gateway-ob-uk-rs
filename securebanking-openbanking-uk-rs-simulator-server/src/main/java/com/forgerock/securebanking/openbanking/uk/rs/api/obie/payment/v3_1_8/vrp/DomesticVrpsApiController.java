@@ -175,7 +175,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         log.debug("Deserialized consent from IDM");
 
         if (xVrpLimitBreachResponseSimulation != null) {
-            log.warn("Executing Limit breach simulation, value of header: {}", xVrpLimitBreachResponseSimulation);
+            log.info("Executing Limit breach simulation, value of header: {}", xVrpLimitBreachResponseSimulation);
             PeriodicLimitBreachResponseSimulator.processRequest(xVrpLimitBreachResponseSimulation, consent);
         }
 
