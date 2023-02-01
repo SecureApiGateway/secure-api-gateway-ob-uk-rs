@@ -73,7 +73,7 @@ public class FRResponseDataRefundFactory {
 
     /**
      * Creates a {@link FRInternationalResponseDataRefund}, so long as the provided {@link FRReadRefundAccount} is
-     * set to 'Yes' and the initiation's debit account is null. Otherwise returns an empty {@link Optional}.
+     * set to 'Yes' and the initiation's debit account is null. Otherwise, returns an empty {@link Optional}.
      *
      * @param frReadRefundAccount The {@link FRReadRefundAccount} indicating if a refund should be issued.
      * @param initiation          {@link FRDomesticDataInitiation} The payment's initiation data.

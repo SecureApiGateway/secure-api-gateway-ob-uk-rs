@@ -50,7 +50,7 @@
     </parent>
 
     <properties>
-        <uk.bom.version>1.1.8-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>1.1.9-SNAPSHOT</uk.bom.version>
         <common.cors.version>1.0.1-SNAPSHOT</common.cors.version>
     </properties>
 
