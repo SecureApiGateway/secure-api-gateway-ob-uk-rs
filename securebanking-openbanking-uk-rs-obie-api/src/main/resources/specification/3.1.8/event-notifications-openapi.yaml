@@ -38,7 +38,7 @@ components:
     x-fapi-financial-id-Param:
       in: "header"
       name: "x-fapi-financial-id"
-      required: true
+      required: false
       description: "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB."
       schema:
         type: "string"
