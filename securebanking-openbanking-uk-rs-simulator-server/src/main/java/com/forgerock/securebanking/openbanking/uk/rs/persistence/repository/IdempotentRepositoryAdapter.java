@@ -15,13 +15,17 @@
  */
 package com.forgerock.securebanking.openbanking.uk.rs.persistence.repository;
 
+import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorResponseException;
+import com.forgerock.securebanking.openbanking.uk.rs.api.backoffice.payment.calculation.*;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.PaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.PaymentSubmissionRepository;
 import com.forgerock.securebanking.openbanking.uk.rs.validator.IdempotencyValidator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
+
+import static com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
 
 /**
  * This class allows reuse of idempotent save logic for payment submissions.
@@ -45,8 +49,11 @@ public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
     }
 
     public T idempotentSave(T paymentSubmission) throws OBErrorResponseException {
+
+        IntentType intentType = IntentType.identify(paymentSubmission.getConsentId());
+
         Optional<T> isPaymentSubmission = repository.findByConsentId(paymentSubmission.getConsentId());
-        if (isPaymentSubmission.isPresent()) {
+        if (isPaymentSubmission.isPresent() && (intentType == null || !intentType.equals(DOMESTIC_VRP_PAYMENT_CONSENT))) {
             log.info("A payment with this consent id '{}' was already found. Checking idempotency key.", isPaymentSubmission.get().getConsentId());
             IdempotencyValidator.validateIdempotencyRequest(paymentSubmission, isPaymentSubmission.get());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");

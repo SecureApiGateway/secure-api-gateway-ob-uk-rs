@@ -44,6 +44,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
@@ -59,10 +60,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     protected static final String DEFAULT_CHARGE_AMOUNT = "1.00";
     protected static final String DEFAULT_CHARGE_CURRENCY = "GBP";
-
-    private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
-
     public final DomesticVrpValidationService domesticVrpValidationService;
+    private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
     private final ConsentService consentService;
     private final PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService;
 
@@ -89,13 +88,15 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
+        log.debug("Searching for VRP payment by id '{}'", domesticVRPId);
         Optional<FRDomesticVrpPaymentSubmission> optionalVrpPayment = paymentSubmissionRepository.findById(domesticVRPId);
+
         if (!optionalVrpPayment.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
                     "can't be found");
         }
-        log.debug("Found VRP payment '{}'", domesticVRPId);
+        log.debug("Found VRP payment '{}'", optionalVrpPayment);
         return ResponseEntity.ok(responseEntity(optionalVrpPayment.get(), frReadRefundAccount(xReadRefundAccount)));
     }
 
@@ -190,8 +191,9 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         log.debug("VRP validation successful! Creating the payment.");
 
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()
-                .id(frDomesticVRPRequest.data.consentId)
+                .id(UUID.randomUUID().toString())
                 .transactionId(UUID.randomUUID().toString())
+                .consentId(frDomesticVRPRequest.data.consentId)
                 .payment(frDomesticVRPRequest)
                 .status(toFRSubmissionStatus(OBDomesticVRPResponseData.StatusEnum.PENDING))
                 .created(new DateTime())
@@ -227,7 +229,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         OBDomesticVRPResponse response = new OBDomesticVRPResponse()
                 .data(
                         new OBDomesticVRPResponseData()
-                                .consentId(paymentSubmission.getId())
+                                .consentId(paymentSubmission.getConsentId())
                                 .domesticVRPId(paymentSubmission.getId())
                                 .status(toOBDomesticVRPResponseDataStatusEnum(paymentSubmission.getStatus()))
                                 .creationDateTime(paymentSubmission.getCreated())

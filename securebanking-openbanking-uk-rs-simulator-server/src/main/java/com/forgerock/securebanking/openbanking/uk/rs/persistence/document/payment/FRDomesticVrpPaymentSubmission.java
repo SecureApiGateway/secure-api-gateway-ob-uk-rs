@@ -49,6 +49,9 @@ public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
 
     private String transactionId;
 
+    @Indexed
+    private String consentId;
+
     private OBVersion obVersion;
 
     @Override
