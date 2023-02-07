@@ -66,9 +66,6 @@ public interface FundsConfirmationsApi {
             @ApiParam(value = "The ID of the account to check if funds are available.", required = true)
             @RequestHeader("x-account-id") String accountId,
 
-            //@ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            //@RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -112,9 +109,6 @@ public interface FundsConfirmationsApi {
     ResponseEntity<OBFundsConfirmationResponse1> getFundsConfirmationId(
             @ApiParam(value = "FundsConfirmationId", required = true)
             @PathVariable("FundsConfirmationId") String fundsConfirmationId,
-
-            //@ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            //@RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,

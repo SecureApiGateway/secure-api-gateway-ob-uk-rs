@@ -47,7 +47,6 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
             String amount,
             String version,
             String authorization,
-            //String xFapiFinancialId,
             String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,

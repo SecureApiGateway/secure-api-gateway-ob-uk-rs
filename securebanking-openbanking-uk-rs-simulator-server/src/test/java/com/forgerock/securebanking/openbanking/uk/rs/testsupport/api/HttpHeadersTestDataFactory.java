@@ -131,7 +131,7 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        //headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
+        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-account-id", accountId);
         headers.add("x-ob-url", resourceUrl);

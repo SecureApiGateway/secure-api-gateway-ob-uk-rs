@@ -51,7 +51,6 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
         return previousVersionController.createFundsConfirmation(
                 obFundsConfirmation1,
                 accountId,
-                //DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
@@ -74,7 +73,6 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     ) {
         return previousVersionController.getFundsConfirmationId(
                 fundsConfirmationId,
-                //DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
