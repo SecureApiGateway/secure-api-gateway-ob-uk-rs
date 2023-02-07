@@ -56,7 +56,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     public ResponseEntity createFundsConfirmation(
             @Valid OBFundsConfirmation1 obFundsConfirmation1,
             String accountId,
-            String xFapiFinancialId, String authorization,
+            String authorization,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
@@ -92,7 +92,6 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     @Override
     public ResponseEntity getFundsConfirmationId(
             String fundsConfirmationId,
-            String xFapiFinancialId,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
