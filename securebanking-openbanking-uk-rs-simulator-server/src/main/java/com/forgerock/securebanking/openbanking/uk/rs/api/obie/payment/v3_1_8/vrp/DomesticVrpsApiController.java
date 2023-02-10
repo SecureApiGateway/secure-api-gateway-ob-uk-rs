@@ -28,6 +28,7 @@ import com.forgerock.securebanking.openbanking.uk.rs.common.util.VersionPathExtr
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.IdempotentRepositoryAdapter;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
+import com.forgerock.securebanking.openbanking.uk.rs.validator.PaymentSubmissionValidator;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -64,16 +65,21 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final DomesticVrpValidationService domesticVrpValidationService;
     private final ConsentService consentService;
     private final PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService;
+
+    private final PaymentSubmissionValidator paymentSubmissionValidator;
+
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
             DomesticVrpValidationService domesticVrpValidationService,
             ConsentService consentService,
-            PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService
+            PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
+            PaymentSubmissionValidator paymentSubmissionValidator
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.domesticVrpValidationService = domesticVrpValidationService;
         this.consentService = consentService;
         this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
+        this.paymentSubmissionValidator = paymentSubmissionValidator;
     }
 
     @Override
@@ -147,6 +153,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     @Override
     public ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
             String authorization,
+            String xIdempotencyKey,
             String xJwsSignature,
             OBDomesticVRPRequest obDomesticVRPRequest,
             String xFapiAuthDate,
@@ -159,6 +166,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             Principal principal
     ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received VRP payment submission: '{}'", obDomesticVRPRequest);
+
+        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obDomesticVRPRequest.getRisk());
 
         String consentId = obDomesticVRPRequest.getData().getConsentId();
         //get the consent
@@ -192,6 +201,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()
                 .id(frDomesticVRPRequest.data.consentId)
                 .payment(frDomesticVRPRequest)
+                .idempotencyKey(xIdempotencyKey)
                 .status(toFRSubmissionStatus(OBDomesticVRPResponseData.StatusEnum.PENDING))
                 .created(new DateTime())
                 .updated(new DateTime())
