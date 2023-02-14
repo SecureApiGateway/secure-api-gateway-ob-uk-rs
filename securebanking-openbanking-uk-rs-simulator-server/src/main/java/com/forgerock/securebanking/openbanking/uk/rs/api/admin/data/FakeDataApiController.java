@@ -117,6 +117,7 @@ public class FakeDataApiController implements FakeDataApi {
     private ObjectMapper mapper;
     @Autowired
     private DataConfigurationProperties dataConfig;
+
     private final Map<String, List<TestAccountId>> userAccountIds;
 
     private List<String> companies;
@@ -277,8 +278,10 @@ public class FakeDataApiController implements FakeDataApi {
         // Allow the AccountIds to be sourced from configuration, default to a randomly generated numbers
         final List<TestAccountId> accountIds = userAccountIds.get(username);
         if (accountIds == null) {
+            LOGGER.debug("Using random accountId supplier for user: {}", username);
             return this::generateRandomAccountNumber;
         } else {
+            LOGGER.debug("Using config driven accountId supplier for user: {}", username);
             final AtomicInteger accountIdsIndex = new AtomicInteger(0);
             return () -> {
                 final int index = accountIdsIndex.getAndIncrement();

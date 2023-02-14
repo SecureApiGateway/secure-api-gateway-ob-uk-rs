@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "testdata")
 public class TestUserAccountIds {
+
     private Map<String, List<TestAccountId>> userAccountIds;
 
     public void setUserAccountIds(Map<String, List<TestAccountId>> userAccountIds) {
