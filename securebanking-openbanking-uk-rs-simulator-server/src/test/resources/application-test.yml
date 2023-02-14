@@ -49,3 +49,13 @@ swagger:
   contact-url: https://www.forgerock.com/
   docket-apis-basePackage: com.forgerock.securebanking.openbanking.uk.rs.api.obie
   docket-paths-selector-regex: /open-banking/v(\d+.)?(\d+.)?(\*|\d+)
+
+testdata:
+  userAccountIds:
+    psu4test:
+        - sortCode: "012332"
+          accountNumber: "43245676"
+        - sortCode: "012332"
+          accountNumber: "54312390"
+        - sortCode: "334412"
+          accountNumber: "30187862"

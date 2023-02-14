@@ -22,6 +22,8 @@ import com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.com
 import com.forgerock.securebanking.openbanking.uk.error.OBErrorException;
 import com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.dto.FRUserData;
 import com.forgerock.securebanking.openbanking.uk.rs.configuration.DataConfigurationProperties;
+import com.forgerock.securebanking.openbanking.uk.rs.configuration.TestUserAccountIds;
+import com.forgerock.securebanking.openbanking.uk.rs.configuration.TestUserAccountIds.TestAccountId;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.FRAccount;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.document.account.*;
 import com.forgerock.securebanking.openbanking.uk.rs.persistence.repository.accounts.accounts.FRAccountRepository;
@@ -64,6 +66,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import static com.forgerock.securebanking.common.openbanking.uk.forgerock.datamodel.account.FRFinancialAccount.*;
 import static com.forgerock.securebanking.openbanking.uk.error.OBRIErrorType.DATA_INVALID_REQUEST;
@@ -114,12 +118,21 @@ public class FakeDataApiController implements FakeDataApi {
     @Autowired
     private DataConfigurationProperties dataConfig;
 
+    private final Map<String, List<TestAccountId>> userAccountIds;
+
     private List<String> companies;
     private List<String> names;
 
-    public FakeDataApiController() throws IOException {
+    public FakeDataApiController(TestUserAccountIds testUserAccountIds) throws IOException {
         companies = loadCSV(new ClassPathResource(COMPANIES_CSV));
         names = loadCSV(new ClassPathResource(NAMES_CSV));
+        if (testUserAccountIds == null || testUserAccountIds.getUserAccountIds() == null) {
+            // This config is optional
+            this.userAccountIds = Map.of();
+        } else {
+            this.userAccountIds = testUserAccountIds.getUserAccountIds();
+        }
+
     }
 
     @Override
@@ -154,17 +167,15 @@ public class FakeDataApiController implements FakeDataApi {
         }
     }
 
-    private FRUserData generateRandomData(String userId, String username)
-     {
+    private FRUserData generateRandomData(String userId, String username) {
         LOGGER.debug("Generate data for user '{}'", userId);
 
-        if (accountsRepository.findByUserID(userId).size() > 0 ) {
+        if (accountsRepository.findByUserID(userId).size() > 0) {
             LOGGER.debug("User {} already have some data", userId);
         }
-        {
-            Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
-            Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
 
+        final Supplier<String> accountIdSupplier = createAccountIdSupplier(username);
+        {
             String accountId = UUID.randomUUID().toString();
             FRAccount accountPremierBank = new FRAccount();
             accountPremierBank.setCreated(new DateTime());
@@ -182,7 +193,7 @@ public class FakeDataApiController implements FakeDataApi {
                     .maturityDate(DateTime.now().plusDays(1))
                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
-                            .identification(sortCode.toString() + accountNumber.toString())
+                            .identification(accountIdSupplier.get())
                             .name(username)
                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
                             .build()))
@@ -196,45 +207,39 @@ public class FakeDataApiController implements FakeDataApi {
             generateOfferLimitIncrease(accountPremierBank);
             generateOfferBalanceTransfer(accountPremierBank);
         }
-         {
-             Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
-             Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
-
-             String accountId = UUID.randomUUID().toString();
-             FRAccount accountPremierBank = new FRAccount();
-             accountPremierBank.setId(accountId);
-             accountPremierBank.setCreated(new DateTime());
-             accountPremierBank.setUserID(userId);
-             accountPremierBank.setAccount(builder()
-                     .accountId(accountId)
-                     .accountType(FRAccountTypeCode.PERSONAL)
-                     .accountSubType(FRAccountSubTypeCode.CURRENTACCOUNT)
-                     .currency(EUR)
-                     .nickname("FR Bills")
-                     .status(FRAccountStatusCode.ENABLED)
-                     .statusUpdateDateTime(DateTime.now())
-                     .openingDate(DateTime.now().minusDays(1))
-                     .maturityDate(DateTime.now().plusDays(1))
-                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
-                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
-                             .identification(sortCode.toString() + accountNumber.toString())
-                             .name(username)
-                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
-                             .build()))
-                     .build()
-             );
-
-             LOGGER.debug("Account '{}' generated for user '{}'", accountPremierBank, userId);
-             accountsRepository.save(accountPremierBank);
-             generateAccountData(accountPremierBank);
-             generateParty(accountPremierBank, username);
-             generateOfferLimitIncrease(accountPremierBank);
-             generateOfferBalanceTransfer(accountPremierBank);
-         }
         {
-            Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
-            Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
+            String accountId = UUID.randomUUID().toString();
+            FRAccount accountPremierBank = new FRAccount();
+            accountPremierBank.setId(accountId);
+            accountPremierBank.setCreated(new DateTime());
+            accountPremierBank.setUserID(userId);
+            accountPremierBank.setAccount(builder()
+                    .accountId(accountId)
+                    .accountType(FRAccountTypeCode.PERSONAL)
+                    .accountSubType(FRAccountSubTypeCode.CURRENTACCOUNT)
+                    .currency(EUR)
+                    .nickname("FR Bills")
+                    .status(FRAccountStatusCode.ENABLED)
+                    .statusUpdateDateTime(DateTime.now())
+                    .openingDate(DateTime.now().minusDays(1))
+                    .maturityDate(DateTime.now().plusDays(1))
+                    .accounts(Collections.singletonList(FRAccountIdentifier.builder()
+                            .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
+                            .identification(accountIdSupplier.get())
+                            .name(username)
+                            .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
+                            .build()))
+                    .build()
+            );
 
+            LOGGER.debug("Account '{}' generated for user '{}'", accountPremierBank, userId);
+            accountsRepository.save(accountPremierBank);
+            generateAccountData(accountPremierBank);
+            generateParty(accountPremierBank, username);
+            generateOfferLimitIncrease(accountPremierBank);
+            generateOfferBalanceTransfer(accountPremierBank);
+        }
+        {
             String accountId = UUID.randomUUID().toString();
             FRAccount accountPremierCard = new FRAccount();
             accountPremierCard.setCreated(new DateTime());
@@ -252,7 +257,7 @@ public class FakeDataApiController implements FakeDataApi {
                     .maturityDate(DateTime.now().plusDays(1))
                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
-                            .identification(sortCode.toString() + accountNumber.toString())
+                            .identification(accountIdSupplier.get())
                             .name(username)
                             .build()))
                     .build()
@@ -267,7 +272,37 @@ public class FakeDataApiController implements FakeDataApi {
         generateGlobalParty(userId, username);
 
         return dataController.exportUserData(userId).getBody();
-     }
+    }
+
+    Supplier<String> createAccountIdSupplier(String username) {
+        // Allow the AccountIds to be sourced from configuration, default to a randomly generated numbers
+        final List<TestAccountId> accountIds = userAccountIds.get(username);
+        if (accountIds == null) {
+            LOGGER.debug("Using random accountId supplier for user: {}", username);
+            return this::generateRandomAccountNumber;
+        } else {
+            LOGGER.debug("Using config driven accountId supplier for user: {}", username);
+            final AtomicInteger accountIdsIndex = new AtomicInteger(0);
+            return () -> {
+                final int index = accountIdsIndex.getAndIncrement();
+                if (index < accountIds.size()) {
+                    final TestAccountId accountId = accountIds.get(index);
+                    return accountId.getSortCode() + accountId.getAccountNumber();
+                } else {
+                    return generateRandomAccountNumber();
+                }
+            };
+        }
+    }
+
+    private String generateRandomAccountNumber() {
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
+        // 6-digit sort code
+        final int sortCode = random.nextInt(100000, 999999);
+        // 8-digit account number
+        final int accountNumber = ThreadLocalRandom.current().nextInt(10000000, 99999999);
+        return new StringBuilder().append(sortCode).append(accountNumber).toString();
+    }
 
     private void generateAccountData(FRAccount account) {
         FRBalance balance = generateBalance(account, FRCreditDebitIndicator.DEBIT, null);
