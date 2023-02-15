@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.rs.platform.client.services;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
-import com.forgerock.securebanking.rs.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.rs.platform.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ExceptionClient;
 import com.forgerock.securebanking.rs.platform.client.model.ClientRequest;
@@ -55,7 +55,7 @@ public class PlatformClientServiceTest {
     private CloudPlatformClientService consentService;
 
     @Mock
-    protected ConfigurationPropertiesClient configurationPropertiesClient;
+    protected ConsentRepoConfiguration configurationPropertiesClient;
 
     @Mock
     protected RestTemplate restTemplate;

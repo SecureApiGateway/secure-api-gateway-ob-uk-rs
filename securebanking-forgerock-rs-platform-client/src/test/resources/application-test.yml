@@ -1,10 +1,10 @@
-identity-platform:
+consent-repo:
   client:
-    ig_fqdn: ${IG_FQDN:https://obdemo.dev.forgerock.financial}
-    identity_platform_fqdn: ${IDENTITY_PLATFORM_FQDN:https://iam.dev.forgerock.financial}
+    scheme: http
+    host: ${CONSENT_REPO_HOST:ig}
+    port: 80
     contexts_repo_consent:
       get: /repo/consents/@IntentId@
       put: /repo/consents/@IntentId@
       patch: /repo/consents/@IntentId@
       delete: /repo/consents/@IntentId@
-    scheme: https
