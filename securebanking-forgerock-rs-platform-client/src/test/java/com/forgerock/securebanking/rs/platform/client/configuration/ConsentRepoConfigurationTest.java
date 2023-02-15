@@ -27,22 +27,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for {@link ConfigurationPropertiesClient}
+ * Unit test for {@link ConsentRepoConfiguration}
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ConfigurationPropertiesClient.class}, initializers = ConfigFileApplicationContextInitializer.class)
-@EnableConfigurationProperties(value = ConfigurationPropertiesClient.class)
+@ContextConfiguration(classes = {ConsentRepoConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
+@EnableConfigurationProperties(value = ConsentRepoConfiguration.class)
 @ActiveProfiles("test")
-public class ConfigurationPropertiesClientTest {
+public class ConsentRepoConfigurationTest {
 
     @Autowired
-    private ConfigurationPropertiesClient configurationPropertiesClient;
+    private ConsentRepoConfiguration consentRepoConfiguration;
 
     @Test
-    public void shouldHaveAllProperties(){
-        assertThat(configurationPropertiesClient.getIgFqdn()).isNotNull();
-        assertThat(configurationPropertiesClient.getIdentityPlatformFqdn()).isNotNull();
-        assertThat(configurationPropertiesClient.getScheme()).isNotNull();
-        assertThat(configurationPropertiesClient.getContextsRepoConsent()).isNotEmpty();
+    public void shouldConfigureIgBaseUri(){
+        assertThat(consentRepoConfiguration.getConsentRepoBaseUri()).isEqualTo("http://ig:80");
     }
 }
