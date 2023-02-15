@@ -203,7 +203,6 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .transactionId(UUID.randomUUID().toString())
                 .idempotencyKey(xIdempotencyKey)
                 .consentId(frDomesticVRPRequest.data.consentId)
-                .idempotencyKey(xIdempotencyKey)
                 .payment(frDomesticVRPRequest)
                 .status(toFRSubmissionStatus(OBDomesticVRPResponseData.StatusEnum.PENDING))
                 .created(new DateTime())
