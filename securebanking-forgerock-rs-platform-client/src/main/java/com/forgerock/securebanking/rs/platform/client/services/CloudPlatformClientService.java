@@ -16,7 +16,7 @@
 package com.forgerock.securebanking.rs.platform.client.services;
 
 import com.forgerock.securebanking.openbanking.uk.common.api.meta.share.IntentType;
-import com.forgerock.securebanking.rs.platform.client.configuration.ConfigurationPropertiesClient;
+import com.forgerock.securebanking.rs.platform.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ErrorClient;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ErrorType;
 import com.forgerock.securebanking.rs.platform.client.exceptions.ExceptionClient;
@@ -46,9 +46,9 @@ class CloudPlatformClientService implements PlatformClient {
 
     private static final String IDM_RESPOND_OB_INTENT_OBJECT_FIELD = "OBIntentObject";
     private final RestTemplate restTemplate;
-    private final ConfigurationPropertiesClient configurationProperties;
+    private final ConsentRepoConfiguration configurationProperties;
 
-    public CloudPlatformClientService(RestTemplate restTemplate, ConfigurationPropertiesClient configurationProperties) {
+    public CloudPlatformClientService(RestTemplate restTemplate, ConsentRepoConfiguration configurationProperties) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
     }
@@ -99,7 +99,7 @@ class CloudPlatformClientService implements PlatformClient {
                     errorMessage
             );
         }
-        consentURL = configurationProperties.getIgFqdnURIAsString() +
+        consentURL = configurationProperties.getConsentRepoBaseUri() +
                 UrlContext.replaceParameterContextIntentId(
                         configurationProperties.getContextsRepoConsent().get(httpMethod.name()),
                         intentId
