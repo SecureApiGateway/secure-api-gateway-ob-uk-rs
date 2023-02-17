@@ -1,27 +1,79 @@
-#Spring config
-spring:
-  cloud:
-    config:
-      uri: http://securebanking-config-server:8888
-      failFast: true
-      retry:
-        max-attempts: 10
-        initial-interval: 1000
-        multiplier: 1.5
-  application:
-    name: securebanking-openbanking-uk-rs
-  profiles:
-    active: NOT_SET
+#
+# Copyright © 2020 ForgeRock AS (obst@forgerock.com)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, info, prometheus
-        
-#Swagger
-springfox:
-  documentation:
-    swagger:
-      v2:
-        path: /api-docs
+# Configuration properties entries for common libraries
+common: # root key for all common 'securebanking-common-${library-name}' libraries
+  cors: # library name
+    #allowed_origins: # CORS list allowed domains, to check if the origin header domain ends with any allowed origin.
+    #- "*" # allow all origins
+    #- localhost
+    #- forgerock.financial # valid for *.forgerock.financial
+    allowed_headers: accept-api-version, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, Id-Token # CORS allowed headers
+    allowed_methods: GET, PUT, POST, DELETE, OPTIONS, PATCH # Allowed methods for preflight request
+    allowed_credentials: true # Credentials accepted, default value true
+    max_age: 3600 # Expiration time of preflight request, default value 3600
+
+logging:
+  level:
+    com.forgerock: DEBUG
+
+consent-repo:
+  client:
+    scheme: http
+    host: ${CONSENT_REPO_HOST:ig}
+    port: 80
+    contexts_repo_consent:
+      get: /repo/consents/@IntentId@
+      put: /repo/consents/@IntentId@
+      patch: /repo/consents/@IntentId@
+      delete: /repo/consents/@IntentId@
+
+# Spring data Mongo config
+spring:
+  data:
+    mongodb:
+      database: mongo
+
+# RS config
+rs:
+  # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
+  data:
+    upload:
+      limit:
+        accounts: 100
+        documents: 1000
+
+# Swagger Documentation Specification properties
+swagger:
+  title: Secure Banking Access Toolkit
+  description: Swagger for Read/Write Open Banking API Specification (UK) (https://openbankinguk.github.io/read-write-api-site3)
+  license: open-licence
+  license-url: https://www.openbanking.org.uk/open-licence
+  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
+  contact-name: ForgeRock RS Simulator
+  contact-url: https://www.forgerock.com/
+  docket-apis-basePackage: com.forgerock.securebanking.openbanking.uk.rs.api.obie
+  docket-paths-selector-regex: /open-banking/v(\d+.)?(\d+.)?(\*|\d+)
+
+testdata:
+  userAccountIds:
+    psu4test:
+      - sortCode: "012332"
+        accountNumber: "43245676"
+      - sortCode: "012332"
+        accountNumber: "54312390"
+      - sortCode: "334412"
+        accountNumber: "30187862"
