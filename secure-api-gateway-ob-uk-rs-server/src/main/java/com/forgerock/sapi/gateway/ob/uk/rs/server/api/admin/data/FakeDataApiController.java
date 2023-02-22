@@ -176,8 +176,10 @@ public class FakeDataApiController implements FakeDataApi {
 
         final Supplier<String> accountIdSupplier = createAccountIdSupplier(username);
         {
-            String accountId = UUID.randomUUID().toString();
+
+            String accountId = accountIdSupplier.get();
             com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount();
+
             accountPremierBank.setCreated(new DateTime());
             accountPremierBank.setId(accountId);
             accountPremierBank.setUserID(userId);
@@ -193,7 +195,7 @@ public class FakeDataApiController implements FakeDataApi {
                     .maturityDate(DateTime.now().plusDays(1))
                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
-                            .identification(accountIdSupplier.get())
+                            .identification(accountId)
                             .name(username)
                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
                             .build()))
@@ -208,7 +210,8 @@ public class FakeDataApiController implements FakeDataApi {
             generateOfferBalanceTransfer(accountPremierBank);
         }
         {
-            String accountId = UUID.randomUUID().toString();
+
+            String accountId = accountIdSupplier.get();
             com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount();
             accountPremierBank.setId(accountId);
             accountPremierBank.setCreated(new DateTime());
@@ -225,7 +228,7 @@ public class FakeDataApiController implements FakeDataApi {
                     .maturityDate(DateTime.now().plusDays(1))
                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
-                            .identification(accountIdSupplier.get())
+                            .identification(accountId)
                             .name(username)
                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
                             .build()))
@@ -240,8 +243,10 @@ public class FakeDataApiController implements FakeDataApi {
             generateOfferBalanceTransfer(accountPremierBank);
         }
         {
-            String accountId = UUID.randomUUID().toString();
+
+            String accountId = accountIdSupplier.get();
             com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount accountPremierCard = new com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount();
+
             accountPremierCard.setCreated(new DateTime());
             accountPremierCard.setId(accountId);
             accountPremierCard.setUserID(userId);
@@ -257,7 +262,7 @@ public class FakeDataApiController implements FakeDataApi {
                     .maturityDate(DateTime.now().plusDays(1))
                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
-                            .identification(accountIdSupplier.get())
+                            .identification(accountId)
                             .name(username)
                             .build()))
                     .build()
