@@ -16,17 +16,18 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.forgerock.securebanking.uk</groupId>
-    <artifactId>securebanking-openbanking-uk-rs</artifactId>
-    <version>1.1.5-SNAPSHOT</version>
+    <groupId>com.forgerock.sapi.gateway</groupId>
+    <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>securebanking-openbanking-uk-rs</name>
-    <description>A UK Open Banking Resource Server for the Secure Banking Accelerator Toolkit</description>
+    <name>secure-api-gateway-ob-uk-rs</name>
+    <description>A UK Open Banking Resource Server for the Secure API Gateway</description>
     <url>
-        https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git
+        https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rs.git
     </url>
 
     <organization>
@@ -35,49 +36,49 @@
     </organization>
 
     <modules>
-        <module>securebanking-openbanking-uk-rs-admin-api</module>
-        <module>securebanking-openbanking-uk-rs-backoffice-api</module>
-        <module>securebanking-openbanking-uk-rs-obie-api</module>
-        <module>securebanking-openbanking-uk-rs-simulator-server</module>
-        <module>securebanking-openbanking-uk-rs-simulator-sample</module>
-        <module>securebanking-forgerock-rs-platform-client</module>
+        <module>secure-api-gateway-ob-uk-rs-admin-api</module>
+        <module>secure-api-gateway-ob-uk-rs-backoffice-api</module>
+        <module>secure-api-gateway-ob-uk-rs-obie-api</module>
+        <module>secure-api-gateway-ob-uk-rs-server</module>
+        <module>secure-api-gateway-ob-uk-rs-sample</module>
+        <module>secure-api-gateway-ob-uk-rs-cloud-client</module>
     </modules>
 
     <parent>
-        <groupId>com.forgerock.securebanking</groupId>
-        <artifactId>securebanking-parent</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
+        <groupId>com.forgerock.sapi.gateway</groupId>
+        <artifactId>secure-api-gateway-parent</artifactId>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <uk.bom.version>1.1.9-SNAPSHOT</uk.bom.version>
-        <common.cors.version>1.0.1-SNAPSHOT</common.cors.version>
+        <uk.bom.version>0.9.0-SNAPSHOT</uk.bom.version>
+        <common.cors.version>0.9.0-SNAPSHOT</common.cors.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <!-- ForgeRock BOM -->
             <dependency>
-                <groupId>com.forgerock.securebanking.uk</groupId>
-                <artifactId>securebanking-openbanking-uk-bom</artifactId>
+                <groupId>com.forgerock.sapi.gateway</groupId>
+                <artifactId>secure-api-gateway-ob-uk-common-bom</artifactId>
                 <version>${uk.bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.forgerock.securebanking.common</groupId>
-                <artifactId>securebanking-common-cors</artifactId>
+                <groupId>com.forgerock.sapi.gateway</groupId>
+                <artifactId>secure-api-gateway-common-cors</artifactId>
                 <version>${common.cors.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <scm>
-        <connection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git
+        <connection>scm:git:git@github.com:SecureApiGateway/secure-api-gateway-ob-uk-rs.git
         </connection>
-        <developerConnection>scm:git:git@github.com:SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git
+        <developerConnection>scm:git:git@github.com:SecureApiGateway/secure-api-gateway-ob-uk-rs.git
         </developerConnection>
-        <url>https://github.com/SecureBankingAccessToolkit/securebanking-openbanking-uk-rs.git</url>
+        <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rs.git</url>
         <tag>HEAD</tag>
     </scm>
 
