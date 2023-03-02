@@ -40,7 +40,6 @@
         <module>secure-api-gateway-ob-uk-rs-backoffice-api</module>
         <module>secure-api-gateway-ob-uk-rs-obie-api</module>
         <module>secure-api-gateway-ob-uk-rs-server</module>
-        <module>secure-api-gateway-ob-uk-rs-sample</module>
         <module>secure-api-gateway-ob-uk-rs-cloud-client</module>
     </modules>
 

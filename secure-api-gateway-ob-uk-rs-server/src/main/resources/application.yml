@@ -10,8 +10,6 @@ spring:
         multiplier: 1.5
   application:
     name: securebanking-openbanking-uk-rs
-  profiles:
-    active: NOT_SET
 
 management:
   endpoints:

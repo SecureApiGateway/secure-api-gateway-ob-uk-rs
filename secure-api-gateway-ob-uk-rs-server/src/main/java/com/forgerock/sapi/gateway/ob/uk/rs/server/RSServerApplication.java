@@ -17,13 +17,20 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+@ComponentScan(basePackages =
+        {
+                "com.forgerock.sapi.gateway.common.cors",
+                "com.forgerock.sapi.gateway.ob.uk.rs"
+        }
+)
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository")
-public class BankSimulatorApplication {
+public class RSServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BankSimulatorApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(RSServerApplication.class, args);
+    }
 }
