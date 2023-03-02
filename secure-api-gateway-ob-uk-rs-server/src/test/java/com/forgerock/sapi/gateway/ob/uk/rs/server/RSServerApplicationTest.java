@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.sample;
+package com.forgerock.sapi.gateway.ob.uk.rs.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,11 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * A simple Spring Boot test to ensure the {@link BankSimulatorApplication} starts up correctly.
+ * A simple Spring Boot test to ensure the {@link RSServerApplication} starts up correctly.
  */
 @SpringBootTest
 @ActiveProfiles("test")
-public class BankSimulatorApplicationTest {
+public class RSServerApplicationTest {
 
         @Autowired
         private ApplicationContext applicationContext;

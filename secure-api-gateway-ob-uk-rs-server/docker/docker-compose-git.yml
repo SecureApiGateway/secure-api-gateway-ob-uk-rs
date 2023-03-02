@@ -6,7 +6,7 @@ services:
     image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-spring-config-server
     environment:
       - SSH_KEY=${GIT_SSH_KEY}
-      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=git@github.com:SecureBankingAcceleratorToolkit/securebanking-openbanking-spring-config.git
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=git@github.com:SecureApiGateway/secure-api-gateway-ob-uk-spring-config.git
       - SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT-LABEL=master
     ports:
       - 8888:8888
