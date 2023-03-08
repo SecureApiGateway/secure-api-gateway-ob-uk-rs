@@ -25,7 +25,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResp
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternational;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalData;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_4.internationalpayments.InternationalPaymentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
@@ -37,14 +41,15 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.Idempot
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_4.internationalpayments.InternationalPaymentsApi;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +58,7 @@ import java.security.Principal;
 import java.util.*;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRRiskConverter.toOBRisk1;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalResponse4DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
@@ -66,15 +72,19 @@ public class InternationalPaymentsApiController implements InternationalPayments
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
     private final ConsentService consentService;
+    private final RiskValidationService riskValidationService;
 
     public InternationalPaymentsApiController(
             InternationalPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ConsentService consentService
+            ConsentService consentService,
+            RiskValidationService riskValidationService
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentService = consentService;
+        this.riskValidationService = riskValidationService;
+
     }
 
     @Override
@@ -95,8 +105,36 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternational3.getRisk());
 
+        String consentId = obWriteInternational3.getData().getConsentId();
+        //get the consent
+        JsonObject intent = consentService.getIDMIntent(authorization, consentId);
+        log.debug("Retrieved consent from IDM");
+
+        //deserialize the intent to ob response object
+        OBWriteInternationalConsentResponse5 consent = consentService.deserialize(
+                OBWriteInternationalConsentResponse5.class,
+                intent.getAsJsonObject("OBIntentObject"),
+                consentId
+        );
+        log.debug("Deserialized consent from IDM");
+
         FRWriteInternational frInternationalPayment = toFRWriteInternational(obWriteInternational3);
         log.trace("Converted to: '{}'", frInternationalPayment);
+
+        OBRisk1 consentRisk = consent.getRisk();
+        OBRisk1 requestRisk = toOBRisk1(frInternationalPayment.getRisk());
+
+        // validate the consent against the request
+        log.debug("Validating International Payment submission");
+        try {
+            riskValidationService.validate(consentRisk, requestRisk);
+        } catch (OBErrorException e) {
+            throw new OBErrorResponseException(
+                    e.getObriErrorType().getHttpStatus(),
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    e.getOBError());
+        }
+        log.debug("International Payment validation successful");
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
                 .id(obWriteInternational3.getData().getConsentId())
@@ -233,6 +271,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                 .contractIdentification(rateInformation.getContractIdentification())
                 .expirationDateTime(rateInformation.getExpirationDateTime());
     }
+
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalPaymentSubmission frInternationalPaymentSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
                 frInternationalPaymentSubmission.getStatus().getValue()
