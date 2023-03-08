@@ -15,9 +15,6 @@ deployment:
     tag: latest
     tagDelimiter: ":"
 
-  cors:
-    originEnds: localhost
-
   server:
     port: 8080
 

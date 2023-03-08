@@ -22,7 +22,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @ComponentScan(basePackages =
         {
-                "com.forgerock.sapi.gateway.common.cors",
                 "com.forgerock.sapi.gateway.ob.uk.rs"
         }
 )
