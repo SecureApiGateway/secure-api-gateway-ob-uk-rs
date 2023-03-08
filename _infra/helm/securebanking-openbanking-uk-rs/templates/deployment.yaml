@@ -54,8 +54,6 @@ spec:
             value: {{ .Values.mongodb.host }}
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
-          - name: EXPECTED_ORIGIN_ENDS
-            value: {{ .Values.deployment.cors.originEnds }}
           - name: CONSENT_REPO_HOST
             valueFrom:
               configMapKeyRef:
