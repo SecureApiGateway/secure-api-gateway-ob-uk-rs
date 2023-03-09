@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: rs-config
 data:
+  SPRING_APPLICATION_JSON: '{"logging":{"level":{"com.forgerock":"DEBUG","org.springframework.boot":"DEBUG"}}}'
   application.yml: |
     #Spring config
     spring:
