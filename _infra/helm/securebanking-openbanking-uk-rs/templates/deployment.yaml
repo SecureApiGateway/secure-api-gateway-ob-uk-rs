@@ -68,5 +68,13 @@ spec:
             value: "docker"
           - name: JAVA_OPTS
             value: {{ .Values.deployment.java.opts }}
+          volumeMounts:
+            - mountPath: /config
+              name: config-vol
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
+      volumes:
+        - name: config-vol
+          configMap:
+            name: rs-config
+
