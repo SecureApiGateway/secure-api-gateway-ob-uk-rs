@@ -1,15 +1,10 @@
 #Spring config
 spring:
-  cloud:
-    config:
-      uri: http://securebanking-config-server:8888
-      failFast: true
-      retry:
-        max-attempts: 10
-        initial-interval: 1000
-        multiplier: 1.5
   application:
     name: securebanking-openbanking-uk-rs
+  data:
+    mongodb:
+      database: mongo
 
 management:
   endpoints:
@@ -23,3 +18,49 @@ springfox:
     swagger:
       v2:
         path: /api-docs
+
+# Swagger Documentation Specification properties
+swagger:
+  title: Secure API Gateway Open Banking Resource Server
+  description: Swagger for Read/Write Open Banking API Specification (UK) (https://openbankinguk.github.io/read-write-api-site3)
+  license: open-licence
+  license-url: https://www.openbanking.org.uk/open-licence
+  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
+  contact-name: ForgeRock RS Simulator
+  contact-url: https://www.forgerock.com/
+  docket-apis-basePackage: com.forgerock.sapi.gateway.ob.uk.rs.obie.api
+  docket-paths-selector-regex: /open-banking/v(\d+.)?(\d+.)?(\*|\d+)
+
+logging:
+  level:
+    com.forgerock: DEBUG
+
+consent-repo:
+  client:
+    scheme: http
+    host: ${CONSENT_REPO_HOST:ig}
+    port: 80
+    contexts_repo_consent:
+      get: /repo/consents/@IntentId@
+      put: /repo/consents/@IntentId@
+      patch: /repo/consents/@IntentId@
+      delete: /repo/consents/@IntentId@
+
+# RS config
+rs:
+  # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
+  data:
+    upload:
+      limit:
+        accounts: 100
+        documents: 1000
+
+testdata:
+  userAccountIds:
+    psu4test:
+      - sortCode: "012332"
+        accountNumber: "43245676"
+      - sortCode: "012332"
+        accountNumber: "54312390"
+      - sortCode: "334412"
+        accountNumber: "30187862"

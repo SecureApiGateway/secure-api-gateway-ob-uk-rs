@@ -64,8 +64,6 @@ spec:
               configMapKeyRef:
                 name: securebanking-platform-config
                 key: IDENTITY_PLATFORM_FQDN
-          - name: SPRING_CLOUD_CONFIG_URI
-            value: "http://securebanking-spring-config-server:8080"
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
           - name: JAVA_OPTS
