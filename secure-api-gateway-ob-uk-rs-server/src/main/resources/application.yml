@@ -11,25 +11,6 @@ management:
     web:
       exposure:
         include: health, info, prometheus
-        
-#Swagger
-springfox:
-  documentation:
-    swagger:
-      v2:
-        path: /api-docs
-
-# Swagger Documentation Specification properties
-swagger:
-  title: Secure API Gateway Open Banking Resource Server
-  description: Swagger for Read/Write Open Banking API Specification (UK) (https://openbankinguk.github.io/read-write-api-site3)
-  license: open-licence
-  license-url: https://www.openbanking.org.uk/open-licence
-  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
-  contact-name: ForgeRock RS Simulator
-  contact-url: https://www.forgerock.com/
-  docket-apis-basePackage: com.forgerock.sapi.gateway.ob.uk.rs.obie.api
-  docket-paths-selector-regex: /open-banking/v(\d+.)?(\d+.)?(\*|\d+)
 
 logging:
   level:
@@ -38,7 +19,7 @@ logging:
 consent-repo:
   client:
     scheme: http
-    host: ${CONSENT_REPO_HOST:ig}
+    host: ${consent.repo.host}
     port: 80
     contexts_repo_consent:
       get: /repo/consents/@IntentId@

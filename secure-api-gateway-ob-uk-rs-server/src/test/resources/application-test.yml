@@ -1,50 +1,11 @@
-#Spring config
+# Spring config for "test" profile
+# This config extends/overrides config in the default profile (file: src/main/resources/application.yml)
 spring:
-  cloud:
-    config:
-      enabled: false
-
   data:
     mongodb:
       # force SpringBoot tests to use a random port for mongo
       port: 0
 
-#Swagger
-springfox:
-  documentation:
-    swagger:
-      v2:
-        path: /api-docs
-
 rs:
   discovery:
     financialId: 0015800001041REAAY
-
-  # Data creation limits (see com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.DataCreator)
-  data:
-    upload:
-      limit:
-        accounts: 100
-        documents: 1000
-
-# Swagger Documentation Specification properties
-swagger:
-  title: Secure Banking Access Toolkit
-  description: Swagger for Read/Write Open Banking API Specification (UK) (https://openbankinguk.github.io/read-write-api-site3)
-  license: open-licence
-  license-url: https://www.openbanking.org.uk/open-licence
-  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
-  contact-name: ForgeRock RS Simulator
-  contact-url: https://www.forgerock.com/
-  docket-apis-basePackage: com.forgerock.sapi.gateway.ob.uk.rs.obie.api
-  docket-paths-selector-regex: /open-banking/v(\d+.)?(\d+.)?(\*|\d+)
-
-testdata:
-  userAccountIds:
-    psu4test:
-        - sortCode: "012332"
-          accountNumber: "43245676"
-        - sortCode: "012332"
-          accountNumber: "54312390"
-        - sortCode: "334412"
-          accountNumber: "30187862"
