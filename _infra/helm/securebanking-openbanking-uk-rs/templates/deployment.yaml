@@ -58,7 +58,7 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: securebanking-platform-config
-                key: RCS_CONSENT_REPO_URI
+                key: CONSENT_REPO_URI
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
           - name: JAVA_OPTS
