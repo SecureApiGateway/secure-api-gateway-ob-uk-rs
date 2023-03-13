@@ -16,6 +16,8 @@ logging:
   level:
     com.forgerock: DEBUG
 
+# Configuration for calling the Consent Repository
+# See: com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration
 consent:
   repo:
     contexts_repo_consent:
@@ -42,3 +44,15 @@ testdata:
         accountNumber: "54312390"
       - sortCode: "334412"
         accountNumber: "30187862"
+
+#
+# Deployment Specific configuration
+# The following section contains the mandatory configuration that is deployment specific.
+#
+#
+# Consent Repo Configuration
+#consent:
+#  repo:
+#    # Connection string to the Consent Repo base URI
+#    uri:
+#

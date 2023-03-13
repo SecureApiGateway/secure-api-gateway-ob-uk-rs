@@ -19,8 +19,27 @@ From the command line, simply run:
 ```bash
 mvn clean install
 ```
+### Spring config
+This module is built using Spring Boot and makes use of Spring Properties driven configuration.
+
+`secure-api-gateway-ob-uk-rs-server` module contains the Spring configuration, see: [secure-api-gateway-ob-uk-rs-server/src/main/resources/application.yml](secure-api-gateway-ob-uk-rs-server/src/main/resources/application.yml).
 
 This will run any JUnit/Spring integration tests and build the required JAR file and docker image.
+
+#### Deployment Specific Config
+The Spring config contains sensible defaults for configuration properties, when there is no sensible default then the property is left undefined and the application will fail with an exception at startup.
+
+In this section we will discuss the config that is deployment specific, this config needs to be provided in order to run the application.
+
+
+| Property              | Description                                                                                                                                                                                                                                                                                                                                                                                                                            |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| consent.repo.uri      | Base URI of the Consent Repo API                                                                                                                                                                                                                                                                                                                                                                                                       |
+| spring.data.mongodb.* | <p>RS uses mongo as the datastore, configure the Spring Data MongoDB properties required to connect to your instance</p><p>See https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data documentation, there are lots of options available with the spring.data.mongodb prefix. By default Spring Data will attempt to connect to a local mongodb database.</p> | 
+
+
+
+The recommended way to supply these values is by using OS Environment Variables.
 
 ### How to run
 
