@@ -11,35 +11,15 @@ management:
     web:
       exposure:
         include: health, info, prometheus
-        
-#Swagger
-springfox:
-  documentation:
-    swagger:
-      v2:
-        path: /api-docs
-
-# Swagger Documentation Specification properties
-swagger:
-  title: Secure API Gateway Open Banking Resource Server
-  description: Swagger for Read/Write Open Banking API Specification (UK) (https://openbankinguk.github.io/read-write-api-site3)
-  license: open-licence
-  license-url: https://www.openbanking.org.uk/open-licence
-  terms-of-service-url: https://backstage.forgerock.com/knowledge/openbanking/article/a45894685
-  contact-name: ForgeRock RS Simulator
-  contact-url: https://www.forgerock.com/
-  docket-apis-basePackage: com.forgerock.sapi.gateway.ob.uk.rs.obie.api
-  docket-paths-selector-regex: /open-banking/v(\d+.)?(\d+.)?(\*|\d+)
 
 logging:
   level:
     com.forgerock: DEBUG
 
-consent-repo:
-  client:
-    scheme: http
-    host: ${CONSENT_REPO_HOST:ig}
-    port: 80
+# Configuration for calling the Consent Repository
+# See: com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration
+consent:
+  repo:
     contexts_repo_consent:
       get: /repo/consents/@IntentId@
       put: /repo/consents/@IntentId@
@@ -55,7 +35,10 @@ rs:
         accounts: 100
         documents: 1000
 
+# Configuration for testdata used by the Bank Simulator
 testdata:
+  # Configure Account Identifier for test users, if config is not provided for a particular user then randomised data is used
+  # See com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.TestUserAccountIds
   userAccountIds:
     psu4test:
       - sortCode: "012332"
@@ -64,3 +47,15 @@ testdata:
         accountNumber: "54312390"
       - sortCode: "334412"
         accountNumber: "30187862"
+
+#
+# Deployment Specific configuration
+# The following section contains the mandatory configuration that is deployment specific.
+#
+#
+# Consent Repo Configuration
+#consent:
+#  repo:
+#    # Connection string to the Consent Repo base URI
+#    uri:
+#
