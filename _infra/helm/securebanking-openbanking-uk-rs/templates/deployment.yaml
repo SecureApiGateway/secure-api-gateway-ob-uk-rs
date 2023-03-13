@@ -54,16 +54,11 @@ spec:
             value: {{ .Values.mongodb.host }}
           - name: SERVER_PORT
             value: {{ .Values.deployment.server.port | quote }}
-          - name: CONSENT_REPO_HOST
+          - name: CONSENT_REPO_URI
             valueFrom:
               configMapKeyRef:
                 name: securebanking-platform-config
-                key: IG_INTERNAL_SVC
-          - name: IDENTITY_PLATFORM_FQDN
-            valueFrom:
-              configMapKeyRef:
-                name: securebanking-platform-config
-                key: IDENTITY_PLATFORM_FQDN
+                key: RCS_CONSENT_REPO_URI
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
           - name: JAVA_OPTS

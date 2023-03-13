@@ -16,11 +16,8 @@ logging:
   level:
     com.forgerock: DEBUG
 
-consent-repo:
-  client:
-    scheme: http
-    host: ${consent.repo.host}
-    port: 80
+consent:
+  repo:
     contexts_repo_consent:
       get: /repo/consents/@IntentId@
       put: /repo/consents/@IntentId@

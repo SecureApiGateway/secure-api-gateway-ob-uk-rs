@@ -6,6 +6,10 @@ spring:
       # force SpringBoot tests to use a random port for mongo
       port: 0
 
+consent:
+  repo:
+    uri: http://ig:80
+
 rs:
   discovery:
     financialId: 0015800001041REAAY
