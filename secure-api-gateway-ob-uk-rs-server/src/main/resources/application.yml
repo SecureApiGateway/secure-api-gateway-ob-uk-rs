@@ -59,3 +59,7 @@ testdata:
 #    # Connection string to the Consent Repo base URI
 #    uri:
 #
+#rs:
+#  discovery:
+#    Open Banking Organisation Id of the ASPSP running the RS
+#    financialId:
