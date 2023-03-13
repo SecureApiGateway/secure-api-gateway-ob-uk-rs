@@ -59,6 +59,11 @@ spec:
               configMapKeyRef:
                 name: securebanking-platform-config
                 key: CONSENT_REPO_URI
+          - name: RS_DISCOVERY_FINANCIAL_ID
+            valueFrom:
+              configMapKeyRef:
+                name: securebanking-platform-config
+                key: OB_ASPSP_ORG_ID
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
           - name: JAVA_OPTS
