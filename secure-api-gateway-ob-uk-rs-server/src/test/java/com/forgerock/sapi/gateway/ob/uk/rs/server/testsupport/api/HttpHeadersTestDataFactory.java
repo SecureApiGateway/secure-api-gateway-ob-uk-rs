@@ -95,7 +95,7 @@ public class HttpHeadersTestDataFactory {
     /**
      * @return an instance of {@link HttpHeaders} with the minimal set of required headers for the Payment Funds Confirmation API.
      */
-    public static HttpHeaders requiredPaymentFundsConfirmationHttpHeaders() {
+    public static HttpHeaders requiredPaymentFundsConfirmationHttpHeaders(String resourceUrl) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -104,6 +104,7 @@ public class HttpHeadersTestDataFactory {
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-ob-account-id", UUID.randomUUID().toString());
+        headers.add("x-ob-url", resourceUrl);
         return headers;
     }
 
