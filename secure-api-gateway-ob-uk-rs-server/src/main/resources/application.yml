@@ -1,7 +1,23 @@
-#Spring config
+#
+# Deployment Specific configuration
+#
+# The following section is a template of the mandatory configuration that needs to be supplied in order to start the
+# application, this config is deployment specific.
+#
+#
+# Consent Repo Configuration
+#consent:
+#  repo:
+#    # Connection string to the Consent Repo base URI
+#    uri:
+#
+#rs:
+#  discovery:
+#    Open Banking Organisation Id of the ASPSP running the RS
+#    financialId:
+#
+
 spring:
-  application:
-    name: securebanking-openbanking-uk-rs
   data:
     mongodb:
       database: mongo
@@ -47,19 +63,3 @@ testdata:
         accountNumber: "54312390"
       - sortCode: "334412"
         accountNumber: "30187862"
-
-#
-# Deployment Specific configuration
-# The following section contains the mandatory configuration that is deployment specific.
-#
-#
-# Consent Repo Configuration
-#consent:
-#  repo:
-#    # Connection string to the Consent Repo base URI
-#    uri:
-#
-#rs:
-#  discovery:
-#    Open Banking Organisation Id of the ASPSP running the RS
-#    financialId:
