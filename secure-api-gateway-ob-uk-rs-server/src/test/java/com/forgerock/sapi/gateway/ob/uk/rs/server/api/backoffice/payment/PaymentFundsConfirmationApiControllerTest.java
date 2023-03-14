@@ -47,7 +47,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 public class PaymentFundsConfirmationApiControllerTest {
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentFundsConfirmationHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
     private static final String FUNDS_CONFIRMATION_URI = "/backoffice/payment-funds-confirmation";
     private static final String CURRENCY = "GBP";
@@ -86,12 +85,13 @@ public class PaymentFundsConfirmationApiControllerTest {
         ResponseEntity<OBWriteFundsConfirmationResponse1> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                new HttpEntity<>(HTTP_HEADERS),
+                new HttpEntity<>(HttpHeadersTestDataFactory.requiredPaymentFundsConfirmationHttpHeaders(uri.toString())),
                 OBWriteFundsConfirmationResponse1.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getData().getFundsAvailableResult().getFundsAvailable()).isTrue();
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(uri);
     }
 
     @Test
@@ -108,12 +108,13 @@ public class PaymentFundsConfirmationApiControllerTest {
         ResponseEntity<OBWriteFundsConfirmationResponse1> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                new HttpEntity<>(HTTP_HEADERS),
+                new HttpEntity<>(HttpHeadersTestDataFactory.requiredPaymentFundsConfirmationHttpHeaders(uri.toString())),
                 OBWriteFundsConfirmationResponse1.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getData().getFundsAvailableResult().getFundsAvailable()).isFalse();
+        assertThat(response.getBody().getLinks().getSelf()).isEqualTo(uri);
     }
 
     private FRBalance aValidFRBalance(String accountId) {

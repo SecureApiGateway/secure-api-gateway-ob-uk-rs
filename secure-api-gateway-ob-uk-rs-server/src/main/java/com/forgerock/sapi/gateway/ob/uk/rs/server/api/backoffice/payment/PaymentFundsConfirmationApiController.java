@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.backoffice.api.payment.PaymentFundsConfirmationApi;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +51,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
+            String xObUrl,
             HttpServletRequest request,
             Principal principal) {
 
@@ -70,7 +71,7 @@ public class PaymentFundsConfirmationApiController implements PaymentFundsConfir
                                                 )
                                                 .supplementaryData(null)
                                 )
-                                .links(LinksHelper.createDomesticPaymentsConsentFundsConfirmationLink(this.getClass(), version, accountId))
+                                .links(PaginationUtil.generateLinksOnePager(xObUrl))
                                 .meta(new Meta())
                 );
     }

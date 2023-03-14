@@ -78,6 +78,9 @@ public interface PaymentFundsConfirmationApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
+            @ApiParam(value = "Original Open Banking URL called by the TPP")
+            @RequestHeader(value = "x-ob-url") String xObUrl,
+
             HttpServletRequest request,
 
             Principal principal
