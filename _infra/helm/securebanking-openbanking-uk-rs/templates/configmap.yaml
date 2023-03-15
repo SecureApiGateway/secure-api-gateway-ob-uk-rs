@@ -6,5 +6,5 @@ metadata:
   labels:
     app: {{ .Chart.Name }}
 data:
-  application.yml: {{ tpl (toYaml .Values.springConfig) . | nindent 4 }}
+  application.yml: | {{ tpl (toYaml .Values.springConfig) . | nindent 4 }}
 {{- end }}
