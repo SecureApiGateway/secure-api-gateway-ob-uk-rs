@@ -1,0 +1,10 @@
+{{- if .Values.springConfig -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-spring-config
+  labels:
+    app: {{ .Chart.Name }}
+data:
+  application.yml: | {{ tpl (toYaml .Values.springConfig) . | nindent 4 }}
+{{- end }}

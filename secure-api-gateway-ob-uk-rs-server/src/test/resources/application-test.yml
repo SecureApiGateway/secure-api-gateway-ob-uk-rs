@@ -13,3 +13,15 @@ consent:
 rs:
   discovery:
     financialId: 0015800001041REAAY
+
+testdata:
+  # Configure Account Identifier for test users, if config is not provided for a particular user then randomised data is used
+  # See com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.TestUserAccountIds
+  userAccountIds:
+    psu4test:
+      - sortCode: "012332"
+        accountNumber: "43245676"
+      - sortCode: "012332"
+        accountNumber: "54312390"
+      - sortCode: "334412"
+        accountNumber: "30187862"

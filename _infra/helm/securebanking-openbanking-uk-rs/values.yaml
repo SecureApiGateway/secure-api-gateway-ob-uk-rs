@@ -36,3 +36,5 @@ service:
   apiVersion: v1
   type: ClusterIP
 
+# Addition Spring properties can be provided as a yaml block here, this will be mounted into the container and override / extend the config found in the application.yml inside the jar
+springConfig: {}

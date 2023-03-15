@@ -49,6 +49,9 @@ spec:
             failureThreshold: 5
             successThreshold: 1
             timeoutSeconds: 5
+          volumeMounts:
+            - name: spring-config
+              mountPath: /app/config
           env:
           - name: SPRING_DATA_MONGODB_HOST
             value: {{ .Values.mongodb.host }}
@@ -70,3 +73,13 @@ spec:
             value: {{ .Values.deployment.java.opts }}
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
+      volumes:
+        {{- if .Values.springConfig }}
+          - name: spring-config
+            configMap:
+              name: {{ .Chart.Name }}-spring-config
+        {{- else }}
+          - name: spring-config
+            emptyDir: { }
+        {{- end }}
+
