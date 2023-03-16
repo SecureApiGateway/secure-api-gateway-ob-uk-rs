@@ -68,9 +68,6 @@ public interface CallbackUrlsApi {
             @Valid
             @RequestBody OBCallbackUrl1 obCallbackUrl1,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -109,8 +106,6 @@ public interface CallbackUrlsApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBCallbackUrlsResponse1> readCallBackUrls(
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = false)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
@@ -156,8 +151,6 @@ public interface CallbackUrlsApi {
             @Valid
             @RequestBody OBCallbackUrl1 obCallbackUrl1,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = false)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
@@ -200,8 +193,6 @@ public interface CallbackUrlsApi {
             @ApiParam(value = "CallbackUrlId", required = true)
             @PathVariable("CallbackUrlId") String callbackUrlId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = false)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,

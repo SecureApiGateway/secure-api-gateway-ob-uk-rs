@@ -40,11 +40,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Controller("StandingOrdersApiV3.1.1")
 @Slf4j
 public class StandingOrdersApiController implements StandingOrdersApi {
-    @Value("${rs.page.default.standing-order.size:10}")
-    private int PAGE_LIMIT_STANDING_ORDERS;
-
     private final FRStandingOrderRepository frStandingOrderRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.standing-order.size:10}")
+    private int PAGE_LIMIT_STANDING_ORDERS;
 
     public StandingOrdersApiController(FRStandingOrderRepository frStandingOrderRepository, AccountDataInternalIdFilter accountDataInternalIdFilter) {
         this.frStandingOrderRepository = frStandingOrderRepository;
@@ -54,7 +53,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     @Override
     public ResponseEntity<OBReadStandingOrder5> getAccountStandingOrders(String accountId,
                                                                          int page,
-                                                                         String xFapiFinancialId,
                                                                          String authorization,
                                                                          DateTime xFapiCustomerLastLoggedTime,
                                                                          String xFapiCustomerIpAddress,
@@ -84,8 +82,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     }
 
     @Override
-    public ResponseEntity<OBReadStandingOrder5> getStandingOrders(String xFapiFinancialId,
-                                                                  int page,
+    public ResponseEntity<OBReadStandingOrder5> getStandingOrders(int page,
                                                                   String authorization,
                                                                   DateTime xFapiCustomerLastLoggedTime,
                                                                   String xFapiCustomerIpAddress,

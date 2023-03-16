@@ -72,7 +72,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     @Override
     public ResponseEntity<OBWriteInternationalScheduledResponse1> createInternationalScheduledPayments(
             @Valid OBWriteInternationalScheduled1 obWriteInternationalScheduled1,
-            String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
@@ -114,7 +113,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     @Override
     public ResponseEntity getInternationalScheduledPaymentsInternationalScheduledPaymentId(
             String internationalScheduledPaymentId,
-            String xFapiFinancialId,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,

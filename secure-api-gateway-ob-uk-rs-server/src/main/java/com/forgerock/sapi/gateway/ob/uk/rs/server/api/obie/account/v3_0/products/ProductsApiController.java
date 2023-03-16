@@ -40,11 +40,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class ProductsApiController implements ProductsApi {
 
-    @Value("${rs.page.default.products.size:10}")
-    private int PAGE_LIMIT_PRODUCTS;
-
     private final FRProductRepository frProductRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.products.size:10}")
+    private int PAGE_LIMIT_PRODUCTS;
 
     public ProductsApiController(FRProductRepository frProductRepository,
                                  AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -55,7 +54,6 @@ public class ProductsApiController implements ProductsApi {
     @Override
     public ResponseEntity<OBReadProduct2> getAccountProduct(String accountId,
                                                             int page,
-                                                            String xFapiFinancialId,
                                                             String authorization,
                                                             DateTime xFapiCustomerLastLoggedTime,
                                                             String xFapiCustomerIpAddress,
@@ -79,8 +77,7 @@ public class ProductsApiController implements ProductsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadProduct2> getProducts(String xFapiFinancialId,
-                                                      int page,
+    public ResponseEntity<OBReadProduct2> getProducts(int page,
                                                       String authorization,
                                                       DateTime xFapiCustomerLastLoggedTime,
                                                       String xFapiCustomerIpAddress,

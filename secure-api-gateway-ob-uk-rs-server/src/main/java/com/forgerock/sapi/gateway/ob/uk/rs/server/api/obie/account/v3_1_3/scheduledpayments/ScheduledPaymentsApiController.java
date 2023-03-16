@@ -93,11 +93,11 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
         int totalPages = scheduledPayments.getTotalPages();
 
         return ResponseEntity.ok(new OBReadScheduledPayment3().data(new OBReadScheduledPayment3Data().scheduledPayment(
-                scheduledPayments.getContent()
-                        .stream()
-                        .map(sp -> toOBScheduledPayment3(sp.getScheduledPayment()))
-                        .map(sp -> accountDataInternalIdFilter.apply(sp))
-                        .collect(Collectors.toList())))
+                        scheduledPayments.getContent()
+                                .stream()
+                                .map(sp -> toOBScheduledPayment3(sp.getScheduledPayment()))
+                                .map(sp -> accountDataInternalIdFilter.apply(sp))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

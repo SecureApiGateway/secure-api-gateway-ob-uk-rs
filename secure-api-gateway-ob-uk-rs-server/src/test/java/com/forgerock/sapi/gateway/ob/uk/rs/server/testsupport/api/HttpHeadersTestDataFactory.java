@@ -47,7 +47,6 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-ob-url", resourceUrl);
@@ -68,7 +67,6 @@ public class HttpHeadersTestDataFactory {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(acceptHeader));
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-ob-url", resourceUrl);
@@ -84,7 +82,6 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-jws-signature", "dummyJwsSignature");
@@ -100,7 +97,6 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-ob-account-id", UUID.randomUUID().toString());
@@ -120,7 +116,6 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-ob-tpp-id", tppId);
         headers.add("x-ob-url", resourceUrl);
@@ -132,7 +127,6 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-account-id", accountId);
         headers.add("x-ob-url", resourceUrl);
@@ -147,7 +141,6 @@ public class HttpHeadersTestDataFactory {
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-jws-signature", "dummyJwsSignature");
@@ -162,7 +155,6 @@ public class HttpHeadersTestDataFactory {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("x-fapi-financial-id", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         return headers;
     }

@@ -52,12 +52,11 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class StatementsApiController implements StatementsApi {
 
-    @Value("${rs.page.default.statement.size:10}")
-    private int PAGE_LIMIT_STATEMENTS;
-
     private final FRStatementRepository frStatementRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
     private final StatementPDFService statementPDFService;
+    @Value("${rs.page.default.statement.size:10}")
+    private int PAGE_LIMIT_STATEMENTS;
 
     public StatementsApiController(FRStatementRepository frStatementRepository,
                                    AccountDataInternalIdFilter accountDataInternalIdFilter,
@@ -71,7 +70,6 @@ public class StatementsApiController implements StatementsApi {
     public ResponseEntity<OBReadStatement1> getAccountStatement(String accountId,
                                                                 String statementId,
                                                                 int page,
-                                                                String xFapiFinancialId,
                                                                 String authorization,
                                                                 DateTime xFapiCustomerLastLoggedTime,
                                                                 String xFapiCustomerIpAddress,
@@ -99,7 +97,6 @@ public class StatementsApiController implements StatementsApi {
     public ResponseEntity<Resource> getAccountStatementFile(String accountId,
                                                             int page,
                                                             String statementId,
-                                                            String xFapiFinancialId,
                                                             String authorization,
                                                             DateTime xFapiCustomerLastLoggedTime,
                                                             String xFapiCustomerIpAddress,
@@ -134,8 +131,7 @@ public class StatementsApiController implements StatementsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadStatement1> getStatements(String xFapiFinancialId,
-                                                          int page,
+    public ResponseEntity<OBReadStatement1> getStatements(int page,
                                                           DateTime fromStatementDateTime,
                                                           DateTime toStatementDateTime,
                                                           String authorization,
@@ -166,7 +162,6 @@ public class StatementsApiController implements StatementsApi {
     @Override
     public ResponseEntity<OBReadStatement1> getAccountStatements(String accountId,
                                                                  int page,
-                                                                 String xFapiFinancialId,
                                                                  String authorization,
                                                                  DateTime fromStatementDateTime,
                                                                  DateTime toStatementDateTime,

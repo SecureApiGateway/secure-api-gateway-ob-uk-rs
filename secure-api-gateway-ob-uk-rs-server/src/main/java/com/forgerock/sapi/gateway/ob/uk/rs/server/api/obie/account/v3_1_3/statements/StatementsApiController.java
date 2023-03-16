@@ -180,11 +180,11 @@ public class StatementsApiController implements StatementsApi {
 
     private ResponseEntity<OBReadStatement2> packageResponse(int page, String httpUrl, List<FRStatement> statements, int totalPages) {
         return ResponseEntity.ok(new OBReadStatement2().data(new OBReadDataStatement2().statement(
-                statements
-                        .stream()
-                        .map(st -> toOBStatement2(st.getStatement()))
-                        .map(accountDataInternalIdFilter::apply)
-                        .collect(Collectors.toList())))
+                        statements
+                                .stream()
+                                .map(st -> toOBStatement2(st.getStatement()))
+                                .map(accountDataInternalIdFilter::apply)
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

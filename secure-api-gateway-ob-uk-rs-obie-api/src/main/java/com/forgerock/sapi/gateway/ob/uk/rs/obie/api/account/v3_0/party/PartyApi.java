@@ -63,9 +63,6 @@ public interface PartyApi {
             @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -109,9 +106,6 @@ public interface PartyApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadParty1> getParty(
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 

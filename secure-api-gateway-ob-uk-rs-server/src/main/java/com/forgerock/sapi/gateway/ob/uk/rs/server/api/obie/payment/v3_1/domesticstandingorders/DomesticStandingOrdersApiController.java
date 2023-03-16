@@ -73,7 +73,6 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     @Override
     public ResponseEntity<OBWriteDomesticStandingOrderResponse2> createDomesticStandingOrders(
             @Valid OBWriteDomesticStandingOrder2 obWriteDomesticStandingOrder2,
-            String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
@@ -116,7 +115,6 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     @Override
     public ResponseEntity getDomesticStandingOrdersDomesticStandingOrderId(
             String domesticStandingOrderId,
-            String xFapiFinancialId,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,

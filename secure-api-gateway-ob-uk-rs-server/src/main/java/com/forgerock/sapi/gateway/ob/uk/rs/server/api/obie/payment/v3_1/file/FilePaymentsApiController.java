@@ -64,7 +64,6 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     @Override
     public ResponseEntity<OBWriteFileResponse2> createFilePayments(@Valid OBWriteFile2 obWriteFile2,
-                                                                   String xFapiFinancialId,
                                                                    String authorization,
                                                                    String xIdempotencyKey,
                                                                    String xJwsSignature,
@@ -99,14 +98,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     @Override
     public ResponseEntity getFilePaymentsFilePaymentId(String filePaymentId,
-                                                                             String xFapiFinancialId,
-                                                                             String authorization,
-                                                                             DateTime xFapiCustomerLastLoggedTime,
-                                                                             String xFapiCustomerIpAddress,
-                                                                             String xFapiInteractionId,
-                                                                             String xCustomerUserAgent,
-                                                                             HttpServletRequest request,
-                                                                             Principal principal
+                                                       String authorization,
+                                                       DateTime xFapiCustomerLastLoggedTime,
+                                                       String xFapiCustomerIpAddress,
+                                                       String xFapiInteractionId,
+                                                       String xCustomerUserAgent,
+                                                       HttpServletRequest request,
+                                                       Principal principal
     ) throws OBErrorResponseException {
         Optional<FRFilePaymentSubmission> isPaymentSubmission = filePaymentSubmissionRepository.findById(filePaymentId);
         if (!isPaymentSubmission.isPresent()) {
@@ -127,7 +125,6 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     @Override
     public ResponseEntity<Resource> getFilePaymentsFilePaymentIdReportFile(String filePaymentId,
-                                                                           String xFapiFinancialId,
                                                                            String authorization,
                                                                            DateTime xFapiCustomerLastLoggedTime,
                                                                            String xFapiCustomerIpAddress,

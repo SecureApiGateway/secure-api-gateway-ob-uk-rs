@@ -41,11 +41,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
 
-    @Value("${rs.page.default.scheduled-payments.size:10}")
-    private int PAGE_LIMIT_SCHEDULED_PAYMENTS;
-
     private final FRScheduledPaymentRepository frScheduledPaymentRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.scheduled-payments.size:10}")
+    private int PAGE_LIMIT_SCHEDULED_PAYMENTS;
 
     public ScheduledPaymentsApiController(FRScheduledPaymentRepository frScheduledPaymentRepository,
                                           AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -56,7 +55,6 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     @Override
     public ResponseEntity<OBReadScheduledPayment1> getAccountScheduledPayments(String accountId,
                                                                                int page,
-                                                                               String xFapiFinancialId,
                                                                                String authorization,
                                                                                DateTime xFapiCustomerLastLoggedTime,
                                                                                String xFapiCustomerIpAddress,
@@ -84,8 +82,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadScheduledPayment1> getScheduledPayments(String xFapiFinancialId,
-                                                                        int page,
+    public ResponseEntity<OBReadScheduledPayment1> getScheduledPayments(int page,
                                                                         String authorization,
                                                                         DateTime xFapiCustomerLastLoggedTime,
                                                                         String xFapiCustomerIpAddress,

@@ -39,10 +39,9 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class BalancesApiController implements BalancesApi {
 
+    private final FRBalanceRepository frBalanceRepository;
     @Value("${rs.page.default.balances.size:10}")
     private int PAGE_LIMIT_BALANCES;
-
-    private final FRBalanceRepository frBalanceRepository;
 
     public BalancesApiController(FRBalanceRepository frBalanceRepository) {
         this.frBalanceRepository = frBalanceRepository;
@@ -51,7 +50,6 @@ public class BalancesApiController implements BalancesApi {
     @Override
     public ResponseEntity<OBReadBalance1> getAccountBalances(String accountId,
                                                              int page,
-                                                             String xFapiFinancialId,
                                                              String authorization,
                                                              DateTime xFapiCustomerLastLoggedTime,
                                                              String xFapiCustomerIpAddress,
@@ -73,8 +71,7 @@ public class BalancesApiController implements BalancesApi {
     }
 
     @Override
-    public ResponseEntity<OBReadBalance1> getBalances(String xFapiFinancialId,
-                                                      int page,
+    public ResponseEntity<OBReadBalance1> getBalances(int page,
                                                       String authorization,
                                                       DateTime xFapiCustomerLastLoggedTime,
                                                       String xFapiCustomerIpAddress,

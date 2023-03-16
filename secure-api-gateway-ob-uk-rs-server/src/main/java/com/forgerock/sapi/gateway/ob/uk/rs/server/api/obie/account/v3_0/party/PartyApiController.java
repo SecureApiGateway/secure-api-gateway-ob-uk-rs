@@ -44,7 +44,6 @@ public class PartyApiController implements PartyApi {
 
     @Override
     public ResponseEntity<OBReadParty1> getAccountParty(String accountId,
-                                                        String xFapiFinancialId,
                                                         String authorization,
                                                         DateTime xFapiCustomerLastLoggedTime,
                                                         String xFapiCustomerIpAddress,
@@ -64,8 +63,7 @@ public class PartyApiController implements PartyApi {
     }
 
     @Override
-    public ResponseEntity<OBReadParty1> getParty(String xFapiFinancialId,
-                                                 String authorization,
+    public ResponseEntity<OBReadParty1> getParty(String authorization,
                                                  DateTime xFapiCustomerLastLoggedTime,
                                                  String xFapiCustomerIpAddress,
                                                  String xFapiInteractionId,

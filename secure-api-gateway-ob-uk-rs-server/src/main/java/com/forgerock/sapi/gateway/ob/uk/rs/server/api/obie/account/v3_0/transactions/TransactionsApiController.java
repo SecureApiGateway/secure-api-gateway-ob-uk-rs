@@ -43,11 +43,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class TransactionsApiController implements TransactionsApi {
 
-    @Value("${rs.page.default.transaction.size:120}")
-    private int PAGE_LIMIT_TRANSACTIONS;
-
     private final FRTransactionRepository frTransactionRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.transaction.size:120}")
+    private int PAGE_LIMIT_TRANSACTIONS;
 
     public TransactionsApiController(FRTransactionRepository frTransactionRepository,
                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -59,7 +58,6 @@ public class TransactionsApiController implements TransactionsApi {
     public ResponseEntity<OBReadTransaction3> getAccountTransactions(
             String accountId,
             int page,
-            String xFapiFinancialId,
             String authorization,
             DateTime fromBookingDateTime,
             DateTime toBookingDateTime,
@@ -106,7 +104,6 @@ public class TransactionsApiController implements TransactionsApi {
 
     @Override
     public ResponseEntity<OBReadTransaction3> getTransactions(
-            String xFapiFinancialId,
             int page,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
@@ -157,7 +154,6 @@ public class TransactionsApiController implements TransactionsApi {
             String accountId,
             int page,
             String statementId,
-            String xFapiFinancialId,
             String authorization,
             DateTime fromBookingDateTime,
             DateTime toBookingDateTime,

@@ -72,7 +72,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     @Override
     public ResponseEntity<OBWriteInternationalStandingOrderResponse2> createInternationalStandingOrders(
             @Valid OBWriteInternationalStandingOrder2 obWriteInternationalStandingOrder2,
-            String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
@@ -115,7 +114,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     @Override
     public ResponseEntity getInternationalStandingOrdersInternationalStandingOrderPaymentId(
             String internationalStandingOrderPaymentId,
-            String xFapiFinancialId,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,

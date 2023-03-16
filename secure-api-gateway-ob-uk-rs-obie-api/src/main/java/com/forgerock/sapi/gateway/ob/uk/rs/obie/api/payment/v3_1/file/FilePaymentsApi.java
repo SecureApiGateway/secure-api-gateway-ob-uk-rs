@@ -70,9 +70,6 @@ public interface FilePaymentsApi {
             @Valid
             @RequestBody OBWriteFile2 obWriteFile2,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -123,9 +120,6 @@ public interface FilePaymentsApi {
             @ApiParam(value = "FilePaymentId", required = true)
             @PathVariable("FilePaymentId") String filePaymentId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -170,9 +164,6 @@ public interface FilePaymentsApi {
     ResponseEntity<Resource> getFilePaymentsFilePaymentIdReportFile(
             @ApiParam(value = "FilePaymentId", required = true)
             @PathVariable("FilePaymentId") String filePaymentId,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,

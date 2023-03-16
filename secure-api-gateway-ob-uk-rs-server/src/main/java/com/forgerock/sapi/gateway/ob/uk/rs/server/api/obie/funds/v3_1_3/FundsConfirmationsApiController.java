@@ -29,8 +29,6 @@ import java.security.Principal;
 @Controller("FundsConfirmationsApiV3.1.3")
 public class FundsConfirmationsApiController implements FundsConfirmationsApi {
 
-    private static final String DUMMY_FINANCIAL_ID = "REDUNDANT_ID";
-
     private final com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_2.FundsConfirmationsApiController previousVersionController;
 
     public FundsConfirmationsApiController(@Qualifier("FundsConfirmationsApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_2.FundsConfirmationsApiController previousVersionController) {

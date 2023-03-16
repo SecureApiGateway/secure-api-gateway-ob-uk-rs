@@ -42,11 +42,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.paymen
 @Slf4j
 public class StandingOrdersApiController implements StandingOrdersApi {
 
-    @Value("${rs.page.default.standing-order.size:10}")
-    private int PAGE_LIMIT_STANDING_ORDERS;
-
     private final FRStandingOrderRepository frStandingOrderRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.standing-order.size:10}")
+    private int PAGE_LIMIT_STANDING_ORDERS;
 
     public StandingOrdersApiController(FRStandingOrderRepository frStandingOrderRepository,
                                        AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -57,7 +56,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     @Override
     public ResponseEntity<OBReadStandingOrder3> getAccountStandingOrders(String accountId,
                                                                          int page,
-                                                                         String xFapiFinancialId,
                                                                          String authorization,
                                                                          DateTime xFapiCustomerLastLoggedTime,
                                                                          String xFapiCustomerIpAddress,
@@ -85,8 +83,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     }
 
     @Override
-    public ResponseEntity<OBReadStandingOrder3> getStandingOrders(String xFapiFinancialId,
-                                                                  int page,
+    public ResponseEntity<OBReadStandingOrder3> getStandingOrders(int page,
                                                                   String authorization,
                                                                   DateTime xFapiCustomerLastLoggedTime,
                                                                   String xFapiCustomerIpAddress,

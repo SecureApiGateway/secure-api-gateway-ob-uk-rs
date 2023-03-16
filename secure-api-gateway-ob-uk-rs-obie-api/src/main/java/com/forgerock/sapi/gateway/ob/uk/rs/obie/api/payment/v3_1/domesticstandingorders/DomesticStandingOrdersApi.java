@@ -68,9 +68,6 @@ public interface DomesticStandingOrdersApi {
             @Valid
             @RequestBody OBWriteDomesticStandingOrder2 obWriteDomesticStandingOrder2,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -124,9 +121,6 @@ public interface DomesticStandingOrdersApi {
     ResponseEntity<OBWriteDomesticStandingOrderResponse2> getDomesticStandingOrdersDomesticStandingOrderId(
             @ApiParam(value = "DomesticStandingOrderId", required = true)
             @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,

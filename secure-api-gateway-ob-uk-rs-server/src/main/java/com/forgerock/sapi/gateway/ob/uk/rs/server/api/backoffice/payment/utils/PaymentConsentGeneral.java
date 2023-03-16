@@ -44,7 +44,6 @@ public class PaymentConsentGeneral {
      *
      * @param consentRequest OB consent request object
      * @param intent intent Id prefix (ex. 'PDC_') to identify the intent type
-     * @param xFapiFinancialId fapi financial id for trace purposes
      * @param request http request object to obtain the api version
      * @return OB consent object response
      * @param <T> parametrized type for an instance of OB consent request object
@@ -52,23 +51,23 @@ public class PaymentConsentGeneral {
      * @throws OBErrorResponseException
      * @throws JsonProcessingException
      */
-    public static <T, R> R calculate(T consentRequest, String intent, String xFapiFinancialId, HttpServletRequest request) throws OBErrorResponseException, JsonProcessingException {
+    public static <T, R> R calculate(T consentRequest, String intent, HttpServletRequest request) throws OBErrorResponseException, JsonProcessingException {
 
         OBVersion apiVersion = ApiVersionUtils.getOBVersion(request.getRequestURI());
         isNull(apiVersion, API_VERSION_DESCRIPTION);
         IntentType intentType = IntentType.identify(intent);
         isNull(intentType, INTENT_TYPE_DESCRIPTION);
 
-        log.info("{}, Calculate elements for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
-        log.debug("{}, Consent request\n {}", xFapiFinancialId, customObjectMapper.getObjectMapper().writeValueAsString(consentRequest));
+        log.info("Calculate elements for intent {} version {}", intentType, apiVersion.getCanonicalName());
+        log.debug("Consent request\n {}", customObjectMapper.getObjectMapper().writeValueAsString(consentRequest));
         PaymentConsentValidation validation = PaymentConsentValidationFactory.getValidationInstance(intent);
         validation.clearErrors().validate(consentRequest);
 
-        if (haveErrorEvents(validation.getErrors(), xFapiFinancialId)) {
+        if (haveErrorEvents(validation.getErrors())) {
             throw badRequestResponseException(validation.getErrors());
         }
 
-        log.debug("{}, Validation passed for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
+        log.debug("Validation passed for intent {} version {}", intentType, apiVersion.getCanonicalName());
 
         PaymentConsentResponseCalculation calculation = PaymentConsentResponseCalculationFactory.getCalculationInstance(intent);
         Object consentResponseObject = customObjectMapper.getObjectMapper().readValue(
@@ -77,19 +76,19 @@ public class PaymentConsentGeneral {
         );
         Object consentEntityResponse = calculation.clearErrors().calculate(consentRequest, consentResponseObject);
 
-        if (haveErrorEvents(calculation.getErrors(), xFapiFinancialId)) {
+        if (haveErrorEvents(calculation.getErrors())) {
             throw badRequestResponseException(calculation.getErrors());
         }
 
-        log.debug("{}, Calculation done for intent {} version {}", xFapiFinancialId, intentType, apiVersion.getCanonicalName());
-        log.debug("{}, Sending the response {}", xFapiFinancialId, customObjectMapper.getObjectMapper().writeValueAsString(consentEntityResponse));
+        log.debug("Calculation done for intent {} version {}", intentType, apiVersion.getCanonicalName());
+        log.debug("Sending the response {}", customObjectMapper.getObjectMapper().writeValueAsString(consentEntityResponse));
 
         return (R) consentEntityResponse;
     }
 
-    private static boolean haveErrorEvents(List<OBError1> errors, String xFapiFinancialId) {
+    private static boolean haveErrorEvents(List<OBError1> errors) {
         if (!errors.isEmpty()) {
-            log.error("{}, Errors {}", xFapiFinancialId, errors);
+            log.error("Errors {}", errors);
             return true;
         }
         return false;

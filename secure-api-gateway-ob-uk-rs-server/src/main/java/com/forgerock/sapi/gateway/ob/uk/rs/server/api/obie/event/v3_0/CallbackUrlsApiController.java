@@ -54,7 +54,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     @Override
     public ResponseEntity createCallbackUrls(
             @Valid OBCallbackUrl1 obCallbackUrl1,
-            String xFapiFinancialId,
             String authorization,
             String xJwsSignature,
             String xFapiInteractionId,
@@ -92,7 +91,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
     @Override
     public ResponseEntity<OBCallbackUrlsResponse1> readCallBackUrls(
-            String xFapiFinancialId,
             String authorization,
             String xFapiInteractionId,
             String tppId,
@@ -112,7 +110,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     public ResponseEntity updateCallbackUrl(
             String callbackUrlId,
             @Valid OBCallbackUrl1 obCallbackUrl1,
-            String xFapiFinancialId,
             String authorization,
             String xJwsSignature,
             String xFapiInteractionId,
@@ -151,7 +148,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     @Override
     public ResponseEntity deleteCallbackUrl(
             String callbackUrlId,
-            String xFapiFinancialId,
             String authorization,
             String xFapiInteractionId,
             String tppId,

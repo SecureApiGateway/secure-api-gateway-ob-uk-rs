@@ -65,10 +65,6 @@ public interface StandingOrdersApi {
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. " +
-                    "The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750",
                     required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
@@ -115,10 +111,6 @@ public interface StandingOrdersApi {
         produces = { "application/json; charset=utf-8" }, 
         method = RequestMethod.GET)
     ResponseEntity<OBReadStandingOrder3> getStandingOrders(
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. " +
-                    "The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
 

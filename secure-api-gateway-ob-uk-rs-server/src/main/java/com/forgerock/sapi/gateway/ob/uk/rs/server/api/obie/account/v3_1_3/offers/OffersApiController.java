@@ -25,8 +25,6 @@ import uk.org.openbanking.datamodel.account.OBReadOffer1;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountsUtil.DUMMY_FINANCIAL_ID;
-
 @Controller("OffersApiV3.1.3")
 public class OffersApiController implements OffersApi {
 
@@ -49,7 +47,6 @@ public class OffersApiController implements OffersApi {
         return previousVersionController.getAccountOffers(
                 accountId,
                 page,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
@@ -71,7 +68,6 @@ public class OffersApiController implements OffersApi {
                                                   List<OBExternalPermissions1Code> permissions,
                                                   String httpUrl) {
         return previousVersionController.getOffers(
-                DUMMY_FINANCIAL_ID,
                 page,
                 authorization,
                 xFapiAuthDate,
