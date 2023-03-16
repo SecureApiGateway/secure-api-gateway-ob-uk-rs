@@ -25,8 +25,6 @@ import uk.org.openbanking.datamodel.account.OBReadBalance1;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountsUtil.DUMMY_FINANCIAL_ID;
-
 @Controller("BalancesApiV3.1.3")
 public class BalancesApiController implements BalancesApi {
 
@@ -49,7 +47,6 @@ public class BalancesApiController implements BalancesApi {
         return previousVersionController.getAccountBalances(
                 accountId,
                 page,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
@@ -70,7 +67,6 @@ public class BalancesApiController implements BalancesApi {
                                                       String httpUrl) {
 
         return previousVersionController.getBalances(
-                DUMMY_FINANCIAL_ID,
                 page,
                 authorization,
                 xFapiAuthDate,

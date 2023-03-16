@@ -56,7 +56,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     @Override
     public ResponseEntity<OBReadStandingOrder4> getAccountStandingOrders(String accountId,
                                                                          int page,
-                                                                         String xFapiFinancialId,
                                                                          String authorization,
                                                                          DateTime xFapiCustomerLastLoggedTime,
                                                                          String xFapiCustomerIpAddress,
@@ -84,8 +83,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     }
 
     @Override
-    public ResponseEntity<OBReadStandingOrder4> getStandingOrders(String xFapiFinancialId,
-                                                                  int page,
+    public ResponseEntity<OBReadStandingOrder4> getStandingOrders(int page,
                                                                   String authorization,
                                                                   DateTime xFapiCustomerLastLoggedTime,
                                                                   String xFapiCustomerIpAddress,

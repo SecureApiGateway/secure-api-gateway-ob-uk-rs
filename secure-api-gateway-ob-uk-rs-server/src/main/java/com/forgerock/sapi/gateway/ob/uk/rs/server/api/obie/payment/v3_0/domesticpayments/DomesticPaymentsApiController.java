@@ -62,7 +62,6 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     @Override
     public ResponseEntity<OBWriteDomesticResponse1> createDomesticPayments(@Valid OBWriteDomestic1 obWriteDomestic1,
-                                                                           String xFapiFinancialId,
                                                                            String authorization,
                                                                            String xIdempotencyKey,
                                                                            String xJwsSignature,
@@ -103,7 +102,6 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     @Override
     public ResponseEntity getDomesticPaymentsDomesticPaymentId(String domesticPaymentId,
-                                                               String xFapiFinancialId,
                                                                String authorization,
                                                                DateTime xFapiCustomerLastLoggedTime,
                                                                String xFapiCustomerIpAddress,

@@ -68,9 +68,6 @@ public interface DomesticPaymentsApi {
             @Valid
             @RequestBody OBWriteDomestic2 obWriteDomestic2,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -120,9 +117,6 @@ public interface DomesticPaymentsApi {
     ResponseEntity<OBWriteDomesticResponse2> getDomesticPaymentsDomesticPaymentId(
             @ApiParam(value = "DomesticPaymentId", required = true)
             @PathVariable("DomesticPaymentId") String domesticPaymentId,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,

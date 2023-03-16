@@ -41,11 +41,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class OffersApiController implements OffersApi {
 
-    @Value("${rs.page.default.offers.size:10}")
-    private int PAGE_LIMIT_OFFERS;
-
     private final FROfferRepository frOfferRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.offers.size:10}")
+    private int PAGE_LIMIT_OFFERS;
 
     public OffersApiController(FROfferRepository frOfferRepository,
                                AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -56,7 +55,6 @@ public class OffersApiController implements OffersApi {
     @Override
     public ResponseEntity<OBReadOffer1> getAccountOffers(String accountId,
                                                          int page,
-                                                         String xFapiFinancialId,
                                                          String authorization,
                                                          DateTime xFapiCustomerLastLoggedTime,
                                                          String xFapiCustomerIpAddress,
@@ -81,8 +79,7 @@ public class OffersApiController implements OffersApi {
     }
 
     @Override
-    public ResponseEntity<OBReadOffer1> getOffers(String xFapiFinancialId,
-                                                  int page,
+    public ResponseEntity<OBReadOffer1> getOffers(int page,
                                                   String authorization,
                                                   DateTime xFapiCustomerLastLoggedTime,
                                                   String xFapiCustomerIpAddress,

@@ -64,7 +64,6 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     @Override
     public ResponseEntity createFilePayments(@Valid OBWriteFile1 obWriteFile1,
-                                             String xFapiFinancialId,
                                              String authorization,
                                              String xIdempotencyKey,
                                              String xJwsSignature,
@@ -99,7 +98,6 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     @Override
     public ResponseEntity getFilePaymentsFilePaymentId(String filePaymentId,
-                                                       String xFapiFinancialId,
                                                        String authorization,
                                                        DateTime xFapiCustomerLastLoggedTime,
                                                        String xFapiCustomerIpAddress,
@@ -127,7 +125,6 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     @Override
     public ResponseEntity getFilePaymentsFilePaymentIdReportFile(String filePaymentId,
-                                                                 String xFapiFinancialId,
                                                                  String authorization,
                                                                  DateTime xFapiCustomerLastLoggedTime,
                                                                  String xFapiCustomerIpAddress,

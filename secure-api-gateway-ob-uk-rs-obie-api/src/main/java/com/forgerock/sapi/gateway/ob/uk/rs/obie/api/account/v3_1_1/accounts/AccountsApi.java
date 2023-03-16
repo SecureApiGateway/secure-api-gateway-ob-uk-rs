@@ -60,10 +60,6 @@ public interface AccountsApi  {
             @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. " +
-                    "The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -109,10 +105,6 @@ public interface AccountsApi  {
     ResponseEntity<OBReadAccount3> getAccounts(
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") String page,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. " +
-                    "The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,

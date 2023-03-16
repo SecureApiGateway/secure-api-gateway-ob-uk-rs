@@ -27,8 +27,6 @@ import uk.org.openbanking.datamodel.account.OBReadParty3;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountsUtil.DUMMY_FINANCIAL_ID;
-
 @Controller("PartyApiV3.1.3")
 @Slf4j
 public class PartyApiController implements PartyApi {
@@ -50,7 +48,6 @@ public class PartyApiController implements PartyApi {
                                                         String httpUrl) {
         return previousVersionController.getAccountParty(
                 accountId,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
@@ -72,7 +69,6 @@ public class PartyApiController implements PartyApi {
                                                           String httpUrl) {
         return previousVersionController.getAccountParties(
                 accountId,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
@@ -93,7 +89,6 @@ public class PartyApiController implements PartyApi {
                                                  List<OBExternalPermissions1Code> permissions,
                                                  String httpUrl) {
         return previousVersionController.getParty(
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,

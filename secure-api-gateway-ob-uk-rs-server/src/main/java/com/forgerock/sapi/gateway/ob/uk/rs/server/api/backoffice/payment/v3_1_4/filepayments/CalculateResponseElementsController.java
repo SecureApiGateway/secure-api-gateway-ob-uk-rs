@@ -41,14 +41,13 @@ public class CalculateResponseElementsController implements CalculateResponseEle
     public ResponseEntity<OBWriteFileConsentResponse3> calculateElements(
             OBWriteFileConsent3 body,
             String intent,
-            String xFapiFinancialId,
             String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
             OBWriteFileConsentResponse3 response = PaymentConsentGeneral.calculate(
-                    body, intent, xFapiFinancialId, request
+                    body, intent, request
             );
             response.getData().setStatus(AWAITINGUPLOAD);
             return ResponseEntity.status(HttpStatus.OK).body(response);

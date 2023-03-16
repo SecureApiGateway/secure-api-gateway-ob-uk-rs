@@ -25,8 +25,6 @@ import uk.org.openbanking.datamodel.account.OBReadProduct2;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountsUtil.DUMMY_FINANCIAL_ID;
-
 @Controller("ProductsApiV3.1.3")
 public class ProductsApiController implements ProductsApi {
 
@@ -49,7 +47,6 @@ public class ProductsApiController implements ProductsApi {
         return previousVersionController.getAccountProduct(
                 accountId,
                 page,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
@@ -70,7 +67,6 @@ public class ProductsApiController implements ProductsApi {
                                                       List<OBExternalPermissions1Code> permissions,
                                                       String httpUrl) {
         return previousVersionController.getProducts(
-                DUMMY_FINANCIAL_ID,
                 page,
                 authorization,
                 xFapiAuthDate,

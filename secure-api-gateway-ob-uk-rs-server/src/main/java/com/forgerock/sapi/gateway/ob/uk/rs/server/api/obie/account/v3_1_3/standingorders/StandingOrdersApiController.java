@@ -25,8 +25,6 @@ import uk.org.openbanking.datamodel.account.OBReadStandingOrder5;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountsUtil.DUMMY_FINANCIAL_ID;
-
 @Controller("StandingOrdersApiV3.1.3")
 public class StandingOrdersApiController implements StandingOrdersApi {
 
@@ -51,7 +49,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
         return previousVersionController.getAccountStandingOrders(
                 accountId,
                 page,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
@@ -72,7 +69,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                                                                   List<OBExternalPermissions1Code> permissions,
                                                                   String httpUrl) {
         return previousVersionController.getStandingOrders(
-                DUMMY_FINANCIAL_ID,
                 page,
                 authorization,
                 xFapiAuthDate,

@@ -41,11 +41,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class DirectDebitsApiController implements DirectDebitsApi {
 
-    @Value("${rs.page.default.direct-debits.size:10}")
-    private int PAGE_LIMIT_DIRECT_DEBITS;
-
     private final FRDirectDebitRepository frDirectDebitRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.direct-debits.size:10}")
+    private int PAGE_LIMIT_DIRECT_DEBITS;
 
     public DirectDebitsApiController(FRDirectDebitRepository frDirectDebitRepository,
                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -56,7 +55,6 @@ public class DirectDebitsApiController implements DirectDebitsApi {
     @Override
     public ResponseEntity<OBReadDirectDebit1> getAccountDirectDebits(String accountId,
                                                                      int page,
-                                                                     String xFapiFinancialId,
                                                                      String authorization,
                                                                      DateTime xFapiCustomerLastLoggedTime,
                                                                      String xFapiCustomerIpAddress,
@@ -82,8 +80,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadDirectDebit1> getDirectDebits(String xFapiFinancialId,
-                                                              int page,
+    public ResponseEntity<OBReadDirectDebit1> getDirectDebits(int page,
                                                               String authorization,
                                                               DateTime xFapiCustomerLastLoggedTime,
                                                               String xFapiCustomerIpAddress,

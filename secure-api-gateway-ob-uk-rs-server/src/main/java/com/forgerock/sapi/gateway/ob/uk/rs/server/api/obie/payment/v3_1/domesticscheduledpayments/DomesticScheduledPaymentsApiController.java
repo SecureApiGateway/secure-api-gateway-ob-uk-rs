@@ -72,7 +72,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     @Override
     public ResponseEntity<OBWriteDomesticScheduledResponse2> createDomesticScheduledPayments(
             @Valid OBWriteDomesticScheduled2 obWriteDomesticScheduled2,
-            String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
@@ -115,7 +114,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     @Override
     public ResponseEntity getDomesticScheduledPaymentsDomesticScheduledPaymentId(
             String domesticScheduledPaymentId,
-            String xFapiFinancialId,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,

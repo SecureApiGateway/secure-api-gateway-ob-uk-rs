@@ -40,11 +40,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Controller("ScheduledPaymentsApiV3.1.1")
 @Slf4j
 public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
-    @Value("${rs.page.default.scheduled-payments.size:10}")
-    private int PAGE_LIMIT_SCHEDULE_PAYMENTS;
-
     private final FRScheduledPaymentRepository frScheduledPaymentRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.scheduled-payments.size:10}")
+    private int PAGE_LIMIT_SCHEDULE_PAYMENTS;
 
     public ScheduledPaymentsApiController(FRScheduledPaymentRepository frScheduledPaymentRepository,
                                           AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -55,7 +54,6 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     @Override
     public ResponseEntity<OBReadScheduledPayment2> getAccountScheduledPayments(String accountId,
                                                                                int page,
-                                                                               String xFapiFinancialId,
                                                                                String authorization,
                                                                                DateTime xFapiCustomerLastLoggedTime,
                                                                                String xFapiCustomerIpAddress,
@@ -85,8 +83,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadScheduledPayment2> getScheduledPayments(String xFapiFinancialId,
-                                                                        int page,
+    public ResponseEntity<OBReadScheduledPayment2> getScheduledPayments(int page,
                                                                         String authorization,
                                                                         DateTime xFapiCustomerLastLoggedTime,
                                                                         String xFapiCustomerIpAddress,
@@ -104,12 +101,12 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
         int totalPages = scheduledPayments.getTotalPages();
 
         return ResponseEntity.ok(new OBReadScheduledPayment2().data(new OBReadScheduledPayment2Data().scheduledPayment(
-                scheduledPayments.getContent()
-                        .stream()
-                        .map(FRScheduledPayment::getScheduledPayment)
-                        .map(FRScheduledPaymentConverter::toOBScheduledPayment2)
-                        .map(dd -> accountDataInternalIdFilter.apply(dd))
-                        .collect(Collectors.toList())))
+                        scheduledPayments.getContent()
+                                .stream()
+                                .map(FRScheduledPayment::getScheduledPayment)
+                                .map(FRScheduledPaymentConverter::toOBScheduledPayment2)
+                                .map(dd -> accountDataInternalIdFilter.apply(dd))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

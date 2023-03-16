@@ -25,8 +25,6 @@ import uk.org.openbanking.datamodel.account.OBReadTransaction5;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountsUtil.DUMMY_FINANCIAL_ID;
-
 @Controller("TransactionsApiV3.1.3")
 public class TransactionsApiController implements TransactionsApi {
 
@@ -55,7 +53,6 @@ public class TransactionsApiController implements TransactionsApi {
         return previousVersionController.getAccountTransactions(
                 accountId,
                 page,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 fromBookingDateTime,
                 toBookingDateTime,
@@ -88,7 +85,6 @@ public class TransactionsApiController implements TransactionsApi {
                 accountId,
                 page,
                 statementId,
-                DUMMY_FINANCIAL_ID,
                 authorization,
                 fromBookingDateTime,
                 toBookingDateTime,
@@ -117,7 +113,6 @@ public class TransactionsApiController implements TransactionsApi {
                                                               List<OBExternalPermissions1Code> permissions,
                                                               String httpUrl) {
         return previousVersionController.getTransactions(
-                DUMMY_FINANCIAL_ID,
                 page,
                 authorization,
                 xFapiAuthDate,

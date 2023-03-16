@@ -41,11 +41,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class BeneficiariesApiController implements BeneficiariesApi {
 
-    @Value("${rs.page.default.beneficiaries.size:50}")
-    private int PAGE_LIMIT_BENEFICIARIES;
-
     private final FRBeneficiaryRepository frBeneficiaryRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.beneficiaries.size:50}")
+    private int PAGE_LIMIT_BENEFICIARIES;
 
     public BeneficiariesApiController(FRBeneficiaryRepository frBeneficiaryRepository,
                                       AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -56,7 +55,6 @@ public class BeneficiariesApiController implements BeneficiariesApi {
     @Override
     public ResponseEntity<OBReadBeneficiary2> getAccountBeneficiaries(String accountId,
                                                                       int page,
-                                                                      String xFapiFinancialId,
                                                                       String authorization,
                                                                       DateTime xFapiCustomerLastLoggedTime,
                                                                       String xFapiCustomerIpAddress,
@@ -71,19 +69,18 @@ public class BeneficiariesApiController implements BeneficiariesApi {
         int totalPages = beneficiaries.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBeneficiary2().data(new OBReadBeneficiary2Data().beneficiary(
-                beneficiaries.getContent()
-                        .stream()
-                        .map(FRBeneficiary::getBeneficiary)
-                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
-                        .map(b -> accountDataInternalIdFilter.apply(b))
-                        .collect(Collectors.toList())))
+                        beneficiaries.getContent()
+                                .stream()
+                                .map(FRBeneficiary::getBeneficiary)
+                                .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
+                                .map(b -> accountDataInternalIdFilter.apply(b))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     @Override
-    public ResponseEntity<OBReadBeneficiary2> getBeneficiaries(String xFapiFinancialId,
-                                                               int page,
+    public ResponseEntity<OBReadBeneficiary2> getBeneficiaries(int page,
                                                                String authorization,
                                                                DateTime xFapiCustomerLastLoggedTime,
                                                                String xFapiCustomerIpAddress,
@@ -99,12 +96,12 @@ public class BeneficiariesApiController implements BeneficiariesApi {
         int totalPages = beneficiaries.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBeneficiary2().data(new OBReadBeneficiary2Data().beneficiary(
-                beneficiaries.getContent()
-                        .stream()
-                        .map(FRBeneficiary::getBeneficiary)
-                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
-                        .map(b -> accountDataInternalIdFilter.apply(b))
-                        .collect(Collectors.toList())))
+                        beneficiaries.getContent()
+                                .stream()
+                                .map(FRBeneficiary::getBeneficiary)
+                                .map(FRAccountBeneficiaryConverter::toOBBeneficiary2)
+                                .map(b -> accountDataInternalIdFilter.apply(b))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

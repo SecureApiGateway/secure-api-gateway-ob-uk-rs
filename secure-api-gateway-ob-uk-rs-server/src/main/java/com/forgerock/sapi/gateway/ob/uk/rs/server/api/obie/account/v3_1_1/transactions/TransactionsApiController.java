@@ -43,11 +43,10 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 @Slf4j
 public class TransactionsApiController implements TransactionsApi {
 
-    @Value("${rs.page.default.transaction.size:120}")
-    private int PAGE_LIMIT_TRANSACTIONS;
-
     private final FRTransactionRepository frTransactionRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+    @Value("${rs.page.default.transaction.size:120}")
+    private int PAGE_LIMIT_TRANSACTIONS;
 
     public TransactionsApiController(FRTransactionRepository frTransactionRepository,
                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
@@ -58,7 +57,6 @@ public class TransactionsApiController implements TransactionsApi {
     @Override
     public ResponseEntity<OBReadTransaction5> getAccountTransactions(String accountId,
                                                                      int page,
-                                                                     String xFapiFinancialId,
                                                                      String authorization,
                                                                      DateTime fromBookingDateTime,
                                                                      DateTime toBookingDateTime,
@@ -105,8 +103,7 @@ public class TransactionsApiController implements TransactionsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadTransaction5> getTransactions(String xFapiFinancialId,
-                                                              int page,
+    public ResponseEntity<OBReadTransaction5> getTransactions(int page,
                                                               String authorization,
                                                               DateTime xFapiCustomerLastLoggedTime,
                                                               String xFapiCustomerIpAddress,
@@ -156,7 +153,6 @@ public class TransactionsApiController implements TransactionsApi {
     public ResponseEntity<OBReadTransaction5> getAccountStatementTransactions(String accountId,
                                                                               int page,
                                                                               String statementId,
-                                                                              String xFapiFinancialId,
                                                                               String authorization,
                                                                               DateTime fromBookingDateTime,
                                                                               DateTime toBookingDateTime,

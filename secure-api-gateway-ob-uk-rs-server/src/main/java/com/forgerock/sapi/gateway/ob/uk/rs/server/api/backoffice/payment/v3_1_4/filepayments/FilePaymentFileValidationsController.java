@@ -58,7 +58,6 @@ public class FilePaymentFileValidationsController implements FilePaymentFileVali
             String fileContent,
             String consentId,
             String authorization,
-            String xFapiFinancialId,
             String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
@@ -77,7 +76,7 @@ public class FilePaymentFileValidationsController implements FilePaymentFileVali
         // The intent already has a file check
         JsonElement intentFileContent = intent.get("FileContent");
         if (!Objects.isNull(intentFileContent)) {
-            log.debug("{} The consent {} already has a file uploaded so rejecting.", xFapiFinancialId, consentId);
+            log.debug("The consent {} already has a file uploaded so rejecting.", consentId);
             throw new OBErrorResponseException(
                     HttpStatus.FORBIDDEN,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -100,7 +99,7 @@ public class FilePaymentFileValidationsController implements FilePaymentFileVali
             return ResponseEntity.ok().build();
         } else {
             log.error("Errors: {}", filePaymentFileValidationService.getErrors());
-            throw badRequestResponseException(xFapiFinancialId, filePaymentFileValidationService.getErrors());
+            throw badRequestResponseException(filePaymentFileValidationService.getErrors());
         }
     }
 
@@ -124,8 +123,8 @@ public class FilePaymentFileValidationsController implements FilePaymentFileVali
         }
     }
 
-    private static OBErrorResponseException badRequestResponseException(String xFapiFinancialId, List<OBError1> errors) {
-        log.error("{}, Errors {}", xFapiFinancialId, errors);
+    private static OBErrorResponseException badRequestResponseException(List<OBError1> errors) {
+        log.error("Errors {}", errors);
         return new OBErrorResponseException(
                 HttpStatus.BAD_REQUEST,
                 OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -133,8 +132,8 @@ public class FilePaymentFileValidationsController implements FilePaymentFileVali
         );
     }
 
-    private OBErrorResponseException badRequestResponseException(String xFapiFinancialId, String message) {
-        log.error("{}, Errors {}", xFapiFinancialId, message);
+    private OBErrorResponseException badRequestResponseException(String message) {
+        log.error("Errors {}", message);
         return new OBErrorResponseException(
                 HttpStatus.BAD_REQUEST,
                 OBRIErrorResponseCategory.REQUEST_INVALID,

@@ -64,7 +64,6 @@ public class InternationalPaymentsApiController implements InternationalPayments
     @Override
     public ResponseEntity<OBWriteInternationalResponse2> createInternationalPayments(
             @Valid OBWriteInternational2 obWriteInternational2,
-            String xFapiFinancialId,
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
@@ -100,7 +99,6 @@ public class InternationalPaymentsApiController implements InternationalPayments
     @Override
     public ResponseEntity getInternationalPaymentsInternationalPaymentId(
             String internationalPaymentId,
-            String xFapiFinancialId,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,

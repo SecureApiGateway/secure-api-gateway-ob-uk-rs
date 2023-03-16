@@ -48,7 +48,6 @@ public class AccountsApiController implements AccountsApi {
 
     @Override
     public ResponseEntity<OBReadAccount2> getAccount(String accountId,
-                                                     String xFapiFinancialId,
                                                      String authorization,
                                                      DateTime xFapiCustomerLastLoggedTime,
                                                      String xFapiCustomerIpAddress,
@@ -69,7 +68,6 @@ public class AccountsApiController implements AccountsApi {
 
     @Override
     public ResponseEntity<OBReadAccount2> getAccounts(String page,
-                                                      String xFapiFinancialId,
                                                       String authorization,
                                                       DateTime xFapiCustomerLastLoggedTime,
                                                       String xFapiCustomerIpAddress,
