@@ -46,11 +46,11 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>0.9.0</version>
     </parent>
 
     <properties>
-        <uk.bom.version>0.9.0-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>0.9.0</uk.bom.version>
     </properties>
 
     <dependencyManagement>
@@ -67,26 +67,11 @@
     </dependencyManagement>
 
     <scm>
-        <connection>scm:git:git@github.com:SecureApiGateway/secure-api-gateway-ob-uk-rs.git
-        </connection>
-        <developerConnection>scm:git:git@github.com:SecureApiGateway/secure-api-gateway-ob-uk-rs.git
-        </developerConnection>
+        <connection>scm:git:${project.scm.url}</connection>
+        <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rs.git</url>
         <tag>HEAD</tag>
     </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>maven.forgerock.org-community</id>
-            <name>maven.forgerock.org-releases</name>
-            <url>https://maven.forgerock.org/artifactory/community</url>
-        </repository>
-        <snapshotRepository>
-            <id>maven.forgerock.org-community-snapshots</id>
-            <name>maven.forgerock.org-snapshots</name>
-            <url>https://maven.forgerock.org/artifactory/community</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <repositories>
         <repository>
