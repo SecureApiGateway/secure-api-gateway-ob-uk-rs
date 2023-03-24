@@ -1,58 +1,78 @@
-name: Publish package to the ForgeRock artifactory
+name: create-release
+run-name: Create release '${{ inputs.release_version_number }}'
+# What it does:
+# - Call release-prepare workflow
+# - Call release-publish-java workflow
+# - Call release-publish-docker workflow
+# - Call release-publish-helm workflow
+# - Call release-publish-draft-and-pr
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: "Release notes"
+        required: false
+        type: string
+        default: ''
+      release_version_number:
+        description: "Provide release version number"
+        required: true
+        type: string
+
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    name: Deploy release
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
 
-      - name: Set up forgerock maven repository
-        uses: actions/setup-java@v1
-        with: # running setup-java and overwrites the settings.xml
-          java-version: "14"
-          architecture: x64
-          server-id: maven.forgerock.org-community # Value of the distributionManagement/repository/id field of the pom.xml
-          server-username: MAVEN_USERNAME # env variable for username in deploy
-          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+  release_prepare: # prepare for a release in scm, creates the tag and release branch with the proper release versions
+    name: Call release prepare
+    uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-prepare.yml@master
+    with:
+      release_version_number: ${{ inputs.release_version_number }}
+    secrets:
+      GPG_PRIVATE_KEY_BOT: ${{ secrets.GPG_PRIVATE_KEY_BOT }}
+      GPG_KEY_PASSPHRASE_BOT: ${{ secrets.GPG_KEY_PASSPHRASE_BOT }}
+      GIT_COMMIT_USERNAME_BOT: ${{ secrets.GIT_COMMIT_USERNAME_BOT }}
+      GIT_COMMIT_AUTHOR_EMAIL_BOT: ${{ secrets.GIT_COMMIT_AUTHOR_EMAIL_BOT }}
 
-      - name: Set up snapshot forgerock maven repository
-        if: contains(github.ref, 'SNAPSHOT')
-        uses: actions/setup-java@v1
-        with: # running setup-java and overwrites the settings.xml
-          java-version: "14"
-          architecture: x64
-          server-id: maven.forgerock.org-community-snapshots # Value of the distributionManagement/repository/id field of the pom.xml
-          server-username: MAVEN_USERNAME # env variable for username in deploy
-          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+  release_java:
+    name: Call publish java
+    needs: [ release_prepare ]
+    uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-publish-java.yml@master
+    with:
+      release_version_number: ${{ inputs.release_version_number }}
+      release_tag_ref: ${{ needs.release_prepare.outputs.release_tag_ref }}
+    secrets:
+      FR_ARTIFACTORY_USER: ${{ secrets.FR_ARTIFACTORY_USER }}
+      FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD: ${{ secrets.FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD }}
 
-      - name: Release package
-        run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
-        env:
-          MAVEN_USERNAME: ${{ secrets.FR_ARTIFACTORY_USER }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.FR_ARTIFACTORY_TOKEN }}
-      
-      - name: helm version
-        id: helm
-        run: |
-          HELM_VERSION=$(make version)
-          echo ::set-output name=version::"$HELM_VERSION"
+  release_docker:
+    name: Call publish docker
+    needs: [ release_prepare ]
+    uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-publish-docker.yml@master
+    with:
+      release_version_number: ${{ inputs.release_version_number }}
+      release_tag_ref: ${{ needs.release_prepare.outputs.release_tag_ref }}
+      SERVICE_NAME: secure-api-gateway-test-actions-server
+    secrets:
+      GCR_CREDENTIALS_JSON: ${{ secrets.GCR_CREDENTIALS_JSON }}
+      GCR_RELEASE_REPO: ${{ secrets.GCR_RELEASE_REPO }}
 
-      - name: package helm
-        run: |
-          make helm version=${{ steps.helm.outputs.version }}
+  release_helm:
+    name: Call publish helm
+    needs: [ release_prepare ]
+    uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-publish-helm.yml@master
+    with:
+      release_version_number: ${{ inputs.release_version_number }}
+      release_tag_ref: ${{ needs.release_prepare.outputs.release_tag_ref }}
+      root_helm_directory: "_infra/helm/securebanking-openbanking-uk-rs"
+    secrets:
+      FR_ARTIFACTORY_USER_ACCESS_TOKEN: ${{ secrets.FR_ARTIFACTORY_USER_ACCESS_TOKEN }}
+      FR_HELM_REPO: ${{ secrets.FR_HELM_REPO }}
 
-      - name: Publish Release Chart 
-        id: upload
-        uses: google-github-actions/upload-cloud-storage@v0
-        with:
-          path: ${{ env.SERVICE_NAME }}-${{ steps.helm.outputs.version }}.tgz
-          destination: ${{ secrets.HELM_RELEASE_BUCKET }}/${{ env.SERVICE_NAME }}
-      
-      - name: Release Docker Image
-        run: |
-          make docker tag=${{ github.event.release.tag_name }} gcr-repo=${{ secrets.RELEASE_REPO }}
+  release_draft_and_pr:
+    name: Call publish draft and PR
+    needs: [ release_prepare, release_java, release_docker, release_helm ]
+    uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-publish-draft-and-pr.yml@master
+    with:
+      release_version_number: ${{ inputs.release_version_number }}
+      release_branch_ref: ${{ needs.release_prepare.outputs.release_branch_ref }}
+      release_tag_ref: ${{ needs.release_prepare.outputs.release_tag_ref }}
+      release_notes: ${{ inputs.notes }}
