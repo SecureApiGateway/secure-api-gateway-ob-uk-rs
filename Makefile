@@ -13,7 +13,7 @@ verify: clean
 	mvn verify
 
 docker: clean
-	mvn package dockerfile:build dockerfile:push -DskipTests -DskipITs -Dtag=${tag} \
+	mvn install dockerfile:build dockerfile:push -DskipTests -DskipITs -Dtag=${tag} \
 	  -DgcrRepo=${repo} --file secure-api-gateway-ob-uk-rs-server/pom.xml
 
 package_helm:
@@ -32,7 +32,7 @@ endif
 	jf rt upload  ./*-${version}.tgz ${helm_repo}
 
 dev: clean
-	mvn package -DskipTests=true -Dtag=latest -DgcrRepo=${repo} \
+	mvn install -DskipTests -DskipITs -Dtag=latest -DgcrRepo=${repo} \
 	  --file secure-api-gateway-ob-uk-rs-server/pom.xml
 
 version:
