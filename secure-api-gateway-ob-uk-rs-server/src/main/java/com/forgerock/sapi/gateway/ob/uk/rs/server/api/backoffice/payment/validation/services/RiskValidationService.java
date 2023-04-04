@@ -41,9 +41,28 @@ public class RiskValidationService {
         this.riskValidator = new OBRisk1Validator(true);
 
         // Validate Risk object
-        checkRequestAndConsentRiskPaymentContext1CodeMatch(consentRisk.getPaymentContextCode(), requestRisk.getPaymentContextCode());
-        checkRequestAndConsentRiskMerchantCategoryCodeMatch(consentRisk.getMerchantCategoryCode(), requestRisk.getMerchantCategoryCode());
-        checkRequestAndConsentRiskPaymentMerchantCustomerIdentificationMatch(consentRisk.getMerchantCustomerIdentification(), requestRisk.getMerchantCustomerIdentification());
+        if (validateRisk(requestRisk)) {
+            checkRequestAndConsentRiskPaymentContext1CodeMatch(consentRisk.getPaymentContextCode(), requestRisk.getPaymentContextCode());
+            checkRequestAndConsentRiskMerchantCategoryCodeMatch(consentRisk.getMerchantCategoryCode(), requestRisk.getMerchantCategoryCode());
+            checkRequestAndConsentRiskPaymentMerchantCustomerIdentificationMatch(consentRisk.getMerchantCustomerIdentification(), requestRisk.getMerchantCustomerIdentification());
+        }
+    }
+
+    /**
+     * Check if the Risk object is valid
+     *
+     * @param risk - the risk from the current submit Payment
+     * @throws OBErrorException
+     */
+    public boolean validateRisk(OBRisk1 risk) throws OBErrorException {
+        if (riskValidator != null) {
+            riskValidator.validate(risk);
+            return true;
+        } else {
+            String errorString = "No risk to be validated!";
+            log.error(errorString);
+            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+        }
     }
 
     private void checkRequestAndConsentRiskPaymentContext1CodeMatch(OBExternalPaymentContext1Code paymentContextCode, OBExternalPaymentContext1Code paymentContextCode1) throws OBErrorException {
