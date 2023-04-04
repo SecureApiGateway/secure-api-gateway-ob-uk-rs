@@ -60,12 +60,12 @@ spec:
           - name: CONSENT_REPO_URI
             valueFrom:
               configMapKeyRef:
-                name: securebanking-platform-config
+                name: deployment-config
                 key: CONSENT_REPO_URI
           - name: RS_DISCOVERY_FINANCIAL_ID
             valueFrom:
               configMapKeyRef:
-                name: securebanking-platform-config
+                name: deployment-config
                 key: OB_ASPSP_ORG_ID
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
@@ -77,7 +77,7 @@ spec:
         {{- if .Values.springConfig }}
           - name: spring-config
             configMap:
-              name: {{ .Chart.Name }}-spring-config
+              name: application-config
         {{- else }}
           - name: spring-config
             emptyDir: { }
