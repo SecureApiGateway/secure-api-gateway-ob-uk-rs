@@ -20,6 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.internationalstandingorders;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
@@ -34,8 +35,9 @@ public class InternationalStandingOrdersApiController extends com.forgerock.sapi
             InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             StandingOrderService standingOrderService,
-            ConsentService consentService
+            ConsentService consentService,
+            RiskValidationService riskValidationService
     ) {
-        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService, consentService);
+        super(standingOrderPaymentSubmissionRepository, paymentSubmissionValidator, standingOrderService, consentService, riskValidationService);
     }
 }

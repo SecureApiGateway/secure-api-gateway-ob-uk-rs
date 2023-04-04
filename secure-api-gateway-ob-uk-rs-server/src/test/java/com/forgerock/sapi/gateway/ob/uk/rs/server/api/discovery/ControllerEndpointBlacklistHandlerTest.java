@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -36,16 +38,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import uk.org.openbanking.datamodel.account.OBReadAccount5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
+import uk.org.openbanking.datamodel.common.OBRisk1;
+import uk.org.openbanking.datamodel.payment.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent;
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_5;
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_6;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
@@ -60,12 +65,8 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
         "rs.discovery.versionApiOverrides.v3_1_5.GetAccount=false"})
 public class ControllerEndpointBlacklistHandlerTest {
 
-    private static HttpHeaders PAYMENT_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
-    private static final OBVersion ENABLED_VERSION = v3_1_5;
-    private static final OBVersion DISABLED_VERSION = v3_1_6;
     private static final OBVersion DISABLED_ENDPOINT_OVERRIDE_VERSION = v3_1_5;
-
     @LocalServerPort
     private int port;
 
@@ -77,6 +78,9 @@ public class ControllerEndpointBlacklistHandlerTest {
 
     @MockBean
     private PlatformClientService platformClientService;
+
+    @MockBean
+    private ConsentService consentService;
 
     @AfterEach
     void removeData() {
@@ -91,16 +95,23 @@ public class ControllerEndpointBlacklistHandlerTest {
     }
 
     @Test
-    public void shouldCreateDomesticPaymentGivenApiVersionIsEnabled() throws ExceptionClient {
+    public void shouldCreateDomesticPaymentGivenApiVersionIsEnabled() {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        JsonObject intentResponse = getIntentResponse(payment);
-        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(intentResponse);
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
-        String url = paymentsUrl(ENABLED_VERSION);
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders());
+
+        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
+
+        given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse4(payment)
+        );
+
+        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse4(payment)
+        );
 
         // When
-        ResponseEntity<?> response = restTemplate.postForEntity(url, request, OBWriteDomesticResponse5.class);
+        ResponseEntity<OBWriteDomesticResponse4> response = restTemplate.postForEntity(paymentsUrl(OBVersion.v3_1_4), request, OBWriteDomesticResponse4.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -110,34 +121,44 @@ public class ControllerEndpointBlacklistHandlerTest {
     public void shouldFailToCreateDomesticPaymentGivenApiVersionIsDisabled() {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
-        String url = paymentsUrl(DISABLED_VERSION);
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders());
 
-        // When
-        ResponseEntity<?> response = restTemplate.postForEntity(url, request, OBWriteDomesticResponse5.class);
+        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
+
+        given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(payment)
+        );
+
+        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(payment)
+        );
+
+        ResponseEntity<OBWriteDomesticResponse5> paymentSubmitted = restTemplate.postForEntity(paymentsUrl(OBVersion.v3_1_6), request, OBWriteDomesticResponse5.class);
 
         // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(paymentSubmitted.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() throws ExceptionClient {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        JsonObject intentResponse = getIntentResponse(payment);
-        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(intentResponse);
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, PAYMENT_HEADERS);
-        ResponseEntity<OBWriteDomesticResponse5> persistedPayment = restTemplate.postForEntity(
-                paymentsUrl(ENABLED_VERSION),
-                request,
-                OBWriteDomesticResponse5.class);
-        String url = paymentsIdUrl(ENABLED_VERSION, persistedPayment.getBody().getData().getDomesticPaymentId());
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders());
 
-        // When
-        ResponseEntity<?> response = restTemplate.exchange(url, GET, new HttpEntity<>(PAYMENT_HEADERS), OBWriteDomesticResponse5.class);
+        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
+
+        given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(payment)
+        );
+
+        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(payment)
+        );
+
+        ResponseEntity<OBWriteDomesticResponse5> paymentSubmitted = restTemplate.postForEntity(paymentsUrl(OBVersion.v3_1_6), request, OBWriteDomesticResponse5.class);
 
         // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(paymentSubmitted.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test

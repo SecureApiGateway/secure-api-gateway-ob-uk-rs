@@ -25,7 +25,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRe
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
@@ -39,12 +42,14 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_4.domesticpayments.DomesticPaymentsApi;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +59,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRRiskConverter.toOBRisk1;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse4DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
@@ -69,15 +75,18 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
     private final ConsentService consentService;
+    private final RiskValidationService riskValidationService;
 
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ConsentService consentService
+            ConsentService consentService,
+            RiskValidationService riskValidationService
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentService = consentService;
+        this.riskValidationService = riskValidationService;
     }
 
     @Override
@@ -98,8 +107,36 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomestic2.getRisk());
 
+        String consentId = obWriteDomestic2.getData().getConsentId();
+        //get the consent
+        JsonObject intent = consentService.getIDMIntent(authorization, consentId);
+        log.debug("Retrieved consent from IDM");
+
+        //deserialize the intent to ob response object
+        OBWriteDomesticConsentResponse4 consent = consentService.deserialize(
+                OBWriteDomesticConsentResponse4.class,
+                intent.getAsJsonObject("OBIntentObject"),
+                consentId
+        );
+        log.debug("Deserialized consent from IDM");
+
         FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic2);
         log.trace("Converted to: '{}'", frDomesticPayment);
+
+        OBRisk1 consentRisk = consent.getRisk();
+        OBRisk1 requestRisk = toOBRisk1(frDomesticPayment.getRisk());
+
+        // validate the consent against the request
+        log.debug("Validating Domestic Payment submission");
+        try {
+            riskValidationService.validate(consentRisk, requestRisk);
+        } catch (OBErrorException e) {
+            throw new OBErrorResponseException(
+                    e.getObriErrorType().getHttpStatus(),
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    e.getOBError());
+        }
+        log.debug("Domestic Payment validation successful");
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
                 .id(obWriteDomestic2.getData().getConsentId())

@@ -26,7 +26,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternat
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentStatusUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.FRInternationalStandingOrderPaymentSubmission;
@@ -183,7 +183,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalStandingOrderPaymentSubmission frStandingOrderSubmission) {
         OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
-                PaymentStatusUtils.statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
+                PaymentsUtils.statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
         );
 
         // Build the response object with data to meet the expected data defined by the spec
