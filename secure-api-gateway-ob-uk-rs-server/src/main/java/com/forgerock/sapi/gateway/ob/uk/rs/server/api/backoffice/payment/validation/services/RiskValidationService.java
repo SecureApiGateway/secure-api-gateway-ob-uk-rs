@@ -41,30 +41,15 @@ public class RiskValidationService {
         this.riskValidator = new OBRisk1Validator(true);
 
         // Validate Risk object
-        if (validateRisk(requestRisk)) {
-            checkRequestAndConsentRiskPaymentContext1CodeMatch(consentRisk.getPaymentContextCode(), requestRisk.getPaymentContextCode());
-            checkRequestAndConsentRiskMerchantCategoryCodeMatch(consentRisk.getMerchantCategoryCode(), requestRisk.getMerchantCategoryCode());
-            checkRequestAndConsentRiskPaymentMerchantCustomerIdentificationMatch(consentRisk.getMerchantCustomerIdentification(), requestRisk.getMerchantCustomerIdentification());
-        }
-    }
-
-    /**
-     * Check if the Risk object is valid
-     *
-     * @param risk - the risk from the current submit Payment
-     * @throws OBErrorException
-     */
-    public boolean validateRisk(OBRisk1 risk) throws OBErrorException {
-        if (riskValidator != null) {
-            riskValidator.validate(risk);
-            return true;
-        } else {
-            String errorString = "No risk to be validated!";
-            log.error(errorString);
+        if (requestRisk == null) {
             throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
         }
-    }
 
+        checkRequestAndConsentRiskPaymentContext1CodeMatch(consentRisk.getPaymentContextCode(), requestRisk.getPaymentContextCode());
+        checkRequestAndConsentRiskMerchantCategoryCodeMatch(consentRisk.getMerchantCategoryCode(), requestRisk.getMerchantCategoryCode());
+        checkRequestAndConsentRiskPaymentMerchantCustomerIdentificationMatch(consentRisk.getMerchantCustomerIdentification(), requestRisk.getMerchantCustomerIdentification());
+    }
+    
     private void checkRequestAndConsentRiskPaymentContext1CodeMatch(OBExternalPaymentContext1Code paymentContextCode, OBExternalPaymentContext1Code paymentContextCode1) throws OBErrorException {
         if (paymentContextCode != null && paymentContextCode1 != null && !paymentContextCode.equals(paymentContextCode1)) {
             throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
