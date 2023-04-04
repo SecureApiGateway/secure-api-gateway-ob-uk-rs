@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-spring-config
+  name: application-config
   labels:
     app: {{ .Chart.Name }}
 data:
