@@ -21,7 +21,7 @@
 
     <groupId>com.forgerock.sapi.gateway</groupId>
     <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rs</name>
     <description>A UK Open Banking Resource Server for the Secure API Gateway</description>
@@ -69,7 +69,7 @@
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rs.git</url>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
