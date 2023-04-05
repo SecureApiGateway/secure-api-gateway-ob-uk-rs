@@ -45,11 +45,11 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.1</version>
     </parent>
 
     <properties>
-        <uk.bom.version>0.9.1-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>0.9.1</uk.bom.version>
     </properties>
 
     <dependencyManagement>
