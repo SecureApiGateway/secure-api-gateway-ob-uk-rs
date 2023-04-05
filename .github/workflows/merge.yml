@@ -69,7 +69,7 @@ jobs:
       - name: 'run functional tests'
         uses: codefresh-io/codefresh-pipeline-runner@master
         with:
-          args: '-v SERVICE_NAME=rs'
+          args: '-v SERVICE_NAME=test-facility-bank'
         env:
           PIPELINE_NAME: 'ForgeCloud/sbat-infra/service-build'
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
