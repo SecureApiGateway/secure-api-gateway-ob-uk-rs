@@ -52,11 +52,11 @@ public interface StandingOrdersApi {
             @ApiResponse(code = 405, message = "Method Not Allowed", response = Void.class),
             @ApiResponse(code = 406, message = "Not Acceptable", response = Void.class),
             @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class) })
+            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class)})
 
 
     @RequestMapping(value = "/accounts/{AccountId}/standing-orders",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadStandingOrder5> getAccountStandingOrders(
             @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
@@ -72,8 +72,8 @@ public interface StandingOrdersApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP. " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
                     "Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -92,24 +92,24 @@ public interface StandingOrdersApi {
     ) throws OBErrorResponseException;
 
     @ApiOperation(value = "Get Standing Orders", notes = "Get Standing Orders", response = OBReadStandingOrder5.class, authorizations = {
-        @Authorization(value = "PSUOAuth2Security", scopes = {
-            @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
+            @Authorization(value = "PSUOAuth2Security", scopes = {
+                    @AuthorizationScope(scope = "accounts", description = "Ability to get Accounts information")
             })
     })
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Standing Orders successfully retrieved", response = OBReadStandingOrder5.class),
-        @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
-        @ApiResponse(code = 401, message = "Unauthorized", response = Void.class),
-        @ApiResponse(code = 403, message = "Forbidden", response = Void.class),
-        @ApiResponse(code = 405, message = "Method Not Allowed", response = Void.class),
-        @ApiResponse(code = 406, message = "Not Acceptable", response = Void.class),
-        @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
-        @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class) })
+            @ApiResponse(code = 200, message = "Standing Orders successfully retrieved", response = OBReadStandingOrder5.class),
+            @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Void.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Void.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed", response = Void.class),
+            @ApiResponse(code = 406, message = "Not Acceptable", response = Void.class),
+            @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class)})
 
 
     @RequestMapping(value = "/standing-orders",
-        produces = { "application/json; charset=utf-8" },
-        method = RequestMethod.GET)
+            produces = {"application/json; charset=utf-8"},
+            method = RequestMethod.GET)
     ResponseEntity<OBReadStandingOrder5> getStandingOrders(
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -119,8 +119,8 @@ public interface StandingOrdersApi {
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP. All dates in the HTTP headers are " +
                     "represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
