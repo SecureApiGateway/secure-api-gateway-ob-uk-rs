@@ -75,8 +75,8 @@ public interface StatementsApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
                     "Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -126,8 +126,8 @@ public interface StatementsApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP. " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: " +
                     " Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -135,9 +135,11 @@ public interface StatementsApi {
             @ApiParam(value = "An RFC4122 UID used as a correlation id.")
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
-            @ApiParam(value = "HTTP Accept header defining what files will be accepted.", required=true)
-            @RequestHeader(value="Accept", required=true) String accept
-    ) throws OBErrorResponseException;;
+            @ApiParam(value = "HTTP Accept header defining what files will be accepted.", required = true)
+            @RequestHeader(value = "Accept", required = true) String accept
+    ) throws OBErrorResponseException;
+
+    ;
 
     @ApiOperation(value = "Get Statements", nickname = "getStatements", notes = "Get Statements", response = OBReadStatement1.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
@@ -174,8 +176,8 @@ public interface StatementsApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
                     "Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -236,8 +238,8 @@ public interface StatementsApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP. " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
                     "Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,

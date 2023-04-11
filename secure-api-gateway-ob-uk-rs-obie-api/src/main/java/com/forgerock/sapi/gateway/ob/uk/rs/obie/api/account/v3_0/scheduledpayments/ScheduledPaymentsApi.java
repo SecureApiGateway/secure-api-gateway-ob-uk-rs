@@ -51,9 +51,9 @@ public interface ScheduledPaymentsApi {
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
-            @ApiResponse(code = 500, message = "Internal Server Error") })
+            @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/accounts/{AccountId}/scheduled-payments",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadScheduledPayment1> getAccountScheduledPayments(
             @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
@@ -68,8 +68,8 @@ public interface ScheduledPaymentsApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
                     "Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -100,9 +100,9 @@ public interface ScheduledPaymentsApi {
             @ApiResponse(code = 405, message = "Method Not Allowed"),
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
-            @ApiResponse(code = 500, message = "Internal Server Error") })
+            @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/scheduled-payments",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBReadScheduledPayment1> getScheduledPayments(
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
@@ -114,8 +114,8 @@ public interface ScheduledPaymentsApi {
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
                     "Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+            @RequestHeader(value = "x-fapi-auth-date", required = false)
+            @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
