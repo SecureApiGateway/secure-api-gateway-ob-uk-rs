@@ -102,12 +102,14 @@ public class ControllerEndpointBlacklistHandlerTest {
 
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
 
+        OBWriteDomesticConsentResponse4 obWriteDomesticConsentResponse4 = PaymentsUtils.createTestDataConsentResponse4(payment);
+
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse4(payment)
+                obWriteDomesticConsentResponse4
         );
 
         given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse4(payment)
+                obWriteDomesticConsentResponse4
         );
 
         // When
@@ -124,15 +126,17 @@ public class ControllerEndpointBlacklistHandlerTest {
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders());
 
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
+        OBWriteDomesticConsentResponse5 obWriteDomesticConsentResponse5 = PaymentsUtils.createTestDataConsentResponse5(payment);
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(payment)
+                obWriteDomesticConsentResponse5
         );
 
         given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(payment)
+                obWriteDomesticConsentResponse5
         );
 
+        // When
         ResponseEntity<OBWriteDomesticResponse5> paymentSubmitted = restTemplate.postForEntity(paymentsUrl(OBVersion.v3_1_6), request, OBWriteDomesticResponse5.class);
 
         // Then
@@ -140,19 +144,20 @@ public class ControllerEndpointBlacklistHandlerTest {
     }
 
     @Test
-    public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() throws ExceptionClient {
+    public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders());
 
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
+        OBWriteDomesticConsentResponse5 obWriteDomesticConsentResponse5 = PaymentsUtils.createTestDataConsentResponse5(payment);
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(payment)
+                obWriteDomesticConsentResponse5
         );
 
         given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(payment)
+                obWriteDomesticConsentResponse5
         );
 
         ResponseEntity<OBWriteDomesticResponse5> paymentSubmitted = restTemplate.postForEntity(paymentsUrl(OBVersion.v3_1_6), request, OBWriteDomesticResponse5.class);

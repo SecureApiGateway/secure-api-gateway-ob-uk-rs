@@ -38,20 +38,20 @@ public class PaymentsUtils {
         List<OBWriteDomesticConsentResponse4DataCharges> charges = new ArrayList<>();
         charges.add(new OBWriteDomesticConsentResponse4DataCharges());
         return new OBWriteDomesticConsentResponse4()
-                .data(new OBWriteDomesticConsentResponse4Data().charges(charges))
-                .risk(new OBRisk1().paymentContextCode(payment.getRisk().getPaymentContextCode())
-                        .merchantCategoryCode(payment.getRisk().getMerchantCategoryCode())
-                        .merchantCustomerIdentification(payment.getRisk().getMerchantCustomerIdentification()));
+                .data(new OBWriteDomesticConsentResponse4Data()
+                        .initiation(payment.getData().getInitiation())
+                        .charges(charges))
+                .risk(payment.getRisk());
     }
 
     public static OBWriteDomesticConsentResponse5 createTestDataConsentResponse5(OBWriteDomestic2 payment) {
         List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
         charges.add(new OBWriteDomesticConsentResponse5DataCharges());
         return new OBWriteDomesticConsentResponse5()
-                .data(new OBWriteDomesticConsentResponse5Data().charges(charges))
-                .risk(new OBRisk1().paymentContextCode(payment.getRisk().getPaymentContextCode())
-                        .merchantCategoryCode(payment.getRisk().getMerchantCategoryCode())
-                        .merchantCustomerIdentification(payment.getRisk().getMerchantCustomerIdentification()));
+                .data(new OBWriteDomesticConsentResponse5Data()
+                        .initiation(payment.getData().getInitiation())
+                        .charges(charges))
+                .risk(payment.getRisk());
     }
 
 }

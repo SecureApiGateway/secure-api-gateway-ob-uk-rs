@@ -20,7 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_7.internationalstandingorders;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;

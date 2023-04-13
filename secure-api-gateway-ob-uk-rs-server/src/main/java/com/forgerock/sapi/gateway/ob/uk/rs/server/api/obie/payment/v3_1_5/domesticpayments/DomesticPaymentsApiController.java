@@ -28,7 +28,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
@@ -120,13 +120,10 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic2);
         log.trace("Converted to: '{}'", frDomesticPayment);
 
-        OBRisk1 consentRisk = consent.getRisk();
-        OBRisk1 requestRisk = toOBRisk1(frDomesticPayment.getRisk());
-
         // validate the consent against the request
         log.debug("Validating Domestic Payment submission");
         try {
-            riskValidationService.validate(consentRisk, requestRisk);
+            riskValidationService.validate(consent.getRisk(), obWriteDomestic2.getRisk());
         } catch (OBErrorException e) {
             throw new OBErrorResponseException(
                     e.getObriErrorType().getHttpStatus(),

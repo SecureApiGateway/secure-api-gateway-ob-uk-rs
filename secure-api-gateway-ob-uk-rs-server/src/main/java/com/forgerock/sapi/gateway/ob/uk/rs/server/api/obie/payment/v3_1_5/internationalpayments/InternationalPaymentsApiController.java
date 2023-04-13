@@ -29,7 +29,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalpayments.InternationalPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
@@ -122,13 +122,10 @@ public class InternationalPaymentsApiController implements InternationalPayments
         FRWriteInternational frInternationalPayment = toFRWriteInternational(obWriteInternational3);
         log.trace("Converted to: '{}'", frInternationalPayment);
 
-        OBRisk1 consentRisk = consent.getRisk();
-        OBRisk1 requestRisk = toOBRisk1(frInternationalPayment.getRisk());
-
         // validate the consent against the request
         log.debug("Validating International Payment submission");
         try {
-            riskValidationService.validate(consentRisk, requestRisk);
+            riskValidationService.validate(consent.getRisk(), obWriteInternational3.getRisk());
         } catch (OBErrorException e) {
             throw new OBErrorResponseException(
                     e.getObriErrorType().getHttpStatus(),

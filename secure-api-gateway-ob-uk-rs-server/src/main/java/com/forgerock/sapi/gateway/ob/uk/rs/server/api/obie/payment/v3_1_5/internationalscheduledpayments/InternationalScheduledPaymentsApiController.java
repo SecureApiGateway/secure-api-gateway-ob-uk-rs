@@ -30,7 +30,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalscheduledpayments.InternationalScheduledPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRScheduledPaymentDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
@@ -131,13 +131,10 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         FRWriteInternationalScheduled frScheduledPayment = toFRWriteInternationalScheduled(obWriteInternationalScheduled3);
         log.trace("Converted to: '{}'", frScheduledPayment);
 
-        OBRisk1 consentRisk = consent.getRisk();
-        OBRisk1 requestRisk = toOBRisk1(frScheduledPayment.getRisk());
-
         // validate the consent against the request
         log.debug("Validating International Scheduled Payment submission");
         try {
-            riskValidationService.validate(consentRisk, requestRisk);
+            riskValidationService.validate(consent.getRisk(), obWriteInternationalScheduled3.getRisk());
         } catch (OBErrorException e) {
             throw new OBErrorResponseException(
                     e.getObriErrorType().getHttpStatus(),

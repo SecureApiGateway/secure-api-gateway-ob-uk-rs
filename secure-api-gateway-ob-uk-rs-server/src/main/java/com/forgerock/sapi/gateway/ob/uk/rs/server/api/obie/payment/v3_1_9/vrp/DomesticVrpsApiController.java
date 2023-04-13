@@ -21,8 +21,9 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResp
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.DomesticVrpValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.DomesticVrpValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
@@ -65,21 +66,23 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
     private final ConsentService consentService;
     private final PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService;
-
     private final PaymentSubmissionValidator paymentSubmissionValidator;
+    private final RiskValidationService riskValidationService;
 
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
             DomesticVrpValidationService domesticVrpValidationService,
             ConsentService consentService,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
-            PaymentSubmissionValidator paymentSubmissionValidator
+            PaymentSubmissionValidator paymentSubmissionValidator,
+            RiskValidationService riskValidationService
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.domesticVrpValidationService = domesticVrpValidationService;
         this.consentService = consentService;
         this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.riskValidationService = riskValidationService;
     }
 
     @Override
@@ -195,6 +198,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         // validate the consent against the instruction
         log.debug("Validating VRP submission");
+        riskValidationService.validate(consent.getRisk(), obDomesticVRPRequest.getRisk());
         domesticVrpValidationService.validate(consent, frDomesticVRPRequest);
         log.debug("VRP validation successful! Creating the payment.");
 
