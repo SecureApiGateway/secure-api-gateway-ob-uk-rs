@@ -47,7 +47,7 @@ public class RiskValidationService {
     public void validate(OBRisk1 consentRisk, OBRisk1 requestRisk) throws OBErrorException {
         if (Objects.isNull(requestRisk)) {
             log.error("Request Risk cannot be null");
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK, "Request Risk cannot be null");
         }
         checkEquality(consentRisk.getBeneficiaryAccountType(), requestRisk.getBeneficiaryAccountType());
         checkEquality(
