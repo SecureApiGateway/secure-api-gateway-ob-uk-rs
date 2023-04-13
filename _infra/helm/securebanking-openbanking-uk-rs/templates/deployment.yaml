@@ -35,19 +35,19 @@ spec:
             httpGet:
               path: /actuator/health
               port: {{ .Values.deployment.containerPort }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds | quote }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold | quote }}
-            successThreshold: {{ .Values.readinessProbe.successThreshold | quote }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | quote}}
+            periodSeconds: {{ .Values.deployment.readinessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.deployment.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.deployment.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.deployment.readinessProbe.timeoutSeconds }}
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: {{ .Values.deployment.containerPort }}
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds | quote }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds | quote }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold | quote }}
-            successThreshold: {{ .Values.livenessProbe.successThreshold | quote }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | quote }}
+            initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.deployment.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.deployment.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds }}
           volumeMounts:
             - name: spring-config
               mountPath: /app/config
