@@ -1,40 +1,41 @@
+---
+configmap:
+  apiVersion: v1
+  # Addition Spring properties can be provided as a yaml block here, this will be mounted into the container and override / extend the config found in the application.yml inside the jar
+  springConfig: {}
+
 deployment:
   apiVersion: apps/v1
+  containerPort: 8080
+  image:
+    # repo:
+    # tag:
+    imagePullPolicy: Always
+  java:
+    opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
+  livenessProbe:
+    initialDelaySeconds: 160
+    periodSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+  mongodb:
+    host: mongodb
+  readinessProbe:
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    timeoutSeconds: 5
   replicas: 1
-
+  resources: {}
   rollingUpdate:
     maxSurge: 50%
     maxUnavailable: 25%
+  strategyType: RollingUpdate
 
-  imagePullPolicy: Always
-
-  # Deploy a different image to the intended release (useful for development)
-  imageOverride:
-    enabled: true
-    repo: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
-    tag: latest
-    tagDelimiter: ":"
-
-  server:
-    port: 8080
-
-  java:
-    opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
-    
-  resources:
-    requests:
-      cpu: 1
-      memory: 1024Mi
-    limits:
-      cpu: 1
-      memory: 1024Mi
-
-mongodb:
-  host: mongodb
-  
 service:
   apiVersion: v1
+  port: 8080
+  protocol: TCP
+  targetPort: 80
   type: ClusterIP
-
-# Addition Spring properties can be provided as a yaml block here, this will be mounted into the container and override / extend the config found in the application.yml inside the jar
-springConfig: {}
