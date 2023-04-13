@@ -9,7 +9,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
   - name: {{ .Chart.Name }}
-  - port: {{ .Values.service.port }}
+    port: {{ .Values.service.port }}
     targetPort: {{ .Values.service.targetPort }}
     protocol: {{  .Values.service.protocol }}
   selector:
