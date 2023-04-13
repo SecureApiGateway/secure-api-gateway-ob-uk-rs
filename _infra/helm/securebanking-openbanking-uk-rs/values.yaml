@@ -27,7 +27,13 @@ deployment:
     successThreshold: 1
     timeoutSeconds: 5
   replicas: 1
-  resources: {}
+  resources:
+    requests:
+      cpu: 1
+      memory: 1024Mi
+    limits:
+      cpu: 1
+      memory: 1024Mi
   rollingUpdate:
     maxSurge: 50%
     maxUnavailable: 25%
