@@ -81,4 +81,3 @@ spec:
           - name: spring-config
             emptyDir: { }
         {{- end }}
-
