@@ -17,7 +17,6 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.val
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.OBRisk1Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
@@ -89,11 +88,9 @@ public class RiskValidationService {
      */
     private void checkEquality(Boolean fromConsent, Boolean fromRequest, String propertyName) throws OBErrorException {
         if (Objects.isNull(fromConsent)) {
-            log.warn("The consent property '{}' value is null, validating nullability in the the request", propertyName);
             propertyMustBeNull(fromRequest, propertyName);
         } else if (Objects.isNull(fromRequest) || Boolean.compare(fromRequest, fromConsent) != 0) {
-            log.error("The property '{}' value does not match with the value provided in the consent", propertyName);
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError("The property '" + propertyName + "' value does not match with the value provided in the consent");
         }
     }
 
@@ -104,13 +101,10 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(OBExternalExtendedAccountType1Code fromConsent, OBExternalExtendedAccountType1Code fromRequest) throws OBErrorException {
-        String propertyName = "BeneficiaryAccountType";
         if (Objects.isNull(fromConsent)) {
-            log.warn("The consent property '{}' value is null, validating nullability in the request", propertyName);
-            propertyMustBeNull(fromRequest, propertyName);
+            propertyMustBeNull(fromRequest, "BeneficiaryAccountType");
         } else if (!fromConsent.equals(fromRequest)) {
-            log.error("The property '{}' value does not match with the value provided in the consent", propertyName);
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError("The property 'BeneficiaryAccountType' value does not match with the value provided in the consent");
         }
     }
 
@@ -121,13 +115,10 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(OBExternalPaymentContext1Code fromConsent, OBExternalPaymentContext1Code fromRequest) throws OBErrorException {
-        String propertyName = "PaymentContextCode";
         if (Objects.isNull(fromConsent)) {
-            log.warn("The consent property '{}' value is null, validating nullability in the request", propertyName);
-            propertyMustBeNull(fromRequest, propertyName);
+            propertyMustBeNull(fromRequest, "PaymentContextCode");
         } else if (!fromConsent.equals(fromRequest)) {
-            log.error("The property '{}' value does not match with the value provided in the consent", propertyName);
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError("The property 'PaymentContextCode' value does not match with the value provided in the consent");
         }
     }
 
@@ -140,11 +131,9 @@ public class RiskValidationService {
      */
     private void checkEquality(String fromConsent, String fromRequest, String propertyName) throws OBErrorException {
         if (Objects.isNull(fromConsent)) {
-            log.warn("The consent property '{}' value is null, validating nullability in the request", propertyName);
             propertyMustBeNull(fromRequest, propertyName);
         } else if (!fromConsent.equals(fromRequest)) {
-            log.error("The property '{}' value does not match with the value provided in the consent", propertyName);
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError("The property '" + propertyName + "' value does not match with the value provided in the consent");
         }
     }
 
@@ -155,13 +144,10 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(OBRisk1DeliveryAddress fromConsent, OBRisk1DeliveryAddress fromRequest) throws OBErrorException {
-        String propertyName = "DeliveryAddress";
         if (Objects.isNull(fromConsent)) {
-            log.warn("The consent property '{}' value is null, validating nullability in the request", propertyName);
-            propertyMustBeNull(fromRequest, propertyName);
+            propertyMustBeNull(fromRequest, "DeliveryAddress");
         } else if (!fromConsent.equals(fromRequest)) {
-            log.error("The property '{}' value does not match with the value provided in the consent", propertyName);
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError("The property 'DeliveryAddress' value does not match with the value provided in the consent");
         }
     }
 
@@ -172,9 +158,14 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     protected void propertyMustBeNull(Object property, String propertyName) throws OBErrorException {
+        log.warn("The consent property '{}' value is null, validating nullability in the request", propertyName);
         if (!Objects.isNull(property)) {
-            log.error("The property '{}' It was expected to be null as provided in the consent", propertyName);
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError("The property '" + propertyName + "' It was expected to be null as provided in the consent");
         }
+    }
+
+    private void throwError(String reason) throws OBErrorException {
+        log.error(reason);
+        throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK, reason);
     }
 }
