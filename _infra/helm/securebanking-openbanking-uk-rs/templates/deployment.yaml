@@ -73,7 +73,7 @@ spec:
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
       volumes:
-        {{- if .Values.configmap.springConfig }}
+        {{- if .Values.springConfig }}
           - name: spring-config
             configMap:
               name: application-config
