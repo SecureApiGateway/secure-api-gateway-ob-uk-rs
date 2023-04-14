@@ -143,8 +143,7 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(String fromConsent, String fromRequest, String propertyName) throws OBErrorException {
-        if ((Objects.isNull(fromConsent) && !Objects.isNull(fromRequest)) || !fromConsent.equals(fromRequest))
-        {
+        if (!Objects.equals(fromRequest, fromConsent)){
             throwError("The property '" + propertyName + "' value does not match with the value provided in the consent");
         }
 //        else if (!fromConsent.equals(fromRequest)) {
