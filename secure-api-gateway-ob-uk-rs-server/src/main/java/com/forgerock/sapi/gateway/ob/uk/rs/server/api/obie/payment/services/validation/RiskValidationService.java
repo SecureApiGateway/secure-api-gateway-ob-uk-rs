@@ -100,9 +100,12 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(OBExternalExtendedAccountType1Code fromConsent, OBExternalExtendedAccountType1Code fromRequest) throws OBErrorException {
+        log.debug("BeneficiaryAccountType from consent {}, from request {}", fromConsent, fromRequest);
+        log.debug("BeneficiaryAccountType value from consent {}, from request {}", fromConsent.getValue(), fromRequest.getValue());
+        log.debug("BeneficiaryAccountType name from consent {}, from request {}", fromConsent.name(), fromRequest.name());
         if (Objects.isNull(fromConsent)) {
             propertyMustBeNull(fromRequest, "BeneficiaryAccountType");
-        } else if (!fromConsent.equals(fromRequest)) {
+        } else if (!fromConsent.toString().equals(fromRequest.toString())) {
             throwError("The property 'BeneficiaryAccountType' value does not match with the value provided in the consent");
         }
     }
@@ -116,7 +119,7 @@ public class RiskValidationService {
     private void checkEquality(OBExternalPaymentContext1Code fromConsent, OBExternalPaymentContext1Code fromRequest) throws OBErrorException {
         if (Objects.isNull(fromConsent)) {
             propertyMustBeNull(fromRequest, "PaymentContextCode");
-        } else if (!fromConsent.equals(fromRequest)) {
+        } else if (!fromConsent.toString().equals(fromRequest.toString())) {
             throwError("The property 'PaymentContextCode' value does not match with the value provided in the consent");
         }
     }
