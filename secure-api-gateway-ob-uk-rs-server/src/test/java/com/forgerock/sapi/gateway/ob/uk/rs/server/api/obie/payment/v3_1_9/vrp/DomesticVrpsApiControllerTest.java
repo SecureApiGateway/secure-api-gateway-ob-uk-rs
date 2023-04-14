@@ -30,10 +30,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.vrp.*;
-import uk.org.openbanking.testsupport.vrp.OBDomesticVrpRequestTestDataFactory;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticVrpPaymentConsentDetailsTestFactory.aValidDomesticVrpPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +44,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentResponseTestDataFactory.aValidOBDomesticVRPConsentResponse;
 import static uk.org.openbanking.testsupport.vrp.OBDomesticVrpCommonTestDataFactory.aValidOBCashAccountDebtorWithName;
+import static uk.org.openbanking.testsupport.vrp.OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest;
 
 /**
  * A SpringBoot test for the {@link DomesticVrpsApiController} v[3.1.9, 3.1.10].
@@ -79,7 +80,7 @@ public class DomesticVrpsApiControllerTest {
     @Test
     public void shouldCreateDomesticVrpPayment() {
         // Given
-        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        OBDomesticVRPRequest obDomesticVRPRequest = aValidOBDomesticVRPRequest();
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
 
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticVrpPaymentConsentDetails(
@@ -104,9 +105,33 @@ public class DomesticVrpsApiControllerTest {
     }
 
     @Test
+    public void shouldThrowsErrorValidatingRiskDomesticVrpPayment() {
+        // Given
+        OBDomesticVRPRequest obDomesticVRPRequest = aValidOBDomesticVRPRequest();
+        HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
+
+        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticVrpPaymentConsentDetails(
+                obDomesticVRPRequest.getData().getConsentId()
+        ));
+
+        given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
+                aValidOBDomesticVRPConsentResponse(aValidOBDomesticVRPRequest()).risk(new OBRisk1().paymentPurposeCode("TEST009"))
+        );
+
+        // When
+        ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBErrorResponse1.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        OBError1 error = response.getBody().getErrors().get(0);
+        assertEquals(OBRIErrorType.PAYMENT_INVALID_RISK.getCode().getValue(),
+                error.getErrorCode());
+    }
+
+    @Test
     public void shouldCreateDomesticVrpPaymentWithRefund() {
         // Given
-        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        OBDomesticVRPRequest obDomesticVRPRequest = aValidOBDomesticVRPRequest();
         // the debtor account is mandatory in initiation to fill the refund object in the response
         obDomesticVRPRequest.getData().getInitiation().debtorAccount(aValidOBCashAccountDebtorWithName());
         HttpHeaders headers = HttpHeadersTestDataFactory.requiredVrpPaymentHttpHeaders();
@@ -139,7 +164,7 @@ public class DomesticVrpsApiControllerTest {
     @Test
     public void shouldGetDomesticVrpPaymentById() {
         // Given
-        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        OBDomesticVRPRequest obDomesticVRPRequest = aValidOBDomesticVRPRequest();
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticVrpPaymentConsentDetails(
                 obDomesticVRPRequest.getData().getConsentId()
@@ -165,7 +190,7 @@ public class DomesticVrpsApiControllerTest {
     @Test
     public void shouldGetDomesticVrpPaymentDetails() {
         // Given
-        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        OBDomesticVRPRequest obDomesticVRPRequest = aValidOBDomesticVRPRequest();
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticVrpPaymentConsentDetails(
                 obDomesticVRPRequest.getData().getConsentId()
@@ -188,7 +213,7 @@ public class DomesticVrpsApiControllerTest {
     @Test
     public void shouldReturnLimitBreachWhenCreateDomesticVrpPayment() {
         // Given
-        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        OBDomesticVRPRequest obDomesticVRPRequest = aValidOBDomesticVRPRequest();
         OBDomesticVRPConsentResponse consentResponse = aValidOBDomesticVRPConsentResponse(obDomesticVRPRequest);
         HttpHeaders headers = HttpHeadersTestDataFactory.requiredVrpPaymentHttpHeaders();
         String periodType = consentResponse.getData().getControlParameters().getPeriodicLimits().get(0).getPeriodType().getValue();

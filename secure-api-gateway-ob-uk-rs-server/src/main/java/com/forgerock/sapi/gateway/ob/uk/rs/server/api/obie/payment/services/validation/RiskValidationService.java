@@ -86,11 +86,14 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(Boolean fromConsent, Boolean fromRequest, String propertyName) throws OBErrorException {
-        if (Objects.isNull(fromConsent)) {
-            propertyMustBeNull(fromRequest, propertyName);
-        } else if (Objects.isNull(fromRequest) || Boolean.compare(fromRequest, fromConsent) != 0) {
+        if ((Objects.isNull(fromConsent) && !Objects.isNull(fromRequest)) ||
+                (Objects.isNull(fromRequest) || Boolean.compare(fromRequest, fromConsent) != 0))
+        {
             throwError("The property '" + propertyName + "' value does not match with the value provided in the consent");
         }
+//        else if (Objects.isNull(fromRequest) || Boolean.compare(fromRequest, fromConsent) != 0) {
+//            throwError("The property '" + propertyName + "' value does not match with the value provided in the consent");
+//        }
     }
 
     /**
@@ -101,13 +104,18 @@ public class RiskValidationService {
      */
     private void checkEquality(OBExternalExtendedAccountType1Code fromConsent, OBExternalExtendedAccountType1Code fromRequest) throws OBErrorException {
         log.debug("BeneficiaryAccountType from consent {}, from request {}", fromConsent, fromRequest);
-        log.debug("BeneficiaryAccountType value from consent {}, from request {}", fromConsent.getValue(), fromRequest.getValue());
-        log.debug("BeneficiaryAccountType name from consent {}, from request {}", fromConsent.name(), fromRequest.name());
-        if (Objects.isNull(fromConsent)) {
-            propertyMustBeNull(fromRequest, "BeneficiaryAccountType");
-        } else if (!fromConsent.toString().equals(fromRequest.toString())) {
+        log.debug("BeneficiaryAccountType value from consent {}, from request {}",
+                !Objects.isNull(fromConsent) ? fromConsent.getValue() : "null", !Objects.isNull(fromRequest) ? fromRequest.getValue() : "null");
+        log.debug("BeneficiaryAccountType name from consent {}, from request {}",
+                !Objects.isNull(fromConsent) ? fromConsent.name() : "null", !Objects.isNull(fromRequest) ? fromRequest.name() : "null");
+        if ((Objects.isNull(fromConsent) && !Objects.isNull(fromRequest)) ||
+                (Objects.isNull(fromRequest) || !fromConsent.toString().equals(fromRequest.toString())))
+        {
             throwError("The property 'BeneficiaryAccountType' value does not match with the value provided in the consent");
         }
+//        else if (Objects.isNull(fromRequest) || !fromConsent.toString().equals(fromRequest.toString())) {
+//            throwError("The property 'BeneficiaryAccountType' value does not match with the value provided in the consent");
+//        }
     }
 
     /**
@@ -117,11 +125,14 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(OBExternalPaymentContext1Code fromConsent, OBExternalPaymentContext1Code fromRequest) throws OBErrorException {
-        if (Objects.isNull(fromConsent)) {
-            propertyMustBeNull(fromRequest, "PaymentContextCode");
-        } else if (!fromConsent.toString().equals(fromRequest.toString())) {
+        if ((Objects.isNull(fromConsent) && !Objects.isNull(fromRequest)) ||
+                (Objects.isNull(fromRequest) || !fromConsent.toString().equals(fromRequest.toString())))
+        {
             throwError("The property 'PaymentContextCode' value does not match with the value provided in the consent");
         }
+//        else if (Objects.isNull(fromRequest) || !fromConsent.toString().equals(fromRequest.toString())) {
+//            throwError("The property 'PaymentContextCode' value does not match with the value provided in the consent");
+//        }
     }
 
     /**
@@ -132,11 +143,13 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(String fromConsent, String fromRequest, String propertyName) throws OBErrorException {
-        if (Objects.isNull(fromConsent)) {
-            propertyMustBeNull(fromRequest, propertyName);
-        } else if (!fromConsent.equals(fromRequest)) {
+        if ((Objects.isNull(fromConsent) && !Objects.isNull(fromRequest)) || !fromConsent.equals(fromRequest))
+        {
             throwError("The property '" + propertyName + "' value does not match with the value provided in the consent");
         }
+//        else if (!fromConsent.equals(fromRequest)) {
+//            throwError("The property '" + propertyName + "' value does not match with the value provided in the consent");
+//        }
     }
 
     /**
@@ -146,11 +159,13 @@ public class RiskValidationService {
      * @throws OBErrorException typified exception
      */
     private void checkEquality(OBRisk1DeliveryAddress fromConsent, OBRisk1DeliveryAddress fromRequest) throws OBErrorException {
-        if (Objects.isNull(fromConsent)) {
-            propertyMustBeNull(fromRequest, "DeliveryAddress");
-        } else if (!fromConsent.equals(fromRequest)) {
+        if ((Objects.isNull(fromConsent) && !Objects.isNull(fromRequest)) || !fromConsent.equals(fromRequest))
+        {
             throwError("The property 'DeliveryAddress' value does not match with the value provided in the consent");
         }
+//        else if (!fromConsent.equals(fromRequest)) {
+//            throwError("The property 'DeliveryAddress' value does not match with the value provided in the consent");
+//        }
     }
 
     /**

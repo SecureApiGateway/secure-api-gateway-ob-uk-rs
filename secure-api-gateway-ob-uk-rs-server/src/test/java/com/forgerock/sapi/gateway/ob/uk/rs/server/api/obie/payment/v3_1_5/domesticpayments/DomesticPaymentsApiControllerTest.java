@@ -15,18 +15,14 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domesticpayments;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domesticpayments.DomesticPaymentsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,16 +32,17 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.common.OBRisk1;
+import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
@@ -105,6 +102,32 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
         assertThat(paymentSubmitted.getBody().getLinks().getSelf().toString().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
         assertThat(responseData.getCharges()).isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void shouldThrowErrorValidatingRiskDomesticPayment() {
+        // Given
+        OBWriteDomestic2 payment = aValidOBWriteDomestic2();
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+
+        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
+
+        given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(aValidOBWriteDomestic2().risk(new OBRisk1().paymentPurposeCode("aom-tu-lum")))
+        );
+
+        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(payment)
+        );
+
+        // When
+        ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(paymentsUrl(), request, OBErrorResponse1.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        OBError1 error = response.getBody().getErrors().get(0);
+        assertEquals(OBRIErrorType.PAYMENT_INVALID_RISK.getCode().getValue(),
+                error.getErrorCode());
     }
 
     @Test
