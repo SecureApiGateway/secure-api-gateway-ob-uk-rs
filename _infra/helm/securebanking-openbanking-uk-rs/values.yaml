@@ -8,6 +8,9 @@ deployment:
   apiVersion: apps/v1
   containerPort: 8080
   image:
+    # Repo And Tag are not provided here as the value for the repo will be unique for each user/customer as they will be building their own docker images and push to their own Container Registries 
+    # The tag will use the .AppVersion as the default, meaning that customers who want to install V1 will get V1.0.0 of the software - you may supply a hard coded version if required  
+    # The values for each of these should be supplied in the .Values folder of an individual deployment within the specification repository - See https://github.com/SecureApiGateway/SecureApiGateway/wiki/Deployment#repositories
     # repo:
     # tag:
     imagePullPolicy: Always
