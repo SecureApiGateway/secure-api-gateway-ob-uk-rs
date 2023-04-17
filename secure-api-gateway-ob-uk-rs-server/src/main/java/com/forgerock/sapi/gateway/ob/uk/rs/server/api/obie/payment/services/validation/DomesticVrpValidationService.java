@@ -59,11 +59,6 @@ public class DomesticVrpValidationService {
         OBDomesticVRPControlParameters controlParameters = consent.getData().getControlParameters();
         checkControlParameters(frDomesticVRPRequest.getData().getInstruction(), controlParameters);
 
-        // Risk validation
-        OBRisk1 requestRisk = toOBRisk1(frDomesticVRPRequest.getRisk());
-        validateRisk(requestRisk);
-        checkRequestAndConsentRiskMatch(consent.getRisk(), requestRisk);
-
         // Creditor account validation:
         // If the CreditorAccount was not specified in the consent, the CreditorAccount must be specified in the instruction
         OBCashAccountCreditor3 consentCreditorAccount = consent.getData().getInitiation().getCreditorAccount();
@@ -86,38 +81,9 @@ public class DomesticVrpValidationService {
     public void checkInitiationMatch(OBDomesticVRPInitiation initiation, OBDomesticVRPInitiation initiationToCompare)
             throws OBErrorException {
         if (!initiation.equals(initiationToCompare)) {
+            log.debug("Initiation \n{}", initiation);
+            log.debug("Initiation to compare \n{}", initiationToCompare);
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT);
-        }
-    }
-
-    /**
-     * Validate the risk object from the request against the risk from the consent
-     * @param consentRisk the consent as saved during the consent creation step
-     * @param requestRisk the risk from the current submit domestic vrp request
-     * @throws OBErrorException
-     */
-    public void checkRequestAndConsentRiskMatch(OBRisk1 consentRisk, OBRisk1 requestRisk)
-            throws OBErrorException {
-        if (!requestRisk.equals(consentRisk)) {
-            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_DOESNT_MATCH_CONSENT);
-        }
-    }
-
-    //risk - validation
-
-    /**
-     * Check if the risk object is valid
-     *
-     * @param risk the risk from the current submit domestic vrp request
-     * @throws OBErrorException
-     */
-    public void validateRisk(OBRisk1 risk) throws OBErrorException {
-        if (riskValidator != null) {
-            riskValidator.validate(risk);
-        } else {
-            String errorString = "No validator!";
-            log.error(errorString);
-            throw new NullPointerException(errorString);
         }
     }
 
