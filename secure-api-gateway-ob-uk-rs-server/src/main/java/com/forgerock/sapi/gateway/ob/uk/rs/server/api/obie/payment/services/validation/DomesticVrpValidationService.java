@@ -81,8 +81,7 @@ public class DomesticVrpValidationService {
     public void checkInitiationMatch(OBDomesticVRPInitiation initiation, OBDomesticVRPInitiation initiationToCompare)
             throws OBErrorException {
         if (!initiation.equals(initiationToCompare)) {
-            log.debug("Initiation \n{}", initiation);
-            log.debug("Initiation to compare \n{}", initiationToCompare);
+            log.error(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT.getMessage());
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT);
         }
     }
@@ -95,9 +94,11 @@ public class DomesticVrpValidationService {
      */
     public void checkCreditorAccount(OBCashAccountCreditor3 creditorAccount) throws OBErrorException {
         if (creditorAccount == null) {
+            log.error(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED.getMessage());
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
         } else {
             if (creditorAccount.getIdentification() == null || creditorAccount.getName() == null || creditorAccount.getSchemeName() == null) {
+                log.error(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED.getMessage());
                 throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
             }
         }
@@ -121,6 +122,7 @@ public class DomesticVrpValidationService {
         Double consentAmount = Double.valueOf(controlParameters.getMaximumIndividualAmount().getAmount());
         String consentCurrency = controlParameters.getMaximumIndividualAmount().getCurrency();
         if (!(Double.valueOf(instructionAmount).compareTo(consentAmount) == 0) || !(instructionCurrency.compareTo(consentCurrency) == 0)) {
+            log.error(String.format(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES.getMessage(), MAX_INDIVIDUAL_AMOUNT, MAX_INDIVIDUAL_AMOUNT));
             throw new OBErrorException(
                     OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,
                     MAX_INDIVIDUAL_AMOUNT, MAX_INDIVIDUAL_AMOUNT);
