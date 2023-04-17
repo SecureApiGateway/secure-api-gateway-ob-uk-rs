@@ -197,7 +197,6 @@ public class FakeDataApiController implements FakeDataApi {
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                             .identification(accountId)
                             .name(username)
-                            .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
                             .build()))
                     .build()
             );
@@ -230,7 +229,6 @@ public class FakeDataApiController implements FakeDataApi {
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                             .identification(accountId)
                             .name(username)
-                            .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
                             .build()))
                     .build()
             );
