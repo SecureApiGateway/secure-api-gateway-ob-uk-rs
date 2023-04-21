@@ -67,7 +67,7 @@ public class PlatformClientService implements PlatformClient {
     public JsonObject getIntent(String jwtAuthorization, String intentId, boolean underlyingOBIntentObject) throws ExceptionClient {
         // get the apiClientId from audience claim ('aud')
         List<String> audiences = JwtUtil.getAudiences(jwtAuthorization);
-        log.debug("Building client request object with intentId={} and apiClientId={}", audiences.get(0), intentId);
+        log.debug("Building client request object with apiClientId={} and intentId={}", audiences.get(0), intentId);
         ClientRequest clientRequest = ClientRequest.builder()
                 .intentId(intentId)
                 .apiClientId(audiences.get(0))

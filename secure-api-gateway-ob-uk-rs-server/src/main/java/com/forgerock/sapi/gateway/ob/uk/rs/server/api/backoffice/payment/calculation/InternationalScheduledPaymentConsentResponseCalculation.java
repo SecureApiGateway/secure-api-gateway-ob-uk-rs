@@ -17,11 +17,12 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.calcul
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils.DefaultData;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.payment.*;
+
+import java.util.Objects;
 
 /**
  * Validation class for Domestic Payment Consent response
@@ -72,51 +73,42 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .amount(getDefaultAmount())
                     );
 
-            if (((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
-                log.debug("OBWriteInternationalScheduledConsentResponse3 instance uses default exchangeRate");
-                ((OBWriteInternationalScheduledConsentResponse3) consentResponse)
-                        .getData().
-                        getInitiation()
-                        .setExchangeRateInformation(
-                                DefaultData.defaultOBWriteInternational2DataInitiationExchangeRateInformation(
-                                        ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
+            if (Objects.nonNull(((OBWriteInternationalScheduledConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
+                OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
+                switch (rateType) {
+                    case ACTUAL -> {
+                        ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse3DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .expirationDateTime(DateTime.now().plusMinutes(10))
                         );
+                    }
+                    case INDICATIVE -> {
+                        ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse3DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                        );
+
+                    }
+                    case AGREED -> {
+                        ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse3DataExchangeRateInformation()
+                                        .exchangeRate(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .contractIdentification(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
+                        );
+                    }
+                    default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("The rate type %s provided isn't valid", rateType)
+                    ));
+                }
             }
-
-            OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
-            switch (rateType) {
-                case ACTUAL -> {
-                    ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse3DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .expirationDateTime(DateTime.now().plusMinutes(10))
-                    );
-                }
-                case INDICATIVE -> {
-                    ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse3DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                    );
-
-                }
-                case AGREED -> {
-                    ((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse3DataExchangeRateInformation()
-                                    .exchangeRate(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .contractIdentification(((OBWriteInternationalScheduledConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
-                    );
-                }
-                default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("The rate type %s provided isn't valid", rateType)
-                ));
-            }
-
         } else if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse4) {
             log.debug("OBWriteInternationalScheduledConsentResponse4 instance");
             ((OBWriteInternationalScheduledConsentResponse4) consentResponse)
@@ -128,51 +120,42 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .amount(getDefaultAmount())
                     );
 
-            if (((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
-                log.debug("OBWriteInternationalScheduledConsentResponse4 instance uses default exchangeRate");
-                ((OBWriteInternationalScheduledConsentResponse4) consentResponse)
-                        .getData().
-                        getInitiation()
-                        .setExchangeRateInformation(
-                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
-                                        ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
+            if (Objects.nonNull(((OBWriteInternationalScheduledConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
+                OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
+                switch (rateType) {
+                    case ACTUAL -> {
+                        ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .expirationDateTime(DateTime.now().plusMinutes(10))
                         );
+                    }
+                    case INDICATIVE -> {
+                        ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                        );
+
+                    }
+                    case AGREED -> {
+                        ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
+                                        .exchangeRate(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .contractIdentification(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
+                        );
+                    }
+                    default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("The rate type %s provided isn't valid", rateType)
+                    ));
+                }
             }
-
-            OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
-            switch (rateType) {
-                case ACTUAL -> {
-                    ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .expirationDateTime(DateTime.now().plusMinutes(10))
-                    );
-                }
-                case INDICATIVE -> {
-                    ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                    );
-
-                }
-                case AGREED -> {
-                    ((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
-                                    .exchangeRate(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .contractIdentification(((OBWriteInternationalScheduledConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
-                    );
-                }
-                default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("The rate type %s provided isn't valid", rateType)
-                ));
-            }
-
         } else if (consentResponse instanceof OBWriteInternationalScheduledConsentResponse5) {
             log.debug("OBWriteInternationalScheduledConsentResponse5 instance");
             ((OBWriteInternationalScheduledConsentResponse5) consentResponse)
@@ -184,51 +167,42 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .amount(getDefaultAmount())
                     );
 
-            if (((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
-                log.debug("OBWriteInternationalScheduledConsentResponse5 instance uses default exchangeRate");
-                ((OBWriteInternationalScheduledConsentResponse5) consentResponse)
-                        .getData().
-                        getInitiation()
-                        .setExchangeRateInformation(
-                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
-                                        ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
+            if (Objects.nonNull(((OBWriteInternationalScheduledConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
+                OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
+                switch (rateType) {
+                    case ACTUAL -> {
+                        ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse5DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .expirationDateTime(DateTime.now().plusMinutes(10))
                         );
+                    }
+                    case INDICATIVE -> {
+                        ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse5DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                        );
+
+                    }
+                    case AGREED -> {
+                        ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse5DataExchangeRateInformation()
+                                        .exchangeRate(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .contractIdentification(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
+                        );
+                    }
+                    default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("The rate type %s provided isn't valid", rateType)
+                    ));
+                }
             }
-
-            OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
-            switch (rateType) {
-                case ACTUAL -> {
-                    ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse5DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .expirationDateTime(DateTime.now().plusMinutes(10))
-                    );
-                }
-                case INDICATIVE -> {
-                    ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse5DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                    );
-
-                }
-                case AGREED -> {
-                    ((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse5DataExchangeRateInformation()
-                                    .exchangeRate(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .contractIdentification(((OBWriteInternationalScheduledConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
-                    );
-                }
-                default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("The rate type %s provided isn't valid", rateType)
-                ));
-            }
-
         } else {
             log.debug("OBWriteInternationalScheduledConsentResponse6 instance");
             ((OBWriteInternationalScheduledConsentResponse6) consentResponse)
@@ -240,49 +214,41 @@ public class InternationalScheduledPaymentConsentResponseCalculation extends Pay
                                     .amount(getDefaultAmount())
                     );
 
-            if (((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation() == null) {
-                log.debug("OBWriteInternationalScheduledConsentResponse6 instance uses default exchangeRate");
-                ((OBWriteInternationalScheduledConsentResponse6) consentResponse)
-                        .getData().
-                        getInitiation()
-                        .setExchangeRateInformation(
-                                DefaultData.defaultOBWriteInternational3DataInitiationExchangeRateInformation(
-                                        ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getCurrencyOfTransfer())
+            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
+            if (Objects.nonNull(((OBWriteInternationalScheduledConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
+                OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
+                switch (rateType) {
+                    case ACTUAL -> {
+                        ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse6DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .expirationDateTime(DateTime.now().plusMinutes(10))
                         );
-            }
+                    }
+                    case INDICATIVE -> {
+                        ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse6DataExchangeRateInformation()
+                                        .exchangeRate(EXCHANGE_RATE)
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                        );
 
-            OBExchangeRateType2Code rateType = ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
-            switch (rateType) {
-                case ACTUAL -> {
-                    ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse6DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .expirationDateTime(DateTime.now().plusMinutes(10))
-                    );
+                    }
+                    case AGREED -> {
+                        ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().setExchangeRateInformation(
+                                new OBWriteInternationalConsentResponse6DataExchangeRateInformation()
+                                        .exchangeRate(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
+                                        .rateType(rateType)
+                                        .unitCurrency(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
+                                        .contractIdentification(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
+                        );
+                    }
+                    default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                            String.format("The rate type %s provided isn't valid", rateType)
+                    ));
                 }
-                case INDICATIVE -> {
-                    ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse6DataExchangeRateInformation()
-                                    .exchangeRate(EXCHANGE_RATE)
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                    );
-
-                }
-                case AGREED -> {
-                    ((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().setExchangeRateInformation(
-                            new OBWriteInternationalConsentResponse6DataExchangeRateInformation()
-                                    .exchangeRate(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getExchangeRate())
-                                    .rateType(rateType)
-                                    .unitCurrency(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getUnitCurrency())
-                                    .contractIdentification(((OBWriteInternationalScheduledConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getContractIdentification())
-                    );
-                }
-                default -> errors.add(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("The rate type %s provided isn't valid", rateType)
-                ));
             }
         }
         return consentResponse;

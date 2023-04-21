@@ -167,7 +167,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNotNull();
+        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNull();
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -204,7 +204,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNotNull();
+        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNull();
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -333,7 +333,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNotNull();
+        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNull();
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 
@@ -370,7 +370,7 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNotNull();
+        assertThat(response.getBody().getData().getInitiation().getExchangeRateInformation()).isNull();
         assertThat(response.getBody().getData().getCharges()).isNotEmpty();
     }
 

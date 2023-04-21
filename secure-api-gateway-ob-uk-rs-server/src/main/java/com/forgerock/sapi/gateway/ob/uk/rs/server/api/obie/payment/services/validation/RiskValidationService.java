@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -42,7 +44,7 @@ public class RiskValidationService {
 
         // Validate Risk object
         if (requestRisk == null) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK, "Risk is mandatory and cannot be null");
         }
 
         checkRequestAndConsentRiskPaymentContext1CodeMatch(consentRisk.getPaymentContextCode(), requestRisk.getPaymentContextCode());
@@ -51,32 +53,40 @@ public class RiskValidationService {
     }
     
     private void checkRequestAndConsentRiskPaymentContext1CodeMatch(OBExternalPaymentContext1Code paymentContextCode, OBExternalPaymentContext1Code paymentContextCode1) throws OBErrorException {
+        String reason = "The property 'paymentContextCode' value does not match with the value provided in the consent";
         if (paymentContextCode != null && paymentContextCode1 != null && !paymentContextCode.equals(paymentContextCode1)) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         } else if (paymentContextCode == null && paymentContextCode1 != null) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         } else if (paymentContextCode != null && paymentContextCode1 == null) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         }
     }
 
     private void checkRequestAndConsentRiskMerchantCategoryCodeMatch(String merchantCategoryCode, String merchantCategoryCode1) throws OBErrorException {
+        String reason = "The property 'merchantCategoryCode' value does not match with the value provided in the consent";
         if (merchantCategoryCode != null && merchantCategoryCode1 != null && !merchantCategoryCode.equals(merchantCategoryCode1)) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         } else if (merchantCategoryCode == null && merchantCategoryCode1 != null) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         } else if (merchantCategoryCode != null && merchantCategoryCode1 == null) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         }
     }
 
     private void checkRequestAndConsentRiskPaymentMerchantCustomerIdentificationMatch(String merchantCustomerIdentification, String merchantCustomerIdentification1) throws OBErrorException {
+        String reason = "The property 'merchantCustomerIdentification' value does not match with the value provided in the consent";
         if (merchantCustomerIdentification != null && merchantCustomerIdentification1 != null && !merchantCustomerIdentification.equals(merchantCustomerIdentification1)) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         } else if (merchantCustomerIdentification == null && merchantCustomerIdentification1 != null) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         } else if (merchantCustomerIdentification != null && merchantCustomerIdentification1 == null) {
-            throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
+            throwError(reason);
         }
+    }
+
+    protected void throwError(String reason) throws OBErrorException {
+        log.error(reason);
+        throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK, reason);
     }
 }

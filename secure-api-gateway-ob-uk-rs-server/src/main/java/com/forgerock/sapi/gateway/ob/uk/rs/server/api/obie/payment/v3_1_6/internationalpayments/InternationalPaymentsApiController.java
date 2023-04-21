@@ -20,11 +20,11 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.internationalpayments;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_6.internationalpayments.InternationalPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_6.internationalpayments.InternationalPaymentsApi;
 import org.springframework.stereotype.Controller;
 
 @Controller("InternationalPaymentsApiV3.1.6")
@@ -36,6 +36,11 @@ public class InternationalPaymentsApiController extends com.forgerock.sapi.gatew
             ConsentService consentService,
             RiskValidationService riskValidationService
     ) {
-        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService, riskValidationService);
+        super(
+                paymentSubmissionRepository,
+                paymentSubmissionValidator,
+                consentService,
+                riskValidationService
+        );
     }
 }
