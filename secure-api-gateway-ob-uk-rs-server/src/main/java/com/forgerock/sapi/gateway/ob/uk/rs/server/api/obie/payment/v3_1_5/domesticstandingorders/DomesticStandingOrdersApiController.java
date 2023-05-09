@@ -118,9 +118,10 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         JsonObject intent = consentService.getIDMIntent(authorization, consentId);
         log.debug("Retrieved consent from IDM");
 
-        //deserialize the intent to ob response object
-        OBWriteDomesticStandingOrderConsentResponse6 consent = consentService.deserialize(
-                OBWriteDomesticStandingOrderConsentResponse6.class,
+        // deserialize the intent to ob response object where:
+        // The initiation object class from the consent must be the same class of the payment request initiation object
+        OBWriteDomesticStandingOrderConsentResponse5 consent = consentService.deserialize(
+                OBWriteDomesticStandingOrderConsentResponse5.class,
                 intent.getAsJsonObject("OBIntentObject"),
                 consentId
         );
@@ -132,6 +133,8 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         // validate the consent against the request
         log.debug("Validating Domestic Standing Order submission");
         try {
+            log.debug("Payment: \n{}", obWriteDomesticStandingOrder3.getData().getInitiation());
+            log.debug("Consent: \n{}", consent.getData().getInitiation());
             // validates the initiation
             if (!obWriteDomesticStandingOrder3.getData().getInitiation().equals(consent.getData().getInitiation())) {
                 throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_INITIATION,

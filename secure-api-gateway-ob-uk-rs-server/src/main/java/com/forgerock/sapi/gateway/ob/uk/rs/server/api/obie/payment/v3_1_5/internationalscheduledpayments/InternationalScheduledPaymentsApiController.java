@@ -118,8 +118,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         log.debug("Retrieved consent from IDM");
 
         //deserialize the intent to ob response object
-        OBWriteInternationalScheduledConsentResponse6 consent = consentService.deserialize(
-                OBWriteInternationalScheduledConsentResponse6.class,
+        OBWriteInternationalScheduledConsentResponse5 consent = consentService.deserialize(
+                OBWriteInternationalScheduledConsentResponse5.class,
                 intent.getAsJsonObject("OBIntentObject"),
                 consentId
         );

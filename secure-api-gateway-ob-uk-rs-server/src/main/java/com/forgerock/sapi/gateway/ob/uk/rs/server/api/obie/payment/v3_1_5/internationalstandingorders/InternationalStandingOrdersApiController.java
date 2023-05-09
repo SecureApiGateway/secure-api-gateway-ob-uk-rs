@@ -118,8 +118,8 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         log.debug("Retrieved consent from IDM");
 
         //deserialize the intent to ob response object
-        OBWriteInternationalStandingOrderConsentResponse7 consent = consentService.deserialize(
-                OBWriteInternationalStandingOrderConsentResponse7.class,
+        OBWriteInternationalStandingOrderConsentResponse6 consent = consentService.deserialize(
+                OBWriteInternationalStandingOrderConsentResponse6.class,
                 intent.getAsJsonObject("OBIntentObject"),
                 consentId
         );
