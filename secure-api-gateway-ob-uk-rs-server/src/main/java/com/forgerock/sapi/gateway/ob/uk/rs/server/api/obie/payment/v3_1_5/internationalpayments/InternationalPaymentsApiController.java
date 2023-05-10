@@ -28,9 +28,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternat
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalpayments.InternationalPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
@@ -48,7 +49,6 @@ import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +59,6 @@ import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRRiskConverter.toOBRisk1;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalResponse5DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
@@ -122,13 +121,16 @@ public class InternationalPaymentsApiController implements InternationalPayments
         FRWriteInternational frInternationalPayment = toFRWriteInternational(obWriteInternational3);
         log.trace("Converted to: '{}'", frInternationalPayment);
 
-        OBRisk1 consentRisk = consent.getRisk();
-        OBRisk1 requestRisk = toOBRisk1(frInternationalPayment.getRisk());
-
         // validate the consent against the request
         log.debug("Validating International Payment submission");
         try {
-            riskValidationService.validate(consentRisk, requestRisk);
+            // validates the initiation
+            if (!obWriteInternational3.getData().getInitiation().equals(consent.getData().getInitiation())) {
+                throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_INITIATION,
+                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
+                );
+            }
+            riskValidationService.validate(consent.getRisk(), obWriteInternational3.getRisk());
         } catch (OBErrorException e) {
             throw new OBErrorResponseException(
                     e.getObriErrorType().getHttpStatus(),

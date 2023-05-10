@@ -20,12 +20,12 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_8.domesticscheduledpayments;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_8.domesticscheduledpayments.DomesticScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_8.domesticscheduledpayments.DomesticScheduledPaymentsApi;
 import org.springframework.stereotype.Controller;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.8")
@@ -38,6 +38,12 @@ public class DomesticScheduledPaymentsApiController extends com.forgerock.sapi.g
             ConsentService consentService,
             RiskValidationService riskValidationService
     ) {
-        super(scheduledPaymentSubmissionRepository, paymentSubmissionValidator, scheduledPaymentService, consentService, riskValidationService);
+        super(
+                scheduledPaymentSubmissionRepository,
+                paymentSubmissionValidator,
+                scheduledPaymentService,
+                consentService,
+                riskValidationService
+        );
     }
 }

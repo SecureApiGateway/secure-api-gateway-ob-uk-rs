@@ -15,7 +15,10 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 
+import uk.org.openbanking.datamodel.common.OBAddressTypeCode;
+import uk.org.openbanking.datamodel.common.OBPostalAddress6;
 import uk.org.openbanking.datamodel.common.OBRisk1;
+import uk.org.openbanking.datamodel.common.OBSupplementaryData1;
 import uk.org.openbanking.datamodel.payment.*;
 
 import java.util.ArrayList;
@@ -38,7 +41,52 @@ public class PaymentsUtils {
         List<OBWriteDomesticConsentResponse4DataCharges> charges = new ArrayList<>();
         charges.add(new OBWriteDomesticConsentResponse4DataCharges());
         return new OBWriteDomesticConsentResponse4()
-                .data(new OBWriteDomesticConsentResponse4Data().charges(charges))
+                .data(new OBWriteDomesticConsentResponse4Data()
+                        .initiation(payment.getData().getInitiation())
+                        .charges(charges))
+                .risk(payment.getRisk());
+    }
+
+    public static OBWriteDomesticConsentResponse4 createTestDataConsentResponse4XX(OBWriteDomestic2 payment) {
+        List<OBWriteDomesticConsentResponse4DataCharges> charges = new ArrayList<>();
+        charges.add(new OBWriteDomesticConsentResponse4DataCharges());
+        return new OBWriteDomesticConsentResponse4()
+                .data(
+                        new OBWriteDomesticConsentResponse4Data()
+                                .initiation(
+                                        new OBWriteDomestic2DataInitiation()
+                                                .instructionIdentification("ANSM021")
+                                                .endToEndIdentification("FRESCO.21302.GFX.02")
+                                                .localInstrument("UK.OBIE.CHAPS")
+                                                .instructedAmount(
+                                                        new OBWriteDomestic2DataInitiationInstructedAmount()
+                                                                .currency("GBP")
+                                                                .amount("10.01")
+                                                )
+                                                .creditorAccount(
+                                                        new OBWriteDomestic2DataInitiationCreditorAccount()
+                                                                .schemeName("UK.OBIE.SortCodeAccountNumber")
+                                                                .identification("08080021325698")
+                                                                .name("Mr Tim Burgess")
+                                                                .secondaryIdentification("11")
+                                                )
+                                                .creditorPostalAddress(
+                                                        new OBPostalAddress6()
+                                                                .addressType(OBAddressTypeCode.RESIDENTIAL)
+                                                                .buildingNumber("1")
+                                                                .streetName("The Mall")
+                                                                .postCode("WC1 1AB")
+                                                                .townName("London")
+                                                                .country("UK")
+                                                )
+                                                .remittanceInformation(
+                                                        new OBWriteDomestic2DataInitiationRemittanceInformation()
+                                                                .unstructured("Internal ops code 5120103")
+                                                                .reference("FRESCO-037"))
+                                                .supplementaryData(new OBSupplementaryData1())
+                                )
+                                .charges(charges)
+                )
                 .risk(new OBRisk1().paymentContextCode(payment.getRisk().getPaymentContextCode())
                         .merchantCategoryCode(payment.getRisk().getMerchantCategoryCode())
                         .merchantCustomerIdentification(payment.getRisk().getMerchantCustomerIdentification()));
@@ -48,10 +96,10 @@ public class PaymentsUtils {
         List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
         charges.add(new OBWriteDomesticConsentResponse5DataCharges());
         return new OBWriteDomesticConsentResponse5()
-                .data(new OBWriteDomesticConsentResponse5Data().charges(charges))
-                .risk(new OBRisk1().paymentContextCode(payment.getRisk().getPaymentContextCode())
-                        .merchantCategoryCode(payment.getRisk().getMerchantCategoryCode())
-                        .merchantCustomerIdentification(payment.getRisk().getMerchantCustomerIdentification()));
+                .data(new OBWriteDomesticConsentResponse5Data()
+                        .initiation(payment.getData().getInitiation())
+                        .charges(charges))
+                .risk(payment.getRisk());
     }
 
 }

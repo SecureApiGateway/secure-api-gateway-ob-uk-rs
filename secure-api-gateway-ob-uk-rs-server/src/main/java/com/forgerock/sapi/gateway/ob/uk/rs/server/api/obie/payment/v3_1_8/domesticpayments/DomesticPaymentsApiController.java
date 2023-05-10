@@ -20,11 +20,11 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_8.domesticpayments;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_8.domesticpayments.DomesticPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_8.domesticpayments.DomesticPaymentsApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 

@@ -20,10 +20,10 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_9.file;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_9.file.FilePaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_9.file.FilePaymentsApi;
 import org.springframework.stereotype.Controller;
 
 @Controller("FilePaymentsApiV3.1.9")
@@ -33,7 +33,7 @@ public class FilePaymentsApiController extends com.forgerock.sapi.gateway.ob.uk.
             FilePaymentSubmissionRepository filePaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ConsentService consentService
-    ) {
+            ) {
         super(filePaymentSubmissionRepository, paymentSubmissionValidator, consentService);
     }
 }
