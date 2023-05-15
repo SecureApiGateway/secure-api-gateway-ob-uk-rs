@@ -41,6 +41,7 @@ public class DomesticVrpValidationService {
 
     private static final String INSTRUCTED_AMOUNT_FIELD = "InstructedAmount";
     private static final String MAX_INDIVIDUAL_AMOUNT_FIELD = "MaximumIndividualAmount";
+
     private OBRisk1Validator riskValidator;
 
     /**

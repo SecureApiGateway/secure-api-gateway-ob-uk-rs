@@ -56,7 +56,7 @@ class DomesticVrpValidationServiceTest {
     @Test
     void testBreachMaxIndividualAmountThrowsException() {
         final String maxIndividualAmount = "100.99";
-        final String[] validPaymentInstructionAmounts = new String[]{
+        final String[] invalidPaymentInstructionAmounts = new String[]{
                 "101.00",
                 "121212.33",
                 "3333333.99"
@@ -65,9 +65,9 @@ class DomesticVrpValidationServiceTest {
         final OBDomesticVRPControlParameters vrpControlParameters = createControlParameters(maxIndividualAmount, currency);
 
         final DomesticVrpValidationService vrpValidationService = new DomesticVrpValidationService();
-        for (String validPaymentInstructionAmount : validPaymentInstructionAmounts) {
+        for (String invalidAmount : invalidPaymentInstructionAmounts) {
             final FRDomesticVrpInstructionBuilder vrpInstructionBuilder = FRDomesticVrpInstruction.builder().instructedAmount(
-                    FRAmount.builder().amount(validPaymentInstructionAmount).currency(currency).build());
+                    FRAmount.builder().amount(invalidAmount).currency(currency).build());
 
             final OBErrorException obErrorException = assertThrows(OBErrorException.class,
                     () -> vrpValidationService.validateMaximumIndividualAmount(vrpInstructionBuilder.build(), vrpControlParameters));
