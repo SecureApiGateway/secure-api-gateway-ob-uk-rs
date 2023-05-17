@@ -127,7 +127,6 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .amount(getDefaultAmount())
                     );
 
-            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
             if (Objects.nonNull(((OBWriteInternationalConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
                 OBExchangeRateType2Code rateType = ((OBWriteInternationalConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
                 switch (rateType) {
@@ -182,7 +181,6 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .amount(getDefaultAmount())
                     );
 
-            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
             if (Objects.nonNull(((OBWriteInternationalConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
                 OBExchangeRateType2Code rateType = ((OBWriteInternationalConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
                 switch (rateType) {
@@ -237,7 +235,6 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .amount(getDefaultAmount())
                     );
 
-            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
             if (Objects.nonNull(((OBWriteInternationalConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
                 OBExchangeRateType2Code rateType = ((OBWriteInternationalConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
                 switch (rateType) {
