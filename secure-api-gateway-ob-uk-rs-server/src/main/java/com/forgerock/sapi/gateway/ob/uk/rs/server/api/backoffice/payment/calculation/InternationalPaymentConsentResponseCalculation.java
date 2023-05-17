@@ -73,7 +73,6 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .amount(getDefaultAmount())
                     );
 
-            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
             if (Objects.nonNull(((OBWriteInternationalConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
                 OBExchangeRateType2Code rateType = ((OBWriteInternationalConsentResponse3) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
                 switch (rateType) {
@@ -108,6 +107,14 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                             String.format("The rate type %s provided isn't valid", rateType)
                     ));
                 }
+            } else {
+                // TPP did not supply ExchangeRateInformation in the request, generate an indicative quote using the InstructedAmount.currency as the UnitCurrency
+                ((OBWriteInternationalConsentResponse3) consentResponse).getData().setExchangeRateInformation(
+                        new OBWriteInternationalConsentResponse3DataExchangeRateInformation()
+                                .exchangeRate(EXCHANGE_RATE)
+                                .rateType(OBExchangeRateType2Code.INDICATIVE)
+                                .unitCurrency(((OBWriteInternationalConsentResponse3) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency()));
+
             }
         } else if (consentResponse instanceof OBWriteInternationalConsentResponse4) {
             log.debug("OBWriteInternationalConsentResponse4 instance");
@@ -120,7 +127,6 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .amount(getDefaultAmount())
                     );
 
-            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
             if (Objects.nonNull(((OBWriteInternationalConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
                 OBExchangeRateType2Code rateType = ((OBWriteInternationalConsentResponse4) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
                 switch (rateType) {
@@ -155,6 +161,14 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                             String.format("The rate type %s provided isn't valid", rateType)
                     ));
                 }
+            } else {
+                // TPP did not supply ExchangeRateInformation in the request, generate an indicative quote using the InstructedAmount.currency as the UnitCurrency
+                ((OBWriteInternationalConsentResponse4) consentResponse).getData().setExchangeRateInformation(
+                        new OBWriteInternationalConsentResponse4DataExchangeRateInformation()
+                                .exchangeRate(EXCHANGE_RATE)
+                                .rateType(OBExchangeRateType2Code.INDICATIVE)
+                                .unitCurrency(((OBWriteInternationalConsentResponse4) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency()));
+
             }
         } else if (consentResponse instanceof OBWriteInternationalConsentResponse5) {
             log.debug("OBWriteInternationalConsentResponse5 instance");
@@ -167,7 +181,6 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .amount(getDefaultAmount())
                     );
 
-            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
             if (Objects.nonNull(((OBWriteInternationalConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
                 OBExchangeRateType2Code rateType = ((OBWriteInternationalConsentResponse5) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
                 switch (rateType) {
@@ -202,6 +215,14 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                             String.format("The rate type %s provided isn't valid", rateType)
                     ));
                 }
+            } else {
+                // TPP did not supply ExchangeRateInformation in the request, generate an indicative quote using the InstructedAmount.currency as the UnitCurrency
+                ((OBWriteInternationalConsentResponse5) consentResponse).getData().setExchangeRateInformation(
+                        new OBWriteInternationalConsentResponse5DataExchangeRateInformation()
+                                .exchangeRate(EXCHANGE_RATE)
+                                .rateType(OBExchangeRateType2Code.INDICATIVE)
+                                .unitCurrency(((OBWriteInternationalConsentResponse5) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency()));
+
             }
         } else {
             log.debug("OBWriteInternationalConsentResponse6 instance");
@@ -214,7 +235,6 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                                     .amount(getDefaultAmount())
                     );
 
-            // exchange Rate Information is not mandatory and can be null, in that case we not need to calculate any data
             if (Objects.nonNull(((OBWriteInternationalConsent5) consentRequest).getData().getInitiation().getExchangeRateInformation())) {
                 OBExchangeRateType2Code rateType = ((OBWriteInternationalConsentResponse6) consentResponse).getData().getInitiation().getExchangeRateInformation().getRateType();
                 switch (rateType) {
@@ -249,6 +269,14 @@ public class InternationalPaymentConsentResponseCalculation extends PaymentConse
                             String.format("The rate type %s provided isn't valid", rateType)
                     ));
                 }
+            } else {
+                // TPP did not supply ExchangeRateInformation in the request, generate an indicative quote using the InstructedAmount.currency as the UnitCurrency
+                ((OBWriteInternationalConsentResponse6) consentResponse).getData().setExchangeRateInformation(
+                        new OBWriteInternationalConsentResponse6DataExchangeRateInformation()
+                                .exchangeRate(EXCHANGE_RATE)
+                                .rateType(OBExchangeRateType2Code.INDICATIVE)
+                                .unitCurrency(((OBWriteInternationalConsentResponse6) consentResponse).getData().getInitiation().getInstructedAmount().getCurrency()));
+
             }
         }
 
