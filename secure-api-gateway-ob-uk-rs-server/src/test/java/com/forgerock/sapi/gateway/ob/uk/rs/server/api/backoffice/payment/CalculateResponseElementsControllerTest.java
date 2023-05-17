@@ -54,7 +54,7 @@ public class CalculateResponseElementsControllerTest {
 
     private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredBackofficeHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
-    private static final String INVALID_CURRENCY = "Invalid currency";
+    private static final String INVALID_CURRENCY = "XYZ";
     private static final String REST_CONTEXT = "/backoffice/{0}/{1}/calculate-elements";
 
     private static final String PDC_CONTEXT = "domestic-payment-consents";
@@ -462,13 +462,10 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
-        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
+        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getId());
+        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getDescription());
         assertThat(response.getBody().getErrors()).containsExactly(
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("'%s' cannot be null to be validate", "InstructedAmount")
-                )
-        );
+                OBRIErrorType.REQUEST_FIELD_INVALID.toOBError1("must not be null").path("data.initiation.instructedAmount"));
     }
 
     @Test
@@ -570,13 +567,10 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
-        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
+        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getId());
+        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getDescription());
         assertThat(response.getBody().getErrors()).containsExactly(
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("'%s' cannot be null to be validate", "RateType")
-                )
-        );
+                OBRIErrorType.REQUEST_FIELD_INVALID.toOBError1("must not be null").path("data.initiation.exchangeRateInformation.rateType"));
     }
 
     @Test
@@ -593,13 +587,10 @@ public class CalculateResponseElementsControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
-        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
+        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getId());
+        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getDescription());
         assertThat(response.getBody().getErrors()).containsExactly(
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                        String.format("'%s' cannot be null to be validate", "UnitCurrency")
-                )
-        );
+                OBRIErrorType.REQUEST_FIELD_INVALID.toOBError1("must not be null").path("data.initiation.exchangeRateInformation.unitCurrency"));
     }
 
     @Test
