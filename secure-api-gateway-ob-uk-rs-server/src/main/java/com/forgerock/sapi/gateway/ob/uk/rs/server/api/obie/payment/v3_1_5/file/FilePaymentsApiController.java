@@ -22,9 +22,11 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.file;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataFile;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteFile;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.file.FilePaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
@@ -34,7 +36,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.Idempot
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.file.FilePaymentsApi;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -91,6 +92,27 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
         paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
+        // Get the consent to update the response
+        OBWriteFileConsentResponse4 obConsent = consentService.getOBIntentObject(
+                OBWriteFileConsentResponse4.class,
+                authorization,
+                obWriteFile2.getData().getConsentId()
+        );
+
+        try {
+            // validates the initiation
+            if (!obWriteFile2.getData().getInitiation().equals(obConsent.getData().getInitiation())) {
+                throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_INITIATION,
+                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
+                );
+            }
+        } catch (OBErrorException e) {
+            throw new OBErrorResponseException(
+                    e.getObriErrorType().getHttpStatus(),
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    e.getOBError());
+        }
+
         FRWriteFile frWriteFile = toFRWriteFile(obWriteFile2);
         log.trace("Converted to: '{}'", frWriteFile);
 
@@ -107,12 +129,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         // Save the file payment(s)
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        // Get the consent to update the response
-        OBWriteFileConsentResponse4 obConsent = consentService.getOBIntentObject(
-                OBWriteFileConsentResponse4.class,
-                authorization,
-                obWriteFile2.getData().getConsentId()
-        );
+
         return ResponseEntity.status(CREATED).body(responseEntity(frPaymentSubmission, obConsent));
     }
 

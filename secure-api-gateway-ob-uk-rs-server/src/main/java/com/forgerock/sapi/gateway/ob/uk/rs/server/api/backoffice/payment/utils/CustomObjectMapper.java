@@ -19,11 +19,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.jackson.DateTimeDeserializerConverter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.jackson.DateTimeSerializerConverter;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.joda.time.DateTime;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import uk.org.openbanking.jackson.DateTimeDeserializer;
+import uk.org.openbanking.jackson.DateTimeSerializer;
+
+import java.util.TimeZone;
 
 public class CustomObjectMapper {
     private static CustomObjectMapper customObjectMapper;
@@ -32,9 +35,11 @@ public class CustomObjectMapper {
     private CustomObjectMapper() {
         Jackson2ObjectMapperBuilderCustomizer customizer =
                 jacksonObjectMapperBuilder -> {
+                    jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
                     jacksonObjectMapperBuilder.featuresToEnable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-                    jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializerConverter(DateTime.class));
-                    jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializerConverter());
+                    jacksonObjectMapperBuilder.modules(new JodaModule());
+                    jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
+                    jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
                     jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
                 };
 

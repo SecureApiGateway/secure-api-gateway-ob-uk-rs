@@ -29,9 +29,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticstandingorders.DomesticStandingOrdersApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
@@ -44,7 +46,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payment
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticstandingorders.DomesticStandingOrdersApi;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +53,6 @@ import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,11 +63,9 @@ import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRRiskConverter.toOBRisk1;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory.createFRStandingOrderData;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -120,9 +118,10 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         JsonObject intent = consentService.getIDMIntent(authorization, consentId);
         log.debug("Retrieved consent from IDM");
 
-        //deserialize the intent to ob response object
-        OBWriteDomesticStandingOrderConsentResponse6 consent = consentService.deserialize(
-                OBWriteDomesticStandingOrderConsentResponse6.class,
+        // deserialize the intent to ob response object where:
+        // The initiation object class from the consent must be the same class of the payment request initiation object
+        OBWriteDomesticStandingOrderConsentResponse5 consent = consentService.deserialize(
+                OBWriteDomesticStandingOrderConsentResponse5.class,
                 intent.getAsJsonObject("OBIntentObject"),
                 consentId
         );
@@ -131,13 +130,18 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         FRWriteDomesticStandingOrder frStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder3);
         log.trace("Converted to: '{}'", frStandingOrder);
 
-        OBRisk1 consentRisk = consent.getRisk();
-        OBRisk1 requestRisk = toOBRisk1(frStandingOrder.getRisk());
-
         // validate the consent against the request
         log.debug("Validating Domestic Standing Order submission");
         try {
-            riskValidationService.validate(consentRisk, requestRisk);
+            log.debug("Payment: \n{}", obWriteDomesticStandingOrder3.getData().getInitiation());
+            log.debug("Consent: \n{}", consent.getData().getInitiation());
+            // validates the initiation
+            if (!obWriteDomesticStandingOrder3.getData().getInitiation().equals(consent.getData().getInitiation())) {
+                throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_INITIATION,
+                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
+                );
+            }
+            riskValidationService.validate(consent.getRisk(), obWriteDomesticStandingOrder3.getRisk());
         } catch (OBErrorException e) {
             throw new OBErrorResponseException(
                     e.getObriErrorType().getHttpStatus(),

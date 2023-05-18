@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.validation.services;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpInstruction;
@@ -32,12 +32,16 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRRiskConverter.toOBRisk1;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPInitiation;
 
+import java.math.BigDecimal;
+
 
 @Service
 @Slf4j
 public class DomesticVrpValidationService {
 
-    private static final String MAX_INDIVIDUAL_AMOUNT = "MaximumIndividualAmount";
+    private static final String INSTRUCTED_AMOUNT_FIELD = "InstructedAmount";
+    private static final String MAX_INDIVIDUAL_AMOUNT_FIELD = "MaximumIndividualAmount";
+
     private OBRisk1Validator riskValidator;
 
     /**
@@ -148,16 +152,29 @@ public class DomesticVrpValidationService {
         validateMaximumIndividualAmount(instruction, controlParameters);
     }
 
-    private void validateMaximumIndividualAmount(FRDomesticVrpInstruction instruction, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
-        String instructionAmount = instruction.getInstructedAmount().getAmount();
-        String instructionCurrency = instruction.getInstructedAmount().getCurrency();
+    /**
+     * Validates that payment InstructionAmount is less than or equal to the MaxIndividualAmount controlParameter
+     * and that the currency of both amounts is the same.
+     *
+     * @param paymentInstruction FRDomesticVrpInstruction to validate
+     * @param controlParameters OBDomesticVRPControlParameters from the consent to validate against
+     * @throws OBErrorException if the paymentInstruction breaches the maxIndividualAmount
+     */
+    void validateMaximumIndividualAmount(FRDomesticVrpInstruction paymentInstruction, OBDomesticVRPControlParameters controlParameters) throws OBErrorException {
+        final BigDecimal instructionAmount = new BigDecimal(paymentInstruction.getInstructedAmount().getAmount());
+        final BigDecimal consentAmount = new BigDecimal(controlParameters.getMaximumIndividualAmount().getAmount());
 
-        Double consentAmount = Double.valueOf(controlParameters.getMaximumIndividualAmount().getAmount());
-        String consentCurrency = controlParameters.getMaximumIndividualAmount().getCurrency();
-        if (!(Double.valueOf(instructionAmount).compareTo(consentAmount) == 0) || !(instructionCurrency.compareTo(consentCurrency) == 0)) {
-            throw new OBErrorException(
-                    OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,
-                    MAX_INDIVIDUAL_AMOUNT, MAX_INDIVIDUAL_AMOUNT);
+        // InstructionAmount must be less than or equal to the MaximumIndividualAmount consented to
+        if (instructionAmount.compareTo(consentAmount) == 1) {
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,
+                                       INSTRUCTED_AMOUNT_FIELD, MAX_INDIVIDUAL_AMOUNT_FIELD);
+        }
+
+        final String consentCurrency = controlParameters.getMaximumIndividualAmount().getCurrency();
+        final String instructionCurrency = paymentInstruction.getInstructedAmount().getCurrency();
+        if (!consentCurrency.equals(instructionCurrency)) {
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETER_CURRENCY_MISMATCH,
+                    INSTRUCTED_AMOUNT_FIELD, MAX_INDIVIDUAL_AMOUNT_FIELD);
         }
     }
 

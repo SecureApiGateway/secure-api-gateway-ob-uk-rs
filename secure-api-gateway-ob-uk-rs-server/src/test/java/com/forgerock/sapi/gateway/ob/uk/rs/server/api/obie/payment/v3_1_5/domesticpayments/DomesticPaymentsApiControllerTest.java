@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domesticpayments;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory;
@@ -36,6 +37,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.common.OBRisk1;
+import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.*;
 
 import java.util.ArrayList;
@@ -175,6 +178,44 @@ public class DomesticPaymentsApiControllerTest {
             assertThat(data.getStatusDetail().getStatus()).isEqualTo(responsePayment.getData().getStatus().getValue());
         }
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith(url)).isTrue();
+    }
+
+    @Test
+    public void shouldThrowInvalidPayment() {
+        // Given
+        OBWriteDomestic2 paymentInitiation = aValidOBWriteDomestic2();
+
+        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(paymentInitiation.getData().getConsentId()));
+
+        given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(paymentInitiation)
+        );
+
+        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
+                PaymentsUtils.createTestDataConsentResponse5(paymentInitiation)
+        );
+
+        OBWriteDomestic2 paymentSubmission = aValidOBWriteDomestic2();
+        paymentSubmission.getData().getInitiation().instructedAmount(
+                new OBWriteDomestic2DataInitiationInstructedAmount()
+                        .amount("123123")
+                        .currency("EUR")
+        );
+
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(paymentSubmission, HTTP_HEADERS);
+
+        // When
+        ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(paymentsUrl(), request, OBErrorResponse1.class);
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        OBError1 error = response.getBody().getErrors().get(0);
+        assertThat(error.getErrorCode()).isEqualTo(OBRIErrorType.PAYMENT_INVALID_INITIATION.getCode().getValue());
+        assertThat(error.getMessage()).contains(
+                String.format(
+                        OBRIErrorType.PAYMENT_INVALID_INITIATION.getMessage(),
+                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
+                )
+        );
     }
 
     private String paymentsUrl() {
