@@ -1,40 +1,72 @@
+---
+configmap:
+  # Version of the Kubernetes API to use
+  apiVersion: v1
+  # Addition Spring properties can be provided as a yaml block here, this will be mounted into the container and override / extend the config found in the application.yml inside the jar
+  springConfig: example
+
 deployment:
+  # Version of the Kubernetes API to use
   apiVersion: apps/v1
-  replicas: 1
-
-  rollingUpdate:
-    maxSurge: 50%
-    maxUnavailable: 25%
-
-  imagePullPolicy: Always
-
-  # Deploy a different image to the intended release (useful for development)
-  imageOverride:
-    enabled: true
-    repo: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
-    tag: latest
-    tagDelimiter: ":"
-
-  server:
-    port: 8080
-
+  # Container port exposed by a pod or deployment
+  containerPort: 8080
+  image:
+    # Repo And Tag are not provided here as the value for the repo will be unique for each user/customer as they will be building their own docker images and push to their own Container Registries 
+    # The tag will use the .AppVersion as the default, meaning that customers who want to install V1 will get V1.0.0 of the software - you may supply a hard coded version if required  
+    # The values for each of these should be supplied in the .Values folder of an individual deployment within the specification repository - See https://github.com/SecureApiGateway/SecureApiGateway/wiki/Deployment#repositories
+    # repo:
+    # tag:
+    # We want to pull the image down each time we do a deployment, required if using 'latest' tag
+    imagePullPolicy: Always
+  # Additonal Java config - Needs further explanation 
   java:
     opts: -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n
-    
+  # See https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/ for further info on Liveness and Readiness Probes
+  # Config for the liveness probe
+  livenessProbe:
+    initialDelaySeconds: 160
+    periodSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+    timeoutSeconds: 5
+  # RS Connects to the mongodb instance
+  mongodb:
+    # Full name of the mongodb deployment
+    host: mongodb
+  # Config for the readiness probe
+  readinessProbe:
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    timeoutSeconds: 5
+  # How many pods are to run in the deployment
+  replicas: 1
+  # See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ 
+  # Resource Requests and Limits
   resources:
-    requests:
-      cpu: 1
-      memory: 1024Mi
     limits:
       cpu: 1
       memory: 1024Mi
+    requests:
+      cpu: 0.5
+      memory: 512Mi
+  # See https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/
+  # Allows you to have multiple versions of the deployment in the same cluster, kubernetes will create new pods and scale down old when performing an upgrade 
+  # Depending on the values set below. Other strategyTypes are: Recreate | Blue/ Green (or Red / Black) deployments | Canary | Dark deployments
+  rollingUpdate:
+    maxSurge: 50%
+    maxUnavailable: 25%
+  strategyType: RollingUpdate
 
-mongodb:
-  host: mongodb
-  
 service:
+  # Version of the Kubernetes API to use
   apiVersion: v1
+  # Container port exposed by a pod or deployment
+  port: 8080
+  # Protocol the service will use
+  protocol: TCP
+  # Host Machine port that traffic is diverted too - in this case the nodes
+  targetPort: 8080
+  # See - https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  # Type of service to create. Other types are: NodePort | LoadBalancer | ExternalName
   type: ClusterIP
-
-# Addition Spring properties can be provided as a yaml block here, this will be mounted into the container and override / extend the config found in the application.yml inside the jar
-springConfig: {}
