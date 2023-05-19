@@ -49,7 +49,7 @@
     </parent>
 
     <properties>
-        <uk.bom.version>1.0.3-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>1.0.3</uk.bom.version>
     </properties>
 
     <dependencyManagement>

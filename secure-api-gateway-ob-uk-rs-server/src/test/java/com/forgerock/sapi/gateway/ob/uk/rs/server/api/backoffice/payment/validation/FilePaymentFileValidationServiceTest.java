@@ -122,7 +122,13 @@ public class FilePaymentFileValidationServiceTest {
         String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
         String fileContent = getFileContent(paymentFileType);
         PaymentFile paymentFile = PaymentFileFactory.createPaymentFile(paymentFileType, fileContent);
-        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsentResponse4(paymentFileType.getFileType(), HashUtils.computeSHA256FullHash(fileContent), String.valueOf(paymentFile.getNumberOfTransactions()), paymentFile.getControlSum());
+        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory
+                .aValidOBWriteFileConsentResponse4(
+                        paymentFileType.getFileType(),
+                        HashUtils.computeSHA256FullHash(fileContent),
+                        String.valueOf(paymentFile.getNumberOfTransactions()),
+                        paymentFile.getControlSum()
+                );
         OBWriteFile2DataInitiation initiation = consentResponse4.getData().getInitiation();
 
         initiation.setFileHash(wrongHash);
@@ -152,7 +158,13 @@ public class FilePaymentFileValidationServiceTest {
         String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
         String fileContent = getFileContent(paymentFileType);
         PaymentFile paymentFile = PaymentFileFactory.createPaymentFile(paymentFileType, fileContent);
-        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsentResponse4(paymentFileType.getFileType(), HashUtils.computeSHA256FullHash(fileContent), String.valueOf(paymentFile.getNumberOfTransactions()), paymentFile.getControlSum());
+        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory
+                .aValidOBWriteFileConsentResponse4(
+                        paymentFileType.getFileType(),
+                        HashUtils.computeSHA256FullHash(fileContent),
+                        String.valueOf(paymentFile.getNumberOfTransactions()),
+                        paymentFile.getControlSum()
+                );
         OBWriteFile2DataInitiation initiation = consentResponse4.getData().getInitiation();
 
         initiation.setFileHash(HashUtils.computeSHA256FullHash(fileContent));
@@ -183,7 +195,13 @@ public class FilePaymentFileValidationServiceTest {
         String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
         String fileContent = getFileContent(paymentFileType);
         PaymentFile paymentFile = PaymentFileFactory.createPaymentFile(paymentFileType, fileContent);
-        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsentResponse4(paymentFileType.getFileType(), HashUtils.computeSHA256FullHash(fileContent), String.valueOf(paymentFile.getNumberOfTransactions()), paymentFile.getControlSum());
+        OBWriteFileConsentResponse4 consentResponse4 = OBWriteFileConsentTestDataFactory
+                .aValidOBWriteFileConsentResponse4(
+                        paymentFileType.getFileType(),
+                        HashUtils.computeSHA256FullHash(fileContent),
+                        String.valueOf(paymentFile.getNumberOfTransactions()),
+                        paymentFile.getControlSum()
+                );
         OBWriteFile2DataInitiation initiation = consentResponse4.getData().getInitiation();
 
         initiation.setFileHash(wrongHash);

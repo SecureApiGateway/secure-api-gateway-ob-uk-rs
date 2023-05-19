@@ -16,8 +16,11 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -34,6 +37,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.org.openbanking.jackson.DateTimeDeserializer;
 import uk.org.openbanking.jackson.DateTimeSerializer;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -63,10 +67,14 @@ public class RsApplicationConfiguration {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         Jackson2ObjectMapperBuilder objectMapperBuilder = new Jackson2ObjectMapperBuilder();
         objectMapperBuilderCustomizer.customize(objectMapperBuilder);
-        converter.setObjectMapper(objectMapperBuilder.build());
+        ObjectMapper objectMapper = objectMapperBuilder.build();
+        objectMapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
+        converter.setObjectMapper(objectMapper);
         return converter;
     }
 
+    // Spring boot auto-configure Jackson2ObjectMapperBuilder bean and use this builder to auto-configure ObjectMapper
+    // customize the default behavior of Jackson2ObjectMapperBuilder by defining a custom Jackson2ObjectMapperBuilderCustomizer bean
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer objectMapperBuilderCustomizer() {
         return (jacksonObjectMapperBuilder) -> {
@@ -76,8 +84,11 @@ public class RsApplicationConfiguration {
             jacksonObjectMapperBuilder.featuresToEnable(MapperFeature.USE_BASE_TYPE_AS_DEFAULT_IMPL);
             jacksonObjectMapperBuilder.modules(new JodaModule());
             jacksonObjectMapperBuilder.featuresToEnable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+            jacksonObjectMapperBuilder.featuresToEnable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
             jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
             jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
+            jacksonObjectMapperBuilder.deserializerByType(BigDecimal.class, new BigDecimalDeserializer());
+            jacksonObjectMapperBuilder.serializerByType(BigDecimal.class, new BigDecimalSerializer(BigDecimal.class));
             jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
         };
     }
