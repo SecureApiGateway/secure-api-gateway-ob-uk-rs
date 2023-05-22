@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
@@ -24,7 +24,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3;
 
 public class OBWriteDomesticConsent3Validator extends PaymentConsentValidator<OBWriteDomesticConsent3> {
 
-    public OBWriteDomesticConsent3Validator(OBValidator<OBRisk1> riskValidator) {
+    public OBWriteDomesticConsent3Validator(Validator<OBRisk1, OBError1> riskValidator) {
         super(riskValidator);
     }
 

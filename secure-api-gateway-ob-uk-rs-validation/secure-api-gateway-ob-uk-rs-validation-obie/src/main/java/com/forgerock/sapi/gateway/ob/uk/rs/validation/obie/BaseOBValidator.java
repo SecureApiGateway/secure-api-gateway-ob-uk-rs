@@ -21,10 +21,12 @@ import org.slf4j.LoggerFactory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
+
 import uk.org.openbanking.datamodel.error.OBError1;
 
 /**
- * Base implementation of {@link OBValidator}, this class can be extended to provide Open Banking specific validation.
+ * Implementation of Validator which can be extended to provide Open Banking specific validation.
  *
  * Common functionality provided by this class:
  * - converting unexpected RuntimeExceptions to OBError1 objects
@@ -32,7 +34,7 @@ import uk.org.openbanking.datamodel.error.OBError1;
  *
  * @param <T>
  */
-public abstract class BaseOBValidator<T> implements OBValidator<T> {
+public abstract class BaseOBValidator<T> implements Validator<T, OBError1> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

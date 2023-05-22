@@ -18,17 +18,17 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 import java.util.Objects;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidator;
 
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 
 public abstract class PaymentConsentValidator<T> extends BaseOBValidator<T> {
 
-    private final OBValidator<OBRisk1> riskValidator;
+    private final Validator<OBRisk1, OBError1> riskValidator;
 
-    protected PaymentConsentValidator(OBValidator<OBRisk1> riskValidator) {
+    protected PaymentConsentValidator(Validator<OBRisk1, OBError1> riskValidator) {
         Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
         this.riskValidator = riskValidator;
     }

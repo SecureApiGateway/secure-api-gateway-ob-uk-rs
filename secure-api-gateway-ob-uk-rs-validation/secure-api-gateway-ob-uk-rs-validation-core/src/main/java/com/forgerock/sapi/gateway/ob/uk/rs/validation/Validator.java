@@ -16,6 +16,16 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.validation;
 
 
+/**
+ * Validator takes an object of T type and applies validation rules to it.
+ *
+ * Calls to validate should never throw an exception, instead errors should be added to the ValidationResult. This gives
+ * the implementor the option of failing fast (on the first error encountered) or collecting all the errors and
+ * reporting them in a single result.
+ *
+ * @param <T> type of the object to validate
+ * @param <E> type of the errors returned by the {@link ValidationResult}
+ */
 public interface Validator<T, E> {
 
     ValidationResult<E> validate(T obj);

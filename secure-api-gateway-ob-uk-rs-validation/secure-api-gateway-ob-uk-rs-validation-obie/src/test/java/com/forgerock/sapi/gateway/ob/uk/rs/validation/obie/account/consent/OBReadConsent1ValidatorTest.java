@@ -29,7 +29,7 @@ import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadData1;
 import uk.org.openbanking.datamodel.error.OBError1;
 
-class OBReadConsent1ValidatorTest {
+public class OBReadConsent1ValidatorTest {
 
     private final OBReadConsent1Validator obReadConsent1Validator = new OBReadConsent1Validator();
 
@@ -43,8 +43,16 @@ class OBReadConsent1ValidatorTest {
 
     @Test
     void consentExpirationInPast() {
-        final ValidationResult<OBError1> consentExpirationInPast = obReadConsent1Validator.validate(new OBReadConsent1().data(new OBReadData1().expirationDateTime(DateTime.now().minusMinutes(2))));
-        validateErrorResult(consentExpirationInPast, List.of(new OBError1().errorCode("UK.OBIE.Field.Invalid")
-                .message("The field received is invalid. Reason 'ExpirationDateTime must be in the future'")));
+        final ValidationResult<OBError1> consentExpirationInPast = obReadConsent1Validator.validate(invalidConsentExpirationInPast());
+        validateErrorResult(consentExpirationInPast, expectedConsentExpirationInPastError());
+    }
+
+    public static List<OBError1> expectedConsentExpirationInPastError() {
+        return List.of(new OBError1().errorCode("UK.OBIE.Field.Invalid")
+                .message("The field received is invalid. Reason 'ExpirationDateTime must be in the future'"));
+    }
+
+    public static OBReadConsent1 invalidConsentExpirationInPast() {
+        return new OBReadConsent1().data(new OBReadData1().expirationDateTime(DateTime.now().minusMinutes(2)));
     }
 }
