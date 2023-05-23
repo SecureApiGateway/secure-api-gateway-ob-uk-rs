@@ -32,7 +32,7 @@ import uk.org.openbanking.datamodel.error.OBError1;
  * - converting unexpected RuntimeExceptions to OBError1 objects
  * - logging of failures
  *
- * @param <T>
+ * @param <T> type of the object to validate
  */
 public abstract class BaseOBValidator<T> implements Validator<T, OBError1> {
 

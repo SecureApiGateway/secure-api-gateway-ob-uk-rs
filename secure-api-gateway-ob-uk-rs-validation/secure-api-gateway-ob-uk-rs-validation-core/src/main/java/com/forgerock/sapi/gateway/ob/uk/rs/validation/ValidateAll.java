@@ -17,6 +17,12 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation;
 
 import java.util.List;
 
+/**
+ * Validator implementation applies multiple validations and combines the result.
+ *
+ * To be successful all the validators delegated to must produce success results.
+ * For error results, errors from individual validators are merged into the final result.
+ */
 public class ValidateAll<T, E> implements Validator<T, E> {
 
     private final List<Validator<T, E>> validators;

@@ -77,7 +77,7 @@ public class ValidationResult<E>  {
 
     @Override
     public String toString() {
-        return "DefaultValidationResult{" +
+        return "ValidationResult{" +
                 "valid=" + isValid() +
                 ", errors=" + errors +
                 '}';
