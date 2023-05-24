@@ -11,7 +11,7 @@ framework. These aim to be generic and can be applied to different use cases.
 This defines the behaviour of a validator
 
 - Type param `T` is the type of object that the validator can be applied to
-- Type param `E` is the type of error object that the validator reports
+- Type param `E` is the type of error objects used to indicate validation errors (as part of the ValidationResult)
 
 The interface has a single method:
 ```java
@@ -21,14 +21,15 @@ ValidationResult<E> validate(T obj);
 Validators MUST NOT throw any exceptions, all errors must be communicated by the ValidationResult. It is the responsibility
 of the caller to inspect the result and take appropriate action, for errors this may mean throwing an exception.
 
-This mechanism allows implementors the option of doing full validation and collecting all the errors, or failing-fast returning the first error encountered.
+This mechanism allows implementors the option of doing full validation and collecting all the errors, 
+or failing-fast returning the first error encountered.
 
 #### [com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult<E>](secure-api-gateway-ob-uk-rs-validation-core/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/ValidationResult.java) 
 This defines the result of a validation.
 
-- Type param `E` is the type of error object that this result may contain
+- Type param `E` is the type of error objects used to indicate validation errors
 
-The result can either be valid (successful) or invalid (contains 1 or more error objects)
+The result can either be valid (contains no errors) or invalid (contains 1 or more error objects).
 
 
 ## OBIE Module
@@ -39,11 +40,10 @@ This can then be transformed into a HTTP response which conforms to the OBIE spe
 
 All validators will assume that the OB data model objects passed to them as arguments have already undergone schema validation.
 This means that, for example, validators do not need to do null checks on fields marked as required in the schema, other
-validations such as ranges and regexs enforced by the schema will also not be implemented.
+validations such as ranges and regexs that are enforced by the schema.
 
 These validators are aimed at capturing rules that cannot be expressed on a per-field basis, or to add more restrictive
 validations to fields.
-
 
 ### Key classes
 #### [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator<T>](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/BaseOBValidator.java) 
