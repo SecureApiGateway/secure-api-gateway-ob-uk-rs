@@ -25,7 +25,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.Cons
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomesticValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -40,7 +40,7 @@ public class DomesticPaymentsApiController
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ConsentService consentService,
-            OBValidationService<OBWriteDomesticValidatorContext> paymentValidator
+            OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator
     ) {
         super(paymentSubmissionRepository, paymentSubmissionValidator, consentService, paymentValidator);
     }

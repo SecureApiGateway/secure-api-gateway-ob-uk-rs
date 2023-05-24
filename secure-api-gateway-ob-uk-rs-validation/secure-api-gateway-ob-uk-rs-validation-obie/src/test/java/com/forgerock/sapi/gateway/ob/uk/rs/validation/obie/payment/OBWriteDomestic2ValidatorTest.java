@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomesticValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
 
 import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
@@ -46,7 +46,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
 
-        final OBWriteDomesticValidatorContext validatorContext = new OBWriteDomesticValidatorContext(paymentRequest, consent);
+        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent);
 
         validateSuccessResult(obWriteDomestic2Validator.validate(validatorContext));
     }
@@ -59,7 +59,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation().endToEndIdentification("value different from consent"));
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
 
-        final OBWriteDomesticValidatorContext validatorContext = new OBWriteDomesticValidatorContext(paymentRequest, consent);
+        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent);
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
@@ -74,7 +74,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk().contractPresentInidicator(Boolean.TRUE));
 
-        final OBWriteDomesticValidatorContext validatorContext = new OBWriteDomesticValidatorContext(paymentRequest, consent);
+        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent);
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")

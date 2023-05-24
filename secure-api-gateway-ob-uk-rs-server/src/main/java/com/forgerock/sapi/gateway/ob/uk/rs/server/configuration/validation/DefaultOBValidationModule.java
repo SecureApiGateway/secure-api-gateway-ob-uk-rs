@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.validation;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -21,14 +21,28 @@ import org.springframework.context.annotation.Configuration;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomesticValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
 
+/**
+ * Spring Boot configuration for the Open Banking validation module with the default set of rules.
+ *
+ * Creates Beans that can be used by services and controllers in this simulator for validation purposes.
+ *
+ * This can be enabled by setting the following property:
+ * rs.obie.validation.module: default
+ *
+ * Different validation rules may be implemented by creating a new module that creates the same set of beans, such a
+ * module should include the @ConditionalOnProperty annotation as below but with a different havingValue.
+ */
 @Configuration
 @ConditionalOnProperty(prefix = "rs.obie.validation", name = "module", havingValue = "default")
 public class DefaultOBValidationModule {
 
+    /**
+     * Bean to validate OBWriteDomestic2 objects (Domestic Payment Requests)
+     */
     @Bean
-    public OBValidationService<OBWriteDomesticValidatorContext> domesticPaymentValidator() {
+    public OBValidationService<OBWriteDomestic2ValidatorContext> domesticPaymentValidator() {
         return new OBValidationService<>(new OBWriteDomestic2Validator());
     }
 }

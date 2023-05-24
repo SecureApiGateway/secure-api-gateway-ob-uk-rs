@@ -39,7 +39,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payment
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomesticValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -70,13 +70,13 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ConsentService consentService;
-    private final OBValidationService<OBWriteDomesticValidatorContext> paymentValidator;
+    private final OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator;
 
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ConsentService consentService,
-            OBValidationService<OBWriteDomesticValidatorContext> paymentValidator) {
+            OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentService = consentService;
@@ -118,7 +118,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         // validate the consent against the request
         log.debug("Validating Domestic Payment submission");
-        paymentValidator.validate(new OBWriteDomesticValidatorContext(obWriteDomestic2, consent));
+        paymentValidator.validate(new OBWriteDomestic2ValidatorContext(obWriteDomestic2, consent));
         log.debug("Domestic Payment validation successful");
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
