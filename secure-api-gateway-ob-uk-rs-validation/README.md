@@ -37,6 +37,14 @@ The result can either be valid (successful) or invalid (contains 1 or more error
 Validation errors are communicated using the OBIE data-model class: `uk.org.openbanking.datamodel.error.OBError1`
 This can then be transformed into a HTTP response which conforms to the OBIE spec.
 
+All validators will assume that the OB data model objects passed to them as arguments have already undergone schema validation.
+This means that, for example, validators do not need to do null checks on fields marked as required in the schema, other
+validations such as ranges and regexs enforced by the schema will also not be implemented.
+
+These validators are aimed at capturing rules that cannot be expressed on a per-field basis, or to add more restrictive
+validations to fields.
+
+
 ### Key classes
 #### [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator<T>](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/BaseOBValidator.java) 
 Abstract base class which implements the Validator interface and provides some common functionality for all Open Banking specific validators.
