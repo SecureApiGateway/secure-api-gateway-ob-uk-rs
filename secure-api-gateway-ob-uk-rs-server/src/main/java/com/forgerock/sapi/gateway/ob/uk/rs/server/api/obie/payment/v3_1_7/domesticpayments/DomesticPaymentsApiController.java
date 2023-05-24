@@ -22,9 +22,11 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_7.domes
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_7.domesticpayments.DomesticPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomesticValidatorContext;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
@@ -38,8 +40,8 @@ public class DomesticPaymentsApiController
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ConsentService consentService,
-            RiskValidationService riskValidationService
+            OBValidationService<OBWriteDomesticValidatorContext> paymentValidator
     ) {
-        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService, riskValidationService);
+        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService, paymentValidator);
     }
 }

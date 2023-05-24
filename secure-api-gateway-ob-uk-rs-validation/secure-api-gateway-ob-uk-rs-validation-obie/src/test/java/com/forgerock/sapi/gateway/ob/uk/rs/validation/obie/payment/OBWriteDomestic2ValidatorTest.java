@@ -63,7 +63,7 @@ class OBWriteDomestic2ValidatorTest {
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
-                                      .message("Payment invalid. Payment initiation received doesn't match the initial payment request: ''")));
+                                      .message("Payment invalid. Payment initiation received doesn't match the initial payment request: 'The Initiation field in the request does not match with the consent'")));
     }
 
     @Test
@@ -78,7 +78,7 @@ class OBWriteDomestic2ValidatorTest {
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
-                                      .message("Payment invalid. Payment risk received doesn't match the risk payment request: ''")));
+                                      .message("Payment invalid. Payment risk received doesn't match the risk payment request: 'The Risk field in the request does not match with the consent'")));
     }
 
     private static OBRisk1 createRisk() {

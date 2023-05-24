@@ -25,13 +25,9 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRe
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticpayments.DomesticPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
@@ -42,6 +38,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.Idempot
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomesticValidatorContext;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -72,18 +70,17 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ConsentService consentService;
-    private final RiskValidationService riskValidationService;
+    private final OBValidationService<OBWriteDomesticValidatorContext> paymentValidator;
 
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ConsentService consentService,
-            RiskValidationService riskValidationService
-    ) {
+            OBValidationService<OBWriteDomesticValidatorContext> paymentValidator) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentService = consentService;
-        this.riskValidationService = riskValidationService;
+        this.paymentValidator = paymentValidator;
     }
 
     @Override
@@ -101,7 +98,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             Principal principal) throws OBErrorResponseException {
         log.debug("Received payment submission: '{}'", obWriteDomestic2);
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomestic2.getRisk());
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         String consentId = obWriteDomestic2.getData().getConsentId();
         //get the consent
@@ -109,8 +106,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         log.debug("Retrieved consent from IDM");
 
         //deserialize the intent to ob response object
-        OBWriteDomesticConsentResponse5 consent = consentService.deserialize(
-                OBWriteDomesticConsentResponse5.class,
+        OBWriteDomesticConsent4 consent = consentService.deserialize(
+                OBWriteDomesticConsent4.class,
                 intent.getAsJsonObject("OBIntentObject"),
                 consentId
         );
@@ -121,20 +118,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         // validate the consent against the request
         log.debug("Validating Domestic Payment submission");
-        try {
-            // validates the initiation
-            if (!obWriteDomestic2.getData().getInitiation().equals(consent.getData().getInitiation())) {
-                throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_INITIATION,
-                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
-                );
-            }
-            riskValidationService.validate(consent.getRisk(), obWriteDomestic2.getRisk());
-        } catch (OBErrorException e) {
-            throw new OBErrorResponseException(
-                    e.getObriErrorType().getHttpStatus(),
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    e.getOBError());
-        }
+        paymentValidator.validate(new OBWriteDomesticValidatorContext(obWriteDomestic2, consent));
         log.debug("Domestic Payment validation successful");
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()

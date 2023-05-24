@@ -51,3 +51,7 @@ rs:
       limit:
         accounts: 100
         documents: 1000
+  obie:
+    validation:
+      # OBIE validation module to load, the "default" module is provided as standard with the simulator
+      module: default

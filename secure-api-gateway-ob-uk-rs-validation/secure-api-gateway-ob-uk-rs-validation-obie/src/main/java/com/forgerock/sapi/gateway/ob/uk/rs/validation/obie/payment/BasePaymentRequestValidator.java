@@ -111,13 +111,13 @@ public abstract class BasePaymentRequestValidator<C extends PaymentRequestValida
 
     private void validateRiskMatchesConsent(C paymentReqValidationCtxt, ValidationResult<OBError1> validationResult) {
         if (!Objects.equals(paymentReqValidationCtxt.getConsentRisk(), paymentReqValidationCtxt.getPaymentRequestRisk())) {
-            validationResult.addError(OBRIErrorType.PAYMENT_INVALID_RISK.toOBError1("")); // FIXME need an arg otherwise get an exception, fix PAYMENT_INVALID_RISK format
+            validationResult.addError(OBRIErrorType.PAYMENT_INVALID_RISK.toOBError1("The Risk field in the request does not match with the consent"));
         }
     }
 
     private void validateInitiationMatchesConsent(C paymentReqValidationCtxt, ValidationResult<OBError1> validationResult) {
         if (!Objects.equals(paymentReqValidationCtxt.getConsentInitiation(), paymentReqValidationCtxt.getPaymentRequestInitiation())) {
-            validationResult.addError(OBRIErrorType.PAYMENT_INVALID_INITIATION.toOBError1("")); // FIXME need an arg otherwise get an exception, fix PAYMENT_INVALID_INITIATION format
+            validationResult.addError(OBRIErrorType.PAYMENT_INVALID_INITIATION.toOBError1("The Initiation field in the request does not match with the consent"));
         }
     }
 
