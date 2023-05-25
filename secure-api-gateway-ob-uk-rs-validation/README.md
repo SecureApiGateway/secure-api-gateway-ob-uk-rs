@@ -11,7 +11,7 @@ framework. These aim to be generic and can be applied to different use cases.
 This defines the behaviour of a validator
 
 - Type param `T` is the type of object that the validator can be applied to
-- Type param `E` is the type of error objects used to indicate validation errors (as part of the ValidationResult)
+- Type param `E` is the type of error object used to indicate validation errors (as part of the ValidationResult)
 
 The interface has a single method:
 ```java
@@ -27,7 +27,7 @@ or failing-fast returning the first error encountered.
 #### [com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult<E>](secure-api-gateway-ob-uk-rs-validation-core/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/ValidationResult.java) 
 This defines the result of a validation.
 
-- Type param `E` is the type of error objects used to indicate validation errors
+- Type param `E` is the type of error object used to indicate validation errors
 
 The result can either be valid (contains no errors) or invalid (contains 1 or more error objects).
 
@@ -35,11 +35,11 @@ The result can either be valid (contains no errors) or invalid (contains 1 or mo
 ## OBIE Module
 `secure-api-gateway-ob-uk-rs-validation-obie` module provides OBIE (Open Banking UK) specific validation classes.
 
-Validation errors are communicated using the OBIE data-model class: `uk.org.openbanking.datamodel.error.OBError1`
+Validation errors are communicated using the OBIE data-model class: `uk.org.openbanking.datamodel.error.OBError1`.
 This can then be transformed into a HTTP response which conforms to the OBIE spec.
 
-All validators will assume that the OB data model objects passed to them as arguments have already undergone schema validation.
-This means that, for example, validators do not need to do null checks on fields marked as required in the schema, other
+All validators will assume that the OB data-model objects passed to them as arguments have already undergone schema validation.
+This means that, for example, validators do not need to do null checks on fields marked as required in the schema, or other
 validations such as ranges and regexs that are enforced by the schema.
 
 These validators are aimed at capturing rules that cannot be expressed on a per-field basis, or to add more restrictive
