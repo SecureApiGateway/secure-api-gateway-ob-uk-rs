@@ -37,7 +37,6 @@ import org.springframework.web.client.RestTemplate;
 import uk.org.openbanking.jackson.DateTimeDeserializer;
 import uk.org.openbanking.jackson.DateTimeSerializer;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -87,8 +86,6 @@ public class RsApplicationConfiguration {
             jacksonObjectMapperBuilder.featuresToEnable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
             jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
             jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
-            jacksonObjectMapperBuilder.deserializerByType(BigDecimal.class, new BigDecimalDeserializer());
-            jacksonObjectMapperBuilder.serializerByType(BigDecimal.class, new BigDecimalSerializer(BigDecimal.class));
             jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
         };
     }

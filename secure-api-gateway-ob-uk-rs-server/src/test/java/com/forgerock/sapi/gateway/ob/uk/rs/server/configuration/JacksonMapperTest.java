@@ -27,7 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,57 +50,57 @@ public class JacksonMapperTest {
                 Arguments.arguments(
                         "Zeros precision[2]",
                         "1.00",
-                        new BigDecimal("1.00").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("1.00")
                 ),
                 Arguments.arguments(
                         "Zeros precision[4]",
                         "156.0000",
-                        new BigDecimal("156.0000").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("156.0000")
                 ),
                 Arguments.arguments(
                         "Zeros precision[6]",
                         "43.000000",
-                        new BigDecimal("43.000000").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("43.000000")
                 ),
                 Arguments.arguments(
                         "precision[2]",
                         "66.12",
-                        new BigDecimal("66.12").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("66.12")
                 ),
                 Arguments.arguments(
                         "precision[4]",
                         "3.1234",
-                        new BigDecimal("3.1234").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("3.1234")
                 ),
                 Arguments.arguments(
                         "precision[6]",
                         "90.123456",
-                        new BigDecimal("90.123456").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("90.123456")
                 ),
                 Arguments.arguments(
                         "scientist format",
-                        new BigDecimal(87000000, new MathContext(4)).toString(),
-                        new BigDecimal("87000000").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        "8.7000E-4",
+                        new BigDecimal("0.00087000")
                 ),
                 Arguments.arguments(
                         "scientist format",
                         "13400000.3456E-0",
-                        new BigDecimal("13400000.3456").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("13400000.3456")
                 ),
                 Arguments.arguments(
                         "scientist format",
                         "134.563456E-0",
-                        new BigDecimal("134.563456").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("134.563456")
                 ),
                 Arguments.arguments(
                         "scientist format",
                         "5312.1E-0",
-                        new BigDecimal("5312.1").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("5312.1")
                 ),
                 Arguments.arguments(
                         "scientist format",
                         "8.124734E-3",
-                        new BigDecimal("0.0081247340").setScale(BigDecimalDefaults.DEFAULT_SCALE, BigDecimalDefaults.DEFAULT_ROUNDING_MODE)
+                        new BigDecimal("0.008124734")
                 )
         );
     }
@@ -119,7 +118,7 @@ public class JacksonMapperTest {
                 Arguments.arguments(
                         "zero precision[2]",
                         new BigDecimal("112.00"),
-                        "112.0000"
+                        "112.00"
                 ),
                 Arguments.arguments(
                         "zero precision[4]",
@@ -129,27 +128,27 @@ public class JacksonMapperTest {
                 Arguments.arguments(
                         "zero precision[6]",
                         new BigDecimal("112.000000"),
-                        "112.0000"
+                        "112.000000"
                 ),
                 Arguments.arguments(
                         "precision[2]",
                         new BigDecimal("112.12"),
-                        "112.1200"
+                        "112.12"
                 ),
                 Arguments.arguments(
                         "precision[4]",
-                        new BigDecimal("145.1234").setScale(4, BigDecimalDefaults.DEFAULT_ROUNDING_MODE),
+                        new BigDecimal("145.1234"),
                         "145.1234"
                 ),
                 Arguments.arguments(
                         "precision[6]",
-                        new BigDecimal("145.123456").setScale(6, BigDecimalDefaults.DEFAULT_ROUNDING_MODE),
+                        new BigDecimal("145.1235"),
                         "145.1235"
                 ),
                 Arguments.arguments(
                         "scientist format",
                         new BigDecimal("134.563456E-0"),
-                        "134.5635"
+                        "134.563456"
                 ),
                 Arguments.arguments(
                         "scientist format",
@@ -159,12 +158,12 @@ public class JacksonMapperTest {
                 Arguments.arguments(
                         "scientist format",
                         new BigDecimal("8.124734E-3"),
-                        "0.0081"
+                        "0.008124734"
                 ),
                 Arguments.arguments(
                         "scientist format",
                         new BigDecimal("5312.1E-0"),
-                        "5312.1000"
+                        "5312.1"
                 )
         );
     }

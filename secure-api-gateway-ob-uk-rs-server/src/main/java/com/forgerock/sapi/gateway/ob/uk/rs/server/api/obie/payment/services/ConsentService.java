@@ -84,10 +84,6 @@ public class ConsentService {
     public <T> T deserialize(Class<T> targetClass, JsonObject intent, String intentId) {
         try {
             // deserialize the consent
-            log.debug("defaultObjectMapper: {}", objectMapper);
-            log.debug("registeredModules: {}", objectMapper.getRegisteredModuleIds());
-            log.debug("getDeserializationConfig: {}", objectMapper.getDeserializationConfig());
-            log.debug("getSerializationConfig: {}", objectMapper.getSerializationConfig());
             return objectMapper.readValue(
                     intent.toString(),
                     targetClass
