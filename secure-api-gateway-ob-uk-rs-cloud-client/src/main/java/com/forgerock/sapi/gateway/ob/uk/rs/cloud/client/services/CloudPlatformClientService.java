@@ -90,7 +90,7 @@ class CloudPlatformClientService implements PlatformClient {
         IntentType intentType = IntentType.identify(intentId);
         if (intentType == null) {
             String errorMessage = String.format("It has not been possible identify the intent type '%s'.", intentId);
-            log.error("(ConsentService#request) {}", errorMessage);
+            log.error("(CloudPlatformClientService#request) {}", errorMessage);
             throw new ExceptionClient(
                     ErrorClient.builder()
                             .errorType(ErrorType.UNKNOWN_INTENT_TYPE)
@@ -105,14 +105,14 @@ class CloudPlatformClientService implements PlatformClient {
                         intentId
                 );
 
-        log.debug("(ConsentService#request) {} the consent from platform: {}", httpMethod.name(), consentURL);
+        log.debug("(CloudPlatformClientService#request) {} the consent from platform: {}", httpMethod.name(), consentURL);
         try {
             ResponseEntity<String> responseEntity = restTemplate.exchange(
                     consentURL,
                     httpMethod,
                     null,
                     String.class);
-            log.debug("(ConsentService#request) response entity: " + responseEntity);
+            log.debug("(CloudPlatformClientService#request) response entity: " + responseEntity);
 
             return responseEntity != null && responseEntity.getBody() != null ? JsonParser.parseString(responseEntity.getBody()).getAsJsonObject() : null;
         } catch (RestClientException e) {

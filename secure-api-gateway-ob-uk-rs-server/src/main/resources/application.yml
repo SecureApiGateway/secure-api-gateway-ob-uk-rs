@@ -31,6 +31,7 @@ management:
 logging:
   level:
     com.forgerock: DEBUG
+    uk.org.openbanking: DEBUG
 
 # Configuration for calling the Consent Repository
 # See: com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration

@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.v3_1_10.internationalstandingorders;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.backoffice.api.payment.calculate.elements.v3_1_10.internationalstandingorders.CalculateResponseElements;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils.PaymentConsentCalculateElementsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,4 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CalculateResponseElementsController
         extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.v3_1_9.internationalstandingorders.CalculateResponseElementsController
         implements CalculateResponseElements {
+    public CalculateResponseElementsController(PaymentConsentCalculateElementsService calculateElementsService) {
+        super(calculateElementsService);
+    }
 }

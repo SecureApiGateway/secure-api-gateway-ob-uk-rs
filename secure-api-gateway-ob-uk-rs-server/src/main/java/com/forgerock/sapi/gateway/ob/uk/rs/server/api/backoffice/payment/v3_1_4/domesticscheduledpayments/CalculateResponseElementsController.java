@@ -20,7 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.backoffice.api.payment.calculate.elements.v3_1_4.domesticscheduledpayments.CalculateResponseElements;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils.PaymentConsentGeneral;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils.PaymentConsentCalculateElementsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +37,11 @@ import static uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConse
 @Slf4j
 public class CalculateResponseElementsController implements CalculateResponseElements {
 
+    private final PaymentConsentCalculateElementsService calculateElementsService;
+
+    public CalculateResponseElementsController(PaymentConsentCalculateElementsService calculateElementsService) {
+        this.calculateElementsService = calculateElementsService;
+    }
 
     @Override
     public ResponseEntity<OBWriteDomesticScheduledConsentResponse4> calculateElements(
@@ -47,7 +52,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            OBWriteDomesticScheduledConsentResponse4 response = PaymentConsentGeneral.calculate(
+            OBWriteDomesticScheduledConsentResponse4 response = calculateElementsService.calculate(
                     body, intent, request
             );
             response.getData().setStatus(AWAITINGAUTHORISATION);
