@@ -41,8 +41,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
  */
 @Service
 @Slf4j
-@ComponentScan(basePackages = {"com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration"})
-class CloudPlatformClientService implements PlatformClient {
+public class CloudPlatformClientService implements PlatformClient {
 
     private static final String IDM_RESPOND_OB_INTENT_OBJECT_FIELD = "OBIntentObject";
     private final RestTemplate restTemplate;
