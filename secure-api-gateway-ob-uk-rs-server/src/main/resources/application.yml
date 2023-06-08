@@ -48,6 +48,13 @@ consent:
       patch: /repo/users/@UserId@
       delete: /repo/users/@UserId@
 
+
+rcs:
+  consent:
+    store:
+      api:
+        baseUrl: http://remote-consent-service:8080/consent/store
+
 # RS config
 rs:
   # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
