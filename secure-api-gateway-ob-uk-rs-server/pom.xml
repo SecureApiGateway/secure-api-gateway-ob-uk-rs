@@ -91,6 +91,12 @@
             <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-common-error</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-client</artifactId>
+            <version>${consent.api.version}</version>
+        </dependency>
+
         <!-- External dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
