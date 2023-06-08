@@ -89,6 +89,12 @@ public class HttpHeadersTestDataFactory {
         return headers;
     }
 
+    public static HttpHeaders requiredPaymentHttpHeadersWithApiClientId(String apiClientId) {
+        final HttpHeaders httpHeaders = requiredPaymentHttpHeaders();
+        httpHeaders.add("x-api-client-id", apiClientId);
+        return httpHeaders;
+    }
+
     /**
      * @return an instance of {@link HttpHeaders} with the minimal set of required headers for the Payment Funds Confirmation API.
      */

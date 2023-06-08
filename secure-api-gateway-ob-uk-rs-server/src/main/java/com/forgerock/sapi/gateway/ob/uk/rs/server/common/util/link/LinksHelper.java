@@ -27,7 +27,7 @@ public class LinksHelper {
     private static final String PISP = "pisp";
     private static final String RS = "rs";
     private static final String OPEN_BANKING = "open-banking";
-    private static final String DOMESTIC_PAYMENTS_CONSENT = "domestic-payments-consent";
+    private static final String DOMESTIC_PAYMENT_CONSENTS = "domestic-payment-consents";
     private static final String DOMESTIC_PAYMENTS = "domestic-payments";
     private static final String DOMESTIC_PAYMENTS_DETAILS = "payment-details";
     private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
@@ -45,13 +45,16 @@ public class LinksHelper {
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payments consent funds confirmation.
      *
-     * @param id The version of the resource concerned.
+     * @param controllerClass The controller class that is responsible for handling the self link.
      * @param id The ID of the resource concerned.
      * @return The {@link Links} instance with the populated 'self' URL.
      */
-    public static Links createDomesticPaymentsConsentFundsConfirmationLink(Class<?> controllerClass, String version, String id) {
-        Link link = linkTo(controllerClass).slash(RS).slash(OPEN_BANKING).slash(version).slash(PISP).slash(DOMESTIC_PAYMENTS_CONSENT).slash(id).slash(FUNDS_CONFIRMATION).withSelfRel();
-        return new Links().self(link.toUri());
+    public static Links createDomesticPaymentConsentsFundsConfirmationLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_PAYMENT_CONSENTS, id, FUNDS_CONFIRMATION);
+    }
+
+    public static Links createDomesticPaymentConsentsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_PAYMENT_CONSENTS, id);
     }
 
     /**

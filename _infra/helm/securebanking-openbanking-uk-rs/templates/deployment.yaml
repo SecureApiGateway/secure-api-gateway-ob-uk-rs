@@ -76,6 +76,11 @@ spec:
               configMapKeyRef:
                 name: deployment-config
                 key: CONSENT_REPO_URI
+          - name: RCS_CONSENT_STORE_API_BASEURI
+            valueFrom:
+              configMapKeyRef:
+                name: deployment-config
+                key: RCS_CONSENT_STORE_URI
           - name: RS_DISCOVERY_FINANCIAL_ID
             valueFrom:
               configMapKeyRef:
