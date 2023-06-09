@@ -103,7 +103,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         consentResponse.setData(data);
 
         consentResponse.setRisk(domesticPaymentConsent.getRequestObj().getRisk());
-        consentResponse.links(LinksHelper.createDomesticPaymentLink(controllerClass, domesticPaymentConsent.getId())).meta(new Meta());
+        consentResponse.links(LinksHelper.createDomesticPaymentConsentsLink(controllerClass, domesticPaymentConsent.getId())).meta(new Meta());
 
         return consentResponse;
     }
