@@ -90,7 +90,7 @@ public interface DomesticPaymentsApi {
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
             @ApiParam(value = "The PISP ID")
-            @RequestHeader(value = "x-ob-client-id") String clientId,
+            @RequestHeader(value = "x-api-client-id") String apiClientId,
 
             HttpServletRequest request,
 
@@ -136,7 +136,7 @@ public interface DomesticPaymentsApi {
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
             @ApiParam(value = "The PISP ID")
-            @RequestHeader(value = "x-ob-client-id") String clientId,
+            @RequestHeader(value = "x-api-client-id") String apiClientId,
 
             HttpServletRequest request,
 
