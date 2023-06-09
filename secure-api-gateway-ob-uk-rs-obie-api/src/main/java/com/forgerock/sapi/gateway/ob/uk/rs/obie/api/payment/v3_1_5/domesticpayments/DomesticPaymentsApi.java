@@ -89,6 +89,9 @@ public interface DomesticPaymentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
+            @ApiParam(value = "The PISP ID")
+            @RequestHeader(value = "x-ob-client-id") String clientId,
+
             HttpServletRequest request,
 
             Principal principal) throws OBErrorResponseException;
@@ -131,6 +134,9 @@ public interface DomesticPaymentsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @ApiParam(value = "The PISP ID")
+            @RequestHeader(value = "x-ob-client-id") String clientId,
 
             HttpServletRequest request,
 

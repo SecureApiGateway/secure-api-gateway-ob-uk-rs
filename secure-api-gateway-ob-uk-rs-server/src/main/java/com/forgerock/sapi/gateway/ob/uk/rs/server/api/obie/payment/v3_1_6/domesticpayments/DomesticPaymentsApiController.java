@@ -20,16 +20,16 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domesticpayments;
 
+import org.springframework.stereotype.Controller;
+
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_6.domesticpayments.DomesticPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.DomesticPaymentConsentApiClient;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 
 @Controller("DomesticPaymentsApiV3.1.6")
 @Slf4j
@@ -40,10 +40,9 @@ public class DomesticPaymentsApiController
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ConsentService consentService,
             OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator,
-            FRAccountRepository frAccountRepository
+            DomesticPaymentConsentApiClient consentApiClient
     ) {
-        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService, paymentValidator, frAccountRepository);
+        super(paymentSubmissionRepository, paymentSubmissionValidator, paymentValidator, consentApiClient);
     }
 }
