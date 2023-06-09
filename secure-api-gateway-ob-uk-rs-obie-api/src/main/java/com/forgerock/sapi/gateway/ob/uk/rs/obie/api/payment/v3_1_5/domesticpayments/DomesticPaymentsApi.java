@@ -89,8 +89,8 @@ public interface DomesticPaymentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "Indicates if 'ReadRefundAccount' was set to 'Yes' or 'No' in the consent. Defaults to 'No'", required = false)
-            @RequestHeader(value = "x-read-refund-account", required = false) String xReadRefundAccount,
+            @ApiParam(value = "The PISP ID")
+            @RequestHeader(value = "x-ob-client-id") String clientId,
 
             HttpServletRequest request,
 
@@ -135,8 +135,8 @@ public interface DomesticPaymentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "Indicates if 'ReadRefundAccount' was set to 'Yes' or 'No' in the consent. Defaults to 'No'", required = false)
-            @RequestHeader(value = "x-read-refund-account", required = false) String xReadRefundAccount,
+            @ApiParam(value = "The PISP ID")
+            @RequestHeader(value = "x-ob-client-id") String clientId,
 
             HttpServletRequest request,
 

@@ -21,6 +21,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,6 +49,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1Dat
 @Controller("DomesticPaymentConsentsApiV3.1.10")
 public class DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final DomesticPaymentConsentApiClient consentStoreApiClient;
 
     private final FundsAvailabilityService fundsAvailabilityService;
@@ -72,7 +76,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         // TODO handle errors
         final DomesticPaymentConsent consent = consentStoreApiClient.createConsent(createRequest);
 
-        return new ResponseEntity<>(buildConsentResponse(consent), HttpStatus.CREATED);
+        return new ResponseEntity<>(buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
     }
 
     private List<OBWriteDomesticConsentResponse5DataCharges> calculateCharges(OBWriteDomesticConsent4 obWriteDomesticConsent4) {
@@ -80,7 +84,8 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         return List.of();
     }
 
-    private OBWriteDomesticConsentResponse5 buildConsentResponse(DomesticPaymentConsent domesticPaymentConsent) {
+    // TODO move to builder lib
+    public static OBWriteDomesticConsentResponse5 buildConsentResponse(DomesticPaymentConsent domesticPaymentConsent, Class<?> controllerClass) {
         final OBWriteDomesticConsentResponse5 consentResponse = new OBWriteDomesticConsentResponse5();
         final OBWriteDomesticConsentResponse5Data data = new OBWriteDomesticConsentResponse5Data();
         final OBWriteDomesticConsent4Data consentRequestData = domesticPaymentConsent.getRequestObj().getData();
@@ -91,14 +96,14 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
         data.charges(domesticPaymentConsent.getCharges());
         data.consentId(domesticPaymentConsent.getId());
-        data.status(StatusEnum.valueOf(domesticPaymentConsent.getStatus()));
+        data.status(StatusEnum.fromValue(domesticPaymentConsent.getStatus()));
         data.creationDateTime(domesticPaymentConsent.getCreationDateTime());
         data.statusUpdateDateTime(domesticPaymentConsent.getStatusUpdateDateTime());
 
         consentResponse.setData(data);
 
         consentResponse.setRisk(domesticPaymentConsent.getRequestObj().getRisk());
-        consentResponse.links(LinksHelper.createDomesticPaymentLink(this.getClass(), domesticPaymentConsent.getId())).meta(new Meta());
+        consentResponse.links(LinksHelper.createDomesticPaymentLink(controllerClass, domesticPaymentConsent.getId())).meta(new Meta());
 
         return consentResponse;
     }
@@ -106,13 +111,13 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     @Override
     public ResponseEntity<OBWriteDomesticConsentResponse5> getDomesticPaymentConsentsConsentId(String consentId, String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
         // TODO error handling
-        return ResponseEntity.ok(buildConsentResponse(consentStoreApiClient.getConsent(consentId, clientId)));
+        return ResponseEntity.ok(buildConsentResponse(consentStoreApiClient.getConsent(consentId, clientId), getClass()));
     }
 
     @Override
     public ResponseEntity<OBWriteFundsConfirmationResponse1> getDomesticPaymentConsentsConsentIdFundsConfirmation(String consentId, String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
         final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, clientId);
-        if (StatusEnum.valueOf(consent.getStatus()) != StatusEnum.AUTHORISED) {
+        if (StatusEnum.fromValue(consent.getStatus()) != StatusEnum.AUTHORISED) {
             throw new IllegalStateException("Fund confirmation operation can only be carried out on AUTHORISED consents");
         }
 
@@ -125,7 +130,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                                                                                      .fundsAvailable(fundsAvailable)
                                                                                      .fundsAvailableDateTime(DateTime.now()))
                                                      .supplementaryData(null))
-                                        .links(LinksHelper.createFundsConfirmationSelfLink(getClass(), consentId))
+                                        .links(LinksHelper.createDomesticPaymentsConsentFundsConfirmationLink(getClass(), consentId))
                                         .meta(new Meta()));
     }
 }

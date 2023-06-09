@@ -98,7 +98,7 @@ public interface DomesticPaymentConsentsApi {
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
             @ApiParam(value = "The PISP ID")
-            @RequestHeader(value = "x-ob-client-id", required = false) String clientId,
+            @RequestHeader(value = "x-ob-client-id") String clientId,
 
             HttpServletRequest request,
 
@@ -145,7 +145,7 @@ public interface DomesticPaymentConsentsApi {
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
             @ApiParam(value = "The PISP ID")
-            @RequestHeader(value = "x-ob-client-id", required = false) String clientId,
+            @RequestHeader(value = "x-ob-client-id") String clientId,
 
             HttpServletRequest request,
 
@@ -194,7 +194,7 @@ public interface DomesticPaymentConsentsApi {
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
             @ApiParam(value = "The PISP ID")
-            @RequestHeader(value = "x-ob-client-id", required = false) String clientId,
+            @RequestHeader(value = "x-ob-client-id") String clientId,
 
             HttpServletRequest request,
 
