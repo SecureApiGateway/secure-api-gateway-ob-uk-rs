@@ -53,6 +53,10 @@ public class LinksHelper {
         return createSelfLink(controllerClass, DOMESTIC_PAYMENTS_CONSENT, id, FUNDS_CONFIRMATION);
     }
 
+    public static Links createDomesticPaymentConsentsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_PAYMENTS_CONSENT, id);
+    }
+
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payment.
      *
