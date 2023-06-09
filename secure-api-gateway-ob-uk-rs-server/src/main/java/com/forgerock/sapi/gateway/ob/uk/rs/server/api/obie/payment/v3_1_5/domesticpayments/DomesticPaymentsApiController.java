@@ -105,7 +105,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
-            String clientId,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal) throws OBErrorResponseException {
         log.debug("Received payment submission: '{}'", obWriteDomestic2);
@@ -114,8 +114,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         String consentId = obWriteDomestic2.getData().getConsentId();
 
-        log.debug("Attempting to get consent: {}, clientId: {}", consentId, clientId);
-        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, clientId);
+        log.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);
+        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
         log.debug("Got consent from store: {}", consent);
 
         FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic2);
@@ -142,7 +142,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         final ConsumeDomesticPaymentConsentRequest consumePaymentRequest = new ConsumeDomesticPaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);
-        consumePaymentRequest.setApiClientId(clientId);
+        consumePaymentRequest.setApiClientId(apiClientId);
         consentStoreApiClient.consumeConsent(consumePaymentRequest);
 
         return ResponseEntity.status(CREATED).body(
@@ -158,7 +158,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
-            String clientId,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
     ) {
@@ -174,7 +174,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             return PaymentApiResponseUtil.resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
 
-        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(frPaymentSubmission.getConsentId(), clientId);
+        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(frPaymentSubmission.getConsentId(), apiClientId);
         log.debug("Got consent from store: {}", consent);
 
         return ResponseEntity.ok(

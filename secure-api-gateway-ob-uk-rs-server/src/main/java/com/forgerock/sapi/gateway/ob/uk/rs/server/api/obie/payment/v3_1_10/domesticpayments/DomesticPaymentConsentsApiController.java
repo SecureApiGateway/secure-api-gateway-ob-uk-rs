@@ -62,13 +62,13 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticConsentResponse5> createDomesticPaymentConsents(OBWriteDomesticConsent4 obWriteDomesticConsent4, String authorization, String xIdempotencyKey, String xJwsSignature, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+    public ResponseEntity<OBWriteDomesticConsentResponse5> createDomesticPaymentConsents(OBWriteDomesticConsent4 obWriteDomesticConsent4, String authorization, String xIdempotencyKey, String xJwsSignature, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         // TODO do validation on consent request
 
         final CreateDomesticPaymentConsentRequest createRequest = new CreateDomesticPaymentConsentRequest();
         createRequest.setConsentRequest(obWriteDomesticConsent4);
-        createRequest.setApiClientId(clientId);
+        createRequest.setApiClientId(apiClientId);
         createRequest.setIdempotencyKey(xIdempotencyKey);
         createRequest.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         createRequest.setCharges(calculateCharges(obWriteDomesticConsent4));
@@ -109,14 +109,14 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticConsentResponse5> getDomesticPaymentConsentsConsentId(String consentId, String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+    public ResponseEntity<OBWriteDomesticConsentResponse5> getDomesticPaymentConsentsConsentId(String consentId, String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
         // TODO error handling
-        return ResponseEntity.ok(buildConsentResponse(consentStoreApiClient.getConsent(consentId, clientId), getClass()));
+        return ResponseEntity.ok(buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));
     }
 
     @Override
-    public ResponseEntity<OBWriteFundsConfirmationResponse1> getDomesticPaymentConsentsConsentIdFundsConfirmation(String consentId, String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
-        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, clientId);
+    public ResponseEntity<OBWriteFundsConfirmationResponse1> getDomesticPaymentConsentsConsentIdFundsConfirmation(String consentId, String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
         if (StatusEnum.fromValue(consent.getStatus()) != StatusEnum.AUTHORISED) {
             throw new IllegalStateException("Fund confirmation operation can only be carried out on AUTHORISED consents");
         }
