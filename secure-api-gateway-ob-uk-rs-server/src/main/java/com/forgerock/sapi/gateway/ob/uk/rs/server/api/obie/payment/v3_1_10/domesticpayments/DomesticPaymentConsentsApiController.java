@@ -70,7 +70,6 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         createRequest.setConsentRequest(obWriteDomesticConsent4);
         createRequest.setApiClientId(apiClientId);
         createRequest.setIdempotencyKey(xIdempotencyKey);
-        createRequest.setIdempotencyKeyExpiration(DateTime.now().plusDays(1));
         createRequest.setCharges(calculateCharges(obWriteDomesticConsent4));
 
         // TODO handle errors
