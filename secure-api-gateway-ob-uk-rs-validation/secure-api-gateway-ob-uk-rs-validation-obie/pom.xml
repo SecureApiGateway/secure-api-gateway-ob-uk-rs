@@ -45,6 +45,10 @@
         </dependency>
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-common-datamodel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-common-error</artifactId>
         </dependency>
         <dependency>
@@ -65,6 +69,7 @@
             <version>1.2.3</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
 </project>
