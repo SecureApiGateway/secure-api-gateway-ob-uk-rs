@@ -123,7 +123,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         // validate the consent against the request
         log.debug("Validating Domestic Payment submission");
-        paymentValidator.validate(new OBWriteDomestic2ValidatorContext(obWriteDomestic2, consent.getRequestObj()));
+        paymentValidator.validate(new OBWriteDomestic2ValidatorContext(obWriteDomestic2, consent.getRequestObj(), consent.getStatus()));
         log.debug("Domestic Payment validation successful");
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()

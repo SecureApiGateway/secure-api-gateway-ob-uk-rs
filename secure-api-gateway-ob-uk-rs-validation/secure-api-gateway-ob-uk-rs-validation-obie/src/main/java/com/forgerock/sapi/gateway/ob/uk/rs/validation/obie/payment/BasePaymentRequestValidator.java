@@ -32,11 +32,24 @@ import uk.org.openbanking.datamodel.error.OBError1;
  * This can be extended to provide specific validation for individual payment types.
  *
  * Common functionality provided:
+ * - validates the Consent is Authorised
  * - checking consent risk matches payment request risk
  * - checking consent initiation data matches payment initiation data
  *
  */
 public abstract class BasePaymentRequestValidator<C extends PaymentRequestValidationContext<T, I>, T, I> extends BaseOBValidator<C> {
+
+    private static final String DEFAULT_AUTHORISED_CONSENT_STATUS = "Authorised";
+
+    private final String authorisedConsentStatus;
+
+    public BasePaymentRequestValidator() {
+        this(DEFAULT_AUTHORISED_CONSENT_STATUS);
+    }
+
+    public BasePaymentRequestValidator(String authorisedConsentStatus) {
+        this.authorisedConsentStatus = Objects.requireNonNull(authorisedConsentStatus, "authorisedConsentStatus must be supplied");
+    }
 
     /**
      * Validation context provides all the data required to validate a payment request.
@@ -70,12 +83,18 @@ public abstract class BasePaymentRequestValidator<C extends PaymentRequestValida
          */
         private final Supplier<OBRisk1> consentRiskSupplier;
 
+        /**
+         * The Consent Status
+         */
+        private final String consentStatus;
+
         public PaymentRequestValidationContext(T paymentRequest, Supplier<I> paymentRequestInitiationSupplier, Supplier<OBRisk1> paymentRequestRiskSupplier,
-                                              Supplier<I> consentInitiationSupplier, Supplier<OBRisk1> consentRiskSupplier) {
+                                              String consentStatus, Supplier<I> consentInitiationSupplier, Supplier<OBRisk1> consentRiskSupplier) {
 
             this.paymentRequest = Objects.requireNonNull(paymentRequest, "paymentRequest must be supplied");
             this.paymentRequestInitiationSupplier = Objects.requireNonNull(paymentRequestInitiationSupplier, "paymentRequestInitiationSupplier must be supplied");
             this.paymentRequestRiskSupplier = Objects.requireNonNull(paymentRequestRiskSupplier, "paymentRequestRiskSupplier must be supplied");
+            this.consentStatus = Objects.requireNonNull(consentStatus, "consentStatus must be supplied");
             this.consentInitiationSupplier = Objects.requireNonNull(consentInitiationSupplier, "consentInitiationSupplier must be supplied");
             this.consentRiskSupplier = Objects.requireNonNull(consentRiskSupplier, "consentRiskSupplier must be supplied");
         }
@@ -99,14 +118,25 @@ public abstract class BasePaymentRequestValidator<C extends PaymentRequestValida
         public T getPaymentRequest() {
             return paymentRequest;
         }
+
+        public String getConsentStatus() {
+            return consentStatus;
+        }
     }
 
     @Override
     protected void validate(C paymentReqValidationCtxt, ValidationResult<OBError1> validationResult) {
+        validateConsentStatus(paymentReqValidationCtxt, validationResult);
         validateRiskMatchesConsent(paymentReqValidationCtxt, validationResult);
         validateInitiationMatchesConsent(paymentReqValidationCtxt, validationResult);
 
         doPaymentSpecificValidation(paymentReqValidationCtxt, validationResult);
+    }
+
+    private void validateConsentStatus(C paymentReqValidationCtxt, ValidationResult<OBError1> validationResult) {
+        if (!Objects.equals(paymentReqValidationCtxt.getConsentStatus(), authorisedConsentStatus)) {
+            validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(paymentReqValidationCtxt.getConsentStatus()));
+        }
     }
 
     private void validateRiskMatchesConsent(C paymentReqValidationCtxt, ValidationResult<OBError1> validationResult) {
