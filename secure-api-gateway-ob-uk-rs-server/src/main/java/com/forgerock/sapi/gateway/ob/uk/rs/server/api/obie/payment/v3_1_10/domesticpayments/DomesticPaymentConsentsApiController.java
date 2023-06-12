@@ -31,6 +31,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.DomesticPaymentConsentApiClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.DomesticPaymentConsent;
@@ -53,18 +54,22 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
     private final DomesticPaymentConsentApiClient consentStoreApiClient;
 
+    private final OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator;
+
     private final FundsAvailabilityService fundsAvailabilityService;
 
     public DomesticPaymentConsentsApiController(DomesticPaymentConsentApiClient consentStoreApiClient,
+                                                OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator,
                                                 FundsAvailabilityService fundsAvailabilityService) {
         this.consentStoreApiClient = consentStoreApiClient;
+        this.domesticConsentValidator = domesticConsentValidator;
         this.fundsAvailabilityService = fundsAvailabilityService;
     }
 
     @Override
     public ResponseEntity<OBWriteDomesticConsentResponse5> createDomesticPaymentConsents(OBWriteDomesticConsent4 obWriteDomesticConsent4, String authorization, String xIdempotencyKey, String xJwsSignature, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
-        // TODO do validation on consent request
+        domesticConsentValidator.validate(obWriteDomesticConsent4);
 
         final CreateDomesticPaymentConsentRequest createRequest = new CreateDomesticPaymentConsentRequest();
         createRequest.setConsentRequest(obWriteDomesticConsent4);
