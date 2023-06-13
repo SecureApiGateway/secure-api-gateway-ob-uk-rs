@@ -59,7 +59,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.DomesticPaymentConsentApiClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -81,18 +81,18 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
-    private final DomesticPaymentConsentApiClient consentStoreApiClient;
+    private final DomesticPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator;
 
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator,
-            DomesticPaymentConsentApiClient consentStoreApiClient) {
+            DomesticPaymentConsentStoreClient consentStoreClient) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.paymentValidator = paymentValidator;
-        this.consentStoreApiClient = consentStoreApiClient;
+        this.consentStoreClient = consentStoreClient;
     }
 
     @Override
@@ -115,7 +115,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         String consentId = obWriteDomestic2.getData().getConsentId();
 
         log.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);
-        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
+        final DomesticPaymentConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
         log.debug("Got consent from store: {}", consent);
 
         FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic2);
@@ -143,7 +143,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         final ConsumeDomesticPaymentConsentRequest consumePaymentRequest = new ConsumeDomesticPaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);
         consumePaymentRequest.setApiClientId(apiClientId);
-        consentStoreApiClient.consumeConsent(consumePaymentRequest);
+        consentStoreClient.consumeConsent(consumePaymentRequest);
 
         return ResponseEntity.status(CREATED).body(
                 responseEntity(frPaymentSubmission, DomesticPaymentConsentsApiController.buildConsentResponse(consent, getClass()))
@@ -174,7 +174,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             return PaymentApiResponseUtil.resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
 
-        final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(frPaymentSubmission.getConsentId(), apiClientId);
+        final DomesticPaymentConsent consent = consentStoreClient.getConsent(frPaymentSubmission.getConsentId(), apiClientId);
         log.debug("Got consent from store: {}", consent);
 
         return ResponseEntity.ok(

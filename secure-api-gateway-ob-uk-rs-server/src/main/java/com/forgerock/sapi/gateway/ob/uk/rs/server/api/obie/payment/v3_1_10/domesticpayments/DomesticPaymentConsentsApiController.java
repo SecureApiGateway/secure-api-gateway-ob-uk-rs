@@ -34,7 +34,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticpaym
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.DomesticPaymentConsentApiClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.DomesticPaymentConsent;
 
@@ -54,13 +54,13 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final DomesticPaymentConsentApiClient consentStoreApiClient;
+    private final DomesticPaymentConsentStoreClient consentStoreApiClient;
 
     private final OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator;
 
     private final FundsAvailabilityService fundsAvailabilityService;
 
-    public DomesticPaymentConsentsApiController(DomesticPaymentConsentApiClient consentStoreApiClient,
+    public DomesticPaymentConsentsApiController(DomesticPaymentConsentStoreClient consentStoreApiClient,
                                                 OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator,
                                                 FundsAvailabilityService fundsAvailabilityService) {
         this.consentStoreApiClient = consentStoreApiClient;
