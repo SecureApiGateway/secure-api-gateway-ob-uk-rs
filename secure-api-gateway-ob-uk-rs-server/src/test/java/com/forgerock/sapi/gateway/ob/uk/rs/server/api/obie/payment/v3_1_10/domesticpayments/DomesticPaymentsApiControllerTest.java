@@ -63,16 +63,9 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
 public class DomesticPaymentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "test_client_1234567890";
-
-    private static HttpHeaders HTTP_HEADERS;
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
     private static final String BASE_URL = "http://localhost:";
     private static final String DOMESTIC_PAYMENTS_URI = "/open-banking/v3.1.10/pisp/domestic-payments";
-
-    @BeforeAll
-    public static void beforeAll() {
-        HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders();
-        HTTP_HEADERS.add("x-api-client-id", TEST_API_CLIENT_ID);
-    }
 
     @LocalServerPort
     private int port;
