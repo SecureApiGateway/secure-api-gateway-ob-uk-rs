@@ -47,7 +47,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDome
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticpayments.DomesticPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApiController;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteDomesticConsentResponse5Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
@@ -84,15 +84,18 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final DomesticPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator;
 
+    private final OBWriteDomesticConsentResponse5Factory consentResponseFactory;
+
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator,
-            DomesticPaymentConsentStoreClient consentStoreClient) {
+            DomesticPaymentConsentStoreClient consentStoreClient, OBWriteDomesticConsentResponse5Factory consentResponseFactory) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.paymentValidator = paymentValidator;
         this.consentStoreClient = consentStoreClient;
+        this.consentResponseFactory = consentResponseFactory;
     }
 
     @Override
@@ -146,7 +149,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         consentStoreClient.consumeConsent(consumePaymentRequest);
 
         return ResponseEntity.status(CREATED).body(
-                responseEntity(frPaymentSubmission, DomesticPaymentConsentsApiController.buildConsentResponse(consent, getClass()))
+                responseEntity(frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
         );
     }
 
@@ -178,7 +181,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         log.debug("Got consent from store: {}", consent);
 
         return ResponseEntity.ok(
-                responseEntity(frPaymentSubmission, DomesticPaymentConsentsApiController.buildConsentResponse(consent, getClass()))
+                responseEntity(frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
         );
     }
 
