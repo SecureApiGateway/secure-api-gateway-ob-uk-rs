@@ -252,10 +252,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {OBErrorResponseException.class})
     protected ResponseEntity<Object> handleOBErrorResponse(OBErrorResponseException ex,
                                                            WebRequest request) {
+
+        final String fapiInteractionId = request.getHeader("x-fapi-interaction-id");
+        log.info("(x-fapi-interaction-id: {}) Request failed due to exception", fapiInteractionId, ex.getMessage());
+
         return ResponseEntity.status(ex.getStatus()).body(
                 new OBErrorResponse1()
                         .code(ex.getCategory().getId())
-                        .id(ex.getId() != null ? ex.getId() : request.getHeader("x-fapi-interaction-id"))
+                        .id(ex.getId() != null ? ex.getId() : fapiInteractionId)
                         .message(ex.getCategory().getDescription())
                         .errors(ex.getErrors()));
     }

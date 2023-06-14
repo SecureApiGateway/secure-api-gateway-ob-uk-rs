@@ -78,6 +78,9 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 String authorization, String xIdempotencyKey, String xJwsSignature, DateTime xFapiAuthDate, String xFapiCustomerIpAddress,
                 String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
+        logger.info("Processing createDomesticPaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
+                    obWriteDomesticConsent4, xIdempotencyKey, apiClientId, xFapiInteractionId);
+
         domesticConsentValidator.validate(obWriteDomesticConsent4);
 
         final CreateDomesticPaymentConsentRequest createRequest = new CreateDomesticPaymentConsentRequest();
@@ -87,6 +90,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         createRequest.setCharges(calculateCharges(obWriteDomesticConsent4));
 
         final DomesticPaymentConsent consent = consentStoreApiClient.createConsent(createRequest);
+        logger.info("Created consent - id: {}", consent.getId());
 
         return new ResponseEntity<>(consentResponseFactory.buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
     }
@@ -101,6 +105,9 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
             DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String apiClientId, HttpServletRequest request, Principal principal) {
 
+        logger.info("Processing getDomesticPaymentConsentsConsentId request - consentId: {}, apiClient, x-fapi-interaction-id: {}",
+                    consentId, apiClientId, xFapiInteractionId);
+
         return ResponseEntity.ok(consentResponseFactory.buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));
     }
 
@@ -109,12 +116,17 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
             String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId,
             String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
+        logger.info("Processing getDomesticPaymentConsentsConsentIdFundsConfirmation request - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",
+                consentId, apiClientId, xFapiInteractionId);
+
         final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
         if (StatusEnum.fromValue(consent.getStatus()) != StatusEnum.AUTHORISED) {
-            throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID, OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
+            throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
+                                               OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
         }
 
-        final boolean fundsAvailable = fundsAvailabilityService.isFundsAvailable(consent.getAuthorisedDebtorAccountId(), consent.getRequestObj().getData().getInitiation().getInstructedAmount().getAmount());
+        final boolean fundsAvailable = fundsAvailabilityService.isFundsAvailable(consent.getAuthorisedDebtorAccountId(),
+                                                                                 consent.getRequestObj().getData().getInitiation().getInstructedAmount().getAmount());
 
         return ResponseEntity.ok(fundsConfirmationResponseFactory.create(fundsAvailable, consentId, getClass()));
     }

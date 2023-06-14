@@ -89,7 +89,7 @@ public interface DomesticPaymentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The PISP ID")
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
             @RequestHeader(value = "x-api-client-id") String apiClientId,
 
             HttpServletRequest request,
@@ -135,7 +135,7 @@ public interface DomesticPaymentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The PISP ID")
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
             @RequestHeader(value = "x-api-client-id") String apiClientId,
 
             HttpServletRequest request,
