@@ -43,7 +43,6 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-@Disabled
 public class DomesticPaymentsApiControllerTest {
 
     private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders();
