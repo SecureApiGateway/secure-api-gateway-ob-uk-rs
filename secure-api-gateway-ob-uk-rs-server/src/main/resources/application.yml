@@ -16,6 +16,14 @@
 #    Open Banking Organisation Id of the ASPSP running the RS
 #    financialId:
 #
+#
+# RCS Consent Store API configuration
+#rcs:
+#  consent:
+#    store:
+#      api:
+#        # baseUri to the RCS Consent Store API
+#        baseUri:
 
 spring:
   data:
@@ -47,13 +55,6 @@ consent:
       put: /repo/users/@UserId@
       patch: /repo/users/@UserId@
       delete: /repo/users/@UserId@
-
-# RCS Consent Store API configuration
-rcs:
-  consent:
-    store:
-      api:
-        baseUrl: http://remote-consent-service:8080/consent/store
 
 # RS config
 rs:
