@@ -66,7 +66,7 @@ import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFact
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-class DomesticPaymentConsentsApiControllerTest {
+public class DomesticPaymentConsentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "client_234093-49";
 
@@ -237,7 +237,7 @@ class DomesticPaymentConsentsApiControllerTest {
         return consentRequest;
     }
 
-    private static DomesticPaymentConsent buildAwaitingAuthorisationConsent(OBWriteDomesticConsent4 consentRequest) {
+    public static DomesticPaymentConsent buildAwaitingAuthorisationConsent(OBWriteDomesticConsent4 consentRequest) {
         final DomesticPaymentConsent consentStoreResponse = new DomesticPaymentConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consentStoreResponse.setRequestObj(consentRequest);
