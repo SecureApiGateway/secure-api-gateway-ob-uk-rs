@@ -42,6 +42,11 @@ consent:
       put: /repo/consents/@IntentId@
       patch: /repo/consents/@IntentId@
       delete: /repo/consents/@IntentId@
+    contexts_user:
+      get: /repo/users/@UserId@
+      put: /repo/users/@UserId@
+      patch: /repo/users/@UserId@
+      delete: /repo/users/@UserId@
 
 # RS config
 rs:

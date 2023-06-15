@@ -19,9 +19,10 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRep
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.ClientRequest;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.jwt.JwtUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url.UrlContext;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,14 +47,14 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 
 /**
- * Unit test for {@link CloudPlatformClientService}
+ * Unit test for {@link ConsentClientService}
  */
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-public class PlatformClientServiceTest {
+public class ConsentClientServiceTest {
 
     @InjectMocks
-    private CloudPlatformClientService consentService;
+    private ConsentClientService consentClientService;
 
     @Mock
     protected ConsentRepoConfiguration configurationPropertiesClient;
@@ -61,6 +63,9 @@ public class PlatformClientServiceTest {
     protected RestTemplate restTemplate;
 
     protected MockedStatic<UrlContext> urlContextMockedStatic;
+    protected MockedStatic<JwtUtil> jwtUtilMockedStatic;
+
+    private static final String CLIENT_ID = UUID.randomUUID().toString();
 
     @BeforeEach
     public void setup() {
@@ -68,11 +73,17 @@ public class PlatformClientServiceTest {
         urlContextMockedStatic.when(
                 () -> UrlContext.replaceParameterContextIntentId(anyString(), anyString())
         ).thenReturn("http://a.domain/context/intent-id-xxxx");
+
+        jwtUtilMockedStatic = Mockito.mockStatic(JwtUtil.class);
+        // get apiClientId
+        jwtUtilMockedStatic.when(() -> JwtUtil.getAudiences(anyString()))
+                .thenReturn(List.of(CLIENT_ID));
     }
 
     @AfterEach
     public void close() {
         urlContextMockedStatic.close();
+        jwtUtilMockedStatic.close();
     }
 
     @Test
@@ -80,7 +91,7 @@ public class PlatformClientServiceTest {
         // Given
         ClientRequest clientRequest = ClientRequest.builder()
                 .intentId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
-                .apiClientId(UUID.randomUUID().toString())
+                .apiClientId(CLIENT_ID)
                 .build();
         JsonObject intentResponse = DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent(
                 clientRequest.getIntentId(),
@@ -95,7 +106,9 @@ public class PlatformClientServiceTest {
         ).thenReturn(ResponseEntity.ok(intentResponse.toString()));
 
         // When
-        JsonObject idmIntent = consentService.getIntentAsJsonObject(clientRequest, false);
+        JsonObject idmIntent = consentClientService.getIntent(
+                "JWTAuthorization", clientRequest.intentId, false
+        );
 
         // Then
         assertThat(idmIntent).isNotNull();
@@ -107,7 +120,7 @@ public class PlatformClientServiceTest {
         // Given
         ClientRequest clientRequest = ClientRequest.builder()
                 .intentId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
-                .apiClientId(UUID.randomUUID().toString())
+                .apiClientId(CLIENT_ID)
                 .build();
         JsonObject intentResponse = DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent(
                 clientRequest.getIntentId(),
@@ -122,7 +135,9 @@ public class PlatformClientServiceTest {
         ).thenReturn(ResponseEntity.ok(intentResponse.toString()));
 
         // When
-        JsonObject idmIntent = consentService.getIntentAsJsonObject(clientRequest, true);
+        JsonObject idmIntent = consentClientService.getIntent(
+                "JWTAuthorization", clientRequest.intentId, true
+        );
 
         // Then
         assertThat(idmIntent).isNotNull();
@@ -134,7 +149,7 @@ public class PlatformClientServiceTest {
         // Given
         ClientRequest clientRequest = ClientRequest.builder()
                 .intentId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
-                .apiClientId(UUID.randomUUID().toString())
+                .apiClientId(CLIENT_ID)
                 .build();
         JsonObject intentResponse = DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent(
                 clientRequest.getIntentId(),
@@ -149,7 +164,9 @@ public class PlatformClientServiceTest {
         ).thenReturn(ResponseEntity.ok(intentResponse.toString()));
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> consentService.getIntentAsJsonObject(clientRequest, true), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() -> consentClientService.getIntent(
+                "JWTAuthorization", clientRequest.intentId, true
+        ), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.INVALID_REQUEST);
@@ -162,7 +179,7 @@ public class PlatformClientServiceTest {
         // Given
         ClientRequest clientRequest = ClientRequest.builder()
                 .intentId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
-                .apiClientId(UUID.randomUUID().toString())
+                .apiClientId(CLIENT_ID)
                 .build();
         when(restTemplate.exchange(
                         anyString(),
@@ -173,7 +190,12 @@ public class PlatformClientServiceTest {
         ).thenReturn(null);
 
         // When
-        ExceptionClient exception = catchThrowableOfType(() -> consentService.getIntentAsJsonObject(clientRequest, true), ExceptionClient.class);
+        ExceptionClient exception = catchThrowableOfType(() ->
+                consentClientService.getIntent(
+                        "JWTAuthorization",
+                        clientRequest.intentId,
+                        true
+                ), ExceptionClient.class);
 
         // Then
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.NOT_FOUND);

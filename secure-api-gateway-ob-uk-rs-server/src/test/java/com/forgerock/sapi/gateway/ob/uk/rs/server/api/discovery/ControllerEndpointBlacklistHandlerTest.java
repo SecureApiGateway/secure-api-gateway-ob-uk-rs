@@ -16,7 +16,6 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
@@ -38,22 +37,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import uk.org.openbanking.datamodel.account.OBReadAccount5;
-import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.payment.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent;
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_5;
-import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_6;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpMethod.GET;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -75,9 +69,6 @@ public class ControllerEndpointBlacklistHandlerTest {
 
     @Autowired
     private DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository;
-
-    @MockBean
-    private PlatformClientService platformClientService;
 
     @MockBean
     private ConsentService consentService;

@@ -15,17 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url.UrlContext;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.ClientRequest;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.jwt.JwtUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url.UrlContext;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -33,55 +33,104 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Objects;
+
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
- * Specific implementation service to retrieve the Intent from the platform
+ * An Identity Cloud Platform client service to retrieve the intent from IDM
  */
-@Service
 @Slf4j
-public class CloudPlatformClientService implements PlatformClient {
+@Service
+public class ConsentClientService {
 
     private static final String IDM_RESPOND_OB_INTENT_OBJECT_FIELD = "OBIntentObject";
     private final RestTemplate restTemplate;
     private final ConsentRepoConfiguration configurationProperties;
 
-    public CloudPlatformClientService(RestTemplate restTemplate, ConsentRepoConfiguration configurationProperties) {
+    public ConsentClientService(RestTemplate restTemplate, ConsentRepoConfiguration configurationProperties) {
         this.restTemplate = restTemplate;
         this.configurationProperties = configurationProperties;
     }
 
-    @Override
-    public JsonObject getIntentAsJsonObject(ClientRequest clientRequest, boolean underlyingOBIntentObject) throws ExceptionClient {
+    /**
+     *
+     * @param jwtAuthorization bearer token to extract the clientId
+     * @param intentId consentId to find
+     * @return {@link JsonObject}
+     * @throws ExceptionClient
+     */
+    public JsonObject getIntent(String jwtAuthorization, String intentId, boolean underlyingOBIntentObject) throws ExceptionClient {
+        // get the apiClientId from audience claim ('aud')
+        List<String> audiences = JwtUtil.getAudiences(jwtAuthorization);
+        log.debug("Building client request object with apiClientId={} and intentId={}", audiences.get(0), intentId);
+        ClientRequest clientRequest = ClientRequest.builder()
+                .intentId(intentId)
+                .apiClientId(audiences.get(0))
+                .build();
+        return getIntentAsJsonObject(clientRequest, underlyingOBIntentObject);
+    }
+
+    private JsonObject getIntentAsJsonObject(ClientRequest clientRequest, boolean underlyingOBIntentObject) throws ExceptionClient {
         String intentId = clientRequest.getIntentId();
         log.debug("=> The consent detailsRequest id: '{}'", intentId);
         String apiClientId = clientRequest.getApiClientId();
         log.debug("=> The client id: '{}'", apiClientId);
+        // Validate intent
+        validateIntent(clientRequest);
+        // Process response from Identity cloud platform
+        JsonObject jsonIntent = processCloudClientResponse(request(intentId, GET), clientRequest);
+        // Verify the PISP/AISP is the same as the one that created the consent requested
+        verifyIntentCreator(jsonIntent, clientRequest);
+        return response(jsonIntent, underlyingOBIntentObject);
+    }
 
-        JsonObject consentDetails = request(intentId, GET);
-        String errorMessage;
-        if (consentDetails == null) {
-            errorMessage = String.format("The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist", apiClientId, intentId);
+    private void validateIntent(ClientRequest clientRequest) throws ExceptionClient {
+        if (Objects.isNull(IntentType.identify(clientRequest.intentId))) {
+            String message = String.format("Invalid type for intent ID: '%s'", clientRequest.intentId);
+            log.error(message);
+            throw new ExceptionClient(clientRequest, ErrorType.UNKNOWN_INTENT_TYPE, message);
+        }
+    }
+
+    private JsonObject processCloudClientResponse(
+            JsonObject jsonIntent,
+            ClientRequest clientRequest
+    ) throws ExceptionClient {
+        if (Objects.isNull(jsonIntent)) {
+            String errorMessage = String.format(
+                    "The PISP/AISP '%s' is referencing a consent detailsRequest '%s' that doesn't exist",
+                    clientRequest.apiClientId,
+                    clientRequest.intentId);
             log.error(errorMessage);
             throw new ExceptionClient(clientRequest, ErrorType.NOT_FOUND, errorMessage);
+        } else if (!jsonIntent.has(IDM_RESPOND_OB_INTENT_OBJECT_FIELD)) {
+            throw new ExceptionClient(
+                    clientRequest,
+                    ErrorType.NOT_FOUND,
+                    "Server responded with invalid consent response, missing OBIntentObject field"
+            );
         }
+        return jsonIntent;
+    }
 
-        // Verify the PISP/AISP is the same as the one that created this consent ^
-        if (!apiClientId.equals(consentDetails.get("oauth2ClientId").getAsString())) {
-            errorMessage = String.format("The PISP/AISP '%s' created the consent detailsRequest '%S' but it's PISP/AISP '%s' that is trying to get" +
-                    " consent for it.", consentDetails.get("oauth2ClientId"), intentId, apiClientId);
+    private void verifyIntentCreator(
+            JsonObject jsonIntent,
+            ClientRequest clientRequest
+    ) throws ExceptionClient {
+        if (!clientRequest.apiClientId.equals(jsonIntent.get("oauth2ClientId").getAsString())) {
+            String errorMessage = String.format(
+                    "The PISP/AISP '%s' created the consent detailsRequest '%S' but it's PISP/AISP '%s' that is trying to get" +
+                            " consent for it.",
+                    jsonIntent.get("oauth2ClientId"),
+                    clientRequest.intentId,
+                    clientRequest.apiClientId
+            );
             log.error(errorMessage);
             throw new ExceptionClient(clientRequest, ErrorType.INVALID_REQUEST, errorMessage);
         }
-
-        if (!consentDetails.has(IDM_RESPOND_OB_INTENT_OBJECT_FIELD)) {
-            throw new ExceptionClient(clientRequest, ErrorType.NOT_FOUND, "Server responded with invalid consent response, missing OBIntentObject field");
-        }
-        if(underlyingOBIntentObject) {
-            return consentDetails.getAsJsonObject(IDM_RESPOND_OB_INTENT_OBJECT_FIELD);
-        }
-        return consentDetails.getAsJsonObject();
     }
 
     private JsonObject request(String intentId, HttpMethod httpMethod) throws ExceptionClient {
@@ -113,7 +162,9 @@ public class CloudPlatformClientService implements PlatformClient {
                     String.class);
             log.debug("(CloudPlatformClientService#request) response entity: " + responseEntity);
 
-            return responseEntity != null && responseEntity.getBody() != null ? JsonParser.parseString(responseEntity.getBody()).getAsJsonObject() : null;
+            return Objects.nonNull(responseEntity) && Objects.nonNull(responseEntity.getBody()) ?
+                    JsonParser.parseString(responseEntity.getBody()).getAsJsonObject() :
+                    null;
         } catch (RestClientException e) {
             log.error(ErrorType.SERVER_ERROR.getDescription(), e);
             throw new ExceptionClient(
@@ -124,6 +175,13 @@ public class CloudPlatformClientService implements PlatformClient {
                     e.getMessage()
             );
         }
+    }
+
+    private JsonObject response(JsonObject jsonIntent, boolean underlyingOBIntentObject) {
+        if (underlyingOBIntentObject) {
+            return jsonIntent.getAsJsonObject(IDM_RESPOND_OB_INTENT_OBJECT_FIELD);
+        }
+        return jsonIntent.getAsJsonObject();
     }
 
     private HttpHeaders getHeaders() {

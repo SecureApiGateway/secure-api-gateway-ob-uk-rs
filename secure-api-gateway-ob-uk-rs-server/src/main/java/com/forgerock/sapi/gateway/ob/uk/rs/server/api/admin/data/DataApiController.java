@@ -20,6 +20,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
 import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.DataApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRAccountData;
 import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRUserData;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions.DataApiException;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.*;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
@@ -76,13 +80,16 @@ public class DataApiController implements DataApi {
     private final FROfferRepository offerRepository;
     private final DataUpdater dataUpdater;
     private final DataCreator dataCreator;
+    private final UserClientService userClientService;
 
     public DataApiController(FRDirectDebitRepository directDebitRepository, FRAccountRepository accountsRepository,
                              FRBalanceRepository balanceRepository, FRBeneficiaryRepository beneficiaryRepository,
                              FRProductRepository productRepository, FRStandingOrderRepository standingOrderRepository,
                              FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
                              DataCreator dataCreator, FRScheduledPaymentRepository scheduledPayment1Repository,
-                             FRPartyRepository partyRepository, DataUpdater dataUpdater, FROfferRepository offerRepository) {
+                             FRPartyRepository partyRepository, DataUpdater dataUpdater, FROfferRepository offerRepository,
+                             UserClientService userClientService
+    ) {
         this.directDebitRepository = directDebitRepository;
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
@@ -96,6 +103,7 @@ public class DataApiController implements DataApi {
         this.partyRepository = partyRepository;
         this.dataUpdater = dataUpdater;
         this.offerRepository = offerRepository;
+        this.userClientService = userClientService;
     }
 
     @Override
@@ -137,103 +145,141 @@ public class DataApiController implements DataApi {
     @Override
     public ResponseEntity updateUserData(
             @RequestBody FRUserData userData
-    ) {
+    ) throws DataApiException {
+        try {
+            // verify the user has been created in the Identity cloud platform
+            // Will throw ExceptionClient Not Found when:
+            // - The user response is null
+            // - User not found
+            // - The account is inactive
+            // - HttpClientErrorException 404 returned by IG
+            User user = userClientService.getUserByName(userData.getUserName());
+            // user exist, carry on to update the user data
+            String userId = user.getId();
+            dataUpdater.updateParty(userData);
 
-        dataUpdater.updateParty(userData);
+            Set<String> accountIds = accountsRepository.findByUserID(userId)
+                    .stream()
+                    .map(FRAccount::getId)
+                    .collect(Collectors.toSet());
+            for (FRAccountData accountDataDiff : userData.getAccountDatas()) {
 
-        Set<String> accountIds = accountsRepository.findByUserID(userData.getUserName())
-                .stream()
-                .map(FRAccount::getId)
-                .collect(Collectors.toSet());
-        for (FRAccountData accountDataDiff : userData.getAccountDatas()) {
+                String accountId = accountDataDiff.getAccount().getAccountId();
+                //Account
+                Optional<FRAccount> isAccount = accountsRepository.findById(accountId);
+                if (isAccount.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account ID '" + accountId + "' doesn't exist");
+                }
+                FRAccount account = isAccount.get();
+                if (!account.getUserID().equals(userId)) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account ID '"
+                            + accountDataDiff.getAccount().getAccountId() + "' is not owned by user '" + userId + "'");
 
-            String accountId = accountDataDiff.getAccount().getAccountId();
-            //Account
-            Optional<FRAccount> isAccount = accountsRepository.findById(accountId);
-            if (isAccount.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account ID '" + accountId + "' doesn't exist");
+                }
+
+                dataUpdater.updateAccount(accountDataDiff, account, accountIds);
+                dataUpdater.updateBalances(accountDataDiff, accountIds);
+                dataUpdater.updateProducts(accountDataDiff, accountIds);
+                dataUpdater.updateParty(accountDataDiff, accountIds);
+                dataUpdater.updateBeneficiaries(accountDataDiff, accountIds);
+                dataUpdater.updateDirectDebits(accountDataDiff, accountIds);
+                dataUpdater.updateStandingOrders(accountDataDiff, accountIds);
+                dataUpdater.updateTransactions(accountDataDiff, accountIds);
+                dataUpdater.updateStatements(accountDataDiff, accountIds);
+                dataUpdater.updateScheduledPayments(accountDataDiff, accountIds);
+                dataUpdater.updateOffers(accountDataDiff, accountIds);
             }
-            FRAccount account = isAccount.get();
-            if (!account.getUserID().equals(userData.getUserName())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Account ID '"
-                        + accountDataDiff.getAccount().getAccountId() + "' is not owned by user '" + userData.getUserName() + "'");
-
-            }
-
-            dataUpdater.updateAccount(accountDataDiff, account, accountIds);
-            dataUpdater.updateBalances(accountDataDiff, accountIds);
-            dataUpdater.updateProducts(accountDataDiff, accountIds);
-            dataUpdater.updateParty(accountDataDiff, accountIds);
-            dataUpdater.updateBeneficiaries(accountDataDiff, accountIds);
-            dataUpdater.updateDirectDebits(accountDataDiff, accountIds);
-            dataUpdater.updateStandingOrders(accountDataDiff, accountIds);
-            dataUpdater.updateTransactions(accountDataDiff, accountIds);
-            dataUpdater.updateStatements(accountDataDiff, accountIds);
-            dataUpdater.updateScheduledPayments(accountDataDiff, accountIds);
-            dataUpdater.updateOffers(accountDataDiff, accountIds);
+            return exportUserData(userId);
+        } catch (ExceptionClient exceptionClient) {
+            log.error(
+                    "Status: {}, reason: {}",
+                    exceptionClient.getErrorClient().getErrorType().getHttpStatus(),
+                    exceptionClient.getReason()
+            );
+            throw new DataApiException(exceptionClient);
         }
-        return exportUserData(userData.getUserName());
     }
 
     @Override
     public ResponseEntity importUserData(
             @RequestBody FRUserData userData
-    ) {
-        FRUserData userDataResponse = new FRUserData(userData.getUserName());
-        if (userData.getParty() != null) {
-            FRParty existingParty = partyRepository.findByUserId(userData.getUserName());
+    ) throws DataApiException {
+        try {
+            // verify the user has been created in the Identity cloud platform
+            // Will throw ExceptionClient Not Found when:
+            // - The user response is null
+            // - User not found
+            // - The account is inactive
+            // - HttpClientErrorException 404 returned by IG
+            User user = userClientService.getUserByName(userData.getUserName());
+            // user exist, carry on to create the user data
+            String userId = user.getId();
+            FRUserData userDataResponse = new FRUserData();
+            userDataResponse.setUserId(userId);
+            userDataResponse.setUserName(user.getUserName());
+            if (userData.getParty() != null) {
+                FRParty existingParty = partyRepository.findByUserId(userId);
 
-            //Party
-            if (existingParty != null) {
-                userData.getParty().setPartyId(existingParty.getId());
+                //Party
+                if (existingParty != null) {
+                    userData.getParty().setPartyId(existingParty.getId());
+                }
+
+                FRParty newParty = new FRParty();
+                newParty.setUserId(userId);
+                newParty.setParty(toFRPartyData(userData.getParty()));
+                newParty.setId(userData.getParty().getPartyId());
+                FRPartyData newPartyData = partyRepository.save(newParty).getParty();
+                userDataResponse.setParty(toOBParty2(newPartyData));
             }
 
-            FRParty newParty = new FRParty();
-            newParty.setUserId(userData.getUserName());
-            newParty.setParty(toFRPartyData(userData.getParty()));
-            newParty.setId(userData.getParty().getPartyId());
-            FRPartyData newPartyData = partyRepository.save(newParty).getParty();
-            userDataResponse.setParty(toOBParty2(newPartyData));
-        }
+            Set<String> existingAccountIds = accountsRepository.findByUserID(userId)
+                    .stream()
+                    .map(FRAccount::getId)
+                    .collect(Collectors.toSet());
 
-        Set<String> existingAccountIds = accountsRepository.findByUserID(userData.getUserName())
-                .stream()
-                .map(FRAccount::getId)
-                .collect(Collectors.toSet());
+            for (FRAccountData accountData : userData.getAccountDatas()) {
+                FRAccountData accountDataResponse = new FRAccountData();
 
-        for (FRAccountData accountData : userData.getAccountDatas()) {
-            FRAccountData accountDataResponse = new FRAccountData();
+                //Account
+                if (accountData.getAccount() != null) {
+                    FRFinancialAccount frAccount = dataCreator.createAccount(accountData, userId).getAccount();
+                    accountDataResponse.setAccount(toOBAccount6(frAccount));
+                    existingAccountIds.add(accountDataResponse.getAccount().getAccountId());
+                }
+                //Product
+                dataCreator.createProducts(accountData, existingAccountIds).ifPresent(accountDataResponse::setProduct);
+                //Party
+                dataCreator.createParty(accountData).ifPresent(p -> accountDataResponse.setParty(toOBParty2(p)));
+                //Balance
+                dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(toOBCashBalance1(b.getBalance())));
+                //Beneficiaries
+                dataCreator.createBeneficiaries(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBeneficiary(toOBBeneficiary5(b.getBeneficiary())));
+                //Direct debits
+                dataCreator.createDirectDebits(accountData, existingAccountIds).forEach(d -> accountDataResponse.addDirectDebit(toOBReadDirectDebit2DataDirectDebit(d.getDirectDebit())));
+                //Standing orders
+                dataCreator.createStandingOrders(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStandingOrder(toOBStandingOrder6(d.getStandingOrder())));
+                //Transactions
+                dataCreator.createTransactions(accountData, existingAccountIds).forEach(d -> accountDataResponse.addTransaction(toOBTransaction6(d.getTransaction())));
+                //Statements
+                dataCreator.createStatements(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStatement(toOBStatement2(d.getStatement())));
+                //Scheduled payments
+                dataCreator.createScheduledPayments(accountData, existingAccountIds).forEach(d -> accountDataResponse.addScheduledPayment(toOBScheduledPayment3(d.getScheduledPayment())));
+                //offers
+                dataCreator.createOffers(accountData, existingAccountIds).forEach(d -> accountDataResponse.addOffer(toOBOffer1(d.getOffer())));
 
-            //Account
-            if (accountData.getAccount() != null) {
-                FRFinancialAccount frAccount = dataCreator.createAccount(accountData, userData.getUserName()).getAccount();
-                accountDataResponse.setAccount(toOBAccount6(frAccount));
-                existingAccountIds.add(accountDataResponse.getAccount().getAccountId());
+                userDataResponse.addAccountData(accountDataResponse);
             }
-            //Product
-            dataCreator.createProducts(accountData, existingAccountIds).ifPresent(accountDataResponse::setProduct);
-            //Party
-            dataCreator.createParty(accountData).ifPresent(p -> accountDataResponse.setParty(toOBParty2(p)));
-            //Balance
-            dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(toOBCashBalance1(b.getBalance())));
-            //Beneficiaries
-            dataCreator.createBeneficiaries(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBeneficiary(toOBBeneficiary5(b.getBeneficiary())));
-            //Direct debits
-            dataCreator.createDirectDebits(accountData, existingAccountIds).forEach(d -> accountDataResponse.addDirectDebit(toOBReadDirectDebit2DataDirectDebit(d.getDirectDebit())));
-            //Standing orders
-            dataCreator.createStandingOrders(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStandingOrder(toOBStandingOrder6(d.getStandingOrder())));
-            //Transactions
-            dataCreator.createTransactions(accountData, existingAccountIds).forEach(d -> accountDataResponse.addTransaction(toOBTransaction6(d.getTransaction())));
-            //Statements
-            dataCreator.createStatements(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStatement(toOBStatement2(d.getStatement())));
-            //Scheduled payments
-            dataCreator.createScheduledPayments(accountData, existingAccountIds).forEach(d -> accountDataResponse.addScheduledPayment(toOBScheduledPayment3(d.getScheduledPayment())));
-            //offers
-            dataCreator.createOffers(accountData, existingAccountIds).forEach(d -> accountDataResponse.addOffer(toOBOffer1(d.getOffer())));
+            return ResponseEntity.ok(userDataResponse);
 
-            userDataResponse.addAccountData(accountDataResponse);
+        } catch (ExceptionClient exceptionClient) {
+            log.error(
+                    "Status: {}, reason: {}",
+                    exceptionClient.getErrorClient().getErrorType().getHttpStatus(),
+                    exceptionClient.getReason()
+            );
+            throw new DataApiException(exceptionClient);
         }
-        return ResponseEntity.ok(userDataResponse);
     }
 
     @Override
