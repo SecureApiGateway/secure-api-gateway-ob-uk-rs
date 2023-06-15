@@ -311,15 +311,15 @@ public class DataCreator {
         return balanceRepository.saveAll(balances);
     }
 
-    FRAccount createAccount(FRAccountData accountData, String username) {
+    FRAccount createAccount(FRAccountData accountData, String userId) {
         FRAccount account = new FRAccount();
         account.setCreated(new DateTime());
         account.setId(UUID.randomUUID().toString());
-        account.setUserID(username);
+        account.setUserID(userId);
         accountData.getAccount().setAccountId(account.getId());
         account.setAccount(toFRFinancialAccount(accountData.getAccount()));
         account = accountsRepository.save(account);
-        Example<FRAccount> example = Example.of(FRAccount.builder().userID(username).build());
+        Example<FRAccount> example = Example.of(FRAccount.builder().userID(userId).build());
         if (accountsRepository.count(example) > accountLimit) {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add account as it has exceeded maximum limit of %s", documentLimit));

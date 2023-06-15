@@ -9,6 +9,16 @@ spring:
 consent:
   repo:
     uri: http://ig:80
+    contexts_repo_consent:
+      get: /repo/consents/@IntentId@
+      put: /repo/consents/@IntentId@
+      patch: /repo/consents/@IntentId@
+      delete: /repo/consents/@IntentId@
+    contexts_user:
+      get: /repo/users/@UserId@
+      put: /repo/users/@UserId@
+      patch: /repo/users/@UserId@
+      delete: /repo/users/@UserId@
 
 rs:
   discovery:

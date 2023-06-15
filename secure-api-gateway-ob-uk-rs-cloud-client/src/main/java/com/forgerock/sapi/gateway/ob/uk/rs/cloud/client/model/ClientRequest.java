@@ -27,5 +27,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class ClientRequest {
     public String intentId;
-    protected String apiClientId;
+    public String apiClientId;
 }

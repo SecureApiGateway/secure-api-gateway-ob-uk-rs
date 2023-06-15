@@ -21,7 +21,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.ConsentClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions.InvalidConsentException;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -35,15 +35,14 @@ import org.springframework.stereotype.Service;
 @Service
 @ComponentScan(basePackages = {"com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services"})
 public class ConsentService {
-
-    private final PlatformClientService platformClientService;
+    private final ConsentClientService consentClientService;
 
     // Setting a custom-configured ObjectMapper Bean {@see RSApplicationConfiguration#Jackson2ObjectMapperBuilderCustomizer}
     private final ObjectMapper objectMapper;
 
-    public ConsentService(PlatformClientService platformClientService, ObjectMapper objectMapper) {
+    public ConsentService(ConsentClientService consentClientService, ObjectMapper objectMapper) {
+        this.consentClientService = consentClientService;
         this.objectMapper = objectMapper;
-        this.platformClientService = platformClientService;
     }
 
     /**
@@ -152,7 +151,7 @@ public class ConsentService {
      * @throws ExceptionClient
      */
     private JsonObject getOBConsentAsJsonObject(String authorization, String intentId, boolean underlyingOBIntentObject) throws ExceptionClient {
-        return platformClientService.getIntent(
+        return consentClientService.getIntent(
                 authorization.replace("Bearer", "").trim(),
                 intentId,
                 underlyingOBIntentObject

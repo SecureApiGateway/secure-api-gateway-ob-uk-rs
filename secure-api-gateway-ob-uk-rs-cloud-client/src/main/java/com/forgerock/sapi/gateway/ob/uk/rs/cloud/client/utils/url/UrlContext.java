@@ -21,12 +21,15 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
+
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
 public class UrlContext {
 
     public static final String INTENT_ID = "@IntentId@";
+    public static final String USER_ID = "@UserId@";
     public static String replaceParameterContextIntentId(String context, String intentId) throws ExceptionClient {
 
         try {
@@ -43,7 +46,7 @@ public class UrlContext {
             );
         }
         IntentType intentType = IntentType.identify(intentId);
-        if (intentType == null) {
+        if (Objects.isNull(intentType)) {
             String errorMessage = String.format("It has not been possible identify the intent type '%s' to replace the context.", intentId);
             log.error("(UrlContextUtil#replaceParameterContextIntentId) {}", errorMessage);
             throw new ExceptionClient(
@@ -57,11 +60,14 @@ public class UrlContext {
         return context.replace(INTENT_ID, intentId);
     }
 
-    public static String replaceParameterContextValue(String context, String parameter, String value) throws ExceptionClient {
-
+    public static String replaceParameterContextValue(
+            String context,
+            String parameter,
+            String value
+    ) throws ExceptionClient {
         try {
             requireNonNull(context, "(UrlContextUtil#replaceParameterContextValue) parameter 'context' cannot be null");
-            requireNonNull(value, "(UrlContextUtil#replaceParameterContextValue) parameter 'parameter' cannot be null");
+            requireNonNull(parameter, "(UrlContextUtil#replaceParameterContextValue) parameter 'parameter' cannot be null");
             requireNonNull(value, "(UrlContextUtil#replaceParameterContextValue) parameter 'value' cannot be null");
         } catch (NullPointerException exception) {
             throw new ExceptionClient(
@@ -74,5 +80,25 @@ public class UrlContext {
         }
 
         return context.replace(parameter, value);
+    }
+
+    public static String UrlUserQueryFilter(
+            String context,
+            String queryFilter
+    ) throws ExceptionClient {
+        try {
+            requireNonNull(context, "(UrlContextUtil#replaceParameterContextWithFilter) parameter 'context' cannot be null");
+            requireNonNull(queryFilter, "(UrlContextUtil#replaceParameterContextWithFilter) parameter 'queryFilter' cannot be null");
+        } catch (NullPointerException exception) {
+            throw new ExceptionClient(
+                    ErrorClient.builder()
+                            .errorType(ErrorType.PARAMETER_ERROR)
+                            .build(),
+                    exception.getMessage(),
+                    exception
+            );
+        }
+        String result = context.replace("/" + USER_ID, queryFilter);
+        return result;
     }
 }

@@ -17,12 +17,15 @@ package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.ClientRequest;
 
+import java.util.Objects;
+
 /**
  * Generic Client Cloud exception object
  */
 public class ExceptionClient extends Exception {
 
     ErrorClient errorClient;
+    String reason;
 
     public ExceptionClient() {
         super(ErrorType.INTERNAL_SERVER_ERROR.getDescription());
@@ -54,16 +57,16 @@ public class ExceptionClient extends Exception {
                 .build();
     }
 
-    public ExceptionClient(ClientRequest clientRequest, ErrorType errorType, String message) {
-        super(message);
+    public ExceptionClient(ClientRequest clientRequest, ErrorType errorType, String reason) {
+        super(reason);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
                 .intentId(clientRequest.getIntentId())
                 .build();
     }
 
-    public ExceptionClient(ClientRequest clientRequest, ErrorType errorType, String message, Exception exception) {
-        super(message, exception);
+    public ExceptionClient(ClientRequest clientRequest, ErrorType errorType, String reason, Exception exception) {
+        super(reason, exception);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
                 .intentId(clientRequest.getIntentId())
@@ -75,9 +78,10 @@ public class ExceptionClient extends Exception {
         this.errorClient = errorClient;
     }
 
-    public ExceptionClient(ErrorClient errorClient, String message) {
-        super(message);
+    public ExceptionClient(ErrorClient errorClient, String reason) {
+        super(reason);
         this.errorClient = errorClient;
+        this.reason = reason;
     }
 
     public ExceptionClient(ErrorClient errorClient, Exception exception) {
@@ -85,9 +89,10 @@ public class ExceptionClient extends Exception {
         this.errorClient = errorClient;
     }
 
-    public ExceptionClient(ErrorClient errorClient, String message, Exception exception) {
-        super(message, exception);
+    public ExceptionClient(ErrorClient errorClient, String reason, Exception exception) {
+        super(reason, exception);
         this.errorClient = errorClient;
+        this.reason = reason;
     }
 
     public ExceptionClient(Exception exception) {
@@ -96,5 +101,12 @@ public class ExceptionClient extends Exception {
 
     public ErrorClient getErrorClient() {
         return errorClient;
+    }
+
+    public String getReason() {
+        if(Objects.isNull(reason) && Objects.nonNull(errorClient)){
+            return errorClient.getReason();
+        }
+        return reason;
     }
 }

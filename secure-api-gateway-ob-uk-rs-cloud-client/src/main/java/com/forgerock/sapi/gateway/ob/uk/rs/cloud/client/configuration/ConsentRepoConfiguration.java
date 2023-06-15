@@ -36,9 +36,10 @@ public class ConsentRepoConfiguration {
      * @see: application-test.yml
      * case-insensitive map's keys
      * @Use pattern: contextMap.get(http-verb-any-case)
-     * @Use: contextAccountsConsent.get("GeT")
+     * @Use: contextsRepoConsent.get("GeT")
      */
     private Map<String, String> contextsRepoConsent = new LinkedCaseInsensitiveMap<>();
+    private Map<String, String> contextsUser = new LinkedCaseInsensitiveMap<>();
 
 
     public String getConsentRepoBaseUri() {

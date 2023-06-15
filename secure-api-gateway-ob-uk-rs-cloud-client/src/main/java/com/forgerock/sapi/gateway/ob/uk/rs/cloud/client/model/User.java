@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions;
+package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ErrorClient {
-    ErrorType errorType;
-    String reason;
-    String intentId;
-    String apiClientId;
-    String userId;
-    String userName;
+public class User {
+    private String id;
+    private String userName;
+    private String givenName;
+    private String surname;
+    private String mail;
+    private String accountStatus;
 }

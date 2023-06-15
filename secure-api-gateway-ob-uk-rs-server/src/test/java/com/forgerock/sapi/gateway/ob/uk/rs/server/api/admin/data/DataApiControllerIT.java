@@ -17,6 +17,11 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.admin.data;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRAccountData;
 import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRUserData;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
@@ -24,13 +29,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 import uk.org.openbanking.datamodel.account.OBCashBalance1;
@@ -40,6 +47,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.PUT;
 
@@ -64,7 +74,13 @@ public class DataApiControllerIT {
     private FRBalanceRepository frBalanceRepository;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private RestTemplate restTemplate;
+
+    @MockBean
+    private UserClientService userClientService;
+
+    private final static String USER_NAME = "user-name";
+    private final static String ACCOUNT_STATUS = "active";
 
     @BeforeEach
     public void setUp() {
@@ -73,19 +89,56 @@ public class DataApiControllerIT {
     }
 
     @Test
-    public void shouldCreateNewData() {
+    public void shouldCreateNewData() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
         List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBCashBalance1()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
-        userData.setUserName(UUID.randomUUID().toString());
+        userData.setUserName(USER_NAME);
+
+        User user = User.builder()
+                .id(UUID.randomUUID().toString())
+                .userName(userData.getUserName())
+                .accountStatus(ACCOUNT_STATUS)
+                .build();
 
         // When
+        when(userClientService.getUserByName(anyString())).thenReturn(user);
         ResponseEntity<FRUserData> response = restTemplate.postForEntity(dataUrl(), userData, FRUserData.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldRaiseUserNotFoundRejectCreationData() throws Exception {
+        // Given
+        OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBCashBalance1()));
+        FRUserData userData = new FRUserData();
+        userData.setAccountDatas(accountDatas);
+        userData.setUserName(USER_NAME);
+        String errorReason = String.format("User with userName '%s' not found.", userData.getUserName());
+
+        // When
+        when(userClientService.getUserByName(anyString())).thenThrow(
+                new ExceptionClient(
+                        ErrorClient.builder()
+                                .errorType(ErrorType.NOT_FOUND)
+                                .reason(errorReason)
+                                .userName(userData.getUserName())
+                                .build(),
+                        errorReason
+                )
+        );
+        HttpClientErrorException exception = catchThrowableOfType(() ->
+                        restTemplate.postForEntity(dataUrl(), userData, FRUserData.class),
+                HttpClientErrorException.class
+        );
+
+        // Then
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -110,6 +163,36 @@ public class DataApiControllerIT {
     }
 
     @Test
+    public void shouldRaiseUserNotFoundUsingUpdate() throws ExceptionClient {
+        // Given
+        OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBCashBalance1()));
+        FRUserData userData = new FRUserData();
+        userData.setAccountDatas(accountDatas);
+        userData.setUserName(USER_NAME);
+        String errorReason = String.format("User with userName '%s' not found.", userData.getUserName());
+
+        // When
+        when(userClientService.getUserByName(anyString())).thenThrow(
+                new ExceptionClient(
+                        ErrorClient.builder()
+                                .errorType(ErrorType.NOT_FOUND)
+                                .reason(errorReason)
+                                .userName(userData.getUserName())
+                                .build(),
+                        errorReason
+                )
+        );
+        HttpClientErrorException exception = catchThrowableOfType(() ->
+                        restTemplate.exchange(dataUrl(), PUT, new HttpEntity<>(userData), FRUserData.class),
+                HttpClientErrorException.class
+        );
+
+        // Then
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     public void shouldFailToCreateNewDataUsingUpdateGivenPayloadTooLarge() {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
@@ -127,10 +210,13 @@ public class DataApiControllerIT {
         userData.setUserName(savedAccount.getUserID());
 
         // When
-        ResponseEntity<FRUserData> response = restTemplate.exchange(dataUrl(), PUT, new HttpEntity<>(userData), FRUserData.class);
+        HttpClientErrorException exception = catchThrowableOfType(() ->
+                        restTemplate.exchange(dataUrl(), PUT, new HttpEntity<>(userData), FRUserData.class)
+                , HttpClientErrorException.class
+        );
 
         // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE);
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
     private FRAccountData accountDataWithBalances(OBAccount6 account, OBCashBalance1... obCashBalance1s) {
