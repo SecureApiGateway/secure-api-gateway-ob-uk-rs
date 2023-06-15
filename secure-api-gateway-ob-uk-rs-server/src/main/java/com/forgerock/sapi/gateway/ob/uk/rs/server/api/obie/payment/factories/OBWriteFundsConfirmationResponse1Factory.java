@@ -25,6 +25,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1DataFundsAvailableResult;
 
+/**
+ * Factory capable of producing {@link OBWriteFundsConfirmationResponse1} objects. These schema objects are reused by
+ * the funds confirmation endpoint of many of the Payment APIs.
+ */
 @Component
 public class OBWriteFundsConfirmationResponse1Factory {
 
@@ -38,6 +42,5 @@ public class OBWriteFundsConfirmationResponse1Factory {
                 .links(LinksHelper.createDomesticPaymentsConsentFundsConfirmationLink(controllerClass, consentId))
                 .meta(new Meta());
     }
-
 
 }
