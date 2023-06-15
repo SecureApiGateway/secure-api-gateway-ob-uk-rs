@@ -76,7 +76,7 @@ spec:
               configMapKeyRef:
                 name: deployment-config
                 key: CONSENT_REPO_URI
-          - name: RCS_CONSENT_STORE_API_BASE_URI
+          - name: RCS_CONSENT_STORE_API_BASEURI
             valueFrom:
               configMapKeyRef:
                 name: deployment-config
