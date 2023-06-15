@@ -15,10 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
+import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
+import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_SERVER_INTERNAL_ERROR;
+import static uk.org.openbanking.datamodel.error.OBStandardErrorCodes1.UK_OBIE_RESOURCE_INVALID_CONSENT_STATUS;
+
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,6 +52,7 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @ControllerAdvice
 @Slf4j
@@ -338,5 +346,43 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 Collections.singletonList(new OBError1().message(ex.getMessage()))
                         )
         );
+    }
+
+    @ExceptionHandler(ConsentStoreClientException.class)
+    protected ResponseEntity<OBErrorResponse1> handleConsentStoreClientException(ConsentStoreClientException ex, WebRequest request) {
+        final String fapiInteractionId = request.getHeader("x-fapi-interaction-id");
+
+        // Omit the stacktrace as most of the exceptions are due to bad client requests
+        log.info("({}) request failed due to Consent Store Exception: {}", fapiInteractionId, ex.getMessage());
+
+        final HttpStatus httpStatus;
+        final String errorCode;
+        switch (ex.getErrorType()) {
+        case INVALID_PERMISSIONS:
+            httpStatus = HttpStatus.FORBIDDEN;
+            errorCode = OBRI_PERMISSION_INVALID.toString();
+            break;
+        case NOT_FOUND:
+            httpStatus = HttpStatus.NOT_FOUND;
+            errorCode = OBRI_CONSENT_NOT_FOUND.toString();
+            break;
+        case INVALID_STATE_TRANSITION:
+            httpStatus = HttpStatus.BAD_REQUEST;
+            errorCode = UK_OBIE_RESOURCE_INVALID_CONSENT_STATUS.toString();
+            break;
+        default:
+            // Handle as an unexpected exception which yields internal server error, log stacktrace for debugging
+            log.warn("({}) Unexpected ConsentStoreClientException", fapiInteractionId, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            errorCode = OBRI_SERVER_INTERNAL_ERROR.toString();
+        }
+
+        final String errorResponseId = fapiInteractionId != null ? fapiInteractionId : UUID.randomUUID().toString();
+
+        return ResponseEntity.status(httpStatus).body(new OBErrorResponse1().code(errorCode)
+                .id(errorResponseId)
+                .message(httpStatus.name())
+                .errors(List.of(new OBError1().errorCode(ex.getErrorType().name())
+                        .message(ex.getMessage()))));
     }
 }
