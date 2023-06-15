@@ -37,8 +37,7 @@ public class OBWriteFundsConfirmationResponse1Factory {
                 .data(new OBWriteFundsConfirmationResponse1Data()
                         .fundsAvailableResult(new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
                                                         .fundsAvailable(fundsAvailable)
-                                                        .fundsAvailableDateTime(DateTime.now()))
-                        .supplementaryData(null))
+                                                        .fundsAvailableDateTime(DateTime.now())))
                 .links(LinksHelper.createDomesticPaymentsConsentFundsConfirmationLink(controllerClass, consentId))
                 .meta(new Meta());
     }
