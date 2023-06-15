@@ -24,13 +24,6 @@ rs:
   discovery:
     financialId: 0015800001041REAAY
 
-rcs:
-  consent:
-    store:
-      api:
-        # Dummy value for now - wont work if connected to
-        baseUrl: http://localhost:8080/consent/store
-
 testdata:
   # Configure Account Identifier for test users, if config is not provided for a particular user then randomised data is used
   # See com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.TestUserAccountIds

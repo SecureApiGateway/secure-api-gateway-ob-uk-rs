@@ -48,7 +48,7 @@ consent:
       patch: /repo/users/@UserId@
       delete: /repo/users/@UserId@
 
-
+# RCS Consent Store API configuration
 rcs:
   consent:
     store:
