@@ -20,7 +20,7 @@
 spring:
   data:
     mongodb:
-      database: mongo
+      database: test-facility-bank
 
 management:
   endpoints:
