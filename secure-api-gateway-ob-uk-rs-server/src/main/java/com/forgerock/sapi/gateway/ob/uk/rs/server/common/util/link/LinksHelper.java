@@ -27,7 +27,7 @@ public class LinksHelper {
     private static final String PISP = "pisp";
     private static final String RS = "rs";
     private static final String OPEN_BANKING = "open-banking";
-    private static final String DOMESTIC_PAYMENTS_CONSENT = "domestic-payment-consents";
+    private static final String DOMESTIC_PAYMENT_CONSENTS = "domestic-payment-consents";
     private static final String DOMESTIC_PAYMENTS = "domestic-payments";
     private static final String DOMESTIC_PAYMENTS_DETAILS = "payment-details";
     private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
@@ -49,12 +49,12 @@ public class LinksHelper {
      * @param id The ID of the resource concerned.
      * @return The {@link Links} instance with the populated 'self' URL.
      */
-    public static Links createDomesticPaymentsConsentFundsConfirmationLink(Class<?> controllerClass, String id) {
-        return createSelfLink(controllerClass, DOMESTIC_PAYMENTS_CONSENT, id, FUNDS_CONFIRMATION);
+    public static Links createDomesticPaymentConsentsFundsConfirmationLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_PAYMENT_CONSENTS, id, FUNDS_CONFIRMATION);
     }
 
     public static Links createDomesticPaymentConsentsLink(Class<?> controllerClass, String id) {
-        return createSelfLink(controllerClass, DOMESTIC_PAYMENTS_CONSENT, id);
+        return createSelfLink(controllerClass, DOMESTIC_PAYMENT_CONSENTS, id);
     }
 
     /**
