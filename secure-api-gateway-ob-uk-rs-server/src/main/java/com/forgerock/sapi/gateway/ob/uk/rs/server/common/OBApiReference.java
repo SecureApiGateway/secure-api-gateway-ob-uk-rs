@@ -30,7 +30,9 @@ import static org.springframework.http.HttpMethod.*;
  */
 public enum OBApiReference {
 
-    /** Account and Transactions Api **/
+    /**
+     * Account and Transactions Api
+     **/
 
     GET_ACCOUNTS(AISP, "GetAccounts", GET, "/aisp/accounts"),
     GET_ACCOUNT(AISP, "GetAccount", GET, "/aisp/accounts/{AccountId}"),
@@ -62,17 +64,23 @@ public enum OBApiReference {
     GET_SCHEDULED_PAYMENTS(AISP, "GetScheduledPayments", GET, "/aisp/scheduled-payments"),
     GET_STATEMENTS(AISP, "GetStatements", GET, "/aisp/statements"),
 
-    /** Funds Api **/
+    /**
+     * Funds Api
+     **/
     CREATE_FUNDS_CONFIRMATION(CBPII, "CreateFundsConfirmation", POST, "/cbpii/funds-confirmations"),
     GET_FUNDS_CONFIRMATION(CBPII, "GetFundsConfirmation", GET, "/cbpii/funds-confirmations/{FundsConfirmationId}"),
 
-    /** Callback Api **/
+    /**
+     * Callback Api
+     **/
     CREATE_CALLBACK_URL(EVENT, "CreateCallbackUrl", POST, "/callback-urls"),
     GET_CALLBACK_URLS(EVENT, "GetCallbackUrls", GET, "/callback-urls"),
     AMEND_CALLBACK_URL(EVENT, "AmendCallbackUrl", PUT, "/callback-urls/{CallbackUrlId}"),
     DELETE_CALLBACK_URL(EVENT, "DeleteCallbackUrl", DELETE, "/callback-urls/{CallbackUrlId}"),
 
-    /** Events Api **/
+    /**
+     * Events Api
+     **/
     CREATE_EVENT_SUBSCRIPTION(EVENT, "CreateEventSubscription", POST, "/event-subscriptions"),
     GET_EVENT_SUBSCRIPTION(EVENT, "GetEventSubscription", GET, "/event-subscriptions"),
     AMEND_EVENT_SUBSCRIPTION(EVENT, "AmendEventSubscription", PUT, "/event-subscriptions/{EventSubscriptionId}"),
@@ -80,7 +88,9 @@ public enum OBApiReference {
 
     EVENT_AGGREGATED_POLLING(EVENT, "EventAggregatedPolling", GET, "/events"),
 
-    /** Payments Api **/
+    /**
+     * Payments Api
+     **/
     CREATE_DOMESTIC_PAYMENT(PISP, "CreateDomesticPayment", POST, "/pisp/domestic-payments"),
     GET_DOMESTIC_PAYMENT(PISP, "GetDomesticPayment", GET, "/pisp/domestic-payments/{DomesticPaymentId}"),
     GET_DOMESTIC_PAYMENT_DOMESTIC_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetDomesticPaymentDomesticPaymentIdPaymentDetails", GET, "/pisp/domestic-payments/{DomesticPaymentId}/payment-details"),
@@ -113,10 +123,10 @@ public enum OBApiReference {
     GET_FILE_PAYMENT_REPORT(PISP, "GetFilePaymentReport", GET, "/pisp/file-payments/{ConsentId}/report-file"),
 
     // VRP payments
-    GET_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "GetDomesticVrpPaymentFundsConfirmation", GET, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
-    CREATE_DOMESTIC_VRP_PAYMENT(PISP,"CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
-    GET_DOMESTIC_VRP_PAYMENT(PISP,"GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
-    GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP,"GetDomesticVrpPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");
+    CREATE_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "GetDomesticVrpPaymentFundsConfirmation", POST, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
+    CREATE_DOMESTIC_VRP_PAYMENT(PISP, "CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
+    GET_DOMESTIC_VRP_PAYMENT(PISP, "GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
+    GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP, "GetDomesticVrpPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");
 
     private static final OBApiReference[] VALUES = OBApiReference.values();
 
@@ -143,9 +153,10 @@ public enum OBApiReference {
 
     /**
      * Constructor used by enum declarations above.
-     * @param groupName The "group" of the API (e.g. AISP, PISP).
-     * @param reference A reference for the API endpoint.
-     * @param httpMethod The HTTP method (e.g. GET) for the endpoint.
+     *
+     * @param groupName    The "group" of the API (e.g. AISP, PISP).
+     * @param reference    A reference for the API endpoint.
+     * @param httpMethod   The HTTP method (e.g. GET) for the endpoint.
      * @param relativePath The relative path of the API endpoint.
      */
     OBApiReference(OBGroupName groupName, String reference, HttpMethod httpMethod, String relativePath) {
