@@ -54,6 +54,21 @@ spec:
           env:
           - name: SPRING_DATA_MONGODB_HOST
             value: {{ .Values.deployment.mongodb.host }}
+          - name: SPRING_DATA_MONGODB_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: openig-secrets-env
+                key: MONGODB_CONSENT_USERNAME
+          - name: SPRING_DATA_MONGODB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: openig-secrets-env
+                key: MONGODB_CONSENT_USERNAME
+          - name: SPRING_DATA_MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: openig-secrets-env
+                key: MONGODB_CONSENT_PASSWORD
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
           - name: CONSENT_REPO_URI
