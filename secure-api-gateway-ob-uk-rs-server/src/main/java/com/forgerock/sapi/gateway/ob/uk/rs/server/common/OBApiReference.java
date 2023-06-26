@@ -123,7 +123,7 @@ public enum OBApiReference {
     GET_FILE_PAYMENT_REPORT(PISP, "GetFilePaymentReport", GET, "/pisp/file-payments/{ConsentId}/report-file"),
 
     // VRP payments
-    CREATE_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "GetDomesticVrpPaymentFundsConfirmation", POST, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
+    CREATE_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "CreateDomesticVRPConsentsConsentIdFundsConfirmation", POST, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
     CREATE_DOMESTIC_VRP_PAYMENT(PISP, "CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
     GET_DOMESTIC_VRP_PAYMENT(PISP, "GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
     GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP, "GetDomesticVrpPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");

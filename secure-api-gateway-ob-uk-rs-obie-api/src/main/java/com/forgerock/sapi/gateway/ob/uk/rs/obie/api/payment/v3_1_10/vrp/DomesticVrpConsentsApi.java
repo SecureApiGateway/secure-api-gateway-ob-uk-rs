@@ -107,7 +107,7 @@ public interface DomesticVrpConsentsApi {
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." ) @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
             @ApiParam(value = "An RFC4122 UID used as a correlation id." ) @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
             @ApiParam(value = "Indicates the user-agent that the PSU is using." ) @RequestHeader(value="x-customer-user-agent", required=false) String xCustomerUserAgent,
-            HttpServletRequest request,
-            Principal principal) throws OBErrorResponseException;
+            HttpServletRequest request
+    ) throws OBErrorResponseException;
 
 }

@@ -36,6 +36,7 @@ import static java.util.UUID.randomUUID;
  */
 public class DomesticVrpPaymentConsentDetailsTestFactory {
 
+    public static final String DEFAULT_ACCOUNT_ID = "01233243245676";
     public static final Gson gson = new Gson();
 
     public static JsonObject aValidDomesticVrpPaymentConsentDetails() {
@@ -71,6 +72,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
+        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
         return consent;
     }
 
@@ -83,6 +85,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
+        consent.addProperty("AccountId", accountIdentifier.getAccountId());
         return consent;
     }
 
@@ -95,6 +98,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
+        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
         return consent;
     }
 
@@ -107,7 +111,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
 
         return consent;
     }
@@ -121,7 +125,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
 
         return consent;
     }

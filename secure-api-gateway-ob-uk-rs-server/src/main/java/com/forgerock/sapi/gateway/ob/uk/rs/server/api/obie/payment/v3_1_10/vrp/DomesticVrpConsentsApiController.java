@@ -15,23 +15,37 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
 
-import java.security.Principal;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpConsentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.vrp.*;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpConsentsApi;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Controller("DomesticVrpConsentApiV3.1.10")
+@Slf4j
 public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {
 
+    private final FundsAvailabilityService fundsAvailabilityService;
+    private final ConsentService consentService;
+
+    public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService, ConsentService consentService) {
+        this.fundsAvailabilityService = fundsAvailabilityService;
+        this.consentService = consentService;
+    }
 
     @Override
     public ResponseEntity<OBVRPFundsConfirmationResponse> domesticVrpConsentsFundsConfirmation(String consentId,
@@ -42,8 +56,63 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                                                                String xFapiCustomerIpAddress,
                                                                                                String xFapiInteractionId,
                                                                                                String xCustomerUserAgent,
-                                                                                               HttpServletRequest request,
-                                                                                               Principal principal) throws OBErrorResponseException {
-        throw new UnsupportedOperationException("implement me");
+                                                                                               HttpServletRequest request
+    ) throws OBErrorResponseException {
+        validateRequest(obVRPFundsConfirmationRequest, consentId);
+
+        JsonObject intent = consentService.getIDMIntent(authorization, consentId);
+        log.debug("Retrieved consent from IDM");
+        String accountId = intent.get("AccountId").getAsString();
+
+        String amount = obVRPFundsConfirmationRequest.getData().getInstructedAmount().getAmount();
+
+        // Check if funds are available on the account
+        boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(accountId, amount);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(
+                        new OBVRPFundsConfirmationResponse()
+                                .data(
+                                        new OBVRPFundsConfirmationResponseData()
+                                                .consentId(obVRPFundsConfirmationRequest.getData().getConsentId())
+                                                .reference(obVRPFundsConfirmationRequest.getData().getReference())
+                                                .fundsAvailableResult(
+                                                        new OBPAFundsAvailableResult1()
+                                                                .fundsAvailable(
+                                                                        areFundsAvailable ?
+                                                                                OBPAFundsAvailableResult1.FundsAvailableEnum.AVAILABLE :
+                                                                                OBPAFundsAvailableResult1.FundsAvailableEnum.NOTAVAILABLE
+                                                                )
+                                                                .fundsAvailableDateTime(DateTime.now())
+                                                )
+                                                .instructedAmount(
+                                                        obVRPFundsConfirmationRequest.getData().getInstructedAmount()
+                                                )
+                                )
+                );
+    }
+
+    private void validateRequest(
+            OBVRPFundsConfirmationRequest obVRPFundsConfirmationRequest,
+            String consentId
+    ) throws OBErrorResponseException {
+        OBVRPFundsConfirmationRequestData data = obVRPFundsConfirmationRequest.getData();
+        if (Objects.isNull(data) || Objects.isNull(data.getInstructedAmount()) || Objects.isNull(data.getInstructedAmount().getAmount())) {
+            throw new OBErrorResponseException(
+                    BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.REQUEST_OBJECT_INVALID.toOBError1("Mandatory data not provided.")
+            );
+        }
+        if (!obVRPFundsConfirmationRequest.getData().getConsentId().equals(consentId)) {
+            throw new OBErrorResponseException(
+                    BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.REQUEST_OBJECT_INVALID.toOBError1(
+                            "The consentId provided in the body doesn't match with the consent id provided as parameter"
+                    )
+            );
+        }
     }
 }
