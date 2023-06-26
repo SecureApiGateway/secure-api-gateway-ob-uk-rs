@@ -68,7 +68,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
         // Check if funds are available on the account
         boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(accountId, amount);
-
+        log.debug("Are funds available {}", areFundsAvailable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(
@@ -97,20 +97,25 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             OBVRPFundsConfirmationRequest obVRPFundsConfirmationRequest,
             String consentId
     ) throws OBErrorResponseException {
+        log.debug("Validating request {}", obVRPFundsConfirmationRequest.toString());
         OBVRPFundsConfirmationRequestData data = obVRPFundsConfirmationRequest.getData();
         if (Objects.isNull(data) || Objects.isNull(data.getInstructedAmount()) || Objects.isNull(data.getInstructedAmount().getAmount())) {
+            String reason = "Mandatory data not provided.";
+            log.error(reason);
             throw new OBErrorResponseException(
                     BAD_REQUEST,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.REQUEST_OBJECT_INVALID.toOBError1("Mandatory data not provided.")
+                    OBRIErrorType.REQUEST_OBJECT_INVALID.toOBError1(reason)
             );
         }
         if (!obVRPFundsConfirmationRequest.getData().getConsentId().equals(consentId)) {
+            String reason = "The consentId provided in the body doesn't match with the consent id provided as parameter";
+            log.error(reason);
             throw new OBErrorResponseException(
                     BAD_REQUEST,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
                     OBRIErrorType.REQUEST_OBJECT_INVALID.toOBError1(
-                            "The consentId provided in the body doesn't match with the consent id provided as parameter"
+                            reason
                     )
             );
         }
