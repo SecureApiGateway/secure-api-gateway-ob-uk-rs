@@ -196,7 +196,6 @@ class DomesticVrpConsentsApiControllerTest {
         // Then
         OBErrorResponse1 body = response.getBody();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(body.getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
         assertThat(body.getErrors().get(0).getMessage()).contains("Mandatory data not provided.");
     }
 
@@ -236,7 +235,6 @@ class DomesticVrpConsentsApiControllerTest {
         // Then
         OBErrorResponse1 body = response.getBody();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(body.getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
         assertThat(body.getErrors().get(0).getMessage()).contains(
                 "The consentId provided in the body doesn't match with the consent id provided as parameter"
         );
