@@ -27,6 +27,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -35,14 +37,13 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBW
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteFundsConfirmationResponse1Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.v3_1_10.DomesticPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
 @Controller("DomesticPaymentConsentsApiV3.1.10")
@@ -84,7 +85,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         domesticConsentValidator.validate(obWriteDomesticConsent4);
 
         final CreateDomesticPaymentConsentRequest createRequest = new CreateDomesticPaymentConsentRequest();
-        createRequest.setConsentRequest(obWriteDomesticConsent4);
+        createRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(obWriteDomesticConsent4));
         createRequest.setApiClientId(apiClientId);
         createRequest.setIdempotencyKey(xIdempotencyKey);
         createRequest.setCharges(calculateCharges(obWriteDomesticConsent4));
@@ -95,7 +96,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         return new ResponseEntity<>(consentResponseFactory.buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
     }
 
-    private List<OBWriteDomesticConsentResponse5DataCharges> calculateCharges(OBWriteDomesticConsent4 obWriteDomesticConsent4) {
+    private List<FRCharge> calculateCharges(OBWriteDomesticConsent4 obWriteDomesticConsent4) {
         // TODO add some logic to apply charges to payments
         return List.of();
     }
