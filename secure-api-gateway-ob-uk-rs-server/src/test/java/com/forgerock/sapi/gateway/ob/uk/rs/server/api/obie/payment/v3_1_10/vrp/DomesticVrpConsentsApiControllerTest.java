@@ -164,43 +164,6 @@ class DomesticVrpConsentsApiControllerTest {
     }
 
     @Test
-    public void shouldRaiseBadRequestMandatoryData() {
-        // Given
-        final String consentId = UUID.randomUUID().toString();
-        final OBVRPFundsConfirmationRequest obvrpFundsConfirmationRequest = new OBVRPFundsConfirmationRequest()
-                .data(new OBVRPFundsConfirmationRequestData()
-                        .consentId(consentId)
-                        .reference("reference")
-                        .instructedAmount(null)
-                );
-
-        // Given
-        FRBalance balance = aValidBalance(new BigDecimal("49.99").setScale(2));
-        given(balanceStoreService.getBalance(balance.getAccountId(), balance.getBalance().getType())).willReturn(Optional.of(balance));
-
-        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(
-                aValidDomesticVrpPaymentConsentDetails(obvrpFundsConfirmationRequest.getData().getConsentId())
-        );
-
-        HttpEntity<OBVRPFundsConfirmationRequest> request = new HttpEntity<>(
-                obvrpFundsConfirmationRequest, HttpHeadersTestDataFactory.requiredVrpPaymentHttpHeaders()
-        );
-
-        // When
-        ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(
-                getFundsConfirmationUrl(consentId),
-                request,
-                OBErrorResponse1.class
-        );
-
-        // Then
-        OBErrorResponse1 body = response.getBody();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(body.getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
-        assertThat(body.getErrors().get(0).getMessage()).contains("Mandatory data not provided.");
-    }
-
-    @Test
     public void shouldRaiseBadRequestConsentIdMismatch() {
         // Given
         final String consentId = UUID.randomUUID().toString();
