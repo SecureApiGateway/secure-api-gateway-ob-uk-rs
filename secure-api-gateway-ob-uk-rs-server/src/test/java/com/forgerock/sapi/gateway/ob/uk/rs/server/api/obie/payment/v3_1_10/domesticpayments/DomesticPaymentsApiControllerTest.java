@@ -15,21 +15,18 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domesticpayments.DomesticPaymentsApiController;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.v3_1_10.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.ConsumeDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +34,27 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domesticpayments.DomesticPaymentsApiController;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
+
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 import java.util.List;
@@ -51,8 +64,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
@@ -123,7 +134,7 @@ public class DomesticPaymentsApiControllerTest {
         final DomesticPaymentConsent consent = new DomesticPaymentConsent();
         consent.setId(consentId);
         consent.setStatus(status);
-        consent.setRequestObj(consentRequest);
+        consent.setRequestObj(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(consentRequest));
         when(domesticPaymentConsentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consent);
     }
 
@@ -155,9 +166,9 @@ public class DomesticPaymentsApiControllerTest {
         verify(domesticPaymentConsentStoreClient).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
 
         // Verify that consumeConsent was called
-        final ArgumentCaptor<ConsumeDomesticPaymentConsentRequest> consumeReqCaptor = ArgumentCaptor.forClass(ConsumeDomesticPaymentConsentRequest.class);
+        final ArgumentCaptor<ConsumePaymentConsentRequest> consumeReqCaptor = ArgumentCaptor.forClass(ConsumePaymentConsentRequest.class);
         verify(domesticPaymentConsentStoreClient).consumeConsent(consumeReqCaptor.capture());
-        final ConsumeDomesticPaymentConsentRequest consumeConsentReq = consumeReqCaptor.getValue();
+        final ConsumePaymentConsentRequest consumeConsentReq = consumeReqCaptor.getValue();
         assertThat(consumeConsentReq.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
         assertThat(consumeConsentReq.getConsentId()).isEqualTo(consentId);
     }

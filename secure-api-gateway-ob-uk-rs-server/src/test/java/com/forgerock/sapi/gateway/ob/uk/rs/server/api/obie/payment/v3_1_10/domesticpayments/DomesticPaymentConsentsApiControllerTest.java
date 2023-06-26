@@ -44,13 +44,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.v3_1_10.DomesticPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
@@ -98,7 +99,7 @@ public class DomesticPaymentConsentsApiControllerTest {
         when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
             final CreateDomesticPaymentConsentRequest createConsentArg = invocation.getArgument(0, CreateDomesticPaymentConsentRequest.class);
             assertThat(createConsentArg.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
-            assertThat(createConsentArg.getConsentRequest()).isEqualTo(consentRequest);
+            assertThat(createConsentArg.getConsentRequest()).isEqualTo(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(consentRequest));
             assertThat(createConsentArg.getCharges()).isEmpty();
             assertThat(createConsentArg.getIdempotencyKey()).isEqualTo(HTTP_HEADERS.getFirst("x-idempotency-key"));
 
@@ -240,7 +241,7 @@ public class DomesticPaymentConsentsApiControllerTest {
     public static DomesticPaymentConsent buildAwaitingAuthorisationConsent(OBWriteDomesticConsent4 consentRequest) {
         final DomesticPaymentConsent consentStoreResponse = new DomesticPaymentConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        consentStoreResponse.setRequestObj(consentRequest);
+        consentStoreResponse.setRequestObj(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(consentRequest));
         consentStoreResponse.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
         consentStoreResponse.setCharges(List.of());
         final DateTime creationDateTime = DateTime.now();

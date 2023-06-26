@@ -43,6 +43,7 @@ import org.springframework.stereotype.Controller;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
@@ -59,8 +60,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.v3_1_10.DomesticPaymentConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.ConsumeDomesticPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
@@ -126,7 +127,9 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         // validate the consent against the request
         log.debug("Validating Domestic Payment submission");
-        paymentValidator.validate(new OBWriteDomestic2ValidatorContext(obWriteDomestic2, consent.getRequestObj(), consent.getStatus()));
+        final OBWriteDomestic2ValidatorContext validationCtxt = new OBWriteDomestic2ValidatorContext(obWriteDomestic2,
+                FRWriteDomesticConsentConverter.toOBWriteDomesticConsent4(consent.getRequestObj()), consent.getStatus());
+        paymentValidator.validate(validationCtxt);
         log.debug("Domestic Payment validation successful");
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
@@ -143,7 +146,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
 
-        final ConsumeDomesticPaymentConsentRequest consumePaymentRequest = new ConsumeDomesticPaymentConsentRequest();
+        final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);
         consumePaymentRequest.setApiClientId(apiClientId);
         consentStoreClient.consumeConsent(consumePaymentRequest);
