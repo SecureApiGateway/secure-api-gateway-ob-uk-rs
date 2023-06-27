@@ -21,7 +21,7 @@
 
     <groupId>com.forgerock.sapi.gateway</groupId>
     <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rs</name>
     <description>A UK Open Banking Resource Server for the Secure API Gateway</description>
@@ -40,6 +40,7 @@
         <module>secure-api-gateway-ob-uk-rs-obie-api</module>
         <module>secure-api-gateway-ob-uk-rs-server</module>
         <module>secure-api-gateway-ob-uk-rs-cloud-client</module>
+        <module>secure-api-gateway-ob-uk-rs-validation</module>
     </modules>
 
     <parent>
@@ -49,7 +50,7 @@
     </parent>
 
     <properties>
-        <uk.bom.version>1.0.3-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>1.0.4</uk.bom.version>
     </properties>
 
     <dependencyManagement>

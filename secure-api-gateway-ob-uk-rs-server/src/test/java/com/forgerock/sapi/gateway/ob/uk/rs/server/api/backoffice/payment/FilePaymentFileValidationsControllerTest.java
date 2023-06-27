@@ -21,7 +21,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.ConsentClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.FilePaymentIntentTestModel;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.FilePaymentPlatformIntentTestFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFile;
@@ -80,7 +80,7 @@ public class FilePaymentFileValidationsControllerTest {
     static String UK_OBIE_PaymentInitiation_3_1_Content;
 
     @MockBean
-    private PlatformClientService platformClientService;
+    private ConsentClientService consentClientService;
 
     private static final String BASE_URL = "http://localhost:";
 
@@ -122,7 +122,7 @@ public class FilePaymentFileValidationsControllerTest {
         HTTP_HEADERS.setContentType(paymentFileType.getContentType());
         HTTP_HEADERS.setBearerAuth("token");
         HttpEntity<String> request = new HttpEntity<>(fileContent, HTTP_HEADERS);
-        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(jsonObject);
+        given(consentClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(jsonObject);
 
         // When
         ResponseEntity<Void> response = restTemplate.exchange(
@@ -163,7 +163,7 @@ public class FilePaymentFileValidationsControllerTest {
         HTTP_HEADERS.setContentType(paymentFileType.getContentType());
         HTTP_HEADERS.setBearerAuth("token");
         HttpEntity<String> request = new HttpEntity<>(fileContent, HTTP_HEADERS);
-        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(jsonObject);
+        given(consentClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(jsonObject);
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
@@ -225,7 +225,7 @@ public class FilePaymentFileValidationsControllerTest {
         HTTP_HEADERS.setContentType(wrongContentType);
         HTTP_HEADERS.setBearerAuth("token");
         HttpEntity<String> request = new HttpEntity<>(fileContent, HTTP_HEADERS);
-        given(platformClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(jsonObject);
+        given(consentClientService.getIntent(anyString(), anyString(), anyBoolean())).willReturn(jsonObject);
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(

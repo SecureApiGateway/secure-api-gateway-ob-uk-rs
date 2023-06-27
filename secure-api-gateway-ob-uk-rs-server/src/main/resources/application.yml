@@ -20,7 +20,7 @@
 spring:
   data:
     mongodb:
-      database: mongo
+      database: test-facility-bank
 
 management:
   endpoints:
@@ -31,6 +31,7 @@ management:
 logging:
   level:
     com.forgerock: DEBUG
+    uk.org.openbanking: DEBUG
 
 # Configuration for calling the Consent Repository
 # See: com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration
@@ -41,6 +42,11 @@ consent:
       put: /repo/consents/@IntentId@
       patch: /repo/consents/@IntentId@
       delete: /repo/consents/@IntentId@
+    contexts_user:
+      get: /repo/users/@UserId@
+      put: /repo/users/@UserId@
+      patch: /repo/users/@UserId@
+      delete: /repo/users/@UserId@
 
 # RS config
 rs:
@@ -50,3 +56,7 @@ rs:
       limit:
         accounts: 100
         documents: 1000
+  obie:
+    validation:
+      # OBIE validation module to load, the "default" module is provided as standard with the simulator
+      module: default

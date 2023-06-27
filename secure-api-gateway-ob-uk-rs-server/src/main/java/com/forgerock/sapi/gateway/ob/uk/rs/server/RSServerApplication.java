@@ -17,15 +17,13 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@ComponentScan(basePackages =
-        {
-                "com.forgerock.sapi.gateway.ob.uk.rs"
-        }
-)
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.CloudClientModuleConfiguration;
+
 @SpringBootApplication
+@Import(CloudClientModuleConfiguration.class)
 @EnableMongoRepositories(basePackages = "com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository")
 public class RSServerApplication {
 

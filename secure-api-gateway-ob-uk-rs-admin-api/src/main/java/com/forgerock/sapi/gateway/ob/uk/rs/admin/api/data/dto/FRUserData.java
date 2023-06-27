@@ -29,6 +29,7 @@ import java.util.List;
 public class FRUserData {
 
     private String userName;
+    private String userId;
     private OBParty2 party;
     private List<FRAccountData> accountDatas = new ArrayList<>();
 

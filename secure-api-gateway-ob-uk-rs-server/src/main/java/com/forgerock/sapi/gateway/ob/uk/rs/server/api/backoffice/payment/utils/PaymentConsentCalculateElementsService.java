@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -28,6 +29,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.error.OBError1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,10 +37,17 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class PaymentConsentGeneral {
-    public static final String API_VERSION_DESCRIPTION = "Api version";
-    public static final String INTENT_TYPE_DESCRIPTION = "Intent type";
-    private static final CustomObjectMapper customObjectMapper = CustomObjectMapper.getCustomObjectMapper();
+@Service
+public class PaymentConsentCalculateElementsService {
+    public final String API_VERSION_DESCRIPTION = "Api version";
+    public final String INTENT_TYPE_DESCRIPTION = "Intent type";
+
+    // Setting a custom-configured ObjectMapper Bean {@see RSApplicationConfiguration#Jackson2ObjectMapperBuilderCustomizer}
+    private final ObjectMapper objectMapper;
+
+    public PaymentConsentCalculateElementsService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     /**
      *
@@ -48,10 +57,10 @@ public class PaymentConsentGeneral {
      * @return OB consent object response
      * @param <T> parametrized type for an instance of OB consent request object
      * @param <R> parametrized type for an instance of OB consent response object
-     * @throws OBErrorResponseException
-     * @throws JsonProcessingException
+     * @throws OBErrorResponseException OB error exception
+     * @throws JsonProcessingException Json error exception
      */
-    public static <T, R> R calculate(T consentRequest, String intent, HttpServletRequest request) throws OBErrorResponseException, JsonProcessingException {
+    public <T, R> R calculate(T consentRequest, String intent, HttpServletRequest request) throws OBErrorResponseException, JsonProcessingException {
 
         OBVersion apiVersion = ApiVersionUtils.getOBVersion(request.getRequestURI());
         isNull(apiVersion, API_VERSION_DESCRIPTION);
@@ -59,7 +68,7 @@ public class PaymentConsentGeneral {
         isNull(intentType, INTENT_TYPE_DESCRIPTION);
 
         log.info("Calculate elements for intent {} version {}", intentType, apiVersion.getCanonicalName());
-        log.debug("Consent request\n {}", customObjectMapper.getObjectMapper().writeValueAsString(consentRequest));
+        log.debug("Consent request\n {}", objectMapper.writeValueAsString(consentRequest));
         PaymentConsentValidation validation = PaymentConsentValidationFactory.getValidationInstance(intent);
         validation.clearErrors().validate(consentRequest);
 
@@ -70,8 +79,8 @@ public class PaymentConsentGeneral {
         log.debug("Validation passed for intent {} version {}", intentType, apiVersion.getCanonicalName());
 
         PaymentConsentResponseCalculation calculation = PaymentConsentResponseCalculationFactory.getCalculationInstance(intent);
-        Object consentResponseObject = customObjectMapper.getObjectMapper().readValue(
-                customObjectMapper.getObjectMapper().writeValueAsString(consentRequest),
+        Object consentResponseObject = objectMapper.readValue(
+                objectMapper.writeValueAsString(consentRequest),
                 calculation.getResponseClass(apiVersion)
         );
         Object consentEntityResponse = calculation.clearErrors().calculate(consentRequest, consentResponseObject);
@@ -81,7 +90,7 @@ public class PaymentConsentGeneral {
         }
 
         log.debug("Calculation done for intent {} version {}", intentType, apiVersion.getCanonicalName());
-        log.debug("Sending the response {}", customObjectMapper.getObjectMapper().writeValueAsString(consentEntityResponse));
+        log.debug("Sending the response {}", objectMapper.writeValueAsString(consentEntityResponse));
 
         return (R) consentEntityResponse;
     }

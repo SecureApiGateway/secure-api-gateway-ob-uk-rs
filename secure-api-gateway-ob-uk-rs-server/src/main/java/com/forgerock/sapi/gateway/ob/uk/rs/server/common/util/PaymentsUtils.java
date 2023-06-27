@@ -102,4 +102,13 @@ public class PaymentsUtils {
                 .risk(payment.getRisk());
     }
 
+    public static OBWriteDomesticConsent4 createTestDataConsent4(OBWriteDomestic2 payment) {
+        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
+        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
+        return new OBWriteDomesticConsent4()
+                .data(new OBWriteDomesticConsent4Data()
+                        .initiation(payment.getData().getInitiation()))
+                .risk(payment.getRisk());
+    }
+
 }

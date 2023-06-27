@@ -20,7 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.backoffice.api.payment.calculate.elements.v3_1_5.filepayments.CalculateResponseElements;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils.PaymentConsentGeneral;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils.PaymentConsentCalculateElementsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +37,12 @@ import static uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Da
 @Slf4j
 public class CalculateResponseElementsController implements CalculateResponseElements {
 
+    private final PaymentConsentCalculateElementsService calculateElementsService;
+
+    public CalculateResponseElementsController(PaymentConsentCalculateElementsService calculateElementsService) {
+        this.calculateElementsService = calculateElementsService;
+    }
+
     @Override
     public ResponseEntity<OBWriteFileConsentResponse4> calculateElements(
             OBWriteFileConsent3 body,
@@ -46,7 +52,7 @@ public class CalculateResponseElementsController implements CalculateResponseEle
             String xFapiInteractionId,
             HttpServletRequest request) throws OBErrorResponseException {
         try {
-            OBWriteFileConsentResponse4 response = PaymentConsentGeneral.calculate(
+            OBWriteFileConsentResponse4 response = calculateElementsService.calculate(
                     body, intent, request
             );
             response.getData().setStatus(AWAITINGUPLOAD);

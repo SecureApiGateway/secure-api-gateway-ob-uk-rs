@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_9.vrp;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_8.vrp.DomesticVrpsApiController;
@@ -75,6 +76,30 @@ public class DomesticVrpsApiControllerTest {
     void removeData() {
         paymentSubmissionRepository.deleteAll();
     }
+
+    /**
+     * Test to check that Bean validation configuration is enabled.
+     *
+     * Attempt to submit an empty payment request, and verify we get an error response stating risk and data fields
+     * must not be null.
+     */
+    @Test
+    public void testBeanValidation() {
+        OBDomesticVRPRequest badRequest = new OBDomesticVRPRequest();
+        HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(badRequest, HTTP_HEADERS);
+
+        ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBErrorResponse1.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        final OBErrorResponse1 errorResponse = response.getBody();
+        assertThat(errorResponse.getCode()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getId());
+        assertThat(errorResponse.getMessage()).isEqualTo(OBRIErrorResponseCategory.ARGUMENT_INVALID.getDescription());
+        assertThat(errorResponse.getErrors()).hasSize(2);
+        assertThat(errorResponse.getErrors()).containsExactlyInAnyOrder(
+                new OBError1().errorCode("UK.OBIE.Field.Invalid").message("The field received is invalid. Reason 'must not be null'").path("risk"),
+                new OBError1().errorCode("UK.OBIE.Field.Invalid").message("The field received is invalid. Reason 'must not be null'").path("data"));
+    }
+
 
     @Test
     public void shouldCreateDomesticVrpPayment() {

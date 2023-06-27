@@ -16,13 +16,13 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.backoffice.payment.utils.CustomObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions.InvalidConsentException;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.ConsentClientService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions.InvalidConsentException;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,13 +35,14 @@ import org.springframework.stereotype.Service;
 @Service
 @ComponentScan(basePackages = {"com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services"})
 public class ConsentService {
+    private final ConsentClientService consentClientService;
 
-    private final CustomObjectMapper customObjectMapper;
-    private final PlatformClientService platformClientService;
+    // Setting a custom-configured ObjectMapper Bean {@see RSApplicationConfiguration#Jackson2ObjectMapperBuilderCustomizer}
+    private final ObjectMapper objectMapper;
 
-    public ConsentService(PlatformClientService platformClientService) {
-        this.customObjectMapper = CustomObjectMapper.getCustomObjectMapper();
-        this.platformClientService = platformClientService;
+    public ConsentService(ConsentClientService consentClientService, ObjectMapper objectMapper) {
+        this.consentClientService = consentClientService;
+        this.objectMapper = objectMapper;
     }
 
     /**
@@ -82,7 +83,7 @@ public class ConsentService {
     public <T> T deserialize(Class<T> targetClass, JsonObject intent, String intentId) {
         try {
             // deserialize the consent
-            return customObjectMapper.getObjectMapper().readValue(
+            return objectMapper.readValue(
                     intent.toString(),
                     targetClass
             );
@@ -115,7 +116,11 @@ public class ConsentService {
     public <T> T getOBIntentObject(Class<T> targetClass, String authorization, String intentId) {
         try {
             // deserialize the consent
-            return customObjectMapper.getObjectMapper().readValue(
+            log.debug("defaultObjectMapper: {}", objectMapper);
+            log.debug("registeredModules: {}", objectMapper.getRegisteredModuleIds());
+            log.debug("getDeserializationConfig: {}", objectMapper.getDeserializationConfig());
+            log.debug("getSerializationConfig: {}", objectMapper.getSerializationConfig());
+            return objectMapper.readValue(
                     getOBConsentAsJsonObject(authorization, intentId, true).toString(),
                     targetClass
             );
@@ -146,7 +151,7 @@ public class ConsentService {
      * @throws ExceptionClient
      */
     private JsonObject getOBConsentAsJsonObject(String authorization, String intentId, boolean underlyingOBIntentObject) throws ExceptionClient {
-        return platformClientService.getIntent(
+        return consentClientService.getIntent(
                 authorization.replace("Bearer", "").trim(),
                 intentId,
                 underlyingOBIntentObject

@@ -55,7 +55,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers,
                                                                   HttpStatus status,
                                                                   WebRequest request) {
-
         List<OBError1> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(OBRIErrorType.REQUEST_FIELD_INVALID
@@ -83,7 +82,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                           HttpHeaders headers,
                                                                           HttpStatus status,
                                                                           WebRequest request) {
-
         return handleOBErrorResponse(
                 new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -254,7 +252,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {OBErrorResponseException.class})
     protected ResponseEntity<Object> handleOBErrorResponse(OBErrorResponseException ex,
                                                            WebRequest request) {
-
         return ResponseEntity.status(ex.getStatus()).body(
                 new OBErrorResponse1()
                         .code(ex.getCategory().getId())
@@ -309,6 +306,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {InvalidConsentException.class})
     protected ResponseEntity<Object> handleInvalidConsentException(InvalidConsentException ex, WebRequest request) {
         HttpStatus httpStatus = ex.getObriErrorType().getHttpStatus();
+        return ResponseEntity.status(httpStatus).body(
+                new OBErrorResponse1()
+                        .code(httpStatus.name())
+                        .id(request.getHeader("x-fapi-interaction-id"))
+                        .message(httpStatus.getReasonPhrase())
+                        .errors(
+                                Collections.singletonList(new OBError1().message(ex.getMessage()))
+                        )
+        );
+    }
+
+    @ExceptionHandler(value = {DataApiException.class})
+    protected ResponseEntity<Object> handleDataApiException(DataApiException ex, WebRequest request) {
+        HttpStatus httpStatus = ex.getErrorType().getHttpStatus();
+        log.debug("Error in admin data user API, reason {}", ex.getMessage());
         return ResponseEntity.status(httpStatus).body(
                 new OBErrorResponse1()
                         .code(httpStatus.name())

@@ -16,18 +16,13 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domesticpayments;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.PlatformClientService;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domesticpayments.DomesticPaymentsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,14 +31,11 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,7 +83,7 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(payment)
+                PaymentsUtils.createTestDataConsent4(payment)
         );
 
         given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
@@ -119,7 +111,7 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(payment)
+                PaymentsUtils.createTestDataConsent4(payment)
         );
 
         given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
@@ -151,7 +143,7 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(payment)
+                PaymentsUtils.createTestDataConsent4(payment)
         );
 
         given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
@@ -188,7 +180,7 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(paymentInitiation.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsentResponse5(paymentInitiation)
+                PaymentsUtils.createTestDataConsent4(paymentInitiation)
         );
 
         given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
@@ -213,7 +205,7 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(error.getMessage()).contains(
                 String.format(
                         OBRIErrorType.PAYMENT_INVALID_INITIATION.getMessage(),
-                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
+                        "The Initiation field in the request does not match with the consent"
                 )
         );
     }
