@@ -31,6 +31,7 @@ import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -62,7 +63,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
         JsonObject intent = consentService.getIDMIntent(authorization, consentId);
         log.debug("Retrieved consent from IDM");
-        String accountId = intent.get("AccountId").getAsString();
+        String accountId = intent.get("accountId").getAsString();
 
         String amount = obVRPFundsConfirmationRequest.getData().getInstructedAmount().getAmount();
 
@@ -77,6 +78,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                         new OBVRPFundsConfirmationResponseData()
                                                 .consentId(obVRPFundsConfirmationRequest.getData().getConsentId())
                                                 .reference(obVRPFundsConfirmationRequest.getData().getReference())
+                                                .fundsConfirmationId(UUID.randomUUID().toString())
                                                 .fundsAvailableResult(
                                                         new OBPAFundsAvailableResult1()
                                                                 .fundsAvailable(

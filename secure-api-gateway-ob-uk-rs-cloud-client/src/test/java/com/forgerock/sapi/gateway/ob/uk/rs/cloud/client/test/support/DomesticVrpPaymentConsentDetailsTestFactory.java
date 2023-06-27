@@ -72,7 +72,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
+        consent.addProperty("accountId", DEFAULT_ACCOUNT_ID);
         return consent;
     }
 
@@ -85,7 +85,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("AccountId", accountIdentifier.getAccountId());
+        consent.addProperty("accountId", accountIdentifier.getAccountId());
         return consent;
     }
 
@@ -98,7 +98,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
+        consent.addProperty("accountId", DEFAULT_ACCOUNT_ID);
         return consent;
     }
 
@@ -111,7 +111,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
+        consent.addProperty("accountId", DEFAULT_ACCOUNT_ID);
 
         return consent;
     }
@@ -125,7 +125,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("AccountId", DEFAULT_ACCOUNT_ID);
+        consent.addProperty("accountId", DEFAULT_ACCOUNT_ID);
 
         return consent;
     }
