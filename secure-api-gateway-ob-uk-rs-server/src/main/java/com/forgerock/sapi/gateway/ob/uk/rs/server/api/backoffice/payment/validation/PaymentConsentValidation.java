@@ -97,7 +97,14 @@ public abstract class PaymentConsentValidation {
         OBExchangeRateType2Code rateType = exchangeRateInformation.getRateType();
         switch (rateType) {
             case AGREED -> {
-                return;
+                // validate only mandatory fields for agreed rate type
+                if (Objects.isNull(exchangeRateInformation.getContractIdentification()) || Objects.isNull(exchangeRateInformation.getExchangeRate())) {
+                    errors.add(
+                            OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                                    "ExchangeRate and ContractIdentification must be specify when requesting an Agreed RateType."
+                            )
+                    );
+                }
             }
             case ACTUAL, INDICATIVE -> {
                 if (!(exchangeRateInformation.getExchangeRate() == null && exchangeRateInformation.getContractIdentification() == null)) {
@@ -133,13 +140,7 @@ public abstract class PaymentConsentValidation {
         OBExchangeRateType2Code rateType = exchangeRateInformation.getRateType();
         switch (rateType) {
             case AGREED -> {
-                if (!exchangeRateInformation.getUnitCurrency().equals(currencyOfTransfer)) {
-                    errors.add(
-                            OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                                    "The currency of transfer should be the same with the exchange unit currency."
-                            )
-                    );
-                }
+                return;
             }
             case ACTUAL, INDICATIVE -> {
                 if (!(exchangeRateInformation.getExchangeRate() == null && exchangeRateInformation.getContractIdentification() == null)) {
