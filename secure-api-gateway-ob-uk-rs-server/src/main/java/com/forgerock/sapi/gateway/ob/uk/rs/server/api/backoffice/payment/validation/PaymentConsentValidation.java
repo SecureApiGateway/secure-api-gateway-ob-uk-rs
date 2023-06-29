@@ -59,6 +59,7 @@ public abstract class PaymentConsentValidation {
 
     /**
      * Clear error event list
+     *
      * @return this
      */
     public PaymentConsentValidation clearErrors() {
@@ -96,14 +97,7 @@ public abstract class PaymentConsentValidation {
         OBExchangeRateType2Code rateType = exchangeRateInformation.getRateType();
         switch (rateType) {
             case AGREED -> {
-                // validate only mandatory fields for agreed rate type
-                if (Objects.isNull(exchangeRateInformation.getContractIdentification()) || Objects.isNull(exchangeRateInformation.getExchangeRate())) {
-                    errors.add(
-                            OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                                    "ExchangeRate and ContractIdentification must be specify when requesting an Agreed RateType."
-                            )
-                    );
-                }
+                return;
             }
             case ACTUAL, INDICATIVE -> {
                 if (!(exchangeRateInformation.getExchangeRate() == null && exchangeRateInformation.getContractIdentification() == null)) {
