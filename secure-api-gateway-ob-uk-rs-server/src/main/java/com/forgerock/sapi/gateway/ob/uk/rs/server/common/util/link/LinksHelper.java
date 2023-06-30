@@ -24,9 +24,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
  * Helper class for creating the OB {@link Links} class in an HTTP response.
  */
 public class LinksHelper {
-    private static final String PISP = "pisp";
-    private static final String RS = "rs";
-    private static final String OPEN_BANKING = "open-banking";
+
+    private static final String ACCOUNT_ACCESS_CONSENTS = "account-access-consents";
+    private static final String ACCOUNTS = "accounts";
     private static final String DOMESTIC_PAYMENT_CONSENTS = "domestic-payment-consents";
     private static final String DOMESTIC_PAYMENTS = "domestic-payments";
     private static final String DOMESTIC_PAYMENTS_DETAILS = "payment-details";
@@ -41,6 +41,7 @@ public class LinksHelper {
     private static final String FUNDS_CONFIRMATION = "funds-confirmation";
     private static final String FUNDS_CONFIRMATIONS = "funds-confirmations";
     private static final String DOMESTIC_VRP_PAYMENTS = "domestic-vrps";
+
 
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic payments consent funds confirmation.
@@ -274,6 +275,19 @@ public class LinksHelper {
      */
     public static Links createFundsConfirmationSelfLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, FUNDS_CONFIRMATIONS, id);
+    }
+
+
+    public static Links createAccountAccessConsentsSelfLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, ACCOUNT_ACCESS_CONSENTS, id);
+    }
+
+    public static Links createGetAccountsSelfLink(Class<?> controllerClass) {
+        return createResourcesLink(controllerClass, ACCOUNTS);
+    }
+
+    public static Links createGetAccountsSelfLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, ACCOUNTS, id);
     }
 
     /**
