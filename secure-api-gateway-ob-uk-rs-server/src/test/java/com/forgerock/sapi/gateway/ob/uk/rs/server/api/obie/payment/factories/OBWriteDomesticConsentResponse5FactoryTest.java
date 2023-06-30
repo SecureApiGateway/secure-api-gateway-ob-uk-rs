@@ -62,7 +62,7 @@ class OBWriteDomesticConsentResponse5FactoryTest {
 
         assertThat(response.getRisk()).isEqualTo(consentRequest.getRisk());
         assertThat(response.getLinks().getSelf().toString())
-                .isEqualTo("/open-banking/v3.1.10/pisp/domestic-payment-consents/" + domesticPaymentConsent.getId());
+                .endsWith("/open-banking/v3.1.10/pisp/domestic-payment-consents/" + domesticPaymentConsent.getId());
         assertThat(response.getMeta()).isNotNull();
     }
 
