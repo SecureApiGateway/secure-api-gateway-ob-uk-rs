@@ -58,17 +58,17 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: openig-secrets-env
-                key: MONGODB_CONSENT_USERNAME
+                key: MONGODB_TEST_FACILITY_USERNAME
           - name: SPRING_DATA_MONGODB_USERNAME
             valueFrom:
               secretKeyRef:
                 name: openig-secrets-env
-                key: MONGODB_CONSENT_USERNAME
+                key: MONGODB_TEST_FACILITY_USERNAME
           - name: SPRING_DATA_MONGODB_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: openig-secrets-env
-                key: MONGODB_CONSENT_PASSWORD
+                key: MONGODB_TEST_FACILITY_PASSWORD
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
           - name: CONSENT_REPO_URI
