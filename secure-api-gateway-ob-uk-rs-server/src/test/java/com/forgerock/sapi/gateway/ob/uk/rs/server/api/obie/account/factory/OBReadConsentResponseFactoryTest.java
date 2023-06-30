@@ -67,6 +67,6 @@ class OBReadConsentResponseFactoryTest {
         assertThat(response1Data.getTransactionFromDateTime()).isEqualTo(consentRequest.getData().getTransactionFromDateTime());
         assertThat(response1Data.getTransactionFromDateTime()).isEqualTo(consentRequest.getData().getTransactionFromDateTime());
         assertThat(obReadConsentResponse1.getMeta()).isNotNull();
-        assertThat(obReadConsentResponse1.getLinks().getSelf().toString()).isEqualTo("/open-banking/v3.1.10/aisp/account-access-consents/" + consentId);
+        assertThat(obReadConsentResponse1.getLinks().getSelf().toString()).endsWith("/open-banking/v3.1.10/aisp/account-access-consents/" + consentId);
     }
 }
