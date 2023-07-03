@@ -59,6 +59,7 @@ public abstract class PaymentConsentValidation {
 
     /**
      * Clear error event list
+     *
      * @return this
      */
     public PaymentConsentValidation clearErrors() {
@@ -139,13 +140,7 @@ public abstract class PaymentConsentValidation {
         OBExchangeRateType2Code rateType = exchangeRateInformation.getRateType();
         switch (rateType) {
             case AGREED -> {
-                if (!exchangeRateInformation.getUnitCurrency().equals(currencyOfTransfer)) {
-                    errors.add(
-                            OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                                    "The currency of transfer should be the same with the exchange unit currency."
-                            )
-                    );
-                }
+                return;
             }
             case ACTUAL, INDICATIVE -> {
                 if (!(exchangeRateInformation.getExchangeRate() == null && exchangeRateInformation.getContractIdentification() == null)) {
