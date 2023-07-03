@@ -15,27 +15,29 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.beneficiaries;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBeneficiary;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.beneficiaries.BeneficiariesApi;
-import lombok.extern.slf4j.Slf4j;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.beneficiaries.BeneficiariesApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBeneficiary;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary2;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary2Data;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("BeneficiariesApiV3.0")
 @Slf4j

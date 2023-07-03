@@ -45,10 +45,15 @@ public class DefaultAccountResourceAccessService implements AccountResourceAcces
     }
 
     @Override
-    public AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, List<String> requestedAccessForAccountIds) throws OBErrorException {
+    public AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, List<String> accountIdsToAccess) throws OBErrorException {
+        if (accountIdsToAccess == null || accountIdsToAccess.isEmpty()) {
+            throw new IllegalArgumentException("accountIdsToAccess list must not be null or empty");
+        }
         final AccountAccessConsent consent = getConsentForResourceAccess(consentId, apiClientId);
-        if (!consent.getAuthorisedAccountIds().containsAll(requestedAccessForAccountIds)) {
-            throw new OBErrorException(OBRIErrorType.UNAUTHORISED_ACCOUNT, requestedAccessForAccountIds.get(0));
+        for (String accountId : accountIdsToAccess) {
+            if (!consent.getAuthorisedAccountIds().contains(accountId)) {
+                throw new OBErrorException(OBRIErrorType.UNAUTHORISED_ACCOUNT, accountId);
+            }
         }
         return consent;
     }

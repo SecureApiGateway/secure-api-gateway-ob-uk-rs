@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_7.direc
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.directdebits.FRDirectDebitRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_7.directdebits.DirectDebitsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
@@ -26,7 +28,9 @@ public class DirectDebitsApiController extends com.forgerock.sapi.gateway.ob.uk.
 
     public DirectDebitsApiController(@Value("${rs.page.default.direct-debits.size:10}") int pageLimitDirectDebits,
                                      FRDirectDebitRepository frDirectDebitRepository,
-                                     AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(pageLimitDirectDebits, frDirectDebitRepository, accountDataInternalIdFilter);
+                                     AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                     AccountResourceAccessService accountResourceAccessService) {
+
+        super(pageLimitDirectDebits, frDirectDebitRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 }

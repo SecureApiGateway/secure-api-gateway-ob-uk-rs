@@ -36,10 +36,10 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBReadBalance1;
 import uk.org.openbanking.datamodel.account.OBReadBalance1Data;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
+import static java.util.Collections.singletonList;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("BalancesApiV3.0")
@@ -69,7 +69,7 @@ public class BalancesApiController implements BalancesApi {
                                                              String apiClientId) throws OBErrorException {
 
         log.info("Read balances for consentId: {}, accountId: {}, apiClientId: {}", consentId, accountId, apiClientId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, List.of(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, singletonList(accountId));
         checkConsentHasRequiredPermission(consent);
         Page<FRBalance> balances = frBalanceRepository.findByAccountId(accountId, PageRequest.of(page, PAGE_LIMIT_BALANCES));
         int totalPage = balances.getTotalPages();
@@ -118,7 +118,7 @@ public class BalancesApiController implements BalancesApi {
     private static void checkConsentHasRequiredPermission(AccountAccessConsent consent) throws OBErrorException {
         final FRExternalPermissionsCode readBalancesPermission = FRExternalPermissionsCode.READBALANCES;
         if (!consent.getRequestObj().getData().getPermissions().contains(readBalancesPermission)) {
-            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, readBalancesPermission.getValue(), ""); // FIXME remove third arg
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, readBalancesPermission.getValue());
         }
     }
 }
