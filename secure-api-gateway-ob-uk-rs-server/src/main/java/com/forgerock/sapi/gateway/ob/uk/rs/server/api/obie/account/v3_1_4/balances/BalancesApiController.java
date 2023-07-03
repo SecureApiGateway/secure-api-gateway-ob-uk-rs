@@ -15,14 +15,16 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_4.balances;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_4.balances.BalancesApi;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_4.balances.BalancesApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 @Controller("BalancesApiV3.1.4")
 public class BalancesApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.balances.BalancesApiController implements BalancesApi {
 
-    public BalancesApiController(@Qualifier("BalancesApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.balances.BalancesApiController baseController) {
-        super(baseController);
+    public BalancesApiController(FRBalanceRepository frBalanceRepository, AccountResourceAccessService accountResourceAccessService) {
+        super(frBalanceRepository, accountResourceAccessService);
     }
 }
