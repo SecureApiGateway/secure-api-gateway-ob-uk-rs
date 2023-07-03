@@ -20,6 +20,8 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,6 +40,8 @@ import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
 @Controller("AccountAccessConsentsApiV3.1.10")
 public class AccountAccessConsentsApiController implements AccountAccessConsentsApi {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final AccountAccessConsentStoreClient accountAccessConsentStoreClient;
 
     private final OBReadConsentResponseFactory obReadConsentResponseFactory;
@@ -55,6 +59,7 @@ public class AccountAccessConsentsApiController implements AccountAccessConsents
         final CreateAccountAccessConsentRequest createConsentRequest = new CreateAccountAccessConsentRequest();
         createConsentRequest.setApiClientId(apiClientId);
         createConsentRequest.setConsentRequest(FRReadConsentConverter.toFRReadConsent(body));
+        logger.info("CreateAccountAccessConsentRequest: {}", createConsentRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(obReadConsentResponseFactory.buildConsentResponse(accountAccessConsentStoreClient.createConsent(createConsentRequest), getClass()));
     }
