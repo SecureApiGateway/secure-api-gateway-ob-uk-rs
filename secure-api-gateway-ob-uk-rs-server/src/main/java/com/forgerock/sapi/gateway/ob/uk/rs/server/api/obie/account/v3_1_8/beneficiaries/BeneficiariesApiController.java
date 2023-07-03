@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_8.benef
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_8.beneficiaries.BeneficiariesApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
@@ -26,7 +28,9 @@ public class BeneficiariesApiController extends com.forgerock.sapi.gateway.ob.uk
 
     public BeneficiariesApiController(@Value("${rs.page.default.beneficiaries.size:50}") int pageLimitBeneficiaries,
                                       FRBeneficiaryRepository frBeneficiaryRepository,
-                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(pageLimitBeneficiaries, frBeneficiaryRepository, accountDataInternalIdFilter);
+                                      AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                      AccountResourceAccessService accountResourceAccessService) {
+
+        super(pageLimitBeneficiaries, frBeneficiaryRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 }
