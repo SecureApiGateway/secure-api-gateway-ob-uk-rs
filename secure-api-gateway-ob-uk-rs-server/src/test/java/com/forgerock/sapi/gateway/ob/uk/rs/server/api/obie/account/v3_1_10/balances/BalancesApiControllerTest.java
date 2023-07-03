@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.balances;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.balances;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRCashBalanceTestDataFactory.aValidFRCashBalance;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
@@ -38,6 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.balances.BalancesApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBalance;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
@@ -56,8 +57,8 @@ import uk.org.openbanking.datamodel.account.OBReadBalance1;
 public class BalancesApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNT_BALANCES_URI = "/open-banking/v3.0/aisp/accounts/{AccountId}/balances";
-    private static final String BALANCES_URI = "/open-banking/v3.0/aisp/balances";
+    private static final String ACCOUNT_BALANCES_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/balances";
+    private static final String BALANCES_URI = "/open-banking/v3.1.10/aisp/balances";
 
     @LocalServerPort
     private int port;
