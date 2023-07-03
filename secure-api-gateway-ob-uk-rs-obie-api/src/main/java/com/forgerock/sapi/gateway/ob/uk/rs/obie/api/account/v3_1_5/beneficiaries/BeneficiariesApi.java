@@ -20,6 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_5.beneficiaries;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
@@ -28,10 +29,7 @@ import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary5;
-
-import java.util.List;
 
 @Api(tags = {"v3.1.5", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.5/aisp")
@@ -80,12 +78,12 @@ public interface BeneficiariesApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The OB permissions")
-            @RequestHeader(value = "x-ob-permissions", required = true) List<OBExternalPermissions1Code> permissions,
+            @ApiParam(value = "openbanking_intent_id from the access_token")
+            @RequestHeader(value = "x-intent-id") String consentId,
 
-            @ApiParam(value = "The origin http url")
-            @RequestHeader(value = "x-ob-url", required = true) String httpUrl
-    ) throws OBErrorResponseException;
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId
+    ) throws OBErrorResponseException, OBErrorException;
 
     @ApiOperation(value = "Get Beneficiaries", nickname = "getBeneficiaries", notes = "Get Beneficiarie", response = OBReadBeneficiary5.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
@@ -126,13 +124,10 @@ public interface BeneficiariesApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The OB account IDs")
-            @RequestHeader(value = "x-ob-account-ids", required = true) List<String> accountIds,
+            @ApiParam(value = "openbanking_intent_id from the access_token")
+            @RequestHeader(value = "x-intent-id") String consentId,
 
-            @ApiParam(value = "The OB permissions")
-            @RequestHeader(value = "x-ob-permissions", required = true) List<OBExternalPermissions1Code> permissions,
-
-            @ApiParam(value = "The origin http url")
-            @RequestHeader(value = "x-ob-url", required = true) String httpUrl
-    ) throws OBErrorResponseException;
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId
+    ) throws OBErrorResponseException, OBErrorException;
 }
