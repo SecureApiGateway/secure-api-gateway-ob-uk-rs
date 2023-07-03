@@ -15,87 +15,19 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.party;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.party.PartyApi;
-import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadParty2;
-import uk.org.openbanking.datamodel.account.OBReadParty3;
 
-import java.util.List;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.party.PartyApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller("PartyApiV3.1.3")
 @Slf4j
-public class PartyApiController implements PartyApi {
+public class PartyApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.party.PartyApiController implements PartyApi {
 
-    private final com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.party.PartyApiController previousVersionController;
-
-    public PartyApiController(@Qualifier("PartyApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.party.PartyApiController previousVersionController) {
-        this.previousVersionController = previousVersionController;
-    }
-
-    @Override
-    public ResponseEntity<OBReadParty2> getAccountParty(String accountId,
-                                                        String authorization,
-                                                        DateTime xFapiAuthDate,
-                                                        String xFapiCustomerIpAddress,
-                                                        String xFapiInteractionId,
-                                                        String xCustomerUserAgent,
-                                                        List<OBExternalPermissions1Code> permissions,
-                                                        String httpUrl) {
-        return previousVersionController.getAccountParty(
-                accountId,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                permissions,
-                httpUrl);
-    }
-
-    @Override
-    public ResponseEntity<OBReadParty3> getAccountParties(String accountId,
-                                                          String authorization,
-                                                          DateTime xFapiAuthDate,
-                                                          String xFapiCustomerIpAddress,
-                                                          String xFapiInteractionId,
-                                                          String xCustomerUserAgent,
-                                                          String userId,
-                                                          List<OBExternalPermissions1Code> permissions,
-                                                          String httpUrl) {
-        return previousVersionController.getAccountParties(
-                accountId,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                userId,
-                permissions,
-                httpUrl);
-    }
-
-    @Override
-    public ResponseEntity<OBReadParty2> getParty(String authorization,
-                                                 DateTime xFapiAuthDate,
-                                                 String xFapiCustomerIpAddress,
-                                                 String xFapiInteractionId,
-                                                 String xCustomerUserAgent,
-                                                 String userId,
-                                                 List<OBExternalPermissions1Code> permissions,
-                                                 String httpUrl) {
-        return previousVersionController.getParty(
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                userId,
-                permissions,
-                httpUrl);
+    public PartyApiController(FRPartyRepository frPartyRepository, AccountResourceAccessService accountResourceAccessService) {
+        super(frPartyRepository, accountResourceAccessService);
     }
 }

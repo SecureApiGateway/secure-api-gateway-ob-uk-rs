@@ -20,6 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_1.party;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
@@ -31,7 +32,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadParty2;
 import uk.org.openbanking.datamodel.account.OBReadParty3;
 
@@ -80,12 +80,12 @@ public interface PartyApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The OB permissions")
-            @RequestHeader(value = "x-ob-permissions", required = true) List<OBExternalPermissions1Code> permissions,
+            @ApiParam(value = "openbanking_intent_id from the access_token")
+            @RequestHeader(value = "x-intent-id") String consentId,
 
-            @ApiParam(value = "The origin http url")
-            @RequestHeader(value = "x-ob-url", required = true) String httpUrl
-    ) throws OBErrorResponseException;
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId
+    ) throws OBErrorResponseException, OBErrorException;
 
     @ApiOperation(value = "Get All Account Parties", nickname = "getAccountParties", notes = "Get Parties related to an account", response = OBReadParty3.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
@@ -127,15 +127,12 @@ public interface PartyApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The OB user ID")
-            @RequestHeader(value = "x-ob-user-id", required = true) String userId,
+            @ApiParam(value = "openbanking_intent_id from the access_token")
+            @RequestHeader(value = "x-intent-id") String consentId,
 
-            @ApiParam(value = "The OB permissions")
-            @RequestHeader(value = "x-ob-permissions", required = true) List<OBExternalPermissions1Code> permissions,
-
-            @ApiParam(value = "The origin http url")
-            @RequestHeader(value = "x-ob-url", required = true) String httpUrl
-    ) throws OBErrorResponseException;
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId
+    ) throws OBErrorResponseException, OBErrorException;
 
     @ApiOperation(value = "Get Party", nickname = "getParty", notes = "Get Party", response = OBReadParty2.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
@@ -173,13 +170,10 @@ public interface PartyApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The OB user ID")
-            @RequestHeader(value = "x-ob-user-id", required = true) String userId,
+            @ApiParam(value = "openbanking_intent_id from the access_token")
+            @RequestHeader(value = "x-intent-id") String consentId,
 
-            @ApiParam(value = "The OB permissions")
-            @RequestHeader(value = "x-ob-permissions", required = true) List<OBExternalPermissions1Code> permissions,
-
-            @ApiParam(value = "The origin http url")
-            @RequestHeader(value = "x-ob-url", required = true) String httpUrl
-    ) throws OBErrorResponseException;
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId
+    ) throws OBErrorResponseException, OBErrorException;
 }
