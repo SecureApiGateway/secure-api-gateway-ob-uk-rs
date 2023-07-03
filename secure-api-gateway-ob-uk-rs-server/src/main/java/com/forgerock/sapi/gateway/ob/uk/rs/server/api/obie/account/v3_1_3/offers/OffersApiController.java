@@ -15,68 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.offers;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.offers.OffersApi;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadOffer1;
 
-import java.util.List;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.offers.OffersApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.offers.FROfferRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 @Controller("OffersApiV3.1.3")
-public class OffersApiController implements OffersApi {
+public class OffersApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.offers.OffersApiController implements OffersApi {
 
-    private final com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.offers.OffersApiController previousVersionController;
-
-    public OffersApiController(@Qualifier("OffersApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.offers.OffersApiController previousVersionController) {
-        this.previousVersionController = previousVersionController;
-    }
-
-    @Override
-    public ResponseEntity<OBReadOffer1> getAccountOffers(String accountId,
-                                                         int page,
-                                                         String authorization,
-                                                         DateTime xFapiAuthDate,
-                                                         String xFapiCustomerIpAddress,
-                                                         String xFapiInteractionId,
-                                                         String xCustomerUserAgent,
-                                                         List<OBExternalPermissions1Code> permissions,
-                                                         String httpUrl) {
-        return previousVersionController.getAccountOffers(
-                accountId,
-                page,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                permissions,
-                httpUrl
-        );
-    }
-
-    @Override
-    public ResponseEntity<OBReadOffer1> getOffers(int page,
-                                                  String authorization,
-                                                  DateTime xFapiAuthDate,
-                                                  String xFapiCustomerIpAddress,
-                                                  String xFapiInteractionId,
-                                                  String xCustomerUserAgent,
-                                                  List<String> accountIds,
-                                                  List<OBExternalPermissions1Code> permissions,
-                                                  String httpUrl) {
-        return previousVersionController.getOffers(
-                page,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                accountIds,
-                permissions,
-                httpUrl
-        );
+    public OffersApiController(FROfferRepository frOfferRepository, AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+        super(frOfferRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 }

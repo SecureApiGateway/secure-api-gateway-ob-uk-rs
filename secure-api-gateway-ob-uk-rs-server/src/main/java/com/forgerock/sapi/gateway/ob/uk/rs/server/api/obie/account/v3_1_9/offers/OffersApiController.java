@@ -15,14 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_9.offers;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_9.offers.OffersApi;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_9.offers.OffersApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.offers.FROfferRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 @Controller("OffersApiV3.1.9")
 public class OffersApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_8.offers.OffersApiController implements OffersApi {
 
-    public OffersApiController(@Qualifier("OffersApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.offers.OffersApiController baseController) {
-        super(baseController);
+    public OffersApiController(FROfferRepository frOfferRepository, AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+        super(frOfferRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 }
