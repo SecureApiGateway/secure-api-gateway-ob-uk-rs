@@ -29,5 +29,5 @@ public interface AccountResourceAccessService {
 
     AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId) throws OBErrorException;
 
-    AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, List<String> requestedAccessForAccountIds) throws OBErrorException;
+    AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, List<String> accountIdsToAccess) throws OBErrorException;
 }
