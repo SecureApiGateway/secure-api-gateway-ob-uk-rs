@@ -21,11 +21,12 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_4.internationalscheduledpayments;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
@@ -34,14 +35,15 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_4.international
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRScheduledPaymentDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRReadRefundAccountFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.FRInternationalScheduledPaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
@@ -58,6 +60,7 @@ import uk.org.openbanking.datamodel.payment.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -78,19 +81,22 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     private final ScheduledPaymentService scheduledPaymentService;
     private final ConsentService consentService;
     private final RiskValidationService riskValidationService;
+    private final FRAccountRepository frAccountRepository;
 
     public InternationalScheduledPaymentsApiController(
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ScheduledPaymentService scheduledPaymentService,
             ConsentService consentService,
-            RiskValidationService riskValidationService
+            RiskValidationService riskValidationService,
+            FRAccountRepository frAccountRepository
     ) {
         this.scheduledPaymentSubmissionRepository = scheduledPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.scheduledPaymentService = scheduledPaymentService;
         this.consentService = consentService;
         this.riskValidationService = riskValidationService;
+        this.frAccountRepository = frAccountRepository;
     }
 
     @Override
@@ -104,7 +110,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
-            String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
@@ -118,7 +123,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         log.debug("Retrieved consent from IDM");
 
         //deserialize the intent to ob response object
-        OBWriteInternationalScheduledConsentResponse5 consent = consentService.deserialize(
+        OBWriteInternationalScheduledConsentResponse5 obConsentResponse = consentService.deserialize(
                 OBWriteInternationalScheduledConsentResponse5.class,
                 intent.getAsJsonObject("OBIntentObject"),
                 consentId
@@ -132,12 +137,12 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         log.debug("Validating International Scheduled Payment submission");
         try {
             // validates the initiation
-            if (!obWriteInternationalScheduled3.getData().getInitiation().equals(consent.getData().getInitiation())) {
+            if (!obWriteInternationalScheduled3.getData().getInitiation().equals(obConsentResponse.getData().getInitiation())) {
                 throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_INITIATION,
                         "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
                 );
             }
-            riskValidationService.validate(consent.getRisk(), obWriteInternationalScheduled3.getRisk());
+            riskValidationService.validate(obConsentResponse.getRisk(), obWriteInternationalScheduled3.getRisk());
         } catch (OBErrorException e) {
             throw new OBErrorResponseException(
                     e.getObriErrorType().getHttpStatus(),
@@ -163,15 +168,18 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         // Save the scheduled payment data for the Accounts API
         FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment, xAccountId);
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
-        // Get the consent to update the response
-        OBWriteInternationalScheduledConsentResponse5 obConsent = consentService.getOBIntentObject(
-                OBWriteInternationalScheduledConsentResponse5.class,
-                authorization,
-                obWriteInternationalScheduled3.getData().getConsentId()
+
+        OBWriteInternationalScheduledResponse5 entity = responseEntity(frPaymentSubmission, obConsentResponse);
+
+        // update the entity with refund
+        setRefund(
+                obConsentResponse.getData().getReadRefundAccount(),
+                frPaymentSubmission.getScheduledPayment().getData().getInitiation(),
+                intent,
+                entity
         );
-        return ResponseEntity.status(CREATED).body(
-                responseEntity(frPaymentSubmission, FRReadRefundAccountFactory.frReadRefundAccount(xReadRefundAccount), obConsent)
-        );
+
+        return ResponseEntity.status(CREATED).body(entity);
     }
 
     @Override
@@ -182,7 +190,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
-            String xReadRefundAccount,
             HttpServletRequest request,
             Principal principal
     ) {
@@ -196,15 +203,28 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         if (!ResourceVersionValidator.isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return PaymentApiResponseUtil.resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
-        // Get the consent to update the response
-        OBWriteInternationalScheduledConsentResponse5 obConsent = consentService.getOBIntentObject(
+        ///get the consent
+        JsonObject intent = consentService.getIDMIntent(authorization, frPaymentSubmission.getConsentId());
+        log.debug("Retrieved consent from IDM");
+
+        //deserialize the intent to ob response object
+        OBWriteInternationalScheduledConsentResponse5 obConsentResponse = consentService.deserialize(
                 OBWriteInternationalScheduledConsentResponse5.class,
-                authorization,
-                internationalScheduledPaymentId
+                intent.getAsJsonObject("OBIntentObject"),
+                frPaymentSubmission.getConsentId()
         );
-        return ResponseEntity.ok(
-                responseEntity(frPaymentSubmission, FRReadRefundAccountFactory.frReadRefundAccount(xReadRefundAccount), obConsent)
+
+        OBWriteInternationalScheduledResponse5 entity = responseEntity(frPaymentSubmission, obConsentResponse);
+
+        // update the entity with refund
+        setRefund(
+                obConsentResponse.getData().getReadRefundAccount(),
+                frPaymentSubmission.getScheduledPayment().getData().getInitiation(),
+                intent,
+                entity
         );
+
+        return ResponseEntity.status(CREATED).body(entity);
     }
 
     @Override
@@ -234,11 +254,9 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
     private OBWriteInternationalScheduledResponse5 responseEntity(
             FRInternationalScheduledPaymentSubmission frPaymentSubmission,
-            FRReadRefundAccount readRefundAccount,
             OBWriteInternationalScheduledConsentResponse5 obConsent
     ) {
         FRWriteInternationalScheduledData data = frPaymentSubmission.getScheduledPayment().getData();
-        Optional<FRInternationalResponseDataRefund> refund = FRResponseDataRefundFactory.frInternationalResponseDataRefund(readRefundAccount, data.getInitiation());
         return new OBWriteInternationalScheduledResponse5()
                 .data(new OBWriteInternationalScheduledResponse5Data()
                         .charges(obConsent.getData().getCharges())
@@ -247,7 +265,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())
                         .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId())
-                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse4DataRefund).orElse(null))
                         .status(toOBWriteInternationalScheduledResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .exchangeRateInformation(obConsent.getData().getExchangeRateInformation())
                         .expectedExecutionDateTime(data.getInitiation().getRequestedExecutionDateTime())
@@ -290,5 +307,33 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         )
                 )
                 .meta(new Meta());
+    }
+
+    private void setRefund(
+            OBReadRefundAccountEnum obReadRefundAccountEnum,
+            FRWriteInternationalScheduledDataInitiation initiation,
+            JsonObject intent,
+            OBWriteInternationalScheduledResponse5 entity
+    ) {
+        if (Objects.nonNull(obReadRefundAccountEnum) && obReadRefundAccountEnum.equals(OBReadRefundAccountEnum.YES)) {
+            String accountId = Objects.nonNull(intent.get("accountId")) ? intent.get("accountId").getAsString() : null;
+            log.debug("Account Id from consent '{}'", accountId);
+            if (Objects.nonNull(accountId)) {
+                FRAccount frAccount = Objects.nonNull(accountId) ? frAccountRepository.byAccountId(accountId) : null;
+                FRAccountIdentifier frAccountIdentifier = Objects.nonNull(frAccount) ?
+                        frAccount.getAccount().getFirstAccount() :
+                        null;
+                Optional<FRInternationalResponseDataRefund> refund = FRResponseDataRefundFactory.frInternationalResponseDataRefund(
+                        frAccountIdentifier,
+                        initiation
+                );
+
+                if(Objects.nonNull(refund)) {
+                    entity.getData().setRefund(
+                            refund.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse4DataRefund).orElse(null)
+                    );
+                }
+            }
+        }
     }
 }

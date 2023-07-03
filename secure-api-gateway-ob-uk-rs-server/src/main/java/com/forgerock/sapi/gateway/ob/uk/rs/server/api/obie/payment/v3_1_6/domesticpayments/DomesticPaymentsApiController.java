@@ -22,6 +22,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domes
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_6.domesticpayments.DomesticPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -40,8 +41,9 @@ public class DomesticPaymentsApiController
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ConsentService consentService,
-            OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator
+            OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator,
+            FRAccountRepository frAccountRepository
     ) {
-        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService, paymentValidator);
+        super(paymentSubmissionRepository, paymentSubmissionValidator, consentService, paymentValidator, frAccountRepository);
     }
 }

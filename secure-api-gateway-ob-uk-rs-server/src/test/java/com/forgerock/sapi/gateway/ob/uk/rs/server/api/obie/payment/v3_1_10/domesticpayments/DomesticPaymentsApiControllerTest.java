@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domesticpayments;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domesticpayments.DomesticPaymentsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +43,8 @@ import java.util.List;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticPaymentPlatformIntentTestFactory.aValidDomesticPaymentPlatformIntent;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
@@ -55,7 +59,7 @@ public class DomesticPaymentsApiControllerTest {
 
     private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
-    private static final String DOMESTIC_PAYMENTS_URI = "/open-banking/v3.1.5/pisp/domestic-payments";
+    private static final String DOMESTIC_PAYMENTS_URI = "/open-banking/v3.1.10/pisp/domestic-payments";
 
     @LocalServerPort
     private int port;
@@ -64,10 +68,34 @@ public class DomesticPaymentsApiControllerTest {
     private DomesticPaymentSubmissionRepository domesticPaymentRepository;
 
     @MockBean
+    private FRAccountRepository frAccountRepository;
+
+    @MockBean
     private ConsentService consentService;
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    private FRAccount readRefundAccount;
+    @BeforeEach
+    void setup() {
+        readRefundAccount = FRAccount.builder()
+                .account(
+                        FRFinancialAccount.builder().accounts(
+                                List.of(
+                                        FRAccountIdentifier.builder()
+                                                .identification("08080021325698")
+                                                .name("ACME Inc")
+                                                .schemeName("UK.OBIE.SortCodeAccountNumber")
+                                                .secondaryIdentification("0002")
+                                                .build()
+                                )
+                        ).build()
+                )
+                .build();
+
+        given(frAccountRepository.byAccountId(anyString())).willReturn(readRefundAccount);
+    }
 
     @AfterEach
     void removeData() {
@@ -75,7 +103,7 @@ public class DomesticPaymentsApiControllerTest {
     }
 
     @Test
-    public void shouldCreateDomesticPayment() {
+    public void shouldCreateDomesticPayment_refundYes() {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
@@ -83,10 +111,6 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsent4(payment)
-        );
-
-        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
                 PaymentsUtils.createTestDataConsentResponse5(payment)
         );
 
@@ -96,8 +120,39 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(paymentSubmitted.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OBWriteDomesticResponse5Data responseData = paymentSubmitted.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
-        // convert from new to old before comparing (due to missing fields on older versions)
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
+        assertThat(responseData.getRefund()).isNotNull();
+        FRAccountIdentifier frAccountIdentifier = readRefundAccount.getAccount().getFirstAccount();
+        OBWriteDomesticResponse5DataRefundAccount response5DataRefundAccount = responseData.getRefund().getAccount();
+        assertThat(response5DataRefundAccount.getIdentification()).isEqualTo(frAccountIdentifier.getIdentification());
+        assertThat(response5DataRefundAccount.getName()).isEqualTo(frAccountIdentifier.getName());
+        assertThat(response5DataRefundAccount.getSchemeName()).isEqualTo(frAccountIdentifier.getSchemeName());
+        assertThat(paymentSubmitted.getBody().getLinks().getSelf().toString().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
+        assertThat(responseData.getCharges()).isNotNull().isNotEmpty();
+    }
+    @Test
+    public void shouldCreateDomesticPayment_refundNo() {
+        // Given
+        OBWriteDomestic2 payment = aValidOBWriteDomestic2();
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+
+        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(
+                aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId(), OBReadRefundAccountEnum.NO)
+        );
+
+        OBWriteDomesticConsentResponse5 obConsentResponse5 = PaymentsUtils.createTestDataConsentResponse5(payment);
+        obConsentResponse5.getData().readRefundAccount(OBReadRefundAccountEnum.NO);
+
+        given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(obConsentResponse5);
+
+        ResponseEntity<OBWriteDomesticResponse5> paymentSubmitted = restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse5.class);
+
+        // Then
+        assertThat(paymentSubmitted.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        OBWriteDomesticResponse5Data responseData = paymentSubmitted.getBody().getData();
+        assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
+        assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
+        assertThat(responseData.getRefund()).isNull();
         assertThat(paymentSubmitted.getBody().getLinks().getSelf().toString().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
         assertThat(responseData.getCharges()).isNotNull().isNotEmpty();
     }
@@ -111,10 +166,6 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsent4(payment)
-        );
-
-        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
                 PaymentsUtils.createTestDataConsentResponse5(payment)
         );
 
@@ -130,6 +181,7 @@ public class DomesticPaymentsApiControllerTest {
         OBWriteDomesticResponse5Data responseData = response.getBody().getData();
         assertThat(responseData.getConsentId()).isEqualTo(payment.getData().getConsentId());
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
+        assertThat(responseData.getRefund()).isNotNull();
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
         assertThat(responseData.getCharges()).isNotNull().isNotEmpty();
     }
@@ -143,10 +195,6 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(payment.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsent4(payment)
-        );
-
-        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
                 PaymentsUtils.createTestDataConsentResponse5(payment)
         );
 
@@ -180,10 +228,6 @@ public class DomesticPaymentsApiControllerTest {
         given(consentService.getIDMIntent(anyString(), anyString())).willReturn(aValidDomesticPaymentPlatformIntent(paymentInitiation.getData().getConsentId()));
 
         given(consentService.deserialize(any(), any(JsonObject.class), anyString())).willReturn(
-                PaymentsUtils.createTestDataConsent4(paymentInitiation)
-        );
-
-        given(consentService.getOBIntentObject(any(), anyString(), anyString())).willReturn(
                 PaymentsUtils.createTestDataConsentResponse5(paymentInitiation)
         );
 

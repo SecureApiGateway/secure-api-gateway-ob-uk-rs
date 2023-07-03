@@ -15,12 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_4.domesticpayments;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,8 +68,32 @@ public class DomesticPaymentsApiControllerTest {
     @MockBean
     private ConsentService consentService;
 
+    @MockBean
+    private FRAccountRepository frAccountRepository;
+
     @Autowired
     private TestRestTemplate restTemplate;
+
+    private FRAccount readRefundAccount;
+    @BeforeEach
+    void setup() {
+        readRefundAccount = FRAccount.builder()
+                .account(
+                        FRFinancialAccount.builder().accounts(
+                                List.of(
+                                        FRAccountIdentifier.builder()
+                                                .identification("08080021325698")
+                                                .name("ACME Inc")
+                                                .schemeName("UK.OBIE.SortCodeAccountNumber")
+                                                .secondaryIdentification("0002")
+                                                .build()
+                                )
+                        ).build()
+                )
+                .build();
+
+        given(frAccountRepository.byAccountId(anyString())).willReturn(readRefundAccount);
+    }
 
     @AfterEach
     void removeData() {

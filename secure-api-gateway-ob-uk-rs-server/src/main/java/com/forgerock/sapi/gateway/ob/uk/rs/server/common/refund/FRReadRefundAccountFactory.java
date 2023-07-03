@@ -35,4 +35,11 @@ public class FRReadRefundAccountFactory {
         }
         return NO;
     }
+
+    public static boolean frReadRefundAccountAsBoolean(String xReadRefundAccount) {
+        if (xReadRefundAccount != null && xReadRefundAccount.equals(YES.getValue())) {
+            return true;
+        }
+        return false;
+    }
 }

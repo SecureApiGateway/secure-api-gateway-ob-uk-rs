@@ -25,10 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Objects;
 
 import static uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7Data.StatusEnum.AWAITINGAUTHORISATION;
 
@@ -56,6 +59,9 @@ public class CalculateResponseElementsController implements CalculateResponseEle
                     body, intent, request
             );
             response.getData().setStatus(AWAITINGAUTHORISATION);
+            response.getData().readRefundAccount(
+                    Objects.isNull(response.getData().getReadRefundAccount()) ? OBReadRefundAccountEnum.NO : null
+            );
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (UnsupportedOperationException | JsonProcessingException e) {
             String message = String.format("%s", e.getMessage());

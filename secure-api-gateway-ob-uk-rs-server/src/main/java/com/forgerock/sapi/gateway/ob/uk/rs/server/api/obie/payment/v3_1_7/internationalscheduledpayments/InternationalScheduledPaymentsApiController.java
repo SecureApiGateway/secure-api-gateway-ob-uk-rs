@@ -23,6 +23,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_7.inter
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_7.internationalscheduledpayments.InternationalScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
@@ -36,14 +37,16 @@ public class InternationalScheduledPaymentsApiController extends com.forgerock.s
             PaymentSubmissionValidator paymentSubmissionValidator,
             ScheduledPaymentService scheduledPaymentService,
             ConsentService consentService,
-            RiskValidationService riskValidationService
+            RiskValidationService riskValidationService,
+            FRAccountRepository frAccountRepository
     ) {
         super(
                 scheduledPaymentSubmissionRepository,
                 paymentSubmissionValidator,
                 scheduledPaymentService,
                 consentService,
-                riskValidationService
+                riskValidationService,
+                frAccountRepository
         );
     }
 }

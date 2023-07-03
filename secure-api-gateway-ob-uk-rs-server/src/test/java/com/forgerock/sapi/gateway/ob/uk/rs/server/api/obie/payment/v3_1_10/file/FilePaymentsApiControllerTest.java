@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_0.file;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
@@ -30,7 +30,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * A SpringBoot test for the {@link FilePaymentsApiController}.
+ * A SpringBoot test for the {@link FilePaymentsApiController}.<br/>
+ * Coverage versions v3.1.5 to v3.1.10.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
@@ -38,7 +39,7 @@ public class FilePaymentsApiControllerTest {
 
     private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders();
     private static final String BASE_URL = "http://localhost:";
-    private static final String FILE_PAYMENTS_URI = "/open-banking/v3.0/pisp/file-payments";
+    private static final String FILE_PAYMENTS_URI = "/open-banking/v3.1.10/pisp/file-payments";
 
     @LocalServerPort
     private int port;
