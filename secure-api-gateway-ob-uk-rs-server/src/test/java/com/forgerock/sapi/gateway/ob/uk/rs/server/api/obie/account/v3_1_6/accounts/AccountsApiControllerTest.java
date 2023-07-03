@@ -18,14 +18,13 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.accou
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static java.util.Collections.singletonList;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -35,10 +34,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -102,7 +99,7 @@ public class AccountsApiControllerTest {
         ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(requiredAccountHttpHeaders(consentId, apiClientId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consentId, apiClientId)),
                 OBReadAccount5.class);
 
         // Then
@@ -143,7 +140,7 @@ public class AccountsApiControllerTest {
         ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(requiredAccountHttpHeaders(consentId, apiClientId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consentId, apiClientId)),
                 OBReadAccount5.class);
 
         // Then
@@ -170,18 +167,6 @@ public class AccountsApiControllerTest {
         consent.setAuthorisedAccountIds(List.of(accountId));
         consent.setRequestObj(FRReadConsent.builder().data(FRReadConsentData.builder().permissions(List.of(FRExternalPermissionsCode.READACCOUNTSDETAIL)).build()).build());
         given(accountAccessConsentStoreClient.getConsent(eq(consentId), eq(apiClientId))).willReturn(consent);
-    }
-
-    public static HttpHeaders requiredAccountHttpHeaders(String consentId, String apiClientId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-idempotency-key", UUID.randomUUID().toString());
-        headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
-        headers.add("x-api-client-id", apiClientId);
-        headers.add("x-intent-id", consentId);
-        return headers;
     }
 
     private String accountsUrl() {

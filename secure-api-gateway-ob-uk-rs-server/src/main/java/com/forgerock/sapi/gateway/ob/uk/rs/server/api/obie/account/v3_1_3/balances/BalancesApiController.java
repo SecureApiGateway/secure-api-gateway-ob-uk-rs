@@ -15,15 +15,15 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.balances;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.balances.BalancesApi;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadBalance1;
 
-import java.util.List;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.balances.BalancesApi;
+
+import uk.org.openbanking.datamodel.account.OBReadBalance1;
 
 @Controller("BalancesApiV3.1.3")
 public class BalancesApiController implements BalancesApi {
@@ -42,17 +42,18 @@ public class BalancesApiController implements BalancesApi {
                                                              String xFapiCustomerIpAddress,
                                                              String xFapiInteractionId,
                                                              String xCustomerUserAgent,
-                                                             List<OBExternalPermissions1Code> permissions,
-                                                             String httpUrl) {
-        return previousVersionController.getAccountBalances(
-                accountId,
-                page,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                permissions, httpUrl);
+                                                             String consentId,
+                                                             String apiClientId) throws OBErrorException {
+
+        return previousVersionController.getAccountBalances(accountId,
+                                                            page,
+                                                            authorization,
+                                                            xFapiAuthDate,
+                                                            xFapiCustomerIpAddress,
+                                                            xFapiInteractionId,
+                                                            xCustomerUserAgent,
+                                                            consentId,
+                                                            apiClientId);
     }
 
     @Override
@@ -62,21 +63,17 @@ public class BalancesApiController implements BalancesApi {
                                                       String xFapiCustomerIpAddress,
                                                       String xFapiInteractionId,
                                                       String xCustomerUserAgent,
-                                                      List<String> accountIds,
-                                                      List<OBExternalPermissions1Code> permissions,
-                                                      String httpUrl) {
+                                                      String consentId,
+                                                      String apiClientId) throws OBErrorException {
 
-        return previousVersionController.getBalances(
-                page,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                accountIds,
-                permissions,
-                httpUrl
-        );
+        return previousVersionController.getBalances(page,
+                                                     authorization,
+                                                     xFapiAuthDate,
+                                                     xFapiCustomerIpAddress,
+                                                     xFapiInteractionId,
+                                                     xCustomerUserAgent,
+                                                     consentId,
+                                                     apiClientId);
     }
 
 }

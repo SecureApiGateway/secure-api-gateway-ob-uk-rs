@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
 
@@ -90,7 +90,7 @@ public interface AccountsApi {
 
             @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
             @RequestHeader(value = "x-api-client-id") String apiClientId
-    ) throws OBErrorResponseException;
+    ) throws OBErrorException;
 
 
     @ApiOperation(value = "Get Accounts", nickname = "getAccounts", notes = "Get a list of accounts", response = OBReadAccount5.class, authorizations = {
@@ -137,6 +137,6 @@ public interface AccountsApi {
 
             @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
             @RequestHeader(value = "x-api-client-id") String apiClientId
-    ) throws OBErrorResponseException;
+    ) throws OBErrorException;
 
 }
