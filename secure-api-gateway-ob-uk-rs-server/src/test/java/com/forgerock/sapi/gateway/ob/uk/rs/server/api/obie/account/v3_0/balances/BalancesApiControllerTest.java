@@ -16,17 +16,26 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.balances;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBalance;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -39,7 +48,11 @@ import uk.org.openbanking.datamodel.account.OBReadBalance1;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRCashBalanceTestDataFactory.aValidFRCashBalance;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import java.util.List;
 
 /**
  * Spring Boot Test for {@link BalancesApiController}.
@@ -64,7 +77,14 @@ public class BalancesApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @MockBean
+    private AccountResourceAccessService accountResourceAccessService;
+
     private String accountId;
+
+    private String consentId = IntentType.ACCOUNT_ACCESS_CONSENT.generateIntentId();
+
+    private String apiClientId = "client-dsfsdfsdf";
 
     @BeforeEach
     public void saveData() {
@@ -92,15 +112,17 @@ public class BalancesApiControllerTest {
     }
 
     @Test
-    public void shouldGetAccountBalances() {
+    public void shouldGetAccountBalances() throws OBErrorException {
         // Given
         String url = accountBalancesUrl(accountId);
+
+        given(accountResourceAccessService.getConsentForResourceAccess(eq(consentId), eq(apiClientId), eq(List.of(accountId)))).willReturn(createConsent());
 
         // When
         ResponseEntity<OBReadBalance1> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountApiHeaders(consentId, apiClientId)),
                 OBReadBalance1.class);
 
         // Then
@@ -111,16 +133,26 @@ public class BalancesApiControllerTest {
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
+    private AccountAccessConsent createConsent() {
+        final AccountAccessConsent consent = new AccountAccessConsent();
+        consent.setStatus("Authorised");
+        consent.setRequestObj(FRReadConsent.builder().data(FRReadConsentData.builder().permissions(List.of(FRExternalPermissionsCode.READACCOUNTSBASIC, FRExternalPermissionsCode.READBALANCES)).build()).build());
+        consent.setAuthorisedAccountIds(List.of(accountId));
+        return consent;
+    }
+
     @Test
-    public void shouldGetBalances() {
+    public void shouldGetBalances() throws OBErrorException {
         // Given
         String url = balancesUrl();
+
+        given(accountResourceAccessService.getConsentForResourceAccess(eq(consentId), eq(apiClientId))).willReturn(createConsent());
 
         // When
         ResponseEntity<OBReadBalance1> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountApiHeaders(consentId, apiClientId)),
                 OBReadBalance1.class);
 
         // Then

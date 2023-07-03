@@ -42,6 +42,7 @@ public class HttpHeadersTestDataFactory {
      * @param accountId The ID of the account to be returned.
      * @return the {@link HttpHeaders} instance.
      */
+    @Deprecated
     public static HttpHeaders requiredAccountHttpHeaders(String resourceUrl, String accountId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
@@ -52,6 +53,23 @@ public class HttpHeadersTestDataFactory {
         headers.add("x-ob-url", resourceUrl);
         headers.add("x-ob-permissions", ALL_NON_BASIC_PERMISSIONS);
         headers.add("x-ob-account-ids", accountId);
+        return headers;
+    }
+
+
+    /**
+     * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Accounts API.
+     *
+     * @return the {@link HttpHeaders} instance.
+     */
+    public static HttpHeaders requiredAccountApiHeaders(String consentId, String apiClientId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth("dummyAuthToken");
+        headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
+        headers.add("x-api-client-id", apiClientId);
+        headers.add("x-intent-id", consentId);
         return headers;
     }
 

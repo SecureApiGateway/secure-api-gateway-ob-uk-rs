@@ -17,14 +17,14 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_8.accou
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_8.accounts.AccountsApi;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 import org.springframework.stereotype.Controller;
 
 @Controller("AccountsApiV3.1.8")
 public class AccountsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_7.accounts.AccountsApiController implements AccountsApi {
 
-    public AccountsApiController(FRAccountRepository frAccountRepository, AccountAccessConsentStoreClient accountAccessConsentStoreClient) {
-        super(frAccountRepository, accountAccessConsentStoreClient);
+    public AccountsApiController(FRAccountRepository frAccountRepository, AccountResourceAccessService accountResourceAccessService) {
+        super(frAccountRepository, accountResourceAccessService);
     }
 }
