@@ -15,16 +15,19 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.party;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_2.party.PartyApi;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_2.party.PartyApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller("PartyApiV3.1.2")
 @Slf4j
 public class PartyApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_1.party.PartyApiController implements PartyApi {
 
-    public PartyApiController(FRPartyRepository frPartyRepository) {
-        super(frPartyRepository);
+    public PartyApiController(FRPartyRepository frPartyRepository, AccountResourceAccessService accountResourceAccessService) {
+        super(frPartyRepository, accountResourceAccessService);
     }
 }
