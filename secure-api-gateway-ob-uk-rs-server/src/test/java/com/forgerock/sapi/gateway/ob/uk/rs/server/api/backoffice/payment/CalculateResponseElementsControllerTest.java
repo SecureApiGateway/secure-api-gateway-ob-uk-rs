@@ -507,7 +507,7 @@ public class CalculateResponseElementsControllerTest {
     public void cannotDetermineTheVersion() throws JsonProcessingException {
         String intent = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
         OBWriteDomesticConsent4 consentRequest = aValidOBWriteDomesticConsent4();
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
+
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, "v99.00.334", PDC_CONTEXT),
@@ -523,7 +523,7 @@ public class CalculateResponseElementsControllerTest {
     @Test
     public void cannotDetermineTheIntentType() throws JsonProcessingException {
         OBWriteDomesticConsent4 consentRequest = aValidOBWriteDomesticConsent4();
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
+
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri("WRONG_INTENT", OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
@@ -547,7 +547,6 @@ public class CalculateResponseElementsControllerTest {
         String intent = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
         OBWriteDomesticConsent4 consentRequest = aValidOBWriteDomesticConsent4();
         consentRequest.getData().getInitiation().setInstructedAmount(null);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
@@ -568,7 +567,6 @@ public class CalculateResponseElementsControllerTest {
         String intent = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
         OBWriteDomesticConsent4 consentRequest = aValidOBWriteDomesticConsent4();
         consentRequest.getData().getInitiation().getInstructedAmount().setAmount("0");
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
@@ -595,7 +593,6 @@ public class CalculateResponseElementsControllerTest {
         String intent = IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId();
         OBWriteDomesticConsent4 consentRequest = aValidOBWriteDomesticConsent4();
         consentRequest.getData().getInitiation().getInstructedAmount().setCurrency(INVALID_CURRENCY);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
@@ -623,7 +620,6 @@ public class CalculateResponseElementsControllerTest {
         OBWriteDomesticConsent4 consentRequest = aValidOBWriteDomesticConsent4();
         consentRequest.getData().getInitiation().getInstructedAmount().setAmount("0");
         consentRequest.getData().getInitiation().getInstructedAmount().setCurrency(INVALID_CURRENCY);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PDC_CONTEXT),
@@ -656,7 +652,6 @@ public class CalculateResponseElementsControllerTest {
         String intent = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
         OBWriteInternationalConsent5 consentRequest = aValidOBWriteInternationalConsent5();
         consentRequest.getData().getInitiation().getExchangeRateInformation().setRateType(null);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
@@ -677,7 +672,6 @@ public class CalculateResponseElementsControllerTest {
         String intent = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
         OBWriteInternationalConsent5 consentRequest = aValidOBWriteInternationalConsent5();
         consentRequest.getData().getInitiation().getExchangeRateInformation().setUnitCurrency(null);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
@@ -698,7 +692,6 @@ public class CalculateResponseElementsControllerTest {
         String intent = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
         OBWriteInternationalConsent5 consentRequest = aValidOBWriteInternationalConsent5();
         consentRequest.getData().getInitiation().getInstructedAmount().setCurrency(INVALID_CURRENCY);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
@@ -719,33 +712,11 @@ public class CalculateResponseElementsControllerTest {
     }
 
     @Test
-    public void shouldFailExchangeRateInformationRateType_Agreed() throws JsonProcessingException {
-        String intent = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
-        OBWriteInternationalConsent5 consentRequest = aValidOBWriteInternationalConsent5();
-        consentRequest.getData().getInitiation().setCurrencyOfTransfer("EUR");
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
-        // When
-        ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
-                getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
-                HttpMethod.POST,
-                new HttpEntity<>(mapper.writeValueAsString(consentRequest), HTTP_HEADERS),
-                OBErrorResponse1.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
-        assertThat(response.getBody().getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
-        assertThat(response.getBody().getErrors()).containsExactly(
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("The currency of transfer should be the same with the exchange unit currency.")
-        );
-    }
-
-    @Test
     public void shouldFailExchangeRateInformationRateType_Actual() throws JsonProcessingException {
         String intent = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
         OBWriteInternationalConsent5 consentRequest = aValidOBWriteInternationalConsent5();
         consentRequest.getData().getInitiation().getExchangeRateInformation().setRateType(OBExchangeRateType2Code.ACTUAL);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
+
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
@@ -769,7 +740,7 @@ public class CalculateResponseElementsControllerTest {
         String intent = IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId();
         OBWriteInternationalConsent5 consentRequest = aValidOBWriteInternationalConsent5();
         consentRequest.getData().getInitiation().getExchangeRateInformation().setRateType(OBExchangeRateType2Code.INDICATIVE);
-        consentRequest.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
+
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 getUri(intent, OBVersion.v3_1_8.getCanonicalName(), PIC_CONTEXT),
