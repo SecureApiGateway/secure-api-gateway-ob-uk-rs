@@ -13,7 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_8.statements;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.statements;
+
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRStatementDataTestDataFactory.aValidFRStatementData;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.createAuthorisedConsentAllPermissions;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.mockAccountResourceAccessServiceResponse;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStatementData;
@@ -23,27 +49,12 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.F
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRStatement;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.statements.FRStatementRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.core.io.Resource;
-import org.springframework.http.*;
-import org.springframework.test.context.ActiveProfiles;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-
-import java.io.IOException;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRStatementDataTestDataFactory.aValidFRStatementData;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
  * Spring Boot Test for {@link StatementsApiController}.
@@ -53,9 +64,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class StatementsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNT_STATEMENTS_URI = "/open-banking/v3.1.8/aisp/accounts/{AccountId}/statements";
-    private static final String ACCOUNT_STATEMENTS_FILE_URI = "/open-banking/v3.1.8/aisp/accounts/{AccountId}/statements/{StatementId}/file";
-    private static final String STATEMENTS_URI = "/open-banking/v3.1.8/aisp/statements";
+    private static final String ACCOUNT_STATEMENTS_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/statements";
+    private static final String ACCOUNT_STATEMENTS_FILE_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/statements/{StatementId}/file";
+    private static final String STATEMENTS_URI = "/open-banking/v3.1.10/aisp/statements";
 
     @LocalServerPort
     private int port;
@@ -71,6 +82,9 @@ public class StatementsApiControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @MockBean
+    private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;
 
@@ -106,11 +120,14 @@ public class StatementsApiControllerTest {
         // Given
         String url = accountStatementsUrl(accountId);
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
         // When
         ResponseEntity<OBReadStatement2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadStatement2.class);
 
         // Then
@@ -126,11 +143,14 @@ public class StatementsApiControllerTest {
         // Given
         String url = statementsUrl();
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent);
+
         // When
         ResponseEntity<OBReadStatement2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadStatement2.class);
 
         // Then
@@ -146,11 +166,14 @@ public class StatementsApiControllerTest {
         // Given
         String url = accountStatementsFileUrl(accountId, statementData.getStatementId());
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
         // When
         ResponseEntity<Resource> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountStatementFileHttpHeaders(url, MediaType.APPLICATION_PDF)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId(), MediaType.APPLICATION_PDF)),
                 Resource.class);
 
         // Then
@@ -166,11 +189,14 @@ public class StatementsApiControllerTest {
         // Given
         String url = accountStatementsFileUrl(accountId, statementData.getStatementId());
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountStatementFileHttpHeaders(url, MediaType.ALL)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBErrorResponse1.class);
 
         // Then

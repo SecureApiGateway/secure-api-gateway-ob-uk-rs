@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.state
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.statements.FRStatementRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_6.statements.StatementsApi;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +29,8 @@ public class StatementsApiController extends com.forgerock.sapi.gateway.ob.uk.rs
     public StatementsApiController(@Value("${rs.page.default.statement.size:10}") int pageLimitStatements,
                                    FRStatementRepository frStatementRepository,
                                    AccountDataInternalIdFilter accountDataInternalIdFilter,
-                                   StatementPDFService statementPDFService) {
-        super(pageLimitStatements, frStatementRepository, accountDataInternalIdFilter, statementPDFService);
+                                   StatementPDFService statementPDFService,
+                                   AccountResourceAccessService accountResourceAccessService) {
+        super(pageLimitStatements, frStatementRepository, accountDataInternalIdFilter, statementPDFService, accountResourceAccessService);
     }
 }
