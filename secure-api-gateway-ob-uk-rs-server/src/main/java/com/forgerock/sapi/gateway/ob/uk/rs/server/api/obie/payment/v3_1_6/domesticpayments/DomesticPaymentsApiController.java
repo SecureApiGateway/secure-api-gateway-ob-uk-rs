@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_6.domesticpayments.DomesticPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteDomesticConsentResponse5Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -42,8 +43,9 @@ public class DomesticPaymentsApiController
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator,
-            DomesticPaymentConsentStoreClient consentApiClient,
-            OBWriteDomesticConsentResponse5Factory consentResponseFactory) {
-        super(paymentSubmissionRepository, paymentSubmissionValidator, paymentValidator, consentApiClient, consentResponseFactory);
+            DomesticPaymentConsentStoreClient consentStoreClient,
+            OBWriteDomesticConsentResponse5Factory consentResponseFactory,
+            FRAccountRepository accountRepository) {
+        super(paymentSubmissionRepository, paymentSubmissionValidator, paymentValidator, consentStoreClient, consentResponseFactory, accountRepository);
     }
 }

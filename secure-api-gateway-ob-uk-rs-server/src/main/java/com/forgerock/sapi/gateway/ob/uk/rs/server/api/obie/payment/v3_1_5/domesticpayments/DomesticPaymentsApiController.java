@@ -53,8 +53,10 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRe
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.FRDomesticPaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -87,16 +89,20 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     private final OBWriteDomesticConsentResponse5Factory consentResponseFactory;
 
+    private final FRAccountRepository accountRepository;
+
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator,
-            DomesticPaymentConsentStoreClient consentStoreClient, OBWriteDomesticConsentResponse5Factory consentResponseFactory) {
+            DomesticPaymentConsentStoreClient consentStoreClient,
+            OBWriteDomesticConsentResponse5Factory consentResponseFactory, FRAccountRepository accountRepository) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.paymentValidator = paymentValidator;
         this.consentStoreClient = consentStoreClient;
         this.consentResponseFactory = consentResponseFactory;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -152,7 +158,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         consentStoreClient.consumeConsent(consumePaymentRequest);
 
         return ResponseEntity.status(CREATED).body(
-                responseEntity(frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
+                responseEntity(consent, frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
         );
     }
 
@@ -184,7 +190,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         log.debug("Got consent from store: {}", consent);
 
         return ResponseEntity.ok(
-                responseEntity(frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
+                responseEntity(consent, frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
         );
     }
 
@@ -216,12 +222,20 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     }
 
     private OBWriteDomesticResponse5 responseEntity(
+            DomesticPaymentConsent consent,
             FRDomesticPaymentSubmission frPaymentSubmission,
             OBWriteDomesticConsentResponse5 obConsentResponse
     ) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
-        Optional<FRResponseDataRefund> refund = FRResponseDataRefundFactory.frDomesticResponseDataRefund(FRReadRefundAccount.fromValue(obConsentResponse.getData().getReadRefundAccount().toString()),
-                                                                                                         data.getInitiation());
+
+        final Optional<FRResponseDataRefund> refundAccountData;
+        if (consent.getRequestObj().getData().getReadRefundAccount() == FRReadRefundAccount.YES) {
+            final FRAccount debtorAccount = accountRepository.byAccountId(consent.getAuthorisedDebtorAccountId());
+            refundAccountData = FRResponseDataRefundFactory.frResponseDataRefund(debtorAccount.getAccount().getFirstAccount());
+        } else {
+            refundAccountData = Optional.empty();
+        }
+
         return new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()
                         .domesticPaymentId(frPaymentSubmission.getId())
@@ -232,7 +246,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                         .status(toOBWriteDomesticResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
-                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null)))
+                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null)))
                 .links(LinksHelper.createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

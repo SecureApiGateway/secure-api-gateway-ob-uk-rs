@@ -21,7 +21,6 @@ import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
 
 /**
  * Validator of OBWriteDomestic2 objects (Domestic Payment Requests)
@@ -32,11 +31,6 @@ public class OBWriteDomestic2Validator extends BasePaymentRequestValidator<OBWri
         public OBWriteDomestic2ValidatorContext(OBWriteDomestic2 paymentRequest, OBWriteDomesticConsent4 consent, String consentStatus) {
             super(paymentRequest, () -> paymentRequest.getData().getInitiation(), paymentRequest::getRisk,
                     consentStatus, () -> consent.getData().getInitiation(), consent::getRisk);
-        }
-
-        public OBWriteDomestic2ValidatorContext(OBWriteDomestic2 paymentRequest, OBWriteDomesticConsentResponse5 consent) {
-            super(paymentRequest, () -> paymentRequest.getData().getInitiation(), paymentRequest::getRisk,
-                    () -> consent.getData().getInitiation(), consent::getRisk);
         }
     }
 
