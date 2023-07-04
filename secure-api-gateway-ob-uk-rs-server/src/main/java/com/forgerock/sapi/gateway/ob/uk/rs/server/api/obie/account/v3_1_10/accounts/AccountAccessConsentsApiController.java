@@ -69,13 +69,17 @@ public class AccountAccessConsentsApiController implements AccountAccessConsents
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId,
             HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
-        throw new UnsupportedOperationException(); // FIXME
+        logger.info("Attempting to deleteAccountAccessConsent - consentId: {}, apiClientId: {}", consentId, apiClientId);
+        accountAccessConsentStoreClient.deleteConsent(consentId, apiClientId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override
     public ResponseEntity<OBReadConsentResponse1> getAccountAccessConsent(String consentId, String authorization,
             DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+
+        logger.info("Attempting to getAccountAccessConsent - consentId: {}, apiClientId: {}", consentId, apiClientId);
 
         final AccountAccessConsent consent = accountAccessConsentStoreClient.getConsent(consentId, apiClientId);
         return ResponseEntity.ok(obReadConsentResponseFactory.buildConsentResponse(consent, getClass()));
