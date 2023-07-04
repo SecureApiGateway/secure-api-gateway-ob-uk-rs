@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.tran
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.transactions.TransactionsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
@@ -26,7 +28,8 @@ public class TransactionsApiController extends com.forgerock.sapi.gateway.ob.uk.
 
     public TransactionsApiController(@Value("${rs.page.default.transaction.size:120}") int pageLimitTransactions,
                                      FRTransactionRepository FRTransactionRepository,
-                                     AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(pageLimitTransactions, FRTransactionRepository, accountDataInternalIdFilter);
+                                     AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                     AccountResourceAccessService accountResourceAccessService) {
+        super(pageLimitTransactions, FRTransactionRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 }
