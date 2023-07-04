@@ -15,27 +15,33 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_5.standingorders;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRStandingOrder;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_5.standingorders.StandingOrdersApi;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_5.standingorders.StandingOrdersApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRStandingOrder;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.OBReadStandingOrder6;
 import uk.org.openbanking.datamodel.account.OBReadStandingOrder6Data;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("StandingOrdersApiV3.1.5")
 @Slf4j
@@ -47,12 +53,16 @@ public class StandingOrdersApiController implements StandingOrdersApi {
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
+    private final AccountResourceAccessService accountResourceAccessService;
+
     public StandingOrdersApiController(@Value("${rs.page.default.standing-order.size:10}") int pageLimitStandingOrders,
                                        FRStandingOrderRepository frStandingOrderRepository,
-                                       AccountDataInternalIdFilter accountDataInternalIdFilter) {
+                                       AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                       AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitStandingOrders = pageLimitStandingOrders;
         this.frStandingOrderRepository = frStandingOrderRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -63,12 +73,15 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                                                                          String xFapiCustomerIpAddress,
                                                                          String xFapiInteractionId,
                                                                          String xCustomerUserAgent,
-                                                                         List<OBExternalPermissions1Code> permissions,
-                                                                         String httpUrl) {
-        log.info("Read standing orders for account {} with minimumPermissions {}",
-                accountId, permissions);
+                                                                         String consentId,
+                                                                         String apiClientId) throws OBErrorException {
+        log.info("getAccountStandingOrders for accountId: {}, consentId: {}, apiClientId: {}",
+                accountId, consentId, apiClientId);
+
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkPermissions(consent);
         Page<FRStandingOrder> standingOrders =
-                frStandingOrderRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                frStandingOrderRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),
                         PageRequest.of(page, pageLimitStandingOrders));
 
         int totalPages = standingOrders.getTotalPages();
@@ -80,7 +93,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                         .map(FRStandingOrderConverter::toOBStandingOrder6)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetAccountStandingOrdersUri(accountId), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
@@ -91,11 +104,14 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                                                                   String xFapiCustomerIpAddress,
                                                                   String xFapiInteractionId,
                                                                   String xCustomerUserAgent,
-                                                                  List<String> accountIds,
-                                                                  List<OBExternalPermissions1Code> permissions,
-                                                                  String httpUrl) {
-        log.info("Reading standing orders from account ids {}", accountIds);
-        Page<FRStandingOrder> standingOrders = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+            String consentId,
+            String apiClientId) throws OBErrorException {
+        log.info("getStandingOrders for consentId: {}, apiClientId: {}", consentId, apiClientId);
+
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkPermissions(consent);
+
+        Page<FRStandingOrder> standingOrders = frStandingOrderRepository.byAccountIdInWithPermissions(consent.getAuthorisedAccountIds(), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitStandingOrders));
         int totalPages = standingOrders.getTotalPages();
 
@@ -105,7 +121,22 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                         .map(FRStandingOrderConverter::toOBStandingOrder6)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetStandingOrderUri(), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
+    }
+
+    private String buildGetAccountStandingOrdersUri(String accountId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("standing-orders").toString();
+    }
+
+    private String buildGetStandingOrderUri() {
+        return linkTo(getClass()).slash("standing-orders").toString();
+    }
+
+    private static void checkPermissions(AccountAccessConsent consent) throws OBErrorException {
+        final List<FRExternalPermissionsCode> permissions = consent.getRequestObj().getData().getPermissions();
+        if (!permissions.contains(FRExternalPermissionsCode.READSTANDINGORDERSBASIC) && !permissions.contains(FRExternalPermissionsCode.READSTANDINGORDERSDETAIL)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, FRExternalPermissionsCode.READSTANDINGORDERSBASIC + " or " + FRExternalPermissionsCode.READSTANDINGORDERSDETAIL);
+        }
     }
 }
