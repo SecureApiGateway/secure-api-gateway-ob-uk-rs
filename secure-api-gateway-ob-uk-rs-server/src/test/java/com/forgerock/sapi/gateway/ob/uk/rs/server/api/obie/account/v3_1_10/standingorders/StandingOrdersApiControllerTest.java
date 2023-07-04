@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.standingorders;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.standingorders;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRStandingOrder;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRStandingOrderDataTestDataFactory.aValidFRStandingOrderData;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.createAuthorisedConsentAllPermissions;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.mockAccountResourceAccessServiceResponse;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -34,12 +36,18 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import uk.org.openbanking.datamodel.account.OBReadStandingOrder6;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRStandingOrderDataTestDataFactory.aValidFRStandingOrderData;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.standingorders.StandingOrdersApiController;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRStandingOrder;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
+import uk.org.openbanking.datamodel.account.OBReadStandingOrder6;
 
 /**
  * Spring Boot Test for {@link StandingOrdersApiController}.
@@ -49,8 +57,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class StandingOrdersApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNT_STANDING_ORDERS_URI = "/open-banking/v3.1.6/aisp/accounts/{AccountId}/standing-orders";
-    private static final String STANDING_ORDERS_URI = "/open-banking/v3.1.6/aisp/standing-orders";
+    private static final String ACCOUNT_STANDING_ORDERS_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/standing-orders";
+    private static final String STANDING_ORDERS_URI = "/open-banking/v3.1.10/aisp/standing-orders";
 
     @LocalServerPort
     private int port;
@@ -63,6 +71,9 @@ public class StandingOrdersApiControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @MockBean
+    private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;
 
@@ -96,11 +107,14 @@ public class StandingOrdersApiControllerTest {
         // Given
         String url = accountStandingOrdersUrl(accountId);
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
         // When
         ResponseEntity<OBReadStandingOrder6> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadStandingOrder6.class);
 
         // Then
@@ -116,11 +130,14 @@ public class StandingOrdersApiControllerTest {
         // Given
         String url = standingOrdersUrl();
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent);
+
         // When
         ResponseEntity<OBReadStandingOrder6> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadStandingOrder6.class);
 
         // Then

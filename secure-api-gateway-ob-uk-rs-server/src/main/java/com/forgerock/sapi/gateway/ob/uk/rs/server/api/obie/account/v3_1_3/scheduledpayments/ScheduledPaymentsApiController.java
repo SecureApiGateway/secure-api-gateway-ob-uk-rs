@@ -96,7 +96,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
         checkPermissions(consent);
         Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(consent.getAuthorisedAccountIds(), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitSchedulePayments));
-        return packageResponse(page, buildGetScheduledPayments(), scheduledPayments);
+        return packageResponse(page, buildGetScheduledPaymentsUri(), scheduledPayments);
     }
 
     private ResponseEntity<OBReadScheduledPayment3> packageResponse(int page, String httpUrl, Page<FRScheduledPayment> scheduledPayments) {
@@ -116,7 +116,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
         return linkTo(getClass()).slash("accounts").slash(accountId).slash("scheduled-payments").toString();
     }
 
-    private String buildGetScheduledPayments() {
+    private String buildGetScheduledPaymentsUri() {
         return linkTo(getClass()).slash("scheduled-payments").toString();
     }
 
