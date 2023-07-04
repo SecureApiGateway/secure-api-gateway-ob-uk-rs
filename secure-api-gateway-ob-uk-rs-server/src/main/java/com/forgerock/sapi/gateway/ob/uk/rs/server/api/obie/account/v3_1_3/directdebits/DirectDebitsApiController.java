@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
-import static java.util.Collections.singletonList;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("DirectDebitsApiV3.1.3")
@@ -77,7 +76,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
                                                                      String apiClientId) throws OBErrorException {
 
         log.info("Read direct debits for account: {}, consentId: {}, apiClientId: {} ", accountId, consentId, apiClientId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, singletonList(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkConsentHasRequiredPermission(consent);
         Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitDirectDebits));

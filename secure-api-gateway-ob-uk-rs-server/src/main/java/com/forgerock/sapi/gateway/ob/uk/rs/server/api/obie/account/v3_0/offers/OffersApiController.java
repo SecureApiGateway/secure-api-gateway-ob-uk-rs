@@ -37,7 +37,6 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBReadOffer1;
 import uk.org.openbanking.datamodel.account.OBReadOffer1Data;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
@@ -74,7 +73,7 @@ public class OffersApiController implements OffersApi {
                                                          String apiClientId) throws OBErrorException {
 
         log.info("getAccountOffers for accountId: {}, consentId: {}, apiClientId:{}", accountId, consentId, apiClientId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, List.of(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkConsentHasRequiredPermission(consent);
         Page<FROffer> offers = frOfferRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, PAGE_LIMIT_OFFERS));
@@ -86,7 +85,7 @@ public class OffersApiController implements OffersApi {
                                 .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
                                 .map(accountDataInternalIdFilter::apply)
                                 .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(generateAccountOffersUri(accountId), page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetAccountOffersUri(accountId), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
@@ -113,15 +112,15 @@ public class OffersApiController implements OffersApi {
                                 .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
                                 .map(accountDataInternalIdFilter::apply)
                                 .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(generateOffersUri(), page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetOfferUri(), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
-    private String generateOffersUri() {
+    private String buildGetOfferUri() {
         return linkTo(getClass()).slash("offers").toString();
     }
 
-    private String generateAccountOffersUri(String accountId) {
+    private String buildGetAccountOffersUri(String accountId) {
         return linkTo(getClass()).slash("accounts").slash(accountId).slash("offers").toString();
     }
 

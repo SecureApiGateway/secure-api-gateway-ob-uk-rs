@@ -15,8 +15,6 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
@@ -45,15 +43,10 @@ public class DefaultAccountResourceAccessService implements AccountResourceAcces
     }
 
     @Override
-    public AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, List<String> accountIdsToAccess) throws OBErrorException {
-        if (accountIdsToAccess == null || accountIdsToAccess.isEmpty()) {
-            throw new IllegalArgumentException("accountIdsToAccess list must not be null or empty");
-        }
+    public AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, String accountIdToAccess) throws OBErrorException {
         final AccountAccessConsent consent = getConsentForResourceAccess(consentId, apiClientId);
-        for (String accountId : accountIdsToAccess) {
-            if (!consent.getAuthorisedAccountIds().contains(accountId)) {
-                throw new OBErrorException(OBRIErrorType.UNAUTHORISED_ACCOUNT, accountId);
-            }
+        if (!consent.getAuthorisedAccountIds().contains(accountIdToAccess)) {
+            throw new OBErrorException(OBRIErrorType.UNAUTHORISED_ACCOUNT, accountIdToAccess);
         }
         return consent;
     }

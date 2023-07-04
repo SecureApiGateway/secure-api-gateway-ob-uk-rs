@@ -61,7 +61,7 @@ public class PartyApiController implements PartyApi {
                                                         String apiClientId
     ) throws OBErrorException {
         log.info("getAccountParty - accountId: {}, consentId: {}, apiClientId: {}", accountId, consentId, apiClientId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, List.of(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkConsentHasRequiredPermission(consent, FRExternalPermissionsCode.READPARTY);
         FRParty party = frPartyRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions());
         int totalPages = 1;
@@ -69,7 +69,7 @@ public class PartyApiController implements PartyApi {
         return ResponseEntity.ok(new OBReadParty2()
                 .data(new OBReadParty2Data()
                         .party(toOBParty2(party.getParty())))
-                .links(PaginationUtil.generateLinks(generateGetAccountPartyUri(accountId), 0, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetAccountPartyUri(accountId), 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
@@ -85,7 +85,7 @@ public class PartyApiController implements PartyApi {
     ) throws OBErrorException {
 
         log.info("getAccountParties - accountId: {}, consentId: {}, apiClientId: {}", accountId, consentId, apiClientId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, List.of(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkConsentHasRequiredPermission(consent, FRExternalPermissionsCode.READPARTY);
         final List<FRExternalPermissionsCode> permissions = consent.getRequestObj().getData().getPermissions();
         FRParty accountParty = frPartyRepository.byAccountIdWithPermissions(accountId, permissions);
@@ -105,7 +105,7 @@ public class PartyApiController implements PartyApi {
         int totalPages = 1;
         return ResponseEntity.ok(new OBReadParty3()
                 .data(new OBReadParty3Data().party(parties))
-                .links(PaginationUtil.generateLinks(generateGetAccountParties(accountId), 0, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetAccountPartiesUri(accountId), 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
@@ -128,18 +128,18 @@ public class PartyApiController implements PartyApi {
         return ResponseEntity.ok(new OBReadParty2()
                 .data(new OBReadParty2Data()
                         .party(toOBParty2(party.getParty())))
-                .links(PaginationUtil.generateLinks(generateGetPartyUri(), 0, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetPartyUri(), 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
-    private String generateGetAccountPartyUri(String accountId) {
+    private String buildGetAccountPartyUri(String accountId) {
         return linkTo(getClass()).slash("accounts").slash(accountId).slash("party").toString();
     }
 
-    private String generateGetAccountParties(String accountId) {
+    private String buildGetAccountPartiesUri(String accountId) {
         return linkTo(getClass()).slash("accounts").slash(accountId).slash("parties").toString();
     }
 
-    private String generateGetPartyUri() {
+    private String buildGetPartyUri() {
         return linkTo(getClass()).slash("party").toString();
     }
 

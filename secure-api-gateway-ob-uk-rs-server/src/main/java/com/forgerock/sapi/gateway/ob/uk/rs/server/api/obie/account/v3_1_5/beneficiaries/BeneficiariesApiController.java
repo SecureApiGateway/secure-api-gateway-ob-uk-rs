@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static java.util.Collections.singletonList;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("BeneficiariesApiV3.1.5")
@@ -79,7 +78,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                                                                       String apiClientId) throws OBErrorException {
 
         log.info("Read beneficiaries for account {}, consentId: {}, apiClientId: {}", accountId, consentId, apiClientId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, singletonList(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkConsentHasRequiredPermission(consent);
 
         Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),

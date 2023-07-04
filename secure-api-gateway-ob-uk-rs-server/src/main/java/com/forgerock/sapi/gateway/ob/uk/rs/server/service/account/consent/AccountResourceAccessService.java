@@ -15,8 +15,6 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent;
 
-import java.util.List;
-
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
@@ -29,5 +27,5 @@ public interface AccountResourceAccessService {
 
     AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId) throws OBErrorException;
 
-    AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, List<String> accountIdsToAccess) throws OBErrorException;
+    AccountAccessConsent getConsentForResourceAccess(String consentId, String apiClientId, String accountIdToAccess) throws OBErrorException;
 }

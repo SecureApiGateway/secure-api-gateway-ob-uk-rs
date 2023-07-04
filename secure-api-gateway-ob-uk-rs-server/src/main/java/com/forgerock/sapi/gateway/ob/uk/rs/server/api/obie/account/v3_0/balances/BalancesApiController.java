@@ -39,7 +39,6 @@ import uk.org.openbanking.datamodel.account.OBReadBalance1Data;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
-import static java.util.Collections.singletonList;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("BalancesApiV3.0")
@@ -69,7 +68,7 @@ public class BalancesApiController implements BalancesApi {
                                                              String apiClientId) throws OBErrorException {
 
         log.info("Read balances for consentId: {}, accountId: {}, apiClientId: {}", consentId, accountId, apiClientId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, singletonList(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkConsentHasRequiredPermission(consent);
         Page<FRBalance> balances = frBalanceRepository.findByAccountId(accountId, PageRequest.of(page, PAGE_LIMIT_BALANCES));
         int totalPage = balances.getTotalPages();
@@ -78,7 +77,7 @@ public class BalancesApiController implements BalancesApi {
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
                         .map(b -> toOBReadBalance1DataBalance(b.getBalance()))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(generateAccountBalanceUri(accountId), page, totalPage))
+                .links(PaginationUtil.generateLinks(buildGetAccountBalancesUri(accountId), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
 
@@ -103,15 +102,15 @@ public class BalancesApiController implements BalancesApi {
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
                         .map(b -> toOBReadBalance1DataBalance(b.getBalance()))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(generateBalancesUri(), page, totalPage))
+                .links(PaginationUtil.generateLinks(buildGetBalancesUri(), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
 
-    private String generateBalancesUri() {
+    private String buildGetBalancesUri() {
         return linkTo(getClass()).slash("balances").toString();
     }
 
-    private String generateAccountBalanceUri(String accountId) {
+    private String buildGetAccountBalancesUri(String accountId) {
         return linkTo(getClass()).slash("accounts").slash(accountId).slash("balances").toString();
     }
 

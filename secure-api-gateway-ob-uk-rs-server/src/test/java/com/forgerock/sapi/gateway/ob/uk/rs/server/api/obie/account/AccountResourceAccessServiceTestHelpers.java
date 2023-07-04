@@ -58,7 +58,7 @@ public class AccountResourceAccessServiceTestHelpers {
 
     public static void mockAccountResourceAccessServiceResponse(AccountResourceAccessService mockService, AccountAccessConsent consent, String requestedAccountId) {
         try {
-            given(mockService.getConsentForResourceAccess(eq(consent.getId()), eq(consent.getApiClientId()), eq(List.of(requestedAccountId)))).willReturn(consent);
+            given(mockService.getConsentForResourceAccess(eq(consent.getId()), eq(consent.getApiClientId()), eq(requestedAccountId))).willReturn(consent);
         } catch (OBErrorException e) {
             throw new RuntimeException(e);
         }
