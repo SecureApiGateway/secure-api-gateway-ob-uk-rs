@@ -49,11 +49,14 @@ import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticVrpPaymentConsentDetailsTestFactory.aValidDomesticVrpPaymentConsentDetails;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+/**
+ * A SpringBoot test for the {@link DomesticVrpConsentsApiController} <br/>
+ * Coverage versions v3.1.9 to v3.1.10.
+ */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 class DomesticVrpConsentsApiControllerTest {

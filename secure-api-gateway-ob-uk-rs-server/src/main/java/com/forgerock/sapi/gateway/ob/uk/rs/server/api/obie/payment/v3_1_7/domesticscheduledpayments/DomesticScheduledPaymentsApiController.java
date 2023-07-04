@@ -23,6 +23,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_7.domes
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_7.domesticscheduledpayments.DomesticScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
@@ -36,14 +37,16 @@ public class DomesticScheduledPaymentsApiController extends com.forgerock.sapi.g
             PaymentSubmissionValidator paymentSubmissionValidator,
             ScheduledPaymentService scheduledPaymentService,
             ConsentService consentService,
-            RiskValidationService riskValidationService
+            RiskValidationService riskValidationService,
+            FRAccountRepository frAccountRepository
     ) {
         super(
                 scheduledPaymentSubmissionRepository,
                 paymentSubmissionValidator,
                 scheduledPaymentService,
                 consentService,
-                riskValidationService
+                riskValidationService,
+                frAccountRepository
         );
     }
 }

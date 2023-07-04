@@ -24,8 +24,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import uk.org.openbanking.datamodel.common.OBVRPAuthenticationMethods;
 import uk.org.openbanking.datamodel.common.OBVRPConsentType;
+import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
 
-import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -44,7 +44,11 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
     }
 
     public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId) {
-        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId);
+        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, OBReadRefundAccountEnum.YES);
+    }
+
+    public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, OBReadRefundAccountEnum obReadRefundAccountEnum) {
+        return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, obReadRefundAccountEnum);
     }
 
     public static JsonObject aValidDomesticVrpPaymentConsentDetails(String consentId, FRAccountIdentifier accountIdentifier) {
@@ -63,11 +67,11 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         return aValidDomesticVrpPaymentConsentDetailsBuilder(consentId, clientId, vrpType);
     }
 
-    public static JsonObject aValidDomesticVrpPaymentConsentDetailsBuilder(String consentId) {
+    public static JsonObject aValidDomesticVrpPaymentConsentDetailsBuilder(String consentId, OBReadRefundAccountEnum obReadRefundAccountEnum) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
         final JsonObject obIntent = new JsonObject();
-        obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId));
+        obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId, obReadRefundAccountEnum));
         consent.add("OBIntentObject", obIntent);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
@@ -106,7 +110,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", UUID.randomUUID().toString());
         final JsonObject obIntent = new JsonObject();
-        obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId));
+        obIntent.add("Data", aValidDomesticVrpPaymentConsentDataDetailsBuilder(consentId, OBReadRefundAccountEnum.YES));
         consent.add("OBIntentObject", obIntent);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
@@ -130,9 +134,10 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
         return consent;
     }
 
-    public static JsonObject aValidDomesticVrpPaymentConsentDataDetailsBuilder(String consentId) {
+    public static JsonObject aValidDomesticVrpPaymentConsentDataDetailsBuilder(String consentId, OBReadRefundAccountEnum obReadRefundAccountEnum) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
+        data.addProperty("ReadRefundAccount", obReadRefundAccountEnum.getValue());
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());
@@ -144,6 +149,7 @@ public class DomesticVrpPaymentConsentDetailsTestFactory {
     public static JsonObject aValidDomesticVrpPaymentConsentDataDetailsBuilder(String consentId, FRAccountIdentifier accountIdentifier) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
+        data.addProperty("ReadRefundAccount", OBReadRefundAccountEnum.YES.getValue());
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("Status", ConsentStatusCode.AWAITINGAUTHORISATION.toString());

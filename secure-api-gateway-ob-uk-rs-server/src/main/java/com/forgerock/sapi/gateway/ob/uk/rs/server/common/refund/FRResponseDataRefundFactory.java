@@ -16,11 +16,11 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.*;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRDomesticDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalDataInitiation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRWriteDomesticVrpDataInitiation;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,44 +28,17 @@ import java.util.Optional;
  */
 public class FRResponseDataRefundFactory {
 
-    // flag set on the consent by the PISP if PSU requests a refund for the transaction.
-    // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
-
     /**
      * Creates a {@link FRResponseDataRefund}, so long as the provided {@link FRReadRefundAccount} is set
-     * to 'Yes' and the initiation's debit account is null. Otherwise returns an empty {@link Optional}.
+     * to 'Yes' and the payment account is not null. Otherwise, returns an empty {@link Optional}.
      *
-     * @param frReadRefundAccount The {@link FRReadRefundAccount} indicating if a refund should be issued.
-     * @param initiation          {@link FRDomesticDataInitiation} The payment's initiation data.
+     * @param frAccountIdentifier The {@link FRAccountIdentifier} payment account.
      * @return The {@link Optional} {@link FRResponseDataRefund} instance.
      */
-    public static Optional<FRResponseDataRefund> frDomesticResponseDataRefund(
-            FRReadRefundAccount frReadRefundAccount,
-            FRDomesticDataInitiation initiation) {
-        if (hasRefund(frReadRefundAccount) && initiation.getDebtorAccount() != null) {
+    public static Optional<FRResponseDataRefund> frResponseDataRefund(FRAccountIdentifier frAccountIdentifier) {
+        if (Objects.nonNull(frAccountIdentifier)) {
             return Optional.of(FRResponseDataRefund.builder()
-                    .account(FRAccountIdentifier.builder()
-                            .schemeName(initiation.getDebtorAccount().getSchemeName())
-                            .identification(initiation.getDebtorAccount().getIdentification())
-                            .name(initiation.getDebtorAccount().getName())
-                            .secondaryIdentification(initiation.getDebtorAccount().getSecondaryIdentification())
-                            .build())
-                    .build());
-        }
-        return Optional.empty();
-    }
-
-    public static Optional<FRResponseDataRefund> frDomesticVrpResponseDataRefund(
-            FRReadRefundAccount frReadRefundAccount,
-            FRWriteDomesticVrpDataInitiation initiation) {
-        if (hasRefund(frReadRefundAccount) && initiation.getDebtorAccount() != null) {
-            return Optional.of(FRResponseDataRefund.builder()
-                    .account(FRAccountIdentifier.builder()
-                            .schemeName(initiation.getDebtorAccount().getSchemeName())
-                            .identification(initiation.getDebtorAccount().getIdentification())
-                            .name(initiation.getDebtorAccount().getName())
-                            .secondaryIdentification(initiation.getDebtorAccount().getSecondaryIdentification())
-                            .build())
+                    .account(frAccountIdentifier)
                     .build());
         }
         return Optional.empty();
@@ -75,23 +48,23 @@ public class FRResponseDataRefundFactory {
      * Creates a {@link FRInternationalResponseDataRefund}, so long as the provided {@link FRReadRefundAccount} is
      * set to 'Yes' and the initiation's debit account is null. Otherwise, returns an empty {@link Optional}.
      *
-     * @param frReadRefundAccount The {@link FRReadRefundAccount} indicating if a refund should be issued.
-     * @param initiation          {@link FRDomesticDataInitiation} The payment's initiation data.
+     * @param frAccountIdentifier The {@link FRAccountIdentifier} payment account.
+     * @param initiation          {@link FRInternationalDataInitiation} The payment's initiation data.
      * @return The {@link Optional} {@link FRResponseDataRefund} instance.
      */
     public static Optional<FRInternationalResponseDataRefund> frInternationalResponseDataRefund(
-            FRReadRefundAccount frReadRefundAccount,
-            FRInternationalDataInitiation initiation) {
-        if (hasRefund(frReadRefundAccount) && initiation.getDebtorAccount() != null) {
-            FRAccountIdentifier debtorAccount = initiation.getDebtorAccount();
+            FRAccountIdentifier frAccountIdentifier,
+            FRInternationalDataInitiation initiation
+    ) {
+        if (Objects.nonNull(frAccountIdentifier)) {
             FRFinancialCreditor creditor = initiation.getCreditor();
             FRFinancialAgent creditorAgent = initiation.getCreditorAgent();
             return Optional.of(FRInternationalResponseDataRefund.builder()
                     .account(FRAccountIdentifier.builder()
-                            .schemeName(debtorAccount.getSchemeName())
-                            .identification(debtorAccount.getIdentification())
-                            .name(debtorAccount.getName())
-                            .secondaryIdentification(debtorAccount.getSecondaryIdentification())
+                            .schemeName(frAccountIdentifier.getSchemeName())
+                            .identification(frAccountIdentifier.getIdentification())
+                            .name(frAccountIdentifier.getName())
+                            .secondaryIdentification(frAccountIdentifier.getSecondaryIdentification())
                             .build())
                     .creditor(creditor == null ? null : FRFinancialCreditor.builder()
                             .name(creditor.getName())

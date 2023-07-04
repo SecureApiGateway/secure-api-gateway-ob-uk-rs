@@ -24,6 +24,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
+import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse3DataCharges;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse4DataCharges;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5DataCharges;
@@ -49,8 +50,8 @@ public class DomesticPaymentPlatformIntentTestFactory {
         return aValidDomesticPaymentPlatformIntentBuilder(consentId);
     }
 
-    public static JsonObject aValidOBDomesticPaymentPlatformIntent(String consentId) {
-        return aValidOBDomesticPaymentPlatformIntentBuilder(consentId);
+    public static JsonObject aValidDomesticPaymentPlatformIntent(String consentId, OBReadRefundAccountEnum obReadRefundAccountEnum) {
+        return aValidOBDomesticPaymentPlatformIntentBuilder(consentId, obReadRefundAccountEnum);
     }
 
     public static JsonObject aValidDomesticPaymentPlatformIntent(String consentId, String clientId) {
@@ -65,26 +66,26 @@ public class DomesticPaymentPlatformIntentTestFactory {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId, OBReadRefundAccountEnum.YES));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+        consent.addProperty("accountId", UUID.randomUUID().toString());
 
         return consent;
     }
 
-    public static JsonObject aValidOBDomesticPaymentPlatformIntentBuilder(String consentId) {
+    public static JsonObject aValidOBDomesticPaymentPlatformIntentBuilder(String consentId, OBReadRefundAccountEnum obReadRefundAccountEnum) {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId, obReadRefundAccountEnum));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", randomUUID().toString());
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+        consent.addProperty("accountId", UUID.randomUUID().toString());
 
         return consent;
     }
@@ -93,12 +94,12 @@ public class DomesticPaymentPlatformIntentTestFactory {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId, OBReadRefundAccountEnum.YES));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+        consent.addProperty("accountId", UUID.randomUUID().toString());
         return consent;
     }
 
@@ -106,18 +107,19 @@ public class DomesticPaymentPlatformIntentTestFactory {
         JsonObject consent = new JsonObject();
         consent.addProperty("id", consentId);
         final JsonObject obIntentObject = new JsonObject();
-        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId));
+        obIntentObject.add("Data",  aValidDomesticPaymentPlatformIntentDataBuilder(consentId, OBReadRefundAccountEnum.YES));
         consent.add("OBIntentObject", obIntentObject);
         consent.add("resourceOwnerUsername", null);
         consent.addProperty("oauth2ClientId", clientId);
         consent.addProperty("oauth2ClientName", "PISP Name");
-        consent.addProperty("accountIds", gson.toJson(List.of(UUID.randomUUID().toString())));
+        consent.addProperty("accountId", UUID.randomUUID().toString());
         return consent;
     }
 
-    public static JsonObject aValidDomesticPaymentPlatformIntentDataBuilder(String consentId) {
+    public static JsonObject aValidDomesticPaymentPlatformIntentDataBuilder(String consentId, OBReadRefundAccountEnum obReadRefundAccountEnum) {
         JsonObject data = new JsonObject();
         data.addProperty("ConsentId", consentId);
+        data.addProperty("ReadRefundAccount", obReadRefundAccountEnum.getValue());
         data.addProperty("CreationDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("StatusUpdateDateTime", DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
         data.addProperty("Status", FRExternalRequestStatusCode.AWAITINGAUTHORISATION.toString());
