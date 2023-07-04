@@ -24,9 +24,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClie
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.ConsentClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions.InvalidConsentException;
 import com.google.gson.JsonObject;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
