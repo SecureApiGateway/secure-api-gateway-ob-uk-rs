@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.products;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.products;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.products.ProductsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRProduct;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -39,6 +43,9 @@ import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
 import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.createAuthorisedConsentAllPermissions;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.mockAccountResourceAccessServiceResponse;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -50,8 +57,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class ProductsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNT_PRODUCT_URI = "/open-banking/v3.1.6/aisp/accounts/{AccountId}/product";
-    private static final String PRODUCTS_URI = "/open-banking/v3.1.6/aisp/products";
+    private static final String ACCOUNT_PRODUCT_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/product";
+    private static final String PRODUCTS_URI = "/open-banking/v3.1.10/aisp/products";
 
     @LocalServerPort
     private int port;
@@ -64,6 +71,9 @@ public class ProductsApiControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @MockBean
+    private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;
 
@@ -100,11 +110,14 @@ public class ProductsApiControllerTest {
         // Given
         String url = accountProductUrl(accountId);
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
         // When
         ResponseEntity<OBReadProduct2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadProduct2.class);
 
         // Then
@@ -120,11 +133,14 @@ public class ProductsApiControllerTest {
         // Given
         String url = productsUrl();
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent);
+
         // When
         ResponseEntity<OBReadProduct2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadProduct2.class);
 
         // Then

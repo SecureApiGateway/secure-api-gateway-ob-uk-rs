@@ -16,7 +16,6 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.accounts;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
-import static java.util.Collections.singletonList;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +63,7 @@ public class AccountsApiController implements AccountsApi {
                                                      String apiClientId) throws OBErrorException {
 
         log.info("Read account {} for consentId: {}", accountId, consentId);
-        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, singletonList(accountId));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         FRAccount account = frAccountRepository.byAccountId(accountId, consent.getRequestObj().getData().getPermissions());
 
         List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(account.getAccount()));

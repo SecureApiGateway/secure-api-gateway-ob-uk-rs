@@ -81,8 +81,7 @@ class DefaultAccountResourceAccessServiceTest {
         mockAuthorisedConsentResponse();
 
         final OBErrorException exception = assertThrows(OBErrorException.class,
-                () -> accountAccessConsentService.getConsentForResourceAccess(consentId, apiClientId,
-                        List.of("acc-not-authorised", "another-unknown-acc-id")));
+                () -> accountAccessConsentService.getConsentForResourceAccess(consentId, apiClientId, "acc-not-authorised"));
         assertThat(exception.getObriErrorType()).isEqualTo(OBRIErrorType.UNAUTHORISED_ACCOUNT);
     }
 
@@ -90,10 +89,10 @@ class DefaultAccountResourceAccessServiceTest {
     void testGetConsentWithAuthorisedAccountCheck() throws OBErrorException {
         final AccountAccessConsent mockConsentStoreResponse = mockAuthorisedConsentResponse();
 
-        assertThat(accountAccessConsentService.getConsentForResourceAccess(consentId, apiClientId, authorisedAccountIds))
-                .isEqualTo(mockConsentStoreResponse);
-        assertThat(accountAccessConsentService.getConsentForResourceAccess(consentId, apiClientId, authorisedAccountIds.subList(0, 1)))
-                .isEqualTo(mockConsentStoreResponse);
+        for (String authorisedAccountId : authorisedAccountIds) {
+            assertThat(accountAccessConsentService.getConsentForResourceAccess(consentId, apiClientId, authorisedAccountId))
+                    .isEqualTo(mockConsentStoreResponse);
+        }
     }
 
 }

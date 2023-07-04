@@ -18,13 +18,15 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_1.produ
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_1.products.ProductsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
 import org.springframework.stereotype.Controller;
 
 @Controller("ProductsApiV3.1.1")
 public class ProductsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1.products.ProductsApiController implements ProductsApi {
 
     public ProductsApiController(FRProductRepository frProductRepository,
-                                 AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(frProductRepository, accountDataInternalIdFilter);
+                                 AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+        super(frProductRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 }

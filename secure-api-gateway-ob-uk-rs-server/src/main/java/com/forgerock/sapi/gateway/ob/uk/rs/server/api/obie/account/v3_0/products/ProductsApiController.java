@@ -15,26 +15,31 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.products;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRProduct;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.products.ProductsApi;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.products.ProductsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRProduct;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.OBReadProduct2;
 import uk.org.openbanking.datamodel.account.OBReadProduct2Data;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("ProductsApiV3.0")
 @Slf4j
@@ -42,13 +47,18 @@ public class ProductsApiController implements ProductsApi {
 
     private final FRProductRepository frProductRepository;
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
+
+    private final AccountResourceAccessService accountResourceAccessService;
+
     @Value("${rs.page.default.products.size:10}")
     private int PAGE_LIMIT_PRODUCTS;
 
     public ProductsApiController(FRProductRepository frProductRepository,
-                                 AccountDataInternalIdFilter accountDataInternalIdFilter) {
+                                 AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                 AccountResourceAccessService accountResourceAccessService) {
         this.frProductRepository = frProductRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -59,11 +69,12 @@ public class ProductsApiController implements ProductsApi {
                                                             String xFapiCustomerIpAddress,
                                                             String xFapiInteractionId,
                                                             String xCustomerUserAgent,
-                                                            List<OBExternalPermissions1Code> permissions,
-                                                            String httpUrl
-    ) {
-        log.info("Read product for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRProduct> products = frProductRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                                                            String consentId,
+                                                            String apiClientId
+    ) throws OBErrorException {
+        log.info("getAccountProduct for accountId: {}, consentId: {}, apiClientId: {}", accountId, consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        Page<FRProduct> products = frProductRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
 
         int totalPage = products.getTotalPages();
@@ -72,7 +83,7 @@ public class ProductsApiController implements ProductsApi {
                 .data(new OBReadProduct2Data().product(products.getContent().stream()
                         .map(p -> accountDataInternalIdFilter.apply(p.getProduct()))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
+                .links(PaginationUtil.generateLinks(buildGetAccountProductsUri(accountId), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
 
@@ -83,12 +94,13 @@ public class ProductsApiController implements ProductsApi {
                                                       String xFapiCustomerIpAddress,
                                                       String xFapiInteractionId,
                                                       String xCustomerUserAgent,
-                                                      List<String> accountIds,
-                                                      List<OBExternalPermissions1Code> permissions,
-                                                      String httpUrl
-    ) {
-        log.info("Reading products from account ids {}", accountIds);
-        Page<FRProduct> products = frProductRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+                                                      String consentId,
+                                                      String apiClientId
+    ) throws OBErrorException {
+        log.info("getProducts for consentId: {}, apiClientId: {}", consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkPermissions(consent);
+        Page<FRProduct> products = frProductRepository.byAccountIdInWithPermissions(consent.getAuthorisedAccountIds(), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
 
         int totalPage = products.getTotalPages();
@@ -97,7 +109,21 @@ public class ProductsApiController implements ProductsApi {
                 .data(new OBReadProduct2Data().product(products.getContent().stream()
                         .map(p -> accountDataInternalIdFilter.apply(p.getProduct()))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
+                .links(PaginationUtil.generateLinks(buildGetProductsUri(), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
+    }
+
+    private String buildGetAccountProductsUri(String accountId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("product").toString();
+    }
+
+    private String buildGetProductsUri() {
+        return linkTo(getClass()).slash("products").toString();
+    }
+
+    private static void checkPermissions(AccountAccessConsent consent) throws OBErrorException {
+        if (!consent.getRequestObj().getData().getPermissions().contains(FRExternalPermissionsCode.READPRODUCTS)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, FRExternalPermissionsCode.READPRODUCTS.getValue());
+        }
     }
 }
