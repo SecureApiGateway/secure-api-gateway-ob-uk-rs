@@ -97,7 +97,7 @@ public class HttpHeadersTestDataFactory {
         return headers;
     }
 
-    public static HttpHeaders requiredPaymentHttpHeadersWithApiClientId(String apiClientId) {
+    public static HttpHeaders requiredHttpHeadersWithApiClientId(String apiClientId) {
         final HttpHeaders httpHeaders = requiredPaymentHttpHeaders();
         httpHeaders.add("x-api-client-id", apiClientId);
         return httpHeaders;

@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -71,7 +72,7 @@ public class DomesticPaymentConsentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "client_234093-49";
 
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
 
     @LocalServerPort
     private int port;
@@ -151,6 +152,8 @@ public class DomesticPaymentConsentsApiControllerTest {
         final String fieldInvalidErrCode = OBStandardErrorCodes1.UK_OBIE_FIELD_INVALID.toString();
         assertThat(errors).containsExactlyInAnyOrder(new OBError1().errorCode(fieldInvalidErrCode).message(fieldMustNotBeNullErrMsg).path("risk"),
                                                      new OBError1().errorCode(fieldInvalidErrCode).message(fieldMustNotBeNullErrMsg).path("data"));
+
+        verifyNoMoreInteractions(consentStoreClient);
     }
 
     @Test
@@ -166,6 +169,8 @@ public class DomesticPaymentConsentsApiControllerTest {
         assertThat(errors).hasSize(1);
         assertThat(errors.get(0).getErrorCode()).isEqualTo(ErrorCode.OBRI_DATA_REQUEST_INVALID.toString());
         assertThat(errors.get(0).getMessage()).isEqualTo("Your data request is invalid: reason The amount 0 provided must be greater than 0");
+
+        verifyNoMoreInteractions(consentStoreClient);
     }
 
     @Test
