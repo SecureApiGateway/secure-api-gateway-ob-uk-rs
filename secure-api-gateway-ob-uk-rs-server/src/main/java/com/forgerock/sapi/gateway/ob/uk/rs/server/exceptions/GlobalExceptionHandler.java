@@ -357,24 +357,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         final HttpStatus httpStatus;
         final String errorCode;
+        final String message;
         switch (ex.getErrorType()) {
         case INVALID_PERMISSIONS:
             httpStatus = HttpStatus.FORBIDDEN;
             errorCode = OBRI_PERMISSION_INVALID.toString();
+            message = "You are not allowed to access this consent";
             break;
         case NOT_FOUND:
             httpStatus = HttpStatus.NOT_FOUND;
             errorCode = OBRI_CONSENT_NOT_FOUND.toString();
+            message = "Consent not found";
             break;
         case INVALID_STATE_TRANSITION:
             httpStatus = HttpStatus.BAD_REQUEST;
             errorCode = UK_OBIE_RESOURCE_INVALID_CONSENT_STATUS.toString();
+            message = ex.getMessage();
             break;
         default:
             // Handle as an unexpected exception which yields internal server error, log stacktrace for debugging
             log.warn("({}) Unexpected ConsentStoreClientException", fapiInteractionId, ex);
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             errorCode = OBRI_SERVER_INTERNAL_ERROR.toString();
+            message = ex.getMessage();
         }
 
         final String errorResponseId = fapiInteractionId != null ? fapiInteractionId : UUID.randomUUID().toString();
@@ -383,6 +388,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .id(errorResponseId)
                 .message(httpStatus.getReasonPhrase())
                 .errors(List.of(new OBError1().errorCode(errorCode)
-                        .message(ex.getMessage()))));
+                                              .message(message))));
     }
 }
