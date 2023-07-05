@@ -381,8 +381,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return ResponseEntity.status(httpStatus).body(new OBErrorResponse1().code(errorCode)
                 .id(errorResponseId)
-                .message(httpStatus.name())
-                .errors(List.of(new OBError1().errorCode(ex.getErrorType().name())
+                .message(httpStatus.getReasonPhrase())
+                .errors(List.of(new OBError1().errorCode(errorCode)
                         .message(ex.getMessage()))));
     }
 }
