@@ -33,8 +33,11 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 class OBWriteDomestic2ValidatorTest {
+
+    private static final String AUTHORISED_STATUS = "Authorised";
 
     private final OBWriteDomestic2Validator obWriteDomestic2Validator = new OBWriteDomestic2Validator();
 
@@ -46,7 +49,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
 
-        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent);
+        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, AUTHORISED_STATUS);
 
         validateSuccessResult(obWriteDomestic2Validator.validate(validatorContext));
     }
@@ -59,7 +62,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation().endToEndIdentification("value different from consent"));
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
 
-        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent);
+        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, AUTHORISED_STATUS);
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
@@ -74,11 +77,30 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk().contractPresentInidicator(Boolean.TRUE));
 
-        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent);
+        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, AUTHORISED_STATUS);
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
                                       .message("Payment invalid. Payment risk received doesn't match the risk payment request: 'The Risk field in the request does not match with the consent'")));
+    }
+
+    @Test
+    public void validationFailsWhenConsentIsNotAuthorised() {
+        final StatusEnum[] invalidStatuses = new StatusEnum[] {
+                StatusEnum.CONSUMED, StatusEnum.REJECTED, StatusEnum.AWAITINGAUTHORISATION
+        };
+
+        for (StatusEnum invalidStatus : invalidStatuses) {
+            final OBWriteDomesticConsent4Data consentData = new OBWriteDomesticConsent4Data().initiation(createInitiation());
+            final OBWriteDomesticConsent4 consent = new OBWriteDomesticConsent4().data(consentData).risk(createRisk());
+
+            final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
+            final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
+
+            final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, invalidStatus.toString());
+            validateErrorResult(obWriteDomestic2Validator.validate(validatorContext), List.of(new OBError1().errorCode("UK.OBIE.Resource.InvalidConsentStatus")
+                    .message("Confirmation is not allowed unless the consent status is Authorised. Currently, the consent is " + invalidStatus)));
+        }
     }
 
     private static OBRisk1 createRisk() {

@@ -15,13 +15,20 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.validation;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
+
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 
 /**
  * Spring Boot configuration for the Open Banking validation module with the default set of rules.
@@ -44,5 +51,10 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBWriteDomestic2ValidatorContext> domesticPaymentValidator() {
         return new OBValidationService<>(new OBWriteDomestic2Validator());
+    }
+
+    @Bean
+    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator() {
+        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet())));
     }
 }

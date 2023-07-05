@@ -35,15 +35,17 @@ class BasePaymentRequestValidatorTest {
     @Test
     void failsToConstructPaymentRequestValidationContextWithMissingParams() {
         assertThrowsNullPointerException("paymentRequest must be supplied",
-                () -> new PaymentRequestValidationContext(null, null, null, null, null));
+                () -> new PaymentRequestValidationContext(null, null, null, null, null, null));
         assertThrowsNullPointerException("paymentRequestInitiationSupplier must be supplied",
-                () -> new PaymentRequestValidationContext(new Object(), null, null, null, null));
+                () -> new PaymentRequestValidationContext(new Object(), null, null, null, null, null));
         assertThrowsNullPointerException("paymentRequestRiskSupplier must be supplied",
-                () -> new PaymentRequestValidationContext(new Object(), Object::new, null, null, null));
+                () -> new PaymentRequestValidationContext(new Object(), Object::new, null, null, null, null));
+        assertThrowsNullPointerException("consentStatus must be supplied",
+                () -> new PaymentRequestValidationContext(new Object(), Object::new, OBRisk1::new, null, null, null));
         assertThrowsNullPointerException("consentInitiationSupplier must be supplied",
-                () -> new PaymentRequestValidationContext(new Object(), Object::new, OBRisk1::new, null, null));
+                () -> new PaymentRequestValidationContext(new Object(), Object::new, OBRisk1::new, "status", null, null));
         assertThrowsNullPointerException("consentRiskSupplier must be supplied",
-                () -> new PaymentRequestValidationContext(new Object(), Object::new, OBRisk1::new, Object::new, null));
+                () -> new PaymentRequestValidationContext(new Object(), Object::new, OBRisk1::new, "status", Object::new, null));
     }
 
     @Test
@@ -67,7 +69,7 @@ class BasePaymentRequestValidatorTest {
         consentRequestData.setInitiation(consentRequestInitiation);
 
         final PaymentRequestValidationContext<OBDomesticVRPRequest, OBDomesticVRPInitiation> validationContext = new PaymentRequestValidationContext<>(paymentRequest,
-                () -> paymentRequest.getData().getInitiation(), paymentRequest::getRisk,
+                () -> paymentRequest.getData().getInitiation(), paymentRequest::getRisk, "Authorised",
                 () -> consent.getData().getInitiation(), consent::getRisk);
 
         assertEquals(paymentRequest, validationContext.getPaymentRequest());
@@ -75,6 +77,7 @@ class BasePaymentRequestValidatorTest {
         assertEquals(paymentRequestRisk, validationContext.getPaymentRequestRisk());
         assertEquals(consentRequestInitiation, validationContext.getConsentInitiation());
         assertEquals(consentRisk, validationContext.getConsentRisk());
+        assertEquals("Authorised", validationContext.getConsentStatus());
     }
 
     private static void assertThrowsNullPointerException(String errorMsg, Executable executable) {
