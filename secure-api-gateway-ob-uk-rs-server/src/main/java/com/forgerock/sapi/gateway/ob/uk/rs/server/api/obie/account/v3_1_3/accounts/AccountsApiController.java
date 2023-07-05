@@ -25,7 +25,9 @@ import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.accounts.AccountsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
@@ -64,6 +66,7 @@ public class AccountsApiController implements AccountsApi {
 
         log.info("Read account {} for consentId: {}", accountId, consentId);
         final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkPermissions(consent);
         FRAccount account = frAccountRepository.byAccountId(accountId, consent.getRequestObj().getData().getPermissions());
 
         List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(account.getAccount()));
@@ -85,6 +88,7 @@ public class AccountsApiController implements AccountsApi {
         log.info("Get Accounts for consentId: {}", consentId);
 
         final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkPermissions(consent);
         List<FRAccount> frAccounts = frAccountRepository.byAccountIds(consent.getAuthorisedAccountIds(), consent.getRequestObj().getData().getPermissions());
         List<OBAccount6> obAccounts = frAccounts
                 .stream()
@@ -95,6 +99,13 @@ public class AccountsApiController implements AccountsApi {
                 .data(new OBReadAccount5Data().account(obAccounts))
                 .links(LinksHelper.createGetAccountsSelfLink(getClass()))
                 .meta(PaginationUtil.generateMetaData(1)));
+    }
+
+    private static void checkPermissions(AccountAccessConsent consent) throws OBErrorException {
+        final List<FRExternalPermissionsCode> permissions = consent.getRequestObj().getData().getPermissions();
+        if (!permissions.contains(FRExternalPermissionsCode.READACCOUNTSBASIC) && !permissions.contains(FRExternalPermissionsCode.READACCOUNTSDETAIL)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, FRExternalPermissionsCode.READACCOUNTSBASIC + " or " + FRExternalPermissionsCode.READACCOUNTSDETAIL);
+        }
     }
 
 }
