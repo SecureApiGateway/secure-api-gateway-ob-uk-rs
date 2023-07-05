@@ -15,27 +15,33 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.scheduledpayments;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRScheduledPayment;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.scheduledpayments.ScheduledPaymentsApi;
-import lombok.extern.slf4j.Slf4j;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.scheduledpayments.ScheduledPaymentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRScheduledPayment;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3;
 import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3Data;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
 
 @Controller("ScheduledPaymentsApiV3.1.3")
 @Slf4j
@@ -47,12 +53,15 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
+    private final AccountResourceAccessService accountResourceAccessService;
+
     public ScheduledPaymentsApiController(@Value("${rs.page.default.scheduled-payments.size:10}") int pageLimitSchedulePayments,
                                           FRScheduledPaymentRepository frScheduledPaymentRepository,
-                                          AccountDataInternalIdFilter accountDataInternalIdFilter) {
+                                          AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitSchedulePayments = pageLimitSchedulePayments;
         this.frScheduledPaymentRepository = frScheduledPaymentRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -63,13 +72,14 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                                                                                String xFapiCustomerIpAddress,
                                                                                String xFapiInteractionId,
                                                                                String xCustomerUserAgent,
-                                                                               List<OBExternalPermissions1Code> permissions,
-                                                                               String httpUrl) {
-        log.info("Read scheduled payments for account {} with minimumPermissions {}", accountId, permissions);
-
-        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                                                                               String consentId,
+                                                                               String apiClientId) throws OBErrorException {
+        log.info("getAccountScheduledPayments for accountId: {}, consentId: {}, apiClientId: {}", accountId, consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkPermissions(consent);
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitSchedulePayments));
-        return packageResponse(page, httpUrl, scheduledPayments);
+        return packageResponse(page, buildGetAccountScheduledPaymentsUri(accountId), scheduledPayments);
     }
 
     @Override
@@ -79,14 +89,14 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                                                                         String xFapiCustomerIpAddress,
                                                                         String xFapiInteractionId,
                                                                         String xCustomerUserAgent,
-                                                                        List<String> accountIds,
-                                                                        List<OBExternalPermissions1Code> permissions,
-                                                                        String httpUrl) {
-        log.info("Reading schedule payment from account ids {}", accountIds);
-
-        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+                                                                        String consentId,
+                                                                        String apiClientId) throws OBErrorException {
+        log.info("getScheduledPayments for consentId: {}, apiClientIdd: {}", consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkPermissions(consent);
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(consent.getAuthorisedAccountIds(), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitSchedulePayments));
-        return packageResponse(page, httpUrl, scheduledPayments);
+        return packageResponse(page, buildGetScheduledPaymentsUri(), scheduledPayments);
     }
 
     private ResponseEntity<OBReadScheduledPayment3> packageResponse(int page, String httpUrl, Page<FRScheduledPayment> scheduledPayments) {
@@ -100,6 +110,21 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                                 .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
+    }
+
+    private String buildGetAccountScheduledPaymentsUri(String accountId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("scheduled-payments").toString();
+    }
+
+    private String buildGetScheduledPaymentsUri() {
+        return linkTo(getClass()).slash("scheduled-payments").toString();
+    }
+
+    private static void checkPermissions(AccountAccessConsent consent) throws OBErrorException {
+        final List<FRExternalPermissionsCode> permissions = consent.getRequestObj().getData().getPermissions();
+        if (!permissions.contains(FRExternalPermissionsCode.READSCHEDULEDPAYMENTSBASIC) && !permissions.contains(FRExternalPermissionsCode.READSCHEDULEDPAYMENTSDETAIL)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, FRExternalPermissionsCode.READSCHEDULEDPAYMENTSBASIC + " or " + FRExternalPermissionsCode.READSCHEDULEDPAYMENTSDETAIL);
+        }
     }
 
 }

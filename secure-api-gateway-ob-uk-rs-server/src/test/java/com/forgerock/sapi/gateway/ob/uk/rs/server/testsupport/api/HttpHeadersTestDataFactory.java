@@ -42,6 +42,7 @@ public class HttpHeadersTestDataFactory {
      * @param accountId The ID of the account to be returned.
      * @return the {@link HttpHeaders} instance.
      */
+    @Deprecated
     public static HttpHeaders requiredAccountHttpHeaders(String resourceUrl, String accountId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
@@ -55,22 +56,29 @@ public class HttpHeadersTestDataFactory {
         return headers;
     }
 
+
     /**
      * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Accounts API.
      *
-     * @param resourceUrl The URL to retrieve the resource in question.
-     * @param acceptHeader The value to set 'Accept' header.
+     * @return the {@link HttpHeaders} instance.
+     */
+    public static HttpHeaders requiredAccountApiHeaders(String consentId, String apiClientId) {
+        return requiredAccountApiHeaders(consentId, apiClientId, MediaType.APPLICATION_JSON);
+    }
+
+    /**
+     * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Accounts API.
      *
      * @return the {@link HttpHeaders} instance.
      */
-    public static HttpHeaders requiredAccountStatementFileHttpHeaders(String resourceUrl, MediaType acceptHeader) {
+    public static HttpHeaders requiredAccountApiHeaders(String consentId, String apiClientId, MediaType acceptHeader) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(acceptHeader));
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
-        headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
-        headers.add("x-ob-url", resourceUrl);
-        headers.add("x-ob-permissions", ALL_NON_BASIC_PERMISSIONS);
+        headers.add("x-api-client-id", apiClientId);
+        headers.add("x-intent-id", consentId);
         return headers;
     }
 
@@ -89,7 +97,7 @@ public class HttpHeadersTestDataFactory {
         return headers;
     }
 
-    public static HttpHeaders requiredPaymentHttpHeadersWithApiClientId(String apiClientId) {
+    public static HttpHeaders requiredHttpHeadersWithApiClientId(String apiClientId) {
         final HttpHeaders httpHeaders = requiredPaymentHttpHeaders();
         httpHeaders.add("x-api-client-id", apiClientId);
         return httpHeaders;

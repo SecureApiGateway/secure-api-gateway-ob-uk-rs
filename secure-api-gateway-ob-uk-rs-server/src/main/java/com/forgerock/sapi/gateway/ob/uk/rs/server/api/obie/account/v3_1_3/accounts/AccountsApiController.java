@@ -15,34 +15,43 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.accounts;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.accounts.AccountsApi;
-import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadAccount5;
-import uk.org.openbanking.datamodel.account.OBReadAccount5Data;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
+import org.joda.time.DateTime;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.accounts.AccountsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
+import lombok.extern.slf4j.Slf4j;
+import uk.org.openbanking.datamodel.account.OBAccount6;
+import uk.org.openbanking.datamodel.account.OBReadAccount5;
+import uk.org.openbanking.datamodel.account.OBReadAccount5Data;
 
 @Controller("AccountsApiV3.1.3")
 @Slf4j
 public class AccountsApiController implements AccountsApi {
 
+    private final AccountResourceAccessService accountResourceAccessService;
+
     private final FRAccountRepository frAccountRepository;
 
-    public AccountsApiController(FRAccountRepository frAccountRepository) {
+    public AccountsApiController(FRAccountRepository frAccountRepository, AccountResourceAccessService accountResourceAccessService) {
         this.frAccountRepository = frAccountRepository;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -52,15 +61,18 @@ public class AccountsApiController implements AccountsApi {
                                                      String xFapiCustomerIpAddress,
                                                      String xFapiInteractionId,
                                                      String xCustomerUserAgent,
-                                                     List<OBExternalPermissions1Code> permissions,
-                                                     String httpUrl) {
-        log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount account = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
+                                                     String consentId,
+                                                     String apiClientId) throws OBErrorException {
+
+        log.info("Read account {} for consentId: {}", accountId, consentId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkPermissions(consent);
+        FRAccount account = frAccountRepository.byAccountId(accountId, consent.getRequestObj().getData().getPermissions());
 
         List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(account.getAccount()));
         return ResponseEntity.ok(new OBReadAccount5()
                 .data(new OBReadAccount5Data().account(obAccounts))
-                .links(PaginationUtil.generateLinksOnePager(httpUrl))
+                .links(LinksHelper.createGetAccountsSelfLink(getClass(), accountId))
                 .meta(PaginationUtil.generateMetaData(1)));
     }
 
@@ -71,12 +83,13 @@ public class AccountsApiController implements AccountsApi {
                                                       String xFapiCustomerIpAddress,
                                                       String xFapiInteractionId,
                                                       String xCustomerUserAgent,
-                                                      List<String> accountIds,
-                                                      List<OBExternalPermissions1Code> permissions,
-                                                      String httpUrl) {
-        log.info("Accounts from account ids {}", accountIds);
+                                                      String consentId,
+                                                      String apiClientId) throws OBErrorException {
+        log.info("Get Accounts for consentId: {}", consentId);
 
-        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions));
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkPermissions(consent);
+        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(consent.getAuthorisedAccountIds(), consent.getRequestObj().getData().getPermissions());
         List<OBAccount6> obAccounts = frAccounts
                 .stream()
                 .map(frAccount -> toOBAccount6(frAccount.getAccount()))
@@ -84,8 +97,15 @@ public class AccountsApiController implements AccountsApi {
 
         return ResponseEntity.ok(new OBReadAccount5()
                 .data(new OBReadAccount5Data().account(obAccounts))
-                .links(PaginationUtil.generateLinksOnePager(httpUrl))
+                .links(LinksHelper.createGetAccountsSelfLink(getClass()))
                 .meta(PaginationUtil.generateMetaData(1)));
+    }
+
+    private static void checkPermissions(AccountAccessConsent consent) throws OBErrorException {
+        final List<FRExternalPermissionsCode> permissions = consent.getRequestObj().getData().getPermissions();
+        if (!permissions.contains(FRExternalPermissionsCode.READACCOUNTSBASIC) && !permissions.contains(FRExternalPermissionsCode.READACCOUNTSDETAIL)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, FRExternalPermissionsCode.READACCOUNTSBASIC + " or " + FRExternalPermissionsCode.READACCOUNTSDETAIL);
+        }
     }
 
 }

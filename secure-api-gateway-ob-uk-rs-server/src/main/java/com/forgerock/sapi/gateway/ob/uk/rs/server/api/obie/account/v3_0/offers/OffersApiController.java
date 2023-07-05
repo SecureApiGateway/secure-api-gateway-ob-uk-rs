@@ -15,11 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.offers;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FROffer;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.offers.FROfferRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.offers.OffersApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,15 +33,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+
 import uk.org.openbanking.datamodel.account.OBReadOffer1;
 import uk.org.openbanking.datamodel.account.OBReadOffer1Data;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("OffersApiV3.0")
 @Slf4j
@@ -46,10 +51,14 @@ public class OffersApiController implements OffersApi {
     @Value("${rs.page.default.offers.size:10}")
     private int PAGE_LIMIT_OFFERS;
 
+    private final AccountResourceAccessService accountResourceAccessService;
+
     public OffersApiController(FROfferRepository frOfferRepository,
-                               AccountDataInternalIdFilter accountDataInternalIdFilter) {
+                               AccountDataInternalIdFilter accountDataInternalIdFilter,
+                               AccountResourceAccessService accountResourceAccessService) {
         this.frOfferRepository = frOfferRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -60,11 +69,13 @@ public class OffersApiController implements OffersApi {
                                                          String xFapiCustomerIpAddress,
                                                          String xFapiInteractionId,
                                                          String xCustomerUserAgent,
-                                                         List<OBExternalPermissions1Code> permissions,
-                                                         String httpUrl
-    ) {
-        log.info("Read offers for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FROffer> offers = frOfferRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                                                         String consentId,
+                                                         String apiClientId) throws OBErrorException {
+
+        log.info("getAccountOffers for accountId: {}, consentId: {}, apiClientId:{}", accountId, consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkConsentHasRequiredPermission(consent);
+        Page<FROffer> offers = frOfferRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, PAGE_LIMIT_OFFERS));
         int totalPages = offers.getTotalPages();
 
@@ -74,7 +85,7 @@ public class OffersApiController implements OffersApi {
                                 .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
                                 .map(accountDataInternalIdFilter::apply)
                                 .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetAccountOffersUri(accountId), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
@@ -85,12 +96,13 @@ public class OffersApiController implements OffersApi {
                                                   String xFapiCustomerIpAddress,
                                                   String xFapiInteractionId,
                                                   String xCustomerUserAgent,
-                                                  List<String> accountIds,
-                                                  List<OBExternalPermissions1Code> permissions,
-                                                  String httpUrl
-    ) {
-        log.info("Reading offers from account ids {}", accountIds);
-        Page<FROffer> offers = frOfferRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+                                                  String consentId,
+                                                  String apiClientId) throws OBErrorException {
+
+        log.info("getOffers for consentId: {}, apiClientId: {}", consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkConsentHasRequiredPermission(consent);
+        Page<FROffer> offers = frOfferRepository.byAccountIdInWithPermissions(consent.getAuthorisedAccountIds(), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, PAGE_LIMIT_OFFERS));
         int totalPages = offers.getTotalPages();
 
@@ -100,7 +112,21 @@ public class OffersApiController implements OffersApi {
                                 .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
                                 .map(accountDataInternalIdFilter::apply)
                                 .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetOfferUri(), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
+    }
+
+    private String buildGetOfferUri() {
+        return linkTo(getClass()).slash("offers").toString();
+    }
+
+    private String buildGetAccountOffersUri(String accountId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("offers").toString();
+    }
+
+    private static void checkConsentHasRequiredPermission(AccountAccessConsent consent) throws OBErrorException {
+        if (!consent.getRequestObj().getData().getPermissions().contains(FRExternalPermissionsCode.READOFFERS)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, FRExternalPermissionsCode.READOFFERS.getValue());
+        }
     }
 }

@@ -15,11 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_5.beneficiaries;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBeneficiary;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_5.beneficiaries.BeneficiariesApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +33,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary5;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary5Data;
 
@@ -35,7 +41,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("BeneficiariesApiV3.1.5")
 @Slf4j
@@ -47,12 +53,17 @@ public class BeneficiariesApiController implements BeneficiariesApi {
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
+    private final AccountResourceAccessService accountResourceAccessService;
+
     public BeneficiariesApiController(@Value("${rs.page.default.beneficiaries.size:50}") int pageLimitBeneficiaries,
                                       FRBeneficiaryRepository frBeneficiaryRepository,
-                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
+                                      AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                      AccountResourceAccessService accountResourceAccessService) {
+
         this.pageLimitBeneficiaries = pageLimitBeneficiaries;
         this.frBeneficiaryRepository = frBeneficiaryRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -63,13 +74,24 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                                                                       String xFapiCustomerIpAddress,
                                                                       String xFapiInteractionId,
                                                                       String xCustomerUserAgent,
-                                                                      List<OBExternalPermissions1Code> permissions,
-                                                                      String httpUrl) {
-        log.info("Read beneficiaries for account {} with minimumPermissions {}", accountId, permissions);
+                                                                      String consentId,
+                                                                      String apiClientId) throws OBErrorException {
 
-        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+        log.info("Read beneficiaries for account {}, consentId: {}, apiClientId: {}", accountId, consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkConsentHasRequiredPermission(consent);
+
+        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitBeneficiaries));
-        return packageResponse(page, httpUrl, beneficiaries);
+        return packageResponse(page, buildGetAccountBeneficiariesUri(accountId), beneficiaries);
+    }
+
+    private String buildGetBeneficiariesUri() {
+        return linkTo(getClass()).slash("beneficiaries").toString();
+    }
+
+    private String buildGetAccountBeneficiariesUri(String accountId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("beneficiaries").toString();
     }
 
     @Override
@@ -79,14 +101,25 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                                                                String xFapiCustomerIpAddress,
                                                                String xFapiInteractionId,
                                                                String xCustomerUserAgent,
-                                                               List<String> accountIds,
-                                                               List<OBExternalPermissions1Code> permissions,
-                                                               String httpUrl) {
-        log.info("Beneficiaries from account ids {}", accountIds);
+                                                               String consentId,
+                                                               String apiClientId) throws OBErrorException {
 
-        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
-                PageRequest.of(page, pageLimitBeneficiaries));
-        return packageResponse(page, httpUrl, beneficiaries);
+        log.info("getBeneficiaries for consentId: {}, apiClientId: {}", consentId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkConsentHasRequiredPermission(consent);
+
+        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdInWithPermissions(consent.getAuthorisedAccountIds(),
+                consent.getRequestObj().getData().getPermissions(), PageRequest.of(page, pageLimitBeneficiaries));
+        return packageResponse(page, buildGetBeneficiariesUri(), beneficiaries);
+    }
+
+    private static void checkConsentHasRequiredPermission(AccountAccessConsent consent) throws OBErrorException {
+        final List<FRExternalPermissionsCode> permissions = consent.getRequestObj().getData().getPermissions();
+        if (!permissions.contains(FRExternalPermissionsCode.READBENEFICIARIESBASIC)
+                && !permissions.contains(FRExternalPermissionsCode.READBENEFICIARIESDETAIL)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID,
+                    List.of(FRExternalPermissionsCode.READBENEFICIARIESBASIC, FRExternalPermissionsCode.READBENEFICIARIESDETAIL));
+        }
     }
 
     private ResponseEntity<OBReadBeneficiary5> packageResponse(int page, String httpUrl, Page<FRBeneficiary> beneficiaries) {

@@ -15,13 +15,12 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_5.transactions;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRTransaction;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_5.transactions.TransactionsApi;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -29,15 +28,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_5.transactions.TransactionsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRTransaction;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
+import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.OBReadDataTransaction6;
 import uk.org.openbanking.datamodel.account.OBReadTransaction6;
 import uk.org.openbanking.datamodel.account.OBTransaction6;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("TransactionsApiV3.1.5")
 @Slf4j
@@ -49,12 +56,20 @@ public class TransactionsApiController implements TransactionsApi {
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
+    private final AccountResourceAccessService accountResourceAccessService;
+
+    private final Set<FRExternalPermissionsCode> transactionsPermissions = Set.of(FRExternalPermissionsCode.READTRANSACTIONSBASIC,
+                                                                                  FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
+                                                                                  FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
+                                                                                  FRExternalPermissionsCode.READTRANSACTIONSDEBITS);
+
     public TransactionsApiController(@Value("${rs.page.default.transaction.size:120}") int pageLimitTransactions,
                                      FRTransactionRepository FRTransactionRepository,
-                                     AccountDataInternalIdFilter accountDataInternalIdFilter) {
+                                     AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitTransactions = pageLimitTransactions;
         this.FRTransactionRepository = FRTransactionRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -69,10 +84,9 @@ public class TransactionsApiController implements TransactionsApi {
                                                                      String xFapiCustomerIpAddress,
                                                                      String xFapiInteractionId,
                                                                      String xCustomerUserAgent,
-                                                                     List<OBExternalPermissions1Code> permissions,
-                                                                     String httpUrl) {
-        log.info("Read transactions for account  {} with minimumPermissions {}", accountId,
-                permissions);
+                                                                     String consentId,
+                                                                     String apiClientId) throws OBErrorException {
+        log.info("getAccountTransactions for accountId: {}, consentId: {}, apiClientId: {}", accountId, consentId, apiClientId);
         log.debug("transactionStore request transactionFrom {} transactionTo {} ",
                 fromBookingDateTime, toBookingDateTime);
 
@@ -83,8 +97,11 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkPermissions(consent);
+
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
-                fromBookingDateTime, toBookingDateTime, toFRExternalPermissionsCodeList(permissions),
+                fromBookingDateTime, toBookingDateTime, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
@@ -99,7 +116,7 @@ public class TransactionsApiController implements TransactionsApi {
 
         return ResponseEntity.ok(new OBReadTransaction6()
                 .data(new OBReadDataTransaction6().transaction(transactions))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetAccountTransactionUri(accountId), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
     }
 
@@ -116,11 +133,10 @@ public class TransactionsApiController implements TransactionsApi {
                                                                               String xFapiCustomerIpAddress,
                                                                               String xFapiInteractionId,
                                                                               String xCustomerUserAgent,
-                                                                              List<OBExternalPermissions1Code> permissions,
-                                                                              String httpUrl) {
-        log.info("Reading transations from account id {}, statement id {}, fromBookingDate {} toBookingDate {} " +
-                        "minimumPermissions {} pageNumber {} ", accountId, statementId,
-                fromBookingDateTime, toBookingDateTime, permissions, page);
+                                                                              String consentId,
+                                                                              String apiClientId) throws OBErrorException {
+        log.info("getAccountStatementTransactions from account id {}, statement id {}, consentId: {}, apiClientId: {} fromBookingDate {} toBookingDate {} pageNumber {} ",
+                accountId, statementId, consentId, apiClientId, fromBookingDateTime, toBookingDateTime, page);
 
         if (toBookingDateTime == null) {
             toBookingDateTime = DateTime.now();
@@ -129,8 +145,11 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkPermissions(consent);
+
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
-                fromBookingDateTime, toBookingDateTime, toFRExternalPermissionsCodeList(permissions),
+                fromBookingDateTime, toBookingDateTime, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
@@ -144,7 +163,7 @@ public class TransactionsApiController implements TransactionsApi {
         int totalPages = response.getTotalPages();
 
         return ResponseEntity.ok(new OBReadTransaction6().data(new OBReadDataTransaction6().transaction(transactions))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetAccountStatementTransactionUri(accountId, statementId), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
     }
 
@@ -159,11 +178,10 @@ public class TransactionsApiController implements TransactionsApi {
                                                               String xFapiCustomerIpAddress,
                                                               String xFapiInteractionId,
                                                               String xCustomerUserAgent,
-                                                              List<String> accountIds,
-                                                              List<OBExternalPermissions1Code> permissions,
-                                                              String httpUrl) {
-        log.info("Reading transations from account ids {}, fromBookingDate {} toBookingDate {} minimumPermissions {} pageNumber {} ",
-                accountIds, fromBookingDateTime, toBookingDateTime, permissions, page);
+                                                              String consentId,
+                                                              String apiClientId) throws OBErrorException{
+        log.info("getTransactions for consentId: {}, apiClientId: {}, fromBookingDate {} toBookingDate {} pageNumber {} ",
+                consentId, apiClientId, fromBookingDateTime, toBookingDateTime, page);
 
         if (toBookingDateTime == null) {
             toBookingDateTime = DateTime.now();
@@ -172,8 +190,11 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction> body = FRTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(accountIds,
-                fromBookingDateTime, toBookingDateTime, toFRExternalPermissionsCodeList(permissions),
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkPermissions(consent);
+
+        Page<FRTransaction> body = FRTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(consent.getAuthorisedAccountIds(),
+                fromBookingDateTime, toBookingDateTime, consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = body.getContent()
@@ -187,7 +208,26 @@ public class TransactionsApiController implements TransactionsApi {
         int totalPages = body.getTotalPages();
 
         return  ResponseEntity.ok(new OBReadTransaction6().data(new OBReadDataTransaction6().transaction(transactions))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
+                .links(PaginationUtil.generateLinks(buildGetTransactionsUri(), page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
+    }
+
+    private String buildGetAccountTransactionUri(String accountId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("transactions").toString();
+    }
+
+    private String buildGetAccountStatementTransactionUri(String accountId, String statementId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("statements").slash(statementId).slash("transactions").toString();
+    }
+
+    private String buildGetTransactionsUri() {
+        return linkTo(getClass()).slash("transactions").toString();
+    }
+
+    void checkPermissions(AccountAccessConsent consent) throws OBErrorException {
+        final List<FRExternalPermissionsCode> permissions = consent.getRequestObj().getData().getPermissions();
+        if (transactionsPermissions.stream().noneMatch(permissions::contains)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, "at least one of: " + transactionsPermissions);
+        }
     }
 }

@@ -15,14 +15,16 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_7.party;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_7.party.PartyApi;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_7.party.PartyApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 @Controller("PartyApiV3.1.7")
 public class PartyApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.party.PartyApiController implements PartyApi {
 
-    public PartyApiController(@Qualifier("PartyApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.party.PartyApiController baseController) {
-        super(baseController);
+    public PartyApiController(FRPartyRepository frPartyRepository, AccountResourceAccessService accountResourceAccessService) {
+        super(frPartyRepository, accountResourceAccessService);
     }
 }

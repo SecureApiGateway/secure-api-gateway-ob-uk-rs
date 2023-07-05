@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_7.sched
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_7.scheduledpayments.ScheduledPaymentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -28,8 +30,9 @@ public class ScheduledPaymentsApiController extends com.forgerock.sapi.gateway.o
 
     public ScheduledPaymentsApiController(@Value("${rs.page.default.scheduled-payments.size:10}") int pageLimitSchedulePayments,
                                           FRScheduledPaymentRepository frScheduledPaymentRepository,
-                                          AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(pageLimitSchedulePayments, frScheduledPaymentRepository, accountDataInternalIdFilter);
+                                          AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                          AccountResourceAccessService accountResourceAccessService) {
+        super(pageLimitSchedulePayments, frScheduledPaymentRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 
 }

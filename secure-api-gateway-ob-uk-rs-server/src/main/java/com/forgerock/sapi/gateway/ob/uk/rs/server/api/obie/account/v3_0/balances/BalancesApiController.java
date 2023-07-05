@@ -15,10 +15,16 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.balances;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBalance;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.balances.BalancesApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,25 +32,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+
 import uk.org.openbanking.datamodel.account.OBReadBalance1;
 import uk.org.openbanking.datamodel.account.OBReadBalance1Data;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("BalancesApiV3.0")
 @Slf4j
 public class BalancesApiController implements BalancesApi {
 
+    private final AccountResourceAccessService accountResourceAccessService;
+
     private final FRBalanceRepository frBalanceRepository;
     @Value("${rs.page.default.balances.size:10}")
     private int PAGE_LIMIT_BALANCES;
 
-    public BalancesApiController(FRBalanceRepository frBalanceRepository) {
+    public BalancesApiController(FRBalanceRepository frBalanceRepository, AccountResourceAccessService accountResourceAccessService) {
         this.frBalanceRepository = frBalanceRepository;
+        this.accountResourceAccessService = accountResourceAccessService;
     }
 
     @Override
@@ -55,10 +64,12 @@ public class BalancesApiController implements BalancesApi {
                                                              String xFapiCustomerIpAddress,
                                                              String xFapiInteractionId,
                                                              String xCustomerUserAgent,
-                                                             List<OBExternalPermissions1Code> permissions,
-                                                             String httpUrl
-    ) {
-        log.info("Read balances for account  {} with minimumPermissions {}", accountId, permissions);
+                                                             String consentId,
+                                                             String apiClientId) throws OBErrorException {
+
+        log.info("Read balances for consentId: {}, accountId: {}, apiClientId: {}", consentId, accountId, apiClientId);
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkConsentHasRequiredPermission(consent);
         Page<FRBalance> balances = frBalanceRepository.findByAccountId(accountId, PageRequest.of(page, PAGE_LIMIT_BALANCES));
         int totalPage = balances.getTotalPages();
 
@@ -66,7 +77,7 @@ public class BalancesApiController implements BalancesApi {
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
                         .map(b -> toOBReadBalance1DataBalance(b.getBalance()))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
+                .links(PaginationUtil.generateLinks(buildGetAccountBalancesUri(accountId), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
 
@@ -77,12 +88,13 @@ public class BalancesApiController implements BalancesApi {
                                                       String xFapiCustomerIpAddress,
                                                       String xFapiInteractionId,
                                                       String xCustomerUserAgent,
-                                                      List<String> accountIds,
-                                                      List<OBExternalPermissions1Code> permissions,
-                                                      String httpUrl
-    ) {
-        log.info("Reading balances from account ids {}", accountIds);
-        Page<FRBalance> balances = frBalanceRepository.findByAccountIdIn(accountIds, PageRequest.of(page, PAGE_LIMIT_BALANCES));
+                                                      String consentId,
+                                                      String apiClientId) throws OBErrorException {
+        log.info("Reading balances for consentId: {}, apiClientId: {}", consentId, apiClientId);
+
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
+        checkConsentHasRequiredPermission(consent);
+        Page<FRBalance> balances = frBalanceRepository.findByAccountIdIn(consent.getAuthorisedAccountIds(), PageRequest.of(page, PAGE_LIMIT_BALANCES));
 
         int totalPage = balances.getTotalPages();
 
@@ -90,7 +102,22 @@ public class BalancesApiController implements BalancesApi {
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
                         .map(b -> toOBReadBalance1DataBalance(b.getBalance()))
                         .collect(Collectors.toList())))
-                .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
+                .links(PaginationUtil.generateLinks(buildGetBalancesUri(), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
+    }
+
+    private String buildGetBalancesUri() {
+        return linkTo(getClass()).slash("balances").toString();
+    }
+
+    private String buildGetAccountBalancesUri(String accountId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("balances").toString();
+    }
+
+    private static void checkConsentHasRequiredPermission(AccountAccessConsent consent) throws OBErrorException {
+        final FRExternalPermissionsCode readBalancesPermission = FRExternalPermissionsCode.READBALANCES;
+        if (!consent.getRequestObj().getData().getPermissions().contains(readBalancesPermission)) {
+            throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID, readBalancesPermission.getValue());
+        }
     }
 }

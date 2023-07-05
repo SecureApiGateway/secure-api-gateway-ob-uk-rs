@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.party;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.party;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.party.PartyApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRParty;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
@@ -35,6 +39,9 @@ import uk.org.openbanking.datamodel.account.OBReadParty2;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRPartyDataTestDataFactory.aValidFRPartyData;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.createAuthorisedConsentAllPermissions;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.mockAccountResourceAccessServiceResponse;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -46,8 +53,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class PartyApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNT_PARTY_URI = "/open-banking/v3.1.6/aisp/accounts/{AccountId}/party";
-    private static final String PARTY_URI = "/open-banking/v3.1.6/aisp/party";
+    private static final String ACCOUNT_PARTY_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/party";
+    private static final String PARTY_URI = "/open-banking/v3.1.10/aisp/party";
 
     @LocalServerPort
     private int port;
@@ -60,6 +67,9 @@ public class PartyApiControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @MockBean
+    private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;
 
@@ -79,7 +89,7 @@ public class PartyApiControllerTest {
         FRParty party = FRParty.builder()
                 .accountId(accountId)
                 .party(partyData)
-                .userId("AUserId")
+                .userId(partyData.getPartyId())
                 .build();
         frPartyRepository.save(party);
     }
@@ -95,11 +105,14 @@ public class PartyApiControllerTest {
         // Given
         String url = accountPartyUrl(accountId);
 
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
         // When
         ResponseEntity<OBReadParty2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadParty2.class);
 
         // Then
@@ -115,14 +128,16 @@ public class PartyApiControllerTest {
     public void shouldGetParty() {
         // Given
         String url = partyUrl();
-        HttpHeaders headers = HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId);
-        headers.add("x-ob-user-id", "AUserId");
+
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        consent.setResourceOwnerId(partyData.getPartyId());
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent);
 
         // When
         ResponseEntity<OBReadParty2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(headers),
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
                 OBReadParty2.class);
 
         // Then

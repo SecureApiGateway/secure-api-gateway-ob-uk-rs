@@ -17,12 +17,14 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1.balance
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1.balances.BalancesApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+
 import org.springframework.stereotype.Controller;
 
 @Controller("BalancesApiV3.1")
 public class BalancesApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.balances.BalancesApiController implements BalancesApi {
 
-    public BalancesApiController(FRBalanceRepository frBalanceRepository) {
-        super(frBalanceRepository);
+    public BalancesApiController(FRBalanceRepository frBalanceRepository, AccountResourceAccessService accountResourceAccessService) {
+        super(frBalanceRepository, accountResourceAccessService);
     }
 }

@@ -15,14 +15,22 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_6.accounts;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
@@ -30,14 +38,18 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+
 import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBReadAccount5;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
  * Spring Boot Test for {@link AccountsApiController}.
@@ -51,6 +63,8 @@ public class AccountsApiControllerTest {
 
     @LocalServerPort
     private int port;
+    @MockBean
+    private AccountAccessConsentStoreClient accountAccessConsentStoreClient;
 
     @Autowired
     private FRAccountRepository frAccountRepository;
@@ -77,10 +91,15 @@ public class AccountsApiControllerTest {
         String url = accountsIdUrl(accountId);
 
         // When
+        final String apiClientId = "client-123";
+        final String consentId = "consent-343553";
+
+        mockAuthorisedConsentResponse(accountId, apiClientId, consentId);
+
         ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consentId, apiClientId)),
                 OBReadAccount5.class);
 
         // Then
@@ -112,11 +131,16 @@ public class AccountsApiControllerTest {
         String accountId = account.getId();
         String url = accountsUrl();
 
+        final String apiClientId = "client-123";
+        final String consentId = "consent-343553";
+
+        mockAuthorisedConsentResponse(accountId, apiClientId, consentId);
+
         // When
         ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
-                new HttpEntity<>(HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId)),
+                new HttpEntity<>(requiredAccountApiHeaders(consentId, apiClientId)),
                 OBReadAccount5.class);
 
         // Then
@@ -133,6 +157,16 @@ public class AccountsApiControllerTest {
         assertThat(returnedAccount.getServicer().getIdentification()).isEqualTo(financialAccount.getServicer().getIdentification());
         assertThat(returnedAccount.getAccount().get(0).getIdentification()).isEqualTo(financialAccount.getAccounts().get(0).getIdentification());
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
+    }
+
+    private void mockAuthorisedConsentResponse(String accountId, String apiClientId, String consentId) {
+        final AccountAccessConsent consent = new AccountAccessConsent();
+        consent.setId(consentId);
+        consent.setApiClientId(apiClientId);
+        consent.setStatus("Authorised");
+        consent.setAuthorisedAccountIds(List.of(accountId));
+        consent.setRequestObj(FRReadConsent.builder().data(FRReadConsentData.builder().permissions(List.of(FRExternalPermissionsCode.READACCOUNTSDETAIL)).build()).build());
+        given(accountAccessConsentStoreClient.getConsent(eq(consentId), eq(apiClientId))).willReturn(consent);
     }
 
     private String accountsUrl() {

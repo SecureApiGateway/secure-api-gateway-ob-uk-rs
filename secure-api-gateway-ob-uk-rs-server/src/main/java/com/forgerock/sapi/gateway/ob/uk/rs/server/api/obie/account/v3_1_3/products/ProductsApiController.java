@@ -16,65 +16,16 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.products;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_3.products.ProductsApi;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadProduct2;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import java.util.List;
+import org.springframework.stereotype.Controller;
 
 @Controller("ProductsApiV3.1.3")
-public class ProductsApiController implements ProductsApi {
+public class ProductsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.products.ProductsApiController implements ProductsApi {
 
-    private final com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.products.ProductsApiController previousVersionController;
-
-    public ProductsApiController(@Qualifier("ProductsApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.products.ProductsApiController previousVersionController) {
-        this.previousVersionController = previousVersionController;
-    }
-
-    @Override
-    public ResponseEntity<OBReadProduct2> getAccountProduct(String accountId,
-                                                            int page,
-                                                            String authorization,
-                                                            DateTime xFapiAuthDate,
-                                                            String xFapiCustomerIpAddress,
-                                                            String xFapiInteractionId,
-                                                            String xCustomerUserAgent,
-                                                            List<OBExternalPermissions1Code> permissions,
-                                                            String httpUrl) {
-        return previousVersionController.getAccountProduct(
-                accountId,
-                page,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                permissions,
-                httpUrl);
-    }
-
-    @Override
-    public ResponseEntity<OBReadProduct2> getProducts(int page,
-                                                      String authorization,
-                                                      DateTime xFapiAuthDate,
-                                                      String xFapiCustomerIpAddress,
-                                                      String xFapiInteractionId,
-                                                      String xCustomerUserAgent,
-                                                      List<String> accountIds,
-                                                      List<OBExternalPermissions1Code> permissions,
-                                                      String httpUrl) {
-        return previousVersionController.getProducts(
-                page,
-                authorization,
-                xFapiAuthDate,
-                xFapiCustomerIpAddress,
-                xFapiInteractionId,
-                xCustomerUserAgent,
-                accountIds,
-                permissions,
-                httpUrl);
+    public ProductsApiController(FRProductRepository frProductRepository, AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+        super(frProductRepository, accountDataInternalIdFilter, accountResourceAccessService);
     }
 }

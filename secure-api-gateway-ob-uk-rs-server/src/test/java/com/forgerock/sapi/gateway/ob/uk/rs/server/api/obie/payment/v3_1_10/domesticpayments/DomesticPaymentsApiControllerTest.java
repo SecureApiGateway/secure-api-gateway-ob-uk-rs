@@ -77,7 +77,7 @@ import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPa
 public class DomesticPaymentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "test_client_1234567890";
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
     private static final String BASE_URL = "http://localhost:";
     private static final String DOMESTIC_PAYMENTS_URI = "/open-banking/v3.1.10/pisp/domestic-payments";
 
