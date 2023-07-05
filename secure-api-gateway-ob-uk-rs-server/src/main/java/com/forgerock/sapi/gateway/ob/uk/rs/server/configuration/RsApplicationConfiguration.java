@@ -15,13 +15,15 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import static com.fasterxml.jackson.annotation.JsonInclude.*;
+import static com.fasterxml.jackson.core.JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.databind.DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS;
+import static com.fasterxml.jackson.databind.MapperFeature.USE_BASE_TYPE_AS_DEFAULT_IMPL;
+
+import java.util.List;
+import java.util.TimeZone;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.joda.time.DateTime;
@@ -34,11 +36,13 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+
 import uk.org.openbanking.jackson.DateTimeDeserializer;
 import uk.org.openbanking.jackson.DateTimeSerializer;
-
-import java.util.List;
-import java.util.TimeZone;
 
 @Configuration
 public class RsApplicationConfiguration {
@@ -78,15 +82,12 @@ public class RsApplicationConfiguration {
     public Jackson2ObjectMapperBuilderCustomizer objectMapperBuilderCustomizer() {
         return (jacksonObjectMapperBuilder) -> {
             jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
-            jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_NULL);
-            jacksonObjectMapperBuilder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            jacksonObjectMapperBuilder.featuresToEnable(MapperFeature.USE_BASE_TYPE_AS_DEFAULT_IMPL);
+            jacksonObjectMapperBuilder.serializationInclusion(Include.NON_NULL);
+            jacksonObjectMapperBuilder.featuresToDisable(FAIL_ON_UNKNOWN_PROPERTIES);
+            jacksonObjectMapperBuilder.featuresToEnable(USE_BASE_TYPE_AS_DEFAULT_IMPL, USE_BIG_DECIMAL_FOR_FLOATS, WRITE_BIGDECIMAL_AS_PLAIN);
             jacksonObjectMapperBuilder.modules(new JodaModule());
-            jacksonObjectMapperBuilder.featuresToEnable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-            jacksonObjectMapperBuilder.featuresToEnable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
             jacksonObjectMapperBuilder.deserializerByType(DateTime.class, new DateTimeDeserializer());
             jacksonObjectMapperBuilder.serializerByType(DateTime.class, new DateTimeSerializer(DateTime.class));
-            jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
         };
     }
 }
