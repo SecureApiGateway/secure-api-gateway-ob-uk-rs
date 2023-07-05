@@ -71,7 +71,7 @@ public class AccountAccessConsentsApiController implements AccountAccessConsents
 
         logger.info("Attempting to deleteAccountAccessConsent - consentId: {}, apiClientId: {}", consentId, apiClientId);
         accountAccessConsentStoreClient.deleteConsent(consentId, apiClientId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
