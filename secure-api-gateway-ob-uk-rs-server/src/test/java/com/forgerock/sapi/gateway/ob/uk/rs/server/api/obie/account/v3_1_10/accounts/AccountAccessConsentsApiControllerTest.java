@@ -160,7 +160,7 @@ class AccountAccessConsentsApiControllerTest {
         assertThat(errors).hasSize(1);
         assertThat(errors.get(0)).isEqualTo(
                 new OBError1().errorCode(OBStandardErrorCodes1.UK_OBIE_FIELD_INVALID.toString())
-                              .message("The field received is invalid. Reason 'must not be null'").path("data.permissions"));
+                              .message("The field received is invalid. Reason 'size must be between 1 and 2147483647'").path("data.permissions"));
 
         verifyNoMoreInteractions(consentStoreClient);
     }
