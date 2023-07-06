@@ -41,6 +41,7 @@ public class LinksHelper {
     private static final String FUNDS_CONFIRMATION = "funds-confirmation";
     private static final String FUNDS_CONFIRMATIONS = "funds-confirmations";
     private static final String DOMESTIC_VRP_PAYMENTS = "domestic-vrps";
+    private static final String DOMESTIC_VRP_CONSENTS = "domestic-vrp-consents";
 
 
     /**
@@ -220,6 +221,17 @@ public class LinksHelper {
      */
     public static Links createDomesticVrpPaymentLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, DOMESTIC_VRP_PAYMENTS, id);
+    }
+
+    /**
+     * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a domestic VRP consent.
+     *
+     * @param controllerClass The controller class that is responsible for handling the self link.
+     * @param id The ID of the resource concerned.
+     * @return The {@link Links} instance with the populated 'self' URL.
+     */
+    public static Links createDomesticVrpConsentLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_VRP_CONSENTS, id);
     }
 
     /**

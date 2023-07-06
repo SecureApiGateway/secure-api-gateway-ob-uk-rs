@@ -26,9 +26,11 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 
 /**
  * Spring Boot configuration for the Open Banking validation module with the default set of rules.
@@ -56,5 +58,10 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator() {
         return new OBValidationService<>(new OBWriteDomesticConsent4Validator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet())));
+    }
+
+    @Bean
+    public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator() {
+        return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator());
     }
 }

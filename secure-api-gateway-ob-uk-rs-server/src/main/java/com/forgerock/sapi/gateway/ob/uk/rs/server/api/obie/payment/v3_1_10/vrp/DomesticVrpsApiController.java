@@ -19,9 +19,10 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.vali
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpsApi;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
@@ -32,7 +33,7 @@ public class DomesticVrpsApiController extends com.forgerock.sapi.gateway.ob.uk.
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
             DomesticVrpValidationService domesticVrpValidationService,
-            ConsentService consentService,
+            DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
             FRAccountRepository frAccountRepository
@@ -40,7 +41,7 @@ public class DomesticVrpsApiController extends com.forgerock.sapi.gateway.ob.uk.
         super(
                 paymentSubmissionRepository,
                 domesticVrpValidationService,
-                consentService,
+                consentStoreClient,
                 limitBreachResponseSimulatorService,
                 paymentSubmissionValidator,
                 frAccountRepository

@@ -68,7 +68,7 @@ class AccountAccessConsentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "client-34234234";
 
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredAccountConsentApiHeaders(TEST_API_CLIENT_ID);
 
     @LocalServerPort
     private int port;
