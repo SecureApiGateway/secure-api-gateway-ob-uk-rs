@@ -23,6 +23,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -42,6 +44,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPConsent;
@@ -53,10 +56,12 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payment
 import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
+import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.vrp.OBCashAccountDebtorWithName;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsData;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatus;
@@ -145,6 +150,52 @@ public class DomesticVrpsApiControllerTest {
                 new OBError1().errorCode("UK.OBIE.Field.Invalid").message("The field received is invalid. Reason 'must not be null'").path("data"));
     }
 
+    @Test
+    public void testFailToCreatePaymentWhenConsentNotAuthorised() {
+        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
+
+        final DomesticVRPConsent consent = createAwaitingAuthorisationConsent(obDomesticVRPRequest.getData().getConsentId());
+
+        given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
+
+        ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBErrorResponse1.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        final OBErrorResponse1 errorResponse = response.getBody();
+        assertThat(errorResponse.getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
+        assertThat(errorResponse.getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
+        assertThat(errorResponse.getErrors()).hasSize(1);
+        assertThat(errorResponse.getErrors().get(0)).isEqualTo(
+                new OBError1().errorCode("UK.OBIE.Resource.InvalidConsentStatus").message("Action can only be performed on consents with status: Authorised. Currently, the consent is: AwaitingAuthorisation"));
+    }
+
+    @Test
+    public void testFailToCreatePaymentWhenMaxIndividualAmountIsBreached() {
+        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
+
+        final DomesticVRPConsent consent = createAuthorisedConsent(obDomesticVRPRequest.getData().getConsentId());
+        final OBActiveOrHistoricCurrencyAndAmount instructedAmount = obDomesticVRPRequest.getData().getInstruction().getInstructedAmount();
+        // set MaxIndividualAmount < Instructed Amount
+        consent.getRequestObj().getData().getControlParameters().setMaximumIndividualAmount(new FRAmount(new BigDecimal(
+                instructedAmount.getAmount()).divide(BigDecimal.valueOf(2), RoundingMode.DOWN).toPlainString(),
+                instructedAmount.getCurrency()));
+
+        given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
+
+        ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBErrorResponse1.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        final OBErrorResponse1 errorResponse = response.getBody();
+        assertThat(errorResponse.getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
+        assertThat(errorResponse.getMessage()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getDescription());
+        assertThat(errorResponse.getErrors()).hasSize(1);
+        assertThat(errorResponse.getErrors().get(0)).isEqualTo(
+                new OBError1().errorCode("UK.OBIE.Rules.FailsControlParameters").message("The field 'InstructedAmount' breaches a limitation set by 'MaximumIndividualAmount'"));
+    }
+
+
 
     @Test
     public void shouldCreateDomesticVrpPayment_refundYes() {
@@ -152,12 +203,9 @@ public class DomesticVrpsApiControllerTest {
         OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
 
-        final DomesticVRPConsent consent = new DomesticVRPConsent();
-        final FRDomesticVRPConsent consentRequest = FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest());
-        consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.YES);
-        consent.setRequestObj(consentRequest);
-        consent.setId(obDomesticVRPRequest.getData().getConsentId());
-        consent.setAuthorisedDebtorAccountId("acc-1321243");
+        final DomesticVRPConsent consent = createAuthorisedConsent(obDomesticVRPRequest.getData().getConsentId());
+        consent.getRequestObj().getData().setReadRefundAccount(FRReadRefundAccount.YES);
+
         given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
 
         // When
@@ -183,11 +231,9 @@ public class DomesticVrpsApiControllerTest {
         OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
 
-        final DomesticVRPConsent consent = new DomesticVRPConsent();
-        final FRDomesticVRPConsent consentRequest = FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest());
-        consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.NO);
-        consent.setRequestObj(consentRequest);
-        consent.setId(obDomesticVRPRequest.getData().getConsentId());
+        final DomesticVRPConsent consent = createAuthorisedConsent(obDomesticVRPRequest.getData().getConsentId());
+        consent.getRequestObj().getData().setReadRefundAccount(FRReadRefundAccount.NO);
+
         given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
 
         // When
@@ -208,11 +254,7 @@ public class DomesticVrpsApiControllerTest {
         OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
 
-        final DomesticVRPConsent consent = new DomesticVRPConsent();
-        final FRDomesticVRPConsent consentRequest = FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest());
-        consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.NO);
-        consent.setRequestObj(consentRequest);
-        consent.setId(obDomesticVRPRequest.getData().getConsentId());
+        final DomesticVRPConsent consent = createAuthorisedConsent(obDomesticVRPRequest.getData().getConsentId());
         given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
 
         ResponseEntity<OBDomesticVRPResponse> vrpCreated = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBDomesticVRPResponse.class);
@@ -228,17 +270,34 @@ public class DomesticVrpsApiControllerTest {
         assertThat(response.getBody().getLinks().getSelf().getPath().endsWith(VRP_PAYMENTS_URI + "/" + responseData.getDomesticVRPId())).isTrue();
     }
 
+    private static DomesticVRPConsent createAwaitingAuthorisationConsent(String consentId) {
+        final FRDomesticVRPConsent consentRequest = FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest());
+        final DomesticVRPConsent consent = new DomesticVRPConsent();
+        consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.NO);
+        consent.setRequestObj(consentRequest);
+        consent.setId(consentId);
+        consent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        return consent;
+    }
+
+    private static DomesticVRPConsent createAuthorisedConsent(String consentId) {
+        final FRDomesticVRPConsent consentRequest = FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest());
+        final DomesticVRPConsent consent = new DomesticVRPConsent();
+        consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.NO);
+        consent.setRequestObj(consentRequest);
+        consent.setId(consentId);
+        consent.setStatus(StatusEnum.AUTHORISED.toString());
+        consent.setAuthorisedDebtorAccountId("acc-1321243");
+        return consent;
+    }
+
     @Test
     public void shouldGetDomesticVrpPaymentDetails() {
         // Given
         OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
 
-        final DomesticVRPConsent consent = new DomesticVRPConsent();
-        final FRDomesticVRPConsent consentRequest = FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest());
-        consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.NO);
-        consent.setRequestObj(consentRequest);
-        consent.setId(obDomesticVRPRequest.getData().getConsentId());
+        final DomesticVRPConsent consent = createAuthorisedConsent(obDomesticVRPRequest.getData().getConsentId());
         given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
 
         ResponseEntity<OBDomesticVRPResponse> vrpCreated = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBDomesticVRPResponse.class);
@@ -263,9 +322,7 @@ public class DomesticVrpsApiControllerTest {
         headers.add("x-vrp-limit-breach-response-simulation", periodType + "-" + periodAlignment);
         HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, headers);
 
-        final DomesticVRPConsent consent = new DomesticVRPConsent();
-        consent.setRequestObj(FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(consentRequest));
-        consent.setId(obDomesticVRPRequest.getData().getConsentId());
+        final DomesticVRPConsent consent = createAuthorisedConsent(obDomesticVRPRequest.getData().getConsentId());
         given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
 
         // When

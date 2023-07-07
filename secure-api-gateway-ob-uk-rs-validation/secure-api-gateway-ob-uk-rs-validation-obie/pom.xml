@@ -67,6 +67,12 @@
             <version>1.2.3</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-common-obie-datamodel</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

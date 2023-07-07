@@ -61,7 +61,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payment
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
@@ -85,7 +85,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final PaymentSubmissionValidator paymentSubmissionValidator;
 
     private final DomesticPaymentConsentStoreClient consentStoreClient;
-    private final OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator;
+    private final OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator;
 
     private final OBWriteDomesticConsentResponse5Factory consentResponseFactory;
 
@@ -94,7 +94,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            OBValidationService<OBWriteDomestic2ValidatorContext> paymentValidator,
+            OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,
             DomesticPaymentConsentStoreClient consentStoreClient,
             OBWriteDomesticConsentResponse5Factory consentResponseFactory,
             FRAccountRepository accountRepository) {
@@ -134,7 +134,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         // validate the consent against the request
         log.debug("Validating Domestic Payment submission");
-        final OBWriteDomestic2ValidatorContext validationCtxt = new OBWriteDomestic2ValidatorContext(obWriteDomestic2,
+        final OBWriteDomestic2ValidationContext validationCtxt = new OBWriteDomestic2ValidationContext(obWriteDomestic2,
                 FRWriteDomesticConsentConverter.toOBWriteDomesticConsent4(consent.getRequestObj()), consent.getStatus());
         paymentValidator.validate(validationCtxt);
         log.debug("Domestic Payment validation successful");

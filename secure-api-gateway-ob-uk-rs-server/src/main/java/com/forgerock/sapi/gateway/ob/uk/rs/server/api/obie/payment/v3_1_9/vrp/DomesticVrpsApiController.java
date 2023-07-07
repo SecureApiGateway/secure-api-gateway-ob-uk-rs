@@ -23,7 +23,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpReques
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_9.vrp.DomesticVrpsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.DomesticVrpValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
@@ -34,6 +33,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.Idempot
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
@@ -64,7 +65,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     protected static final String DEFAULT_CHARGE_AMOUNT = "1.00";
     protected static final String DEFAULT_CHARGE_CURRENCY = "GBP";
-    public final DomesticVrpValidationService domesticVrpValidationService;
+
+    private final OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator;
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
     private final PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
@@ -73,14 +75,14 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
-            DomesticVrpValidationService domesticVrpValidationService,
+            OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
             DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
             FRAccountRepository accountRepository
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
-        this.domesticVrpValidationService = domesticVrpValidationService;
+        this.paymentRequestValidator = paymentRequestValidator;
         this.consentStoreClient = consentStoreClient;
         this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
@@ -192,8 +194,9 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         // validate the consent against the instruction
         log.debug("Validating VRP submission");
-        domesticVrpValidationService.validate(FRDomesticVRPConsentConverters.toOBDomesticVRPConsentRequest(consent.getRequestObj()),
-                                                                                                           frDomesticVRPRequest);
+        paymentRequestValidator.validate(new OBDomesticVRPRequestValidationContext(obDomesticVRPRequest,
+                FRDomesticVRPConsentConverters.toOBDomesticVRPConsentRequest(consent.getRequestObj()), consent.getStatus()));
+
         log.debug("VRP validation successful! Creating the payment.");
 
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()

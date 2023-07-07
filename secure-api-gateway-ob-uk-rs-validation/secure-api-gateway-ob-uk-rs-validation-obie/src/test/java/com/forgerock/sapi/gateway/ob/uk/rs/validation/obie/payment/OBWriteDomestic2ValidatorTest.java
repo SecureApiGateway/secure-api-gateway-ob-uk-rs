@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
 
 import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
@@ -49,7 +49,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
 
-        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, AUTHORISED_STATUS);
+        final OBWriteDomestic2ValidationContext validatorContext = new OBWriteDomestic2ValidationContext(paymentRequest, consent, AUTHORISED_STATUS);
 
         validateSuccessResult(obWriteDomestic2Validator.validate(validatorContext));
     }
@@ -62,7 +62,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation().endToEndIdentification("value different from consent"));
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
 
-        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, AUTHORISED_STATUS);
+        final OBWriteDomestic2ValidationContext validatorContext = new OBWriteDomestic2ValidationContext(paymentRequest, consent, AUTHORISED_STATUS);
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
@@ -77,7 +77,7 @@ class OBWriteDomestic2ValidatorTest {
         final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
         final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk().contractPresentInidicator(Boolean.TRUE));
 
-        final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, AUTHORISED_STATUS);
+        final OBWriteDomestic2ValidationContext validatorContext = new OBWriteDomestic2ValidationContext(paymentRequest, consent, AUTHORISED_STATUS);
 
         validateErrorResult(obWriteDomestic2Validator.validate(validatorContext),
                 List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
@@ -97,7 +97,7 @@ class OBWriteDomestic2ValidatorTest {
             final OBWriteDomestic2Data paymentData = new OBWriteDomestic2Data().initiation(createInitiation());
             final OBWriteDomestic2 paymentRequest = new OBWriteDomestic2().data(paymentData).risk(createRisk());
 
-            final OBWriteDomestic2ValidatorContext validatorContext = new OBWriteDomestic2ValidatorContext(paymentRequest, consent, invalidStatus.toString());
+            final OBWriteDomestic2ValidationContext validatorContext = new OBWriteDomestic2ValidationContext(paymentRequest, consent, invalidStatus.toString());
             validateErrorResult(obWriteDomestic2Validator.validate(validatorContext), List.of(new OBError1().errorCode("UK.OBIE.Resource.InvalidConsentStatus")
                     .message("Confirmation is not allowed unless the consent status is Authorised. Currently, the consent is " + invalidStatus)));
         }
