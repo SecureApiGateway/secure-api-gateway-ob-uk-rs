@@ -15,19 +15,26 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBDomesticVRPConsentResponseFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.google.gson.JsonObject;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
+
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
 import uk.org.openbanking.datamodel.vrp.*;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
@@ -41,11 +48,70 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {
 
     private final FundsAvailabilityService fundsAvailabilityService;
-    private final ConsentService consentService;
 
-    public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService, ConsentService consentService) {
+    private final DomesticVRPConsentStoreClient consentStoreClient;
+
+    private final OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator;
+
+    private final OBDomesticVRPConsentResponseFactory responseFactory;
+
+    public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
+                                            DomesticVRPConsentStoreClient consentStoreClient,
+                                            OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
+                                            OBDomesticVRPConsentResponseFactory responseFactory) {
         this.fundsAvailabilityService = fundsAvailabilityService;
-        this.consentService = consentService;
+        this.vrpConsentValidator = vrpConsentValidator;
+        this.consentStoreClient = consentStoreClient;
+        this.responseFactory = responseFactory;
+    }
+
+    @Override
+    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsGet(String consentId,
+                                                                               String authorization,
+                                                                               String xFapiAuthDate,
+                                                                               String xFapiCustomerIpAddress,
+                                                                               String xFapiInteractionId,
+                                                                               String xCustomerUserAgent,
+                                                                               String apiClientId,
+                                                                               HttpServletRequest request) throws OBErrorResponseException {
+
+        log.info("domesticVrpConsentsGet - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}", consentId, apiClientId, xFapiInteractionId);
+        final DomesticVRPConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
+        return ResponseEntity.ok(responseFactory.buildConsentResponse(consent, getClass()));
+    }
+
+    @Override
+    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPost(String authorization,
+                                                                                String xIdempotencyKey,
+                                                                                String xJwsSignature,
+                                                                                OBDomesticVRPConsentRequest obDomesticVRPConsentRequest,
+                                                                                String xFapiAuthDate, String xFapiCustomerIpAddress,
+                                                                                String xFapiInteractionId,
+                                                                                String xCustomerUserAgent,
+                                                                                String apiClientId,
+                                                                                HttpServletRequest request) throws OBErrorResponseException {
+
+        log.info("domesticVrpConsentsPost - creating consent: {}, apiClientId: {}, idempotencyKey: {}, x-fapi-interaction-id: {}  ",
+                obDomesticVRPConsentRequest, apiClientId, xIdempotencyKey, xFapiInteractionId);
+
+        vrpConsentValidator.validate(obDomesticVRPConsentRequest);
+
+        final CreateDomesticVRPConsentRequest createRequest = new CreateDomesticVRPConsentRequest();
+        createRequest.setConsentRequest(FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(obDomesticVRPConsentRequest));
+        createRequest.setApiClientId(apiClientId);
+        createRequest.setIdempotencyKey(xIdempotencyKey);
+
+        final DomesticVRPConsent consent = consentStoreClient.createConsent(createRequest);
+        log.info("Created consent - id: {}", consent.getId());
+
+        return new ResponseEntity<>(responseFactory.buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<Void> domesticVrpConsentsDelete(String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request) throws OBErrorResponseException {
+        log.info("domesticVrpConsentsDelete - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}", consentId, apiClientId, xFapiInteractionId);
+        consentStoreClient.deleteConsent(consentId, apiClientId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
@@ -57,14 +123,19 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                                                                String xFapiCustomerIpAddress,
                                                                                                String xFapiInteractionId,
                                                                                                String xCustomerUserAgent,
+                                                                                               String apiClientId,
                                                                                                HttpServletRequest request
     ) throws OBErrorResponseException {
-        validateRequest(obVRPFundsConfirmationRequest, consentId);
 
-        JsonObject intent = consentService.getIDMIntent(authorization, consentId);
-        log.debug("Retrieved consent from IDM");
-        String accountId = intent.get("accountId").getAsString();
+        validateFundsConfirmationRequest(obVRPFundsConfirmationRequest, consentId);
 
+        DomesticVRPConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
+
+        if (StatusEnum.fromValue(consent.getStatus()) != StatusEnum.AUTHORISED) {
+            throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
+        }
+        String accountId = consent.getAuthorisedDebtorAccountId();
         String amount = obVRPFundsConfirmationRequest.getData().getInstructedAmount().getAmount();
 
         // Check if funds are available on the account
@@ -95,10 +166,9 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 );
     }
 
-    private void validateRequest(
-            OBVRPFundsConfirmationRequest obVRPFundsConfirmationRequest,
-            String consentId
-    ) throws OBErrorResponseException {
+    private void validateFundsConfirmationRequest(OBVRPFundsConfirmationRequest obVRPFundsConfirmationRequest,
+                                                  String consentId) throws OBErrorResponseException {
+
         log.debug("Validating request {}", obVRPFundsConfirmationRequest.toString());
         OBVRPFundsConfirmationRequestData data = obVRPFundsConfirmationRequest.getData();
         if (Objects.isNull(data) || Objects.isNull(data.getInstructedAmount()) || Objects.isNull(data.getInstructedAmount().getAmount())) {

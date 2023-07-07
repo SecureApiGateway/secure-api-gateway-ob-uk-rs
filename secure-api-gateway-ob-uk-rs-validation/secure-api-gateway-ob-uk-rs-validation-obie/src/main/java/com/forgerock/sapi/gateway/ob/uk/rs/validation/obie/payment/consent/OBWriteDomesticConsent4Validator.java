@@ -34,10 +34,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
  */
 public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDomesticConsent4> {
 
-    private final Set<String> validatePaymentCurrencies;
+    private final Set<String> validPaymentCurrencies;
 
     public OBWriteDomesticConsent4Validator(Set<String> validPaymentCurrencies) {
-        this.validatePaymentCurrencies = Objects.requireNonNull(validPaymentCurrencies, "validatePaymentCurrencies must be supplied");
+        this.validPaymentCurrencies = Objects.requireNonNull(validPaymentCurrencies, "validPaymentCurrencies must be supplied");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDom
                     String.format("The amount %s provided must be greater than 0", amount)));
         }
         final String currency = instructedAmount.getCurrency();
-        if (!validatePaymentCurrencies.contains(currency)) {
+        if (!validPaymentCurrencies.contains(currency)) {
             validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                     String.format("The currency %s provided is not supported", currency)));
         }

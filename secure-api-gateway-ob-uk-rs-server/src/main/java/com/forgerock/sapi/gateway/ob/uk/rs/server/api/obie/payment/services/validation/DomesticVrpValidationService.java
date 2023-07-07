@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.common.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 
@@ -51,7 +51,7 @@ public class DomesticVrpValidationService {
      * @param frDomesticVRPRequest the current submit domestic VRP request
      * @throws OBErrorException
      */
-    public void validate(OBDomesticVRPConsentResponse consent, FRDomesticVrpRequest frDomesticVRPRequest) throws OBErrorException {
+    public void validate(OBDomesticVRPConsentRequest consent, FRDomesticVrpRequest frDomesticVRPRequest) throws OBErrorException {
         this.riskValidator = new OBRisk1Validator(true);
 
         // Initiation validation
@@ -165,7 +165,7 @@ public class DomesticVrpValidationService {
         final BigDecimal consentAmount = new BigDecimal(controlParameters.getMaximumIndividualAmount().getAmount());
 
         // InstructionAmount must be less than or equal to the MaximumIndividualAmount consented to
-        if (instructionAmount.compareTo(consentAmount) == 1) {
+        if (instructionAmount.compareTo(consentAmount) > 0) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,
                                        INSTRUCTED_AMOUNT_FIELD, MAX_INDIVIDUAL_AMOUNT_FIELD);
         }

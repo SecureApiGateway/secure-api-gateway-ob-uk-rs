@@ -15,14 +15,14 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_9.vrp;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_9.vrp.DomesticVrpsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.DomesticVrpValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
@@ -34,7 +34,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.Idempot
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.google.gson.JsonObject;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
+
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -43,13 +45,11 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
 import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,25 +66,25 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     protected static final String DEFAULT_CHARGE_CURRENCY = "GBP";
     public final DomesticVrpValidationService domesticVrpValidationService;
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
-    private final ConsentService consentService;
     private final PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-    private final FRAccountRepository frAccountRepository;
+    private final FRAccountRepository accountRepository;
+    private final DomesticVRPConsentStoreClient consentStoreClient;
 
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
             DomesticVrpValidationService domesticVrpValidationService,
-            ConsentService consentService,
+            DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            FRAccountRepository frAccountRepository
+            FRAccountRepository accountRepository
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.domesticVrpValidationService = domesticVrpValidationService;
-        this.consentService = consentService;
+        this.consentStoreClient = consentStoreClient;
         this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
-        this.frAccountRepository = frAccountRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -95,6 +95,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
     ) {
@@ -107,25 +108,9 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         }
         log.debug("Found VRP payment '{}'", domesticVRPId);
 
-        //get the consent
-        JsonObject intent = consentService.getIDMIntent(authorization, optionalVrpPayment.get().getConsentId());
-        log.debug("Retrieved consent from IDM");
-
-        //deserialize the intent to ob response object
-        OBDomesticVRPConsentResponse obConsentResponse = consentService.deserialize(
-                OBDomesticVRPConsentResponse.class,
-                intent.getAsJsonObject("OBIntentObject"),
-                optionalVrpPayment.get().getConsentId()
-        );
-
-        OBDomesticVRPResponse entity = responseEntity(optionalVrpPayment.get());
-
-        // update entity with refund
-        setRefund(
-                obConsentResponse.getData().getReadRefundAccount(),
-                intent,
-                entity
-        );
+        final FRDomesticVrpPaymentSubmission paymentSubmission = optionalVrpPayment.get();
+        final DomesticVRPConsent consent = consentStoreClient.getConsent(paymentSubmission.getConsentId(), apiClientId);
+        OBDomesticVRPResponse entity = responseEntity(consent, paymentSubmission);
 
         return ResponseEntity.ok(entity);
     }
@@ -138,6 +123,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
     ) {
@@ -187,6 +173,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xFapiInteractionId,
             String xCustomerUserAgent,
             String xVrpLimitBreachResponseSimulation,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException, OBErrorException {
@@ -195,29 +182,18 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obDomesticVRPRequest.getRisk());
 
         String consentId = obDomesticVRPRequest.getData().getConsentId();
-        //get the consent
-        JsonObject intent = consentService.getIDMIntent(authorization, consentId);
-        log.debug("Retrieved consent from IDM");
-
-        //deserialize the intent to ob response object
-        OBDomesticVRPConsentResponse obConsentResponse = consentService.deserialize(
-                OBDomesticVRPConsentResponse.class,
-                intent.getAsJsonObject("OBIntentObject"),
-                consentId
-        );
-
-        log.debug("Deserialized consent from IDM");
-
+        final DomesticVRPConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
         if (xVrpLimitBreachResponseSimulation != null) {
             log.info("Executing Limit breach simulation, value of header: {}", xVrpLimitBreachResponseSimulation);
-            limitBreachResponseSimulatorService.processRequest(xVrpLimitBreachResponseSimulation, obConsentResponse);
+            limitBreachResponseSimulatorService.processRequest(xVrpLimitBreachResponseSimulation, consent.getRequestObj());
         }
 
         FRDomesticVrpRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
 
         // validate the consent against the instruction
         log.debug("Validating VRP submission");
-        domesticVrpValidationService.validate(obConsentResponse, frDomesticVRPRequest);
+        domesticVrpValidationService.validate(FRDomesticVRPConsentConverters.toOBDomesticVRPConsentRequest(consent.getRequestObj()),
+                                                                                                           frDomesticVRPRequest);
         log.debug("VRP validation successful! Creating the payment.");
 
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()
@@ -236,29 +212,27 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         vrpPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(vrpPaymentSubmission);
 
-        OBDomesticVRPResponse entity = responseEntity(obDomesticVRPRequest, vrpPaymentSubmission);
-
-        // update entity with refund
-        setRefund(
-                obConsentResponse.getData().getReadRefundAccount(),
-                intent,
-                entity
-        );
+        OBDomesticVRPResponse entity = responseEntity(consent, obDomesticVRPRequest, vrpPaymentSubmission);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(entity);
     }
 
-    private OBDomesticVRPResponse responseEntity(
-            FRDomesticVrpPaymentSubmission paymentSubmission
-    ) {
+    private OBDomesticVRPResponse responseEntity(DomesticVRPConsent consent, FRDomesticVrpPaymentSubmission paymentSubmission) {
         OBDomesticVRPRequest obDomesticVRPRequest = toOBDomesticVRPRequest(paymentSubmission.getPayment());
-        return responseEntity(obDomesticVRPRequest, paymentSubmission);
+        return responseEntity(consent, obDomesticVRPRequest, paymentSubmission);
     }
 
-    private OBDomesticVRPResponse responseEntity(
-            OBDomesticVRPRequest obDomesticVRPRequest,
-            FRDomesticVrpPaymentSubmission paymentSubmission
-    ) {
+    private OBDomesticVRPResponse responseEntity(DomesticVRPConsent consent, OBDomesticVRPRequest obDomesticVRPRequest,
+                                                 FRDomesticVrpPaymentSubmission paymentSubmission) {
+
+        final Optional<FRResponseDataRefund> refundAccountData;
+        if (consent.getRequestObj().getData().getReadRefundAccount() == FRReadRefundAccount.YES) {
+            final FRAccount debtorAccount = accountRepository.byAccountId(consent.getAuthorisedDebtorAccountId());
+            refundAccountData = FRResponseDataRefundFactory.frResponseDataRefund(debtorAccount.getAccount().getFirstAccount());
+        } else {
+            refundAccountData = Optional.empty();
+        }
+
         OBDomesticVRPResponse response = new OBDomesticVRPResponse()
                 .data(
                         new OBDomesticVRPResponseData()
@@ -269,6 +243,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .debtorAccount(obDomesticVRPRequest.getData().getInitiation().getDebtorAccount())
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
                                 .instruction(obDomesticVRPRequest.getData().getInstruction())
+                                .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBCashAccountDebtorWithName).orElse(null))
                 ).links(LinksHelper.createDomesticVrpPaymentLink(this.getClass(), paymentSubmission.getId())
                 ).meta(new Meta())
                 .risk(obDomesticVRPRequest.getRisk());
@@ -288,30 +263,5 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 ));
 
         return response;
-    }
-
-    private void setRefund(
-            OBReadRefundAccountEnum obReadRefundAccountEnum,
-            JsonObject intent,
-            OBDomesticVRPResponse entity
-    ) {
-        if (Objects.nonNull(obReadRefundAccountEnum) && obReadRefundAccountEnum.equals(OBReadRefundAccountEnum.YES)) {
-            String accountId = Objects.nonNull(intent.get("accountId")) ? intent.get("accountId").getAsString() : null;
-            log.debug("Account Id from consent '{}'", accountId);
-            if (Objects.nonNull(accountId)) {
-                FRAccount frAccount = Objects.nonNull(accountId) ? frAccountRepository.byAccountId(accountId) : null;
-                FRAccountIdentifier frAccountIdentifier = Objects.nonNull(frAccount) ?
-                        frAccount.getAccount().getFirstAccount() :
-                        null;
-                Optional<FRResponseDataRefund> refund = Objects.nonNull(frAccountIdentifier) ?
-                        FRResponseDataRefundFactory.frResponseDataRefund(frAccountIdentifier) :
-                        null;
-                if(Objects.nonNull(refund)) {
-                    entity.getData().setRefund(
-                            refund.map(FRResponseDataRefundConverter::toOBCashAccountDebtorWithName).orElse(null)
-                    );
-                }
-            }
-        }
     }
 }

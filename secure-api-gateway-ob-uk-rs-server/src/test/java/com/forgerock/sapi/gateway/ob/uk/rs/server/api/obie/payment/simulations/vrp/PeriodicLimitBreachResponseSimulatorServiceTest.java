@@ -15,17 +15,18 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPConsentData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPControlParameters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRPeriodicLimits;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRPeriodicLimits.PeriodAlignmentEnum;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRPeriodicLimits.PeriodTypeEnum;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits.PeriodAlignmentEnum;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits.PeriodTypeEnum;
+
 
 import java.util.Arrays;
 
@@ -41,7 +42,7 @@ public class PeriodicLimitBreachResponseSimulatorServiceTest {
 
     @Test
     public void testSimulateLimitBreach() {
-        final OBDomesticVRPConsentResponse consent = createConsent(createPeriodicLimit("GBP", "20", PeriodTypeEnum.WEEK, PeriodAlignmentEnum.CONSENT),
+        final FRDomesticVRPConsent consent = createConsent(createPeriodicLimit("GBP", "20", PeriodTypeEnum.WEEK, PeriodAlignmentEnum.CONSENT),
                 createPeriodicLimit("GBP", "80", PeriodTypeEnum.MONTH, PeriodAlignmentEnum.CONSENT),
                 createPeriodicLimit("GBP", "500.00", PeriodTypeEnum.YEAR, PeriodAlignmentEnum.CONSENT));
 
@@ -101,21 +102,18 @@ public class PeriodicLimitBreachResponseSimulatorServiceTest {
                 obErrorException.getMessage());
     }
 
-    private OBDomesticVRPConsentResponse createConsent(OBDomesticVRPControlParametersPeriodicLimits... periodicLimits) {
-
-        final OBDomesticVRPConsentResponse consent = new OBDomesticVRPConsentResponse()
-                .data(
-                        new OBDomesticVRPConsentResponseData().controlParameters(
-                                new OBDomesticVRPControlParameters()
-                                        .periodicLimits(Arrays.asList(periodicLimits))
-                        )
-                );
-        return consent;
+    private FRDomesticVRPConsent createConsent(FRPeriodicLimits... periodicLimits) {
+        return FRDomesticVRPConsent.builder().data(
+                FRDomesticVRPConsentData.builder().controlParameters(
+                        FRDomesticVRPControlParameters.builder().periodicLimits(Arrays.asList(periodicLimits)).
+                                build())
+                        .build())
+                .build();
     }
 
-    private OBDomesticVRPControlParametersPeriodicLimits createPeriodicLimit(String currency, String amount, PeriodTypeEnum periodType,
+    private FRPeriodicLimits createPeriodicLimit(String currency, String amount, PeriodTypeEnum periodType,
                                                  PeriodAlignmentEnum periodAlignment) {
-        final OBDomesticVRPControlParametersPeriodicLimits limit = new OBDomesticVRPControlParametersPeriodicLimits();
+        final FRPeriodicLimits limit = new FRPeriodicLimits();
         limit.setPeriodAlignment(periodAlignment);
         limit.setPeriodType(periodType);
         limit.setCurrency(currency);

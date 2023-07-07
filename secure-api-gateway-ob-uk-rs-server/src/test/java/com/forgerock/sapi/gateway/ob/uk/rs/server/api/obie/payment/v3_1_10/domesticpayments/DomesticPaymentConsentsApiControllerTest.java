@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.dome
 
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.FundsConfirmationTestHelpers.validateConsentNotAuthorisedErrorResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -47,7 +48,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientException;
@@ -72,7 +72,7 @@ public class DomesticPaymentConsentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "client_234093-49";
 
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
 
     @LocalServerPort
     private int port;
@@ -92,6 +92,7 @@ public class DomesticPaymentConsentsApiControllerTest {
     public void postConstruct() {
         controllerBaseUri = "http://localhost:" + port + "/open-banking/v3.1.10/pisp/domestic-payment-consents";
     }
+
 
     @Test
     public void testCreateConsent() {
@@ -221,10 +222,7 @@ public class DomesticPaymentConsentsApiControllerTest {
         final ResponseEntity<OBErrorResponse1> fundsConfirmationResponse = restTemplate.exchange(fundsConfirmationUri,
                 HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBErrorResponse1.class);
 
-        assertThat(fundsConfirmationResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        final List<OBError1> errors = fundsConfirmationResponse.getBody().getErrors();
-        assertThat(errors).hasSize(1);
-        assertThat(errors.get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1("AwaitingAuthorisation"));
+        validateConsentNotAuthorisedErrorResponse(fundsConfirmationResponse);
 
         verifyNoInteractions(fundsAvailabilityService);
     }
