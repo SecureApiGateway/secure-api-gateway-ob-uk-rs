@@ -84,7 +84,7 @@ import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFac
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-class DomesticVrpConsentsApiControllerTest {
+public class DomesticVrpConsentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "client-id-325w25";
 

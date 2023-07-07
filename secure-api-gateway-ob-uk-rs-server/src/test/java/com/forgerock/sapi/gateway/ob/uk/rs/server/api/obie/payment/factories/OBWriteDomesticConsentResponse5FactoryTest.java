@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.BeanValidationTestUtils.verifyBeanValidationIsSuccessful;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -64,6 +64,8 @@ class OBWriteDomesticConsentResponse5FactoryTest {
         assertThat(response.getLinks().getSelf().toString())
                 .endsWith("/open-banking/v3.1.10/pisp/domestic-payment-consents/" + domesticPaymentConsent.getId());
         assertThat(response.getMeta()).isNotNull();
+
+        verifyBeanValidationIsSuccessful(response);
     }
 
 }
