@@ -24,8 +24,10 @@ import org.springframework.context.annotation.Configuration;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidatorContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 
@@ -51,7 +53,7 @@ public class DefaultOBValidationModule {
      * Bean to validate OBWriteDomestic2 objects (Domestic Payment Requests)
      */
     @Bean
-    public OBValidationService<OBWriteDomestic2ValidatorContext> domesticPaymentValidator() {
+    public OBValidationService<OBWriteDomestic2ValidationContext> domesticPaymentValidator() {
         return new OBValidationService<>(new OBWriteDomestic2Validator());
     }
 
@@ -63,5 +65,10 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator() {
         return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator());
+    }
+
+    @Bean
+    public OBValidationService<OBDomesticVRPRequestValidationContext> domesticVRPPaymentRequestValidator() {
+        return new OBValidationService<>(new OBDomesticVRPRequestValidator());
     }
 }
