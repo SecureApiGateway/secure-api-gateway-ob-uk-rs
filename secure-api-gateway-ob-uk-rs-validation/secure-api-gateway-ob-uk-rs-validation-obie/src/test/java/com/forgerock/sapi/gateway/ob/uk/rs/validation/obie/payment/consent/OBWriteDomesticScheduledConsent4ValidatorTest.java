@@ -29,19 +29,19 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
 
-class OBWriteDomesticConsent4ValidatorTest {
+class OBWriteDomesticScheduledConsent4ValidatorTest {
 
-    final OBWriteDomesticConsent4Validator validator = new OBWriteDomesticConsent4Validator(createInstructedAmountValidator("GBP", "EUR", "USD"));
+    final OBWriteDomesticScheduledConsent4Validator validator = new OBWriteDomesticScheduledConsent4Validator(createInstructedAmountValidator("GBP", "EUR", "USD"));
 
-    private static OBWriteDomesticConsent4 createValidConsent() {
-        final OBWriteDomesticConsent4 consent = new OBWriteDomesticConsent4();
-        final OBWriteDomesticConsent4Data consentData = new OBWriteDomesticConsent4Data();
-        final OBWriteDomestic2DataInitiation initiation = new OBWriteDomestic2DataInitiation();
+    private static OBWriteDomesticScheduledConsent4 createValidConsent() {
+        final OBWriteDomesticScheduledConsent4 consent = new OBWriteDomesticScheduledConsent4();
+        final OBWriteDomesticScheduledConsent4Data consentData = new OBWriteDomesticScheduledConsent4Data();
+        final OBWriteDomesticScheduled2DataInitiation initiation = new OBWriteDomesticScheduled2DataInitiation();
         initiation.setInstructedAmount(new OBWriteDomestic2DataInitiationInstructedAmount().amount("12.99").currency("GBP"));
         consentData.setInitiation(initiation);
         consent.setData(consentData);
@@ -50,14 +50,14 @@ class OBWriteDomesticConsent4ValidatorTest {
     }
 
     @Test
-    public void testValidDomesticConsent() {
+    public void testValidConsent() {
         validateSuccessResult(validator.validate(createValidConsent()));
     }
 
     @Test
     public void failsValidationWhenInstructedAmountIsInvalid() {
         final OBError1 expectedValidationError = OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("invalid instructed amount");
-        final ValidationResult<OBError1> validationResult = new OBWriteDomesticConsent4Validator(new BaseOBValidator<>() {
+        final ValidationResult<OBError1> validationResult = new OBWriteDomesticScheduledConsent4Validator(new BaseOBValidator<>() {
             @Override
             protected void validate(OBWriteDomestic2DataInitiationInstructedAmount obj, ValidationResult<OBError1> validationResult) {
                 validationResult.addError(expectedValidationError);

@@ -18,25 +18,27 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 import java.util.Objects;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 
 /**
- * Validator of OBWriteDomesticConsent4 objects (Domestic Payment Consents)
+ * Validator of OBWriteDomesticScheduledConsent4 objects (Domestic Scheduled Payment Consents)
  */
-public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDomesticConsent4> {
+public class OBWriteDomesticScheduledConsent4Validator extends BaseOBValidator<OBWriteDomesticScheduledConsent4> {
 
-    private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
+    private final Validator<OBWriteDomestic2DataInitiationInstructedAmount, OBError1> instructedAmountValidator;
 
-    public OBWriteDomesticConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator) {
+    public OBWriteDomesticScheduledConsent4Validator(Validator<OBWriteDomestic2DataInitiationInstructedAmount, OBError1> instructedAmountValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
     }
 
     @Override
-    protected void validate(OBWriteDomesticConsent4 domesticPaymentConsent, ValidationResult<OBError1> validationResult) {
+    protected void validate(OBWriteDomesticScheduledConsent4 domesticPaymentConsent, ValidationResult<OBError1> validationResult) {
         validationResult.mergeResults(instructedAmountValidator.validate(domesticPaymentConsent.getData().getInitiation().getInstructedAmount()));
     }
+
 }
