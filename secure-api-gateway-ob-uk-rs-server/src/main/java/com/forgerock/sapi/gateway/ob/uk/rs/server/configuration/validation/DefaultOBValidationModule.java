@@ -30,6 +30,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRP
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
@@ -75,6 +77,11 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator) {
         return new OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(instructedAmountValidator));
+    }
+
+    @Bean
+    public OBValidationService<OBWriteDomesticScheduled2ValidationContext> domesticScheduledPaymentValidator() {
+        return new OBValidationService<>(new OBWriteDomesticScheduled2Validator());
     }
 
     @Bean
