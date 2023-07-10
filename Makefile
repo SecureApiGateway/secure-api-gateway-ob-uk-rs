@@ -10,7 +10,7 @@ clean:
 	mvn clean
 
 verify: clean
-	mvn verify
+	mvn -U verify
 
 docker: clean
 	mvn install dockerfile:build dockerfile:push -DskipTests -DskipITs -Dtag=${tag} \
