@@ -17,6 +17,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
 import java.util.Objects;
 
+import org.joda.time.DateTime;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
@@ -37,8 +40,14 @@ public class OBWriteDomesticScheduledConsent4Validator extends BaseOBValidator<O
     }
 
     @Override
-    protected void validate(OBWriteDomesticScheduledConsent4 domesticPaymentConsent, ValidationResult<OBError1> validationResult) {
-        validationResult.mergeResults(instructedAmountValidator.validate(domesticPaymentConsent.getData().getInitiation().getInstructedAmount()));
+    protected void validate(OBWriteDomesticScheduledConsent4 consent, ValidationResult<OBError1> validationResult) {
+        validationResult.mergeResults(instructedAmountValidator.validate(consent.getData().getInitiation().getInstructedAmount()));
+
+        final DateTime requestedExecutionDateTime = consent.getData().getInitiation().getRequestedExecutionDateTime();
+        if (requestedExecutionDateTime.isBeforeNow()) {
+            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                    String.format("RequestedExecutionDateTime must be in the future")));
+        }
     }
 
 }

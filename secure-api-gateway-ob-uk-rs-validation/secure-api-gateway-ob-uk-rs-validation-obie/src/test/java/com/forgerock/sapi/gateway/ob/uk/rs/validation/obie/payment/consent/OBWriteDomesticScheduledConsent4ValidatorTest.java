@@ -21,6 +21,7 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWrit
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -43,6 +44,7 @@ class OBWriteDomesticScheduledConsent4ValidatorTest {
         final OBWriteDomesticScheduledConsent4Data consentData = new OBWriteDomesticScheduledConsent4Data();
         final OBWriteDomesticScheduled2DataInitiation initiation = new OBWriteDomesticScheduled2DataInitiation();
         initiation.setInstructedAmount(new OBWriteDomestic2DataInitiationInstructedAmount().amount("12.99").currency("GBP"));
+        initiation.setRequestedExecutionDateTime(DateTime.now().plusDays(7));
         consentData.setInitiation(initiation);
         consent.setData(consentData);
         consent.setRisk(new OBRisk1());
@@ -52,6 +54,15 @@ class OBWriteDomesticScheduledConsent4ValidatorTest {
     @Test
     public void testValidConsent() {
         validateSuccessResult(validator.validate(createValidConsent()));
+    }
+
+    @Test
+    public void failsValidationWhenRequestExecutionDateTimeInPast() {
+        final OBWriteDomesticScheduledConsent4 consent = createValidConsent();
+        consent.getData().getInitiation().setRequestedExecutionDateTime(DateTime.now().minusSeconds(1));
+
+        final ValidationResult<OBError1> validationResult = validator.validate(consent);
+        validateErrorResult(validationResult, List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("RequestedExecutionDateTime must be in the future")));
     }
 
     @Test
