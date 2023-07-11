@@ -77,9 +77,6 @@ public interface DomesticStandingOrdersApi {
             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
-            @ApiParam(value = "The ID of the account that the standing order is being made from.")
-            @RequestHeader(value = "x-ob-account-id", required = true) String xAccountId,
-
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value = "x-fapi-auth-date", required = false)
             @DateTimeFormat(pattern = ApiConstants.HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
@@ -92,6 +89,9 @@ public interface DomesticStandingOrdersApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId,
 
             HttpServletRequest request,
 
@@ -138,6 +138,9 @@ public interface DomesticStandingOrdersApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId,
+
             HttpServletRequest request,
 
             Principal principal
@@ -183,6 +186,9 @@ public interface DomesticStandingOrdersApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId,
 
             HttpServletRequest request,
 

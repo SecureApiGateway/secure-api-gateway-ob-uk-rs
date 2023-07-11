@@ -119,7 +119,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             Principal principal) throws OBErrorResponseException {
         log.debug("Received payment submission: '{}'", obWriteDomesticScheduled2);
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomesticScheduled2.getRisk());
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         String consentId = obWriteDomesticScheduled2.getData().getConsentId();
         log.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);

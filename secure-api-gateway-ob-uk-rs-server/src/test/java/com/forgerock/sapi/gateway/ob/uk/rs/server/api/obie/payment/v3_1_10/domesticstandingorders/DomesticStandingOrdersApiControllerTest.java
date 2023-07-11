@@ -15,16 +15,22 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticstandingorders;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.google.gson.JsonObject;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils.createTestDataStandingOrderConsentResponse6;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static uk.org.openbanking.testsupport.payment.OBRisk1TestDataFactory.aValidOBRisk1;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrder3DataInitiation;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,24 +39,42 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRModelMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
+
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.*;
-
-import java.util.List;
-import java.util.UUID;
-
-import static com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticStandingOrdersPlatformIntentTestFactory.aValidDomesticStandingOrdersPlatformIntent;
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils.createTestDataStandingOrderConsentResponse5;
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils.createTestDataStandingOrderConsentResponse6;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.testsupport.payment.OBRisk1TestDataFactory.aValidOBRisk1;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrder3DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5DataRefundAccount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3Data;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse6;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse6Data;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
 
 /**
  * A SpringBoot test for the {@link DomesticStandingOrdersApiController}.<br/>
@@ -60,7 +84,8 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrde
 @ActiveProfiles("test")
 public class DomesticStandingOrdersApiControllerTest {
 
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders();
+    private static final String TEST_API_CLIENT_ID = "client-34wrwf";
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
     private static final String BASE_URL = "http://localhost:";
     private static final String STANDING_ORDERS_URI = "/open-banking/v3.1.10/pisp/domestic-standing-orders";
 
@@ -74,12 +99,14 @@ public class DomesticStandingOrdersApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    private ConsentService consentService;
+    private DomesticStandingOrderConsentStoreClient consentStoreClient;
 
     @MockBean
     private FRAccountRepository frAccountRepository;
 
     private FRAccount readRefundAccount;
+
+    private final String debtorAccountId = "acc-23542";
 
     @BeforeEach
     void setup() {
@@ -106,6 +133,37 @@ public class DomesticStandingOrdersApiControllerTest {
         standingOrderRepository.deleteAll();
     }
 
+    private void mockConsentStoreGetResponse(OBWriteDomesticStandingOrder3 paymentRequest) {
+        mockConsentStoreGetResponse(paymentRequest, OBReadRefundAccountEnum.NO);
+    }
+
+    private void mockConsentStoreGetResponse(OBWriteDomesticStandingOrder3 paymentRequest, OBReadRefundAccountEnum readRefundAccount) {
+        mockConsentStoreGetResponse(paymentRequest, readRefundAccount, StatusEnum.AUTHORISED.toString());
+    }
+    private void mockConsentStoreGetResponse(OBWriteDomesticStandingOrder3 paymentRequest, OBReadRefundAccountEnum readRefundAccount, String status) {
+        final String consentId = paymentRequest.getData().getConsentId();
+
+        // reverse engineer the consent from the paymentRequest
+        final OBWriteDomesticStandingOrderConsent5 consentRequest = new OBWriteDomesticStandingOrderConsent5();
+        consentRequest.setRisk(paymentRequest.getRisk());
+        consentRequest.setData(FRModelMapper.map(paymentRequest.getData(), OBWriteDomesticStandingOrderConsent5Data.class));
+        // Force UTC so that initiation validation passes
+        final OBWriteDomesticStandingOrder3DataInitiation initiation = consentRequest.getData().getInitiation();
+        initiation.setFirstPaymentDateTime(initiation.getFirstPaymentDateTime().withZone(DateTimeZone.UTC));
+        initiation.setRecurringPaymentDateTime(initiation.getRecurringPaymentDateTime().withZone(DateTimeZone.UTC));
+        initiation.setFinalPaymentDateTime(initiation.getFinalPaymentDateTime().withZone(DateTimeZone.UTC));
+
+        consentRequest.getData().setReadRefundAccount(readRefundAccount);
+
+        final DomesticStandingOrderConsent consent = new DomesticStandingOrderConsent();
+        consent.setId(consentId);
+        consent.setStatus(status);
+        consent.setRequestObj(FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent(consentRequest));
+        consent.setAuthorisedDebtorAccountId(debtorAccountId);
+        when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consent);
+    }
+
+
 
     @Test
     public void shouldCreateDomesticStandingOrderPayment_refundYes() {
@@ -113,16 +171,7 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDomesticStandingOrder3 paymentRequest = aValidOBWriteDomesticStandingOrder3();
         HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(paymentRequest, HTTP_HEADERS);
 
-        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(
-                aValidDomesticStandingOrdersPlatformIntent(paymentRequest.getData().getConsentId())
-        );
-
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse5.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse5(paymentRequest)
-        );
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse6.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse6(paymentRequest)
-        );
+        mockConsentStoreGetResponse(paymentRequest, OBReadRefundAccountEnum.YES);
 
         // When
         ResponseEntity<OBWriteDomesticStandingOrderResponse6> response = restTemplate.postForEntity(
@@ -145,7 +194,6 @@ public class DomesticStandingOrdersApiControllerTest {
         assertThat(response5DataRefundAccount.getName()).isEqualTo(frAccountIdentifier.getName());
         assertThat(response5DataRefundAccount.getSchemeName()).isEqualTo(frAccountIdentifier.getSchemeName());
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
-        assertThat(responseData.getCharges()).isNotNull().isNotEmpty();
     }
 
     @Test
@@ -154,20 +202,10 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDomesticStandingOrder3 paymentRequest = aValidOBWriteDomesticStandingOrder3();
         HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(paymentRequest, HTTP_HEADERS);
 
-        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(
-                aValidDomesticStandingOrdersPlatformIntent(paymentRequest.getData().getConsentId())
-        );
-        OBWriteDomesticStandingOrderConsentResponse5 obConsentResponse5 = createTestDataStandingOrderConsentResponse5(paymentRequest);
-        obConsentResponse5.getData().readRefundAccount(OBReadRefundAccountEnum.NO);
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse5.class), any(JsonObject.class), anyString())).willReturn(
-                obConsentResponse5
-        );
+        mockConsentStoreGetResponse(paymentRequest, OBReadRefundAccountEnum.NO);
 
         OBWriteDomesticStandingOrderConsentResponse6 obConsentResponse6 = createTestDataStandingOrderConsentResponse6(paymentRequest);
         obConsentResponse6.getData().readRefundAccount(OBReadRefundAccountEnum.NO);
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse6.class), any(JsonObject.class), anyString())).willReturn(
-                obConsentResponse6
-        );
 
         // When
         ResponseEntity<OBWriteDomesticStandingOrderResponse6> response = restTemplate.postForEntity(
@@ -185,7 +223,6 @@ public class DomesticStandingOrdersApiControllerTest {
         );
         assertThat(responseData.getRefund()).isNull();
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
-        assertThat(responseData.getCharges()).isNotNull().isNotEmpty();
     }
 
     @Test
@@ -194,16 +231,7 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDomesticStandingOrder3 paymentRequest = aValidOBWriteDomesticStandingOrder3();
         HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(paymentRequest, HTTP_HEADERS);
 
-        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(
-                aValidDomesticStandingOrdersPlatformIntent(paymentRequest.getData().getConsentId())
-        );
-
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse5.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse5(paymentRequest)
-        );
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse6.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse6(paymentRequest)
-        );
+        mockConsentStoreGetResponse(paymentRequest, OBReadRefundAccountEnum.YES);
 
         ResponseEntity<OBWriteDomesticStandingOrderResponse6> paymentSubmitted = restTemplate.postForEntity(
                 standingOrderUrl(),
@@ -235,7 +263,6 @@ public class DomesticStandingOrdersApiControllerTest {
         assertThat(response5DataRefundAccount.getName()).isEqualTo(frAccountIdentifier.getName());
         assertThat(response5DataRefundAccount.getSchemeName()).isEqualTo(frAccountIdentifier.getSchemeName());
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith(url)).isTrue();
-        assertThat(responseData.getCharges()).isNotNull().isNotEmpty();
     }
 
     @Test
@@ -244,16 +271,7 @@ public class DomesticStandingOrdersApiControllerTest {
         OBWriteDomesticStandingOrder3 paymentRequest = aValidOBWriteDomesticStandingOrder3();
         HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(paymentRequest, HTTP_HEADERS);
 
-        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(
-                aValidDomesticStandingOrdersPlatformIntent(paymentRequest.getData().getConsentId())
-        );
-
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse5.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse5(paymentRequest)
-        );
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse6.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse6(paymentRequest)
-        );
+        mockConsentStoreGetResponse(paymentRequest);
 
         ResponseEntity<OBWriteDomesticStandingOrderResponse6> paymentSubmitted = restTemplate.postForEntity(
                 standingOrderUrl(),
@@ -289,23 +307,13 @@ public class DomesticStandingOrdersApiControllerTest {
         // Given
         OBWriteDomesticStandingOrder3 paymentRequest = aValidOBWriteDomesticStandingOrder3();
 
-        given(consentService.getIDMIntent(anyString(), anyString())).willReturn(
-                aValidDomesticStandingOrdersPlatformIntent(paymentRequest.getData().getConsentId())
-        );
-
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse5.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse5(paymentRequest)
-        );
-        given(consentService.deserialize(eq(OBWriteDomesticStandingOrderConsentResponse6.class), any(JsonObject.class), anyString())).willReturn(
-                createTestDataStandingOrderConsentResponse6(paymentRequest)
-        );
-        OBWriteDomesticStandingOrder3 paymentSubmission = aValidOBWriteDomesticStandingOrder3();
-        paymentSubmission.getData().getInitiation().firstPaymentAmount(
+        mockConsentStoreGetResponse(paymentRequest, OBReadRefundAccountEnum.YES);
+        paymentRequest.getData().getInitiation().firstPaymentAmount(
                 new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount()
                         .amount("123123")
                         .currency("EUR")
         );
-        HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(paymentSubmission, HTTP_HEADERS);
+        HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(paymentRequest, HTTP_HEADERS);
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(
@@ -320,9 +328,26 @@ public class DomesticStandingOrdersApiControllerTest {
         assertThat(error.getMessage()).contains(
                 String.format(
                         OBRIErrorType.PAYMENT_INVALID_INITIATION.getMessage(),
-                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
+                        "The Initiation field in the request does not match with the consent"
                 )
         );
+    }
+
+    @Test
+    public void failsToCreatePaymentIfStatusNotAuthorised() {
+        OBWriteDomesticStandingOrder3 paymentRequest = aValidOBWriteDomesticStandingOrder3();
+        mockConsentStoreGetResponse(paymentRequest, OBReadRefundAccountEnum.NO, StatusEnum.CONSUMED.toString());
+
+        HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(paymentRequest, HTTP_HEADERS);
+
+        ResponseEntity<OBErrorResponse1> errorResponse = restTemplate.postForEntity(standingOrderUrl(), request, OBErrorResponse1.class);
+        assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(errorResponse.getBody().getMessage()).isEqualTo("An error happened when parsing the request arguments");
+        assertThat(errorResponse.getBody().getErrors()).hasSize(1);
+        assertThat(errorResponse.getBody().getErrors().get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(StatusEnum.CONSUMED.toString()));
+
+        verify(consentStoreClient).getConsent(eq(paymentRequest.getData().getConsentId()), eq(TEST_API_CLIENT_ID));
+        verifyNoMoreInteractions(consentStoreClient);
     }
 
     private String standingOrderUrl() {

@@ -313,7 +313,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
     }
 
     @Test
-    public void failsToCreateDomesticPaymentIfStatusNotAuthorised() {
+    public void failsToCreatePaymentIfStatusNotAuthorised() {
         OBWriteDomesticScheduled2 payment = aValidOBWriteDomesticScheduled2();
         final String consentId = payment.getData().getConsentId();
         HttpEntity<OBWriteDomesticScheduled2> request = new HttpEntity<>(payment, HTTP_HEADERS);
