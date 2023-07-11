@@ -51,10 +51,14 @@ public class OBWriteDomesticStandingOrderConsent5Validator extends BaseOBValidat
         validateAmount(firstPaymentAmount.getAmount(), firstPaymentAmount.getCurrency(), FIRST_PAYMENT_AMOUNT, validationResult);
 
         final OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount recurringPaymentAmount = initiation.getRecurringPaymentAmount();
-        validateAmount(recurringPaymentAmount.getAmount(), recurringPaymentAmount.getCurrency(), RECURRING_PAYMENT_AMOUNT, validationResult);
+        if (recurringPaymentAmount != null) {
+            validateAmount(recurringPaymentAmount.getAmount(), recurringPaymentAmount.getCurrency(), RECURRING_PAYMENT_AMOUNT, validationResult);
+        }
 
         final OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount finalPaymentAmount = initiation.getFinalPaymentAmount();
-        validateAmount(finalPaymentAmount.getAmount(), finalPaymentAmount.getCurrency(), FINAL_PAYMENT_AMOUNT, validationResult);
+        if (finalPaymentAmount != null) {
+            validateAmount(finalPaymentAmount.getAmount(), finalPaymentAmount.getCurrency(), FINAL_PAYMENT_AMOUNT, validationResult);
+        }
     }
 
     private void validateAmount(String amount, String currency, String fieldName, ValidationResult<OBError1> validationResult) {

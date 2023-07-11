@@ -47,6 +47,7 @@ class RefundAccountServiceTest {
     @Test
     void testRefundAccountNotRequested() {
         assertThat(refundAccountService.getRefundAccountData(FRReadRefundAccount.NO, new DomesticPaymentConsent())).isEqualTo(Optional.empty());
+        assertThat(refundAccountService.getRefundAccountData(null, new DomesticPaymentConsent())).isEqualTo(Optional.empty());
         verifyNoMoreInteractions(accountRepository);
     }
 

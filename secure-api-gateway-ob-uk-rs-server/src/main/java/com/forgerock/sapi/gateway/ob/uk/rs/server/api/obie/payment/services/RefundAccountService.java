@@ -40,7 +40,6 @@ public class RefundAccountService {
     }
 
     public Optional<FRResponseDataRefund> getRefundAccountData(FRReadRefundAccount readRefundAccount, BasePaymentConsent<?> paymentConsent) {
-        Objects.requireNonNull(readRefundAccount, "readRefundAccount value must be provided");
         if (readRefundAccount == FRReadRefundAccount.YES) {
             final FRAccount debtorAccount = accountRepository.byAccountId(paymentConsent.getAuthorisedDebtorAccountId());
             return FRResponseDataRefundFactory.frResponseDataRefund(debtorAccount.getAccount().getFirstAccount());
