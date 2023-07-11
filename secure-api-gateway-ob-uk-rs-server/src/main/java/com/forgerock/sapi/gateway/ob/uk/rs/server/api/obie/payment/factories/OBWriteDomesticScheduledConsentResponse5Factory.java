@@ -42,6 +42,7 @@ public class OBWriteDomesticScheduledConsentResponse5Factory {
         final OBWriteDomesticScheduledConsent4 obWriteDomesticScheduledConsent4 = FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent4(consent.getRequestObj());
         final OBWriteDomesticScheduledConsent4Data obConsentData = obWriteDomesticScheduledConsent4.getData();
         data.authorisation(obConsentData.getAuthorisation());
+        data.permission(obConsentData.getPermission());
         data.readRefundAccount(obConsentData.getReadRefundAccount());
         data.scASupportData(obConsentData.getScASupportData());
         data.initiation(obConsentData.getInitiation());

@@ -44,9 +44,8 @@ public class OBWriteDomesticScheduledConsent4Validator extends BaseOBValidator<O
         validationResult.mergeResults(instructedAmountValidator.validate(consent.getData().getInitiation().getInstructedAmount()));
 
         final DateTime requestedExecutionDateTime = consent.getData().getInitiation().getRequestedExecutionDateTime();
-        if (requestedExecutionDateTime.isBeforeNow()) {
-            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                    String.format("RequestedExecutionDateTime must be in the future")));
+        if (!requestedExecutionDateTime.isAfterNow()) {
+            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("RequestedExecutionDateTime must be in the future"));
         }
     }
 
