@@ -18,8 +18,6 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper.createDomesticScheduledPaymentConsentsLink;
 
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
@@ -46,8 +44,7 @@ public class OBWriteDomesticScheduledConsentResponse5Factory {
         data.readRefundAccount(obConsentData.getReadRefundAccount());
         data.scASupportData(obConsentData.getScASupportData());
         data.initiation(obConsentData.getInitiation());
-        data.charges(consent.getCharges() == null ? null : consent.getCharges().stream()
-                .map(FRChargeConverter::toOBWriteDomesticConsentResponse5DataCharges).collect(Collectors.toUnmodifiableList()));
+        data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
         data.status(StatusEnum.fromValue(consent.getStatus()));
         data.creationDateTime(consent.getCreationDateTime());

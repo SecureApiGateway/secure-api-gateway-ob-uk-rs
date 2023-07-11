@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticscheduledpayments;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -91,7 +92,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
     }
 
     private List<FRCharge> calculateCharges(OBWriteDomesticScheduledConsent4 obWriteDomesticScheduledConsent4) {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override

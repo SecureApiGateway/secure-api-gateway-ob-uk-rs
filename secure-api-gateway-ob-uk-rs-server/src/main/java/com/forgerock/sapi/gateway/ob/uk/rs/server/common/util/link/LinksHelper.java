@@ -32,6 +32,7 @@ public class LinksHelper {
     private static final String DOMESTIC_PAYMENTS_DETAILS = "payment-details";
     private static final String DOMESTIC_SCHEDULED_PAYMENT_CONSENTS = "domestic-scheduled-payment-consents";
     private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
+    private static final String DOMESTIC_STANDING_ORDER_CONSENTS = "domestic-standing-order-consents";
     private static final String DOMESTIC_STANDING_ORDER = "domestic-standing-orders";
     private static final String FILE_PAYMENTS = "file-payments";
     private static final String INTERNATIONAL_PAYMENTS = "international-payments";
@@ -108,6 +109,10 @@ public class LinksHelper {
      */
     public static Links createDomesticScheduledPaymentDetailsLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, DOMESTIC_SCHEDULED_PAYMENTS, id, DOMESTIC_PAYMENTS_DETAILS);
+    }
+
+    public static Links createDomesticStandingOrderConsentsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, DOMESTIC_STANDING_ORDER_CONSENTS, id);
     }
 
     /**
