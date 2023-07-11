@@ -15,13 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
-import static java.math.BigDecimal.ZERO;
-
-import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.Set;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
@@ -34,28 +29,14 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
  */
 public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDomesticConsent4> {
 
-    private final Set<String> validPaymentCurrencies;
+    private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
 
-    public OBWriteDomesticConsent4Validator(Set<String> validPaymentCurrencies) {
-        this.validPaymentCurrencies = Objects.requireNonNull(validPaymentCurrencies, "validPaymentCurrencies must be supplied");
+    public OBWriteDomesticConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator) {
+        this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
     }
 
     @Override
     protected void validate(OBWriteDomesticConsent4 domesticPaymentConsent, ValidationResult<OBError1> validationResult) {
-        validateInstructedAmount(domesticPaymentConsent.getData().getInitiation().getInstructedAmount(), validationResult);
-    }
-
-    // TODO this is generic to all payments (instructedAmount type will be different tho)
-    private void validateInstructedAmount(OBWriteDomestic2DataInitiationInstructedAmount instructedAmount, ValidationResult<OBError1> validationResult) {
-        final String amount = instructedAmount.getAmount();
-        if (new BigDecimal(amount).compareTo(ZERO) <= 0) {
-            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                    String.format("The amount %s provided must be greater than 0", amount)));
-        }
-        final String currency = instructedAmount.getCurrency();
-        if (!validPaymentCurrencies.contains(currency)) {
-            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                    String.format("The currency %s provided is not supported", currency)));
-        }
+        validationResult.mergeResults(instructedAmountValidator.validate(domesticPaymentConsent.getData().getInitiation().getInstructedAmount()));
     }
 }

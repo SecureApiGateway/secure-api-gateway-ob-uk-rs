@@ -22,6 +22,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domes
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse5DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
@@ -48,7 +49,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDome
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticpayments.DomesticPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteDomesticConsentResponse5Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
@@ -70,7 +70,6 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5Data;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
@@ -83,12 +82,8 @@ import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataSt
 public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-
     private final DomesticPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator;
-
-    private final OBWriteDomesticConsentResponse5Factory consentResponseFactory;
-
     private final FRAccountRepository accountRepository;
 
     public DomesticPaymentsApiController(
@@ -96,13 +91,11 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             PaymentSubmissionValidator paymentSubmissionValidator,
             OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,
             DomesticPaymentConsentStoreClient consentStoreClient,
-            OBWriteDomesticConsentResponse5Factory consentResponseFactory,
             FRAccountRepository accountRepository) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.paymentValidator = paymentValidator;
         this.consentStoreClient = consentStoreClient;
-        this.consentResponseFactory = consentResponseFactory;
         this.accountRepository = accountRepository;
     }
 
@@ -158,8 +151,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         consumePaymentRequest.setApiClientId(apiClientId);
         consentStoreClient.consumeConsent(consumePaymentRequest);
 
-        return ResponseEntity.status(CREATED).body(
-                responseEntity(consent, frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
+        return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission)
         );
     }
 
@@ -190,9 +182,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         final DomesticPaymentConsent consent = consentStoreClient.getConsent(frPaymentSubmission.getConsentId(), apiClientId);
         log.debug("Got consent from store: {}", consent);
 
-        return ResponseEntity.ok(
-                responseEntity(consent, frPaymentSubmission, consentResponseFactory.buildConsentResponse(consent, getClass()))
-        );
+        return ResponseEntity.ok(responseEntity(consent, frPaymentSubmission));
     }
 
     @Override
@@ -224,8 +214,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     private OBWriteDomesticResponse5 responseEntity(
             DomesticPaymentConsent consent,
-            FRDomesticPaymentSubmission frPaymentSubmission,
-            OBWriteDomesticConsentResponse5 obConsentResponse
+            FRDomesticPaymentSubmission frPaymentSubmission
     ) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
 
@@ -240,7 +229,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         return new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()
                         .domesticPaymentId(frPaymentSubmission.getId())
-                        .charges(obConsentResponse.getData().getCharges())
+                        .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
                         .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
                         .statusUpdateDateTime(frPaymentSubmission.getUpdated())

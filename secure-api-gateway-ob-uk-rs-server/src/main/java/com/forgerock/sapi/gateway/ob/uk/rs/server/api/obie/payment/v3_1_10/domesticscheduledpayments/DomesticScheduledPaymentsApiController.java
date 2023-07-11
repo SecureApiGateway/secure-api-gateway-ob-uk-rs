@@ -21,12 +21,14 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticscheduledpayments;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticscheduledpayments.DomesticScheduledPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
+
 import org.springframework.stereotype.Controller;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.10")
@@ -36,17 +38,17 @@ public class DomesticScheduledPaymentsApiController extends com.forgerock.sapi.g
             DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ScheduledPaymentService scheduledPaymentService,
-            ConsentService consentService,
-            RiskValidationService riskValidationService,
-            FRAccountRepository frAccountRepository
+            DomesticScheduledPaymentConsentStoreClient consentStoreClient,
+            FRAccountRepository accountRepository,
+            OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
     ) {
         super(
                 scheduledPaymentSubmissionRepository,
                 paymentSubmissionValidator,
                 scheduledPaymentService,
-                consentService,
-                riskValidationService,
-                frAccountRepository
+                consentStoreClient,
+                accountRepository,
+                paymentValidator
         );
     }
 }

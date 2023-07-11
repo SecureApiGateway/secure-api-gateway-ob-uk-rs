@@ -23,15 +23,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
 
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 
 /**
@@ -58,8 +65,23 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator() {
-        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet())));
+    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator) {
+        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidator));
+    }
+
+    @Bean
+    public BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator() {
+        return new OBWriteDomestic2DataInitiationInstructedAmountValidator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
+    }
+
+    @Bean
+    public OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator) {
+        return new OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(instructedAmountValidator));
+    }
+
+    @Bean
+    public OBValidationService<OBWriteDomesticScheduled2ValidationContext> domesticScheduledPaymentValidator() {
+        return new OBValidationService<>(new OBWriteDomesticScheduled2Validator());
     }
 
     @Bean
