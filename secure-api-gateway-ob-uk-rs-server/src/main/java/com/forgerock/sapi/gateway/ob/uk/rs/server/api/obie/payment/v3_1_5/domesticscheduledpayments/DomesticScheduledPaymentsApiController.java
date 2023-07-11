@@ -117,7 +117,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            String xAccountId,
             DateTime xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
@@ -159,7 +158,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .idempotentSave(frPaymentSubmission);
 
         // Save the scheduled payment data for the Accounts API
-        FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment, xAccountId);
+        FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment, consent.getAuthorisedDebtorAccountId());
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
 
         return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
