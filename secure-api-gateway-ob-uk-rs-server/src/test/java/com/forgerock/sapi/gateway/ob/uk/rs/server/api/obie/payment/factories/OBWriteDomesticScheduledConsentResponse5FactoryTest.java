@@ -36,7 +36,7 @@ class OBWriteDomesticScheduledConsentResponse5FactoryTest {
     private final OBWriteDomesticScheduledConsentResponse5Factory factory = new OBWriteDomesticScheduledConsentResponse5Factory();
 
     @Test
-    void testCreateOBWriteDomesticConsentResponse5() {
+    void testCreateConsentResponse() {
         final OBWriteDomesticScheduledConsent4 consentRequest = OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4();
         final OBWriteDomesticScheduledConsent4Data requestData = consentRequest.getData();
         final DomesticScheduledPaymentConsent consent = DomesticScheduledPaymentConsentsApiControllerTest.buildAwaitingAuthorisationConsent(consentRequest);
