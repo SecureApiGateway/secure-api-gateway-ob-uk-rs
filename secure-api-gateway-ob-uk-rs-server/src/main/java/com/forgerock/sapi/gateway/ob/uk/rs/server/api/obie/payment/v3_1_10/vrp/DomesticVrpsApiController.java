@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
@@ -37,7 +37,7 @@ public class DomesticVrpsApiController extends com.forgerock.sapi.gateway.ob.uk.
             DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            FRAccountRepository frAccountRepository
+            RefundAccountService refundAccountService
     ) {
         super(
                 paymentSubmissionRepository,
@@ -45,7 +45,7 @@ public class DomesticVrpsApiController extends com.forgerock.sapi.gateway.ob.uk.
                 consentStoreClient,
                 limitBreachResponseSimulatorService,
                 paymentSubmissionValidator,
-                frAccountRepository
+                refundAccountService
         );
     }
 }

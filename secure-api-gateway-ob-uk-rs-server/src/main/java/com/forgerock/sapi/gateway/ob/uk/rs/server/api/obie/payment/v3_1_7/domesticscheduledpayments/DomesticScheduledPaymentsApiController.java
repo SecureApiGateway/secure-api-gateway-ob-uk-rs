@@ -21,7 +21,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_7.domesticscheduledpayments;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_7.domesticscheduledpayments.DomesticScheduledPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
@@ -39,7 +39,7 @@ public class DomesticScheduledPaymentsApiController extends com.forgerock.sapi.g
             PaymentSubmissionValidator paymentSubmissionValidator,
             ScheduledPaymentService scheduledPaymentService,
             DomesticScheduledPaymentConsentStoreClient consentStoreClient,
-            FRAccountRepository accountRepository,
+            RefundAccountService refundAccountService,
             OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
     ) {
         super(
@@ -47,7 +47,7 @@ public class DomesticScheduledPaymentsApiController extends com.forgerock.sapi.g
                 paymentSubmissionValidator,
                 scheduledPaymentService,
                 consentStoreClient,
-                accountRepository,
+                refundAccountService,
                 paymentValidator
         );
     }
