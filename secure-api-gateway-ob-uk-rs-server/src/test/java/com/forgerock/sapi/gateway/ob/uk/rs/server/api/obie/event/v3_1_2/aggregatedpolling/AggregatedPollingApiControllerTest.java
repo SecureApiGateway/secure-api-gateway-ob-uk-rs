@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_2.aggregatedpolling;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.event.FREventNotification;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.events.FRPendingEventsRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventNotification;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FRPendingEventsRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

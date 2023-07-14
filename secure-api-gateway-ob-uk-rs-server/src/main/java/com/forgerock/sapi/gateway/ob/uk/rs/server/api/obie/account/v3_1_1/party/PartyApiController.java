@@ -19,8 +19,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermi
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRParty;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_1.party.PartyApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;

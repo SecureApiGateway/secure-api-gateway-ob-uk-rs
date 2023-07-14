@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_8.party
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_8.party.PartyApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 @Controller("PartyApiV3.1.8")

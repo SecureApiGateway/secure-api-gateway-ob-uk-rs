@@ -18,8 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.schedul
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRScheduledPayment;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRScheduledPayment;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.scheduledpayments.ScheduledPaymentsApi;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

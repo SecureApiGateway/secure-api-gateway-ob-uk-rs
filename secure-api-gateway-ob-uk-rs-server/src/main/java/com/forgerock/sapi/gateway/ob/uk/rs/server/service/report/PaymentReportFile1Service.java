@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.report;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.FRFilePaymentSubmission;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRFilePaymentSubmission;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

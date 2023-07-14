@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRScheduledPayment;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRScheduledPayment;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

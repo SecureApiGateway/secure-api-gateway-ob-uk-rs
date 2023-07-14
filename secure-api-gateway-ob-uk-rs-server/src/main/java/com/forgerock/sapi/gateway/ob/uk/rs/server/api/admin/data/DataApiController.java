@@ -17,26 +17,30 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.admin.data;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.DataApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRAccountData;
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.api.admin.DataApi;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.customerinfo.FRCustomerInfo;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions.DataApiException;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.*;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.directdebits.FRDirectDebitRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.offers.FROfferRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.statements.FRStatementRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.*;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.customerinfo.FRCustomerInfoEntity;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.products.FRProductRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -78,6 +82,9 @@ public class DataApiController implements DataApi {
     private final FRScheduledPaymentRepository scheduledPayment1Repository;
     private final FRPartyRepository partyRepository;
     private final FROfferRepository offerRepository;
+
+    private final FRCustomerInfoRepository customerInfoRepository;
+    private boolean isCustomerInfoEnabled;
     private final DataUpdater dataUpdater;
     private final DataCreator dataCreator;
     private final UserClientService userClientService;
@@ -87,7 +94,9 @@ public class DataApiController implements DataApi {
                              FRProductRepository productRepository, FRStandingOrderRepository standingOrderRepository,
                              FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
                              DataCreator dataCreator, FRScheduledPaymentRepository scheduledPayment1Repository,
-                             FRPartyRepository partyRepository, DataUpdater dataUpdater, FROfferRepository offerRepository,
+                             FRPartyRepository partyRepository, FRCustomerInfoRepository customerInfoRepository,
+                             @Value("${rs.data.customer_info.enabled:false}") Boolean isCustomerInfoEnabled,
+                             DataUpdater dataUpdater, FROfferRepository offerRepository,
                              UserClientService userClientService
     ) {
         this.directDebitRepository = directDebitRepository;
@@ -101,6 +110,7 @@ public class DataApiController implements DataApi {
         this.dataCreator = dataCreator;
         this.scheduledPayment1Repository = scheduledPayment1Repository;
         this.partyRepository = partyRepository;
+        this.customerInfoRepository = customerInfoRepository;
         this.dataUpdater = dataUpdater;
         this.offerRepository = offerRepository;
         this.userClientService = userClientService;
@@ -134,6 +144,10 @@ public class DataApiController implements DataApi {
         for (FRAccount account : accountsRepository.findByUserID(userId)) {
             userData.addAccountData(getAccount(account));
         }
+
+        FRCustomerInfoEntity customerInfoEntity = customerInfoRepository.findByUserID(userId);
+
+        userData.setCustomerInfo(customerInfoEntity.toFRCustomerInfo());
 
         FRParty byUserId = partyRepository.findByUserId(userId);
         if (byUserId != null) {
@@ -217,6 +231,22 @@ public class DataApiController implements DataApi {
             FRUserData userDataResponse = new FRUserData();
             userDataResponse.setUserId(userId);
             userDataResponse.setUserName(user.getUserName());
+
+            if(isCustomerInfoEnabled) {
+                FRCustomerInfo requestCustomerInfo = userData.getCustomerInfo();
+                if (requestCustomerInfo != null) {
+                    requestCustomerInfo.setUserID(userId);
+                    FRCustomerInfoEntity existingCustomerInfo = customerInfoRepository.findByUserID(userId);
+                    if(existingCustomerInfo != null) {
+                        requestCustomerInfo.setId(existingCustomerInfo.getId());
+                    }
+                    FRCustomerInfoEntity savedCustomerInfo = customerInfoRepository.save(
+                            new FRCustomerInfoEntity(requestCustomerInfo)
+                    );
+                    userDataResponse.setCustomerInfo(savedCustomerInfo.toFRCustomerInfo());
+                }
+            }
+
             if (userData.getParty() != null) {
                 FRParty existingParty = partyRepository.findByUserId(userId);
 

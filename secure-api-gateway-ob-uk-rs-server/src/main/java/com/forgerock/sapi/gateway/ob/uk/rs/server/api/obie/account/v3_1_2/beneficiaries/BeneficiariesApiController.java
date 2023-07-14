@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.beneficiaries;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_2.beneficiaries.BeneficiariesApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

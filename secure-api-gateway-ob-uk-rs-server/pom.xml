@@ -47,6 +47,16 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-rs-resource-store-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-rs-resource-store-repo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- ForgeRock dependencies -->
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>
@@ -61,11 +71,6 @@
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-rs-backoffice-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock.sapi.gateway</groupId>
-            <artifactId>secure-api-gateway-ob-uk-rs-admin-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

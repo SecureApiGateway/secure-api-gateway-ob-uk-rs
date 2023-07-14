@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRStandingOrder;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStandingOrder;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

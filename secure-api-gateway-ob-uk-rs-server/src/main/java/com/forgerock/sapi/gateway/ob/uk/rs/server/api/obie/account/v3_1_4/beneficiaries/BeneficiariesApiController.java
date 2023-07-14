@@ -24,7 +24,7 @@ import org.springframework.stereotype.Controller;
 public class BeneficiariesApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_3.beneficiaries.BeneficiariesApiController implements BeneficiariesApi {
 
     public BeneficiariesApiController(@Value("${rs.page.default.beneficiaries.size:50}") int pageLimitBeneficiaries,
-                                      com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository FRBeneficiaryRepository,
+                                      com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository FRBeneficiaryRepository,
                                       AccountDataInternalIdFilter accountDataInternalIdFilter) {
         super(pageLimitBeneficiaries, FRBeneficiaryRepository, accountDataInternalIdFilter);
     }

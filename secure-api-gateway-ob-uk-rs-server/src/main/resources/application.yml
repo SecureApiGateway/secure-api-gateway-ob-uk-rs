@@ -60,6 +60,8 @@ consent:
 rs:
   # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
   data:
+    customer_info:
+      enabled: false
     upload:
       limit:
         accounts: 100

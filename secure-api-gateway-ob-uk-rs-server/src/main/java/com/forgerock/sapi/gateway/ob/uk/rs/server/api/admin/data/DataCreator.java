@@ -16,19 +16,19 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.admin.data;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRAccountData;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.*;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.directdebits.FRDirectDebitRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.offers.FROfferRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.statements.FRStatementRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.*;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.products.FRProductRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +68,7 @@ public class DataCreator {
     private FRScheduledPaymentRepository scheduledPaymentRepository;
     private FRPartyRepository partyRepository;
     private FROfferRepository offerRepository;
+
     private int documentLimit;
     private int accountLimit;
 

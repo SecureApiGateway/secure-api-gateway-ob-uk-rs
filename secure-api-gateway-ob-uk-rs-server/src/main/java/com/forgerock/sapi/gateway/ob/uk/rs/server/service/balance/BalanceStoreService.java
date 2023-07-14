@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBalance;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

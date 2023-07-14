@@ -18,8 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.directd
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDirectDebitConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRDirectDebit;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRDirectDebit;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.directdebits.DirectDebitsApi;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

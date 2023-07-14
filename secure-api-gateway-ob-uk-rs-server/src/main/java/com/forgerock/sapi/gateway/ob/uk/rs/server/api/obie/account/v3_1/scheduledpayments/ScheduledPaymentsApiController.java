@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1.scheduledpayments;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1.scheduledpayments.ScheduledPaymentsApi;
 import org.springframework.stereotype.Controller;
 

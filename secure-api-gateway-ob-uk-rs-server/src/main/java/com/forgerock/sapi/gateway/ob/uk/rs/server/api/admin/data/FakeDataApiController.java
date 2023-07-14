@@ -20,23 +20,23 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.*;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.FakeDataApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRUserData;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.DataConfigurationProperties;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.TestUserAccountIds;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.*;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.beneficiaries.FRBeneficiaryRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.directdebits.FRDirectDebitRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.offers.FROfferRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.statements.FRStatementRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.products.FRProductRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.api.admin.FakeDataApi;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.*;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -178,7 +178,7 @@ public class FakeDataApiController implements FakeDataApi {
         {
 
             String accountId = accountIdSupplier.get();
-            com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount();
+            com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount();
 
             accountPremierBank.setCreated(new DateTime());
             accountPremierBank.setId(accountId);
@@ -212,7 +212,7 @@ public class FakeDataApiController implements FakeDataApi {
         {
 
             String accountId = accountIdSupplier.get();
-            com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount();
+            com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount();
             accountPremierBank.setId(accountId);
             accountPremierBank.setCreated(new DateTime());
             accountPremierBank.setUserID(userId);
@@ -245,7 +245,7 @@ public class FakeDataApiController implements FakeDataApi {
         {
 
             String accountId = accountIdSupplier.get();
-            com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount accountPremierCard = new com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount();
+            com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount accountPremierCard = new com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount();
 
             accountPremierCard.setCreated(new DateTime());
             accountPremierCard.setId(accountId);
@@ -309,7 +309,7 @@ public class FakeDataApiController implements FakeDataApi {
         return new StringBuilder().append(sortCode).append(accountNumber).toString();
     }
 
-    private void generateAccountData(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account) {
+    private void generateAccountData(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
         FRBalance balance = generateBalance(account, FRCreditDebitIndicator.DEBIT, null);
         int nbBeneficiaries = ThreadLocalRandom.current().nextInt(2, 8);
         int nbDirectDebits = ThreadLocalRandom.current().nextInt(2, 8);
@@ -369,7 +369,7 @@ public class FakeDataApiController implements FakeDataApi {
         accountsRepository.save(account);
     }
 
-    private FRBalance generateBalance(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account, FRCreditDebitIndicator creditDebitCode, List<FRCreditLine> creditLine) {
+    private FRBalance generateBalance(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account, FRCreditDebitIndicator creditDebitCode, List<FRCreditLine> creditLine) {
         Double amount = generateAmount(1000.0d, 10000.0d);
         FRBalance balance = new FRBalance();
         balance.setAccountId(account.getId());
@@ -386,7 +386,7 @@ public class FakeDataApiController implements FakeDataApi {
         return balance;
     }
 
-    private FRBeneficiary generateBeneficiary(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account) {
+    private FRBeneficiary generateBeneficiary(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
         FRBeneficiary beneficiary = new FRBeneficiary();
         beneficiary.setAccountId(account.getId());
         Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
@@ -410,7 +410,7 @@ public class FakeDataApiController implements FakeDataApi {
         return beneficiary;
     }
 
-    private FRDirectDebit generateDirectDebit(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account) {
+    private FRDirectDebit generateDirectDebit(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
         String company = companies.get(ThreadLocalRandom.current().nextInt(companies.size()));
 
         Double amount = generateAmount(10.0d, 500.0d);
@@ -435,7 +435,7 @@ public class FakeDataApiController implements FakeDataApi {
         return directDebit;
     }
 
-    private FRProduct generateProduct(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account) {
+    private FRProduct generateProduct(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
         FRProduct product = new FRProduct();
         product.setAccountId(account.getId());
         product.setProduct(new OBReadProduct2DataProduct()
@@ -450,7 +450,7 @@ public class FakeDataApiController implements FakeDataApi {
         return product;
     }
 
-    private FRStandingOrder generateStandingOrder(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account) {
+    private FRStandingOrder generateStandingOrder(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
         Double amount = generateAmount(10.0d, 500.0d);
 
         Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
@@ -491,7 +491,7 @@ public class FakeDataApiController implements FakeDataApi {
         return standingOrder;
     }
 
-    private FRStatement generateStatements(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account, FRBalance balance, DateTime startDate) {
+    private FRStatement generateStatements(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account, FRBalance balance, DateTime startDate) {
         String statementId = UUID.randomUUID().toString();
         FRStatement statement = new FRStatement();
         statement.setAccountId(account.getId());
@@ -531,7 +531,7 @@ public class FakeDataApiController implements FakeDataApi {
         );
     }
 
-    private List<FRTransaction> generateTransactions(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account, FRStatement statement, FRBalance balance) {
+    private List<FRTransaction> generateTransactions(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account, FRStatement statement, FRBalance balance) {
         int nbTransactions = ThreadLocalRandom.current().nextInt(7, 30);
         List<FRTransaction> transactions = new ArrayList<>();
         LOGGER.debug("Generate {} transactions", nbTransactions);
@@ -541,7 +541,7 @@ public class FakeDataApiController implements FakeDataApi {
         return transactions;
     }
 
-    private FRTransaction generateTransaction(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account, FRStatement statement, FRBalance balance) {
+    private FRTransaction generateTransaction(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account, FRStatement statement, FRBalance balance) {
         String name = names.get(ThreadLocalRandom.current().nextInt(names.size()));
 
         long deltaTime = (statement.getStatement().getEndDateTime().getMillis() - statement.getStatement().getStartDateTime().getMillis()) / 1000;
@@ -615,7 +615,7 @@ public class FakeDataApiController implements FakeDataApi {
         return transaction;
     }
 
-    private FRScheduledPayment generateScheduledPayment(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account) {
+    private FRScheduledPayment generateScheduledPayment(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
         String scheduledPaymentId = UUID.randomUUID().toString();
 
         Double amount = generateAmount(10.0d, 500.0d);
@@ -648,7 +648,7 @@ public class FakeDataApiController implements FakeDataApi {
         return scheduledPayment;
     }
 
-    private FRParty generateParty(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account2, String username) {
+    private FRParty generateParty(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account2, String username) {
         FRParty party = partyRepository.findByAccountId(account2.getId());
         String partyId = (party == null) ? UUID.randomUUID().toString() : party.getId();
         party = new FRParty();
@@ -679,7 +679,7 @@ public class FakeDataApiController implements FakeDataApi {
         return party;
     }
 
-    private FROffer generateOfferLimitIncrease(com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount account2) {
+    private FROffer generateOfferLimitIncrease(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account2) {
 
         Double amount = generateAmount(1000.0d, 15000.0d);
         amount = amount - (amount % 100);

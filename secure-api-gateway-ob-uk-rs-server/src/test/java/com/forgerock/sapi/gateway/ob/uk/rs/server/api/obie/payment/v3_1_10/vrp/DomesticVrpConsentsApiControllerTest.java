@@ -56,7 +56,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticVrpPaymentConsentDetailsTestFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRBalance;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;

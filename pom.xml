@@ -35,12 +35,12 @@
     </organization>
 
     <modules>
-        <module>secure-api-gateway-ob-uk-rs-admin-api</module>
         <module>secure-api-gateway-ob-uk-rs-backoffice-api</module>
         <module>secure-api-gateway-ob-uk-rs-obie-api</module>
         <module>secure-api-gateway-ob-uk-rs-server</module>
         <module>secure-api-gateway-ob-uk-rs-cloud-client</module>
         <module>secure-api-gateway-ob-uk-rs-validation</module>
+        <module>secure-api-gateway-ob-uk-rs-resource-store</module>
     </modules>
 
     <parent>

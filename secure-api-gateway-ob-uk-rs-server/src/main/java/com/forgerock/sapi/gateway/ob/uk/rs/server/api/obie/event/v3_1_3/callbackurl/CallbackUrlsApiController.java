@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_3.callbackurl;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.events.CallbackUrlsRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.CallbackUrlsRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_3.callbackurl.CallbackUrlsApi;
 import org.springframework.stereotype.Controller;
 

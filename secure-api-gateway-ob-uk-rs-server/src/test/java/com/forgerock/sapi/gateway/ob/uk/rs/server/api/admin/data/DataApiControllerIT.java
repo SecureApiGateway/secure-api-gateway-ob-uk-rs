@@ -15,16 +15,16 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.admin.data;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRAccountData;
-import com.forgerock.sapi.gateway.ob.uk.rs.admin.api.data.dto.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
