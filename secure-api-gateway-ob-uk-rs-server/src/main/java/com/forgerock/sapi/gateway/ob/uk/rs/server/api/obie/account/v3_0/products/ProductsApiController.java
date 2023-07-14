@@ -35,7 +35,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRProduct;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.products.FRProductRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.OBReadProduct2;

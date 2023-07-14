@@ -26,7 +26,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 /**

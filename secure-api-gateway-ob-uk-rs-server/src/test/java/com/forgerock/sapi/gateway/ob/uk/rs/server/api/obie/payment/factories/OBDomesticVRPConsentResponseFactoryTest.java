@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp.DomesticVrpConsentsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp.DomesticVrpConsentsApiControllerTest;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;

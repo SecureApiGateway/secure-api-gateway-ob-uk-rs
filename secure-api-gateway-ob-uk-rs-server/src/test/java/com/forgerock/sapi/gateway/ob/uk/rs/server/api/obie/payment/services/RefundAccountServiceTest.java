@@ -33,7 +33,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRe
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.FRAccountTestDataFactory;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
 @ExtendWith(MockitoExtension.class)
 class RefundAccountServiceTest {

@@ -25,7 +25,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRe
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.BasePaymentConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 
 /**
  * Service to retrieve Account Data to populate the Refund section of a Payment response
