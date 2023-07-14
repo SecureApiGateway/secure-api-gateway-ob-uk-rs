@@ -174,6 +174,10 @@ public class DomesticPaymentsApiControllerTest {
 
         verify(domesticPaymentConsentStoreClient).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
 
+        verifyConsentConsumed(consentId);
+    }
+
+    private void verifyConsentConsumed(String consentId) {
         // Verify that consumeConsent was called
         final ArgumentCaptor<ConsumePaymentConsentRequest> consumeReqCaptor = ArgumentCaptor.forClass(ConsumePaymentConsentRequest.class);
         verify(domesticPaymentConsentStoreClient).consumeConsent(consumeReqCaptor.capture());
@@ -181,6 +185,7 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(consumeConsentReq.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
         assertThat(consumeConsentReq.getConsentId()).isEqualTo(consentId);
     }
+
     @Test
     public void shouldCreateDomesticPayment_refundNo() {
         // Given
@@ -199,6 +204,8 @@ public class DomesticPaymentsApiControllerTest {
         assertThat(responseData.getInitiation()).isEqualTo(payment.getData().getInitiation());
         assertThat(responseData.getRefund()).isNull();
         assertThat(paymentSubmitted.getBody().getLinks().getSelf().toString().endsWith("/domestic-payments/" + responseData.getDomesticPaymentId())).isTrue();
+
+        verifyConsentConsumed(payment.getData().getConsentId());
     }
 
     @Test

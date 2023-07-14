@@ -20,14 +20,16 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_7.domesticstandingorders;
 
+import org.springframework.stereotype.Controller;
+
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_7.domesticstandingorders.DomesticStandingOrdersApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import org.springframework.stereotype.Controller;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
+import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
 
 @Controller("DomesticStandingOrdersApiV3.1.7")
 public class DomesticStandingOrdersApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_6.domesticstandingorders.DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
@@ -36,17 +38,16 @@ public class DomesticStandingOrdersApiController extends com.forgerock.sapi.gate
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             StandingOrderService standingOrderService,
-            ConsentService consentService,
-            RiskValidationService riskValidationService,
-            FRAccountRepository frAccountRepository
+            DomesticStandingOrderConsentStoreClient consentStoreClient,
+            OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> paymentValidator,
+            RefundAccountService refundAccountService
     ) {
         super(
                 standingOrderPaymentSubmissionRepository,
                 paymentSubmissionValidator,
                 standingOrderService,
-                consentService,
-                riskValidationService,
-                frAccountRepository
-        );
+                consentStoreClient,
+                paymentValidator,
+                refundAccountService);
     }
 }

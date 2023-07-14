@@ -15,7 +15,23 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_9.vrp;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.joda.time.DateTime;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
@@ -23,14 +39,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpReques
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_9.vrp.DomesticVrpsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.IdempotentRepositoryAdapter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticVrpPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -39,25 +53,18 @@ import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.vrp.v3_1_10.Do
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.vrp.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsData;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatus;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataStatusDetail;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseData;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataCharges;
+import uk.org.openbanking.datamodel.vrp.OBExternalPaymentChargeType1Code;
 
 @Controller("DomesticVrpsApiV3.1.9")
 @Slf4j
@@ -70,7 +77,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
     private final PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-    private final FRAccountRepository accountRepository;
+    private final RefundAccountService refundAccountService;
     private final DomesticVRPConsentStoreClient consentStoreClient;
 
     public DomesticVrpsApiController(
@@ -79,14 +86,14 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            FRAccountRepository accountRepository
+            RefundAccountService refundAccountService
     ) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentRequestValidator = paymentRequestValidator;
         this.consentStoreClient = consentStoreClient;
         this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
-        this.accountRepository = accountRepository;
+        this.refundAccountService = refundAccountService;
     }
 
     @Override
@@ -228,13 +235,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private OBDomesticVRPResponse responseEntity(DomesticVRPConsent consent, OBDomesticVRPRequest obDomesticVRPRequest,
                                                  FRDomesticVrpPaymentSubmission paymentSubmission) {
 
-        final Optional<FRResponseDataRefund> refundAccountData;
-        if (consent.getRequestObj().getData().getReadRefundAccount() == FRReadRefundAccount.YES) {
-            final FRAccount debtorAccount = accountRepository.byAccountId(consent.getAuthorisedDebtorAccountId());
-            refundAccountData = FRResponseDataRefundFactory.frResponseDataRefund(debtorAccount.getAccount().getFirstAccount());
-        } else {
-            refundAccountData = Optional.empty();
-        }
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         OBDomesticVRPResponse response = new OBDomesticVRPResponse()
                 .data(

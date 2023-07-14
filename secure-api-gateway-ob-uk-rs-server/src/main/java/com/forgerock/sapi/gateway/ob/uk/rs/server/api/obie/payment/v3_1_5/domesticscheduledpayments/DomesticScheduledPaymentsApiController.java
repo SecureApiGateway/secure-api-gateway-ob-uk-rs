@@ -30,7 +30,6 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,8 +41,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
@@ -52,15 +49,13 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticscheduledpayments.DomesticScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRScheduledPaymentDataFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.FRDomesticScheduledPaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.IdempotentRepositoryAdapter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
@@ -68,13 +63,12 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValid
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import com.google.gson.JsonObject;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse5Data;
@@ -93,21 +87,21 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
     private final DomesticScheduledPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator;
-    private final FRAccountRepository accountRepository;
+    private final RefundAccountService refundAccountService;
 
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ScheduledPaymentService scheduledPaymentService,
             DomesticScheduledPaymentConsentStoreClient consentStoreClient,
-            FRAccountRepository accountRepository,
+            RefundAccountService refundAccountService,
             OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
     ) {
         this.scheduledPaymentSubmissionRepository = scheduledPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.scheduledPaymentService = scheduledPaymentService;
         this.consentStoreClient = consentStoreClient;
-        this.accountRepository = accountRepository;
+        this.refundAccountService = refundAccountService;
         this.paymentValidator = paymentValidator;
     }
 
@@ -126,7 +120,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             Principal principal) throws OBErrorResponseException {
         log.debug("Received payment submission: '{}'", obWriteDomesticScheduled2);
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteDomesticScheduled2.getRisk());
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         String consentId = obWriteDomesticScheduled2.getData().getConsentId();
         log.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);
@@ -160,6 +154,11 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Save the scheduled payment data for the Accounts API
         FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment, consent.getAuthorisedDebtorAccountId());
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
+
+        final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
+        consumePaymentRequest.setConsentId(consentId);
+        consumePaymentRequest.setApiClientId(apiClientId);
+        consentStoreClient.consumeConsent(consumePaymentRequest);
 
         return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
     }
@@ -227,13 +226,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             FRDomesticScheduledPaymentSubmission frPaymentSubmission
     ) {
 
-        final Optional<FRResponseDataRefund> refundAccountData;
-        if (consent.getRequestObj().getData().getReadRefundAccount() == FRReadRefundAccount.YES) {
-            final FRAccount debtorAccount = accountRepository.byAccountId(consent.getAuthorisedDebtorAccountId());
-            refundAccountData = FRResponseDataRefundFactory.frResponseDataRefund(debtorAccount.getAccount().getFirstAccount());
-        } else {
-            refundAccountData = Optional.empty();
-        }
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         FRWriteDataDomesticScheduled data = frPaymentSubmission.getScheduledPayment().getData();
         return new OBWriteDomesticScheduledResponse5()
@@ -280,28 +273,5 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 )
                 .links(LinksHelper.createDomesticScheduledPaymentDetailsLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
-    }
-
-    private void setRefund(
-            OBReadRefundAccountEnum obReadRefundAccountEnum,
-            JsonObject intent,
-            OBWriteDomesticScheduledResponse5 entity
-    ) {
-        if (Objects.nonNull(obReadRefundAccountEnum) && obReadRefundAccountEnum.equals(OBReadRefundAccountEnum.YES)) {
-            String accountId = Objects.nonNull(intent.get("accountId")) ? intent.get("accountId").getAsString() : null;
-            log.debug("Account Id from consent '{}'", accountId);
-            if (Objects.nonNull(accountId)) {
-                FRAccount frAccount = Objects.nonNull(accountId) ? accountRepository.byAccountId(accountId) : null;
-                FRAccountIdentifier frAccountIdentifier = Objects.nonNull(frAccount) ?
-                        frAccount.getAccount().getFirstAccount() :
-                        null;
-                Optional<FRResponseDataRefund> refund = FRResponseDataRefundFactory.frResponseDataRefund(frAccountIdentifier);
-                if(Objects.nonNull(refund)) {
-                    entity.getData().setRefund(
-                            refund.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null)
-                    );
-                }
-            }
-        }
     }
 }

@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -97,8 +98,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     }
 
     private List<FRCharge> calculateCharges(OBWriteDomesticConsent4 obWriteDomesticConsent4) {
-        // TODO add some logic to apply charges to payments
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override

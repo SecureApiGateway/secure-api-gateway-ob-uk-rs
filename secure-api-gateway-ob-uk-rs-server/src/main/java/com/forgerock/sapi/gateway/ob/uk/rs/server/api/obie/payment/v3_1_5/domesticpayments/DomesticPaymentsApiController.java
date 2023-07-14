@@ -41,7 +41,6 @@ import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
@@ -49,14 +48,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDome
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticpayments.DomesticPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRAccount;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.FRDomesticPaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.IdempotentRepositoryAdapter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -84,19 +81,19 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final DomesticPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator;
-    private final FRAccountRepository accountRepository;
+    private final RefundAccountService refundAccountService;
 
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,
             DomesticPaymentConsentStoreClient consentStoreClient,
-            FRAccountRepository accountRepository) {
+            RefundAccountService refundAccountService) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.paymentValidator = paymentValidator;
         this.consentStoreClient = consentStoreClient;
-        this.accountRepository = accountRepository;
+        this.refundAccountService = refundAccountService;
     }
 
     @Override
@@ -218,13 +215,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     ) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
 
-        final Optional<FRResponseDataRefund> refundAccountData;
-        if (consent.getRequestObj().getData().getReadRefundAccount() == FRReadRefundAccount.YES) {
-            final FRAccount debtorAccount = accountRepository.byAccountId(consent.getAuthorisedDebtorAccountId());
-            refundAccountData = FRResponseDataRefundFactory.frResponseDataRefund(debtorAccount.getAccount().getFirstAccount());
-        } else {
-            refundAccountData = Optional.empty();
-        }
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         return new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()
