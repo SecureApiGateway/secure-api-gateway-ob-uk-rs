@@ -63,6 +63,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValid
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
@@ -152,6 +153,11 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         // Save the standing order data for the Accounts API
         FRStandingOrderData standingOrderData = FRStandingOrderDataFactory.createFRStandingOrderData(frStandingOrder, consent.getAuthorisedDebtorAccountId());
         standingOrderService.createStandingOrder(standingOrderData);
+
+        final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
+        consumePaymentRequest.setConsentId(consentId);
+        consumePaymentRequest.setApiClientId(apiClientId);
+        consentStoreClient.consumeConsent(consumePaymentRequest);
 
         return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
     }

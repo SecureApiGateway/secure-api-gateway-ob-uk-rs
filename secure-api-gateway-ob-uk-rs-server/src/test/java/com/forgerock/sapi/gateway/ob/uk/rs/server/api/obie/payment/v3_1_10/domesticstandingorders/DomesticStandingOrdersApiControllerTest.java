@@ -34,6 +34,7 @@ import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -57,6 +58,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.account
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
 import uk.org.openbanking.datamodel.error.OBError1;
@@ -163,7 +165,14 @@ public class DomesticStandingOrdersApiControllerTest {
         when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consent);
     }
 
-
+    private void verifyConsentConsumed(String consentId) {
+        // Verify that consumeConsent was called
+        final ArgumentCaptor<ConsumePaymentConsentRequest> consumeReqCaptor = ArgumentCaptor.forClass(ConsumePaymentConsentRequest.class);
+        verify(consentStoreClient).consumeConsent(consumeReqCaptor.capture());
+        final ConsumePaymentConsentRequest consumeConsentReq = consumeReqCaptor.getValue();
+        assertThat(consumeConsentReq.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
+        assertThat(consumeConsentReq.getConsentId()).isEqualTo(consentId);
+    }
 
     @Test
     public void shouldCreateDomesticStandingOrderPayment_refundYes() {
@@ -194,6 +203,8 @@ public class DomesticStandingOrdersApiControllerTest {
         assertThat(response5DataRefundAccount.getName()).isEqualTo(frAccountIdentifier.getName());
         assertThat(response5DataRefundAccount.getSchemeName()).isEqualTo(frAccountIdentifier.getSchemeName());
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+
+        verifyConsentConsumed(paymentRequest.getData().getConsentId());
     }
 
     @Test
@@ -223,6 +234,8 @@ public class DomesticStandingOrdersApiControllerTest {
         );
         assertThat(responseData.getRefund()).isNull();
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-standing-orders/" + responseData.getDomesticStandingOrderId())).isTrue();
+
+        verifyConsentConsumed(paymentRequest.getData().getConsentId());
     }
 
     @Test

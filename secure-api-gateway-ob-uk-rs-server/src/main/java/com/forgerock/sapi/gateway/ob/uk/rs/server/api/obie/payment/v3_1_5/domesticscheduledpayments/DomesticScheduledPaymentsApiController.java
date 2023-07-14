@@ -63,6 +63,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValid
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
 import com.forgerock.sapi.gateway.rcs.conent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
@@ -153,6 +154,11 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Save the scheduled payment data for the Accounts API
         FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment, consent.getAuthorisedDebtorAccountId());
         scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
+
+        final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
+        consumePaymentRequest.setConsentId(consentId);
+        consumePaymentRequest.setApiClientId(apiClientId);
+        consentStoreClient.consumeConsent(consumePaymentRequest);
 
         return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
     }
