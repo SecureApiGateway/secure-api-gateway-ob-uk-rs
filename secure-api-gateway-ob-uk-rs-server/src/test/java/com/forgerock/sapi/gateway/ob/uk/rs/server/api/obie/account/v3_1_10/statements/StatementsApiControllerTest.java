@@ -51,7 +51,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.account
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;

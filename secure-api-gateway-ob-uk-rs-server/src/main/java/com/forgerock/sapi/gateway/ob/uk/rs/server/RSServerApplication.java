@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.CloudClientModuleConfiguration;
-import com.forgerock.sapi.gateway.rcs.conent.store.client.ConsentStoreClientConfiguration;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
 
 @SpringBootApplication
 @Import({CloudClientModuleConfiguration.class, ConsentStoreClientConfiguration.class})

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;

@@ -23,7 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.F
 import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_1.party.PartyApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.conent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
