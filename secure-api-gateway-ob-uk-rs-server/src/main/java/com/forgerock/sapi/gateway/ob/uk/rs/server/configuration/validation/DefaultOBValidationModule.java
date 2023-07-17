@@ -23,6 +23,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -39,11 +41,13 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDom
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteFileConsent3Validator;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 
 /**
@@ -112,5 +116,15 @@ public class DefaultOBValidationModule {
     @Bean
     public Set<String> validPaymentCurrencies() {
         return Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet());
+    }
+
+    @Bean
+    public OBValidationService<OBWriteFileConsent3> filePaymentConsentValidator() {
+        return new OBValidationService<>(new OBWriteFileConsent3Validator());
+    }
+
+    @Bean
+    public OBValidationService<FilePaymentFileContentValidationContext> filePaymentFileContentValidator() {
+        return new OBValidationService<>(new FilePaymentFileContentValidator());
     }
 }

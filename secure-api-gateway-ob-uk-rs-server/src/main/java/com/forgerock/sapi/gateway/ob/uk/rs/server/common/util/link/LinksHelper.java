@@ -34,6 +34,7 @@ public class LinksHelper {
     private static final String DOMESTIC_SCHEDULED_PAYMENTS = "domestic-scheduled-payments";
     private static final String DOMESTIC_STANDING_ORDER_CONSENTS = "domestic-standing-order-consents";
     private static final String DOMESTIC_STANDING_ORDER = "domestic-standing-orders";
+    private static final String FILE_PAYMENT_CONSENTS = "file-payment-consents";
     private static final String FILE_PAYMENTS = "file-payments";
     private static final String INTERNATIONAL_PAYMENTS = "international-payments";
     private static final String INTERNATIONAL_SCHEDULED_PAYMENTS = "international-scheduled-payments";
@@ -139,6 +140,9 @@ public class LinksHelper {
         return createSelfLink(controllerClass, DOMESTIC_STANDING_ORDER, id, DOMESTIC_PAYMENTS_DETAILS);
     }
 
+    public static Links createFilePaymentConsentsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, FILE_PAYMENT_CONSENTS, id);
+    }
 
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for a payments file.
