@@ -44,6 +44,10 @@
             <artifactId>secure-api-gateway-ob-uk-common-datamodel</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-common-obie-datamodel</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>

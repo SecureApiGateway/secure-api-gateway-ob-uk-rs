@@ -333,21 +333,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(value = {DataApiException.class})
-    protected ResponseEntity<Object> handleDataApiException(DataApiException ex, WebRequest request) {
-        HttpStatus httpStatus = ex.getErrorType().getHttpStatus();
-        log.debug("Error in admin data user API, reason {}", ex.getMessage());
-        return ResponseEntity.status(httpStatus).body(
-                new OBErrorResponse1()
-                        .code(httpStatus.name())
-                        .id(request.getHeader("x-fapi-interaction-id"))
-                        .message(httpStatus.getReasonPhrase())
-                        .errors(
-                                Collections.singletonList(new OBError1().message(ex.getMessage()))
-                        )
-        );
-    }
-
     @ExceptionHandler(ConsentStoreClientException.class)
     protected ResponseEntity<OBErrorResponse1> handleConsentStoreClientException(ConsentStoreClientException ex, WebRequest request) {
         final String fapiInteractionId = request.getHeader("x-fapi-interaction-id");

@@ -53,7 +53,11 @@
             <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-common-error</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.forgerock.sapi.gateway</groupId>
+            <artifactId>secure-api-gateway-ob-uk-rs-cloud-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- External dependencies -->
         <dependency>
             <groupId>org.springframework.data</groupId>

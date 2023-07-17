@@ -15,9 +15,11 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.customerinfo;
 
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.customerinfo.FRCustomerInfo;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.customerinfo.FRCustomerInfoAddress;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfoAddress;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.data.annotation.CreatedDate;
@@ -29,27 +31,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Document
 public class FRCustomerInfoEntity {
-
-    public FRCustomerInfoEntity(FRCustomerInfo customerInfo) {
-        this.partyId = customerInfo.getPartyId();
-        this.title = customerInfo.getPartyId();
-        this.initials = customerInfo.getInitials();
-        this.familyName = customerInfo.getFamilyName();
-        this.givenName = customerInfo.getGivenName();
-        this.email = customerInfo.getEmail();
-        this.phoneNumber = customerInfo.getPhoneNumber();
-        this.birthdate = customerInfo.getBirthdate();
-        this.address = customerInfo.getAddress();
-    }
 
     @Id
     @Indexed
     public String id;
 
     @Indexed
-    public String userID;
+    private String userID;
+    private String userName;
     private String partyId;
     private String title;
     private String initials;
@@ -67,19 +61,4 @@ public class FRCustomerInfoEntity {
     private DateTime created;
     @LastModifiedDate
     private DateTime updated;
-
-    public FRCustomerInfo toFRCustomerInfo() {
-        return FRCustomerInfo.builder()
-                .id(this.id)
-                .partyId(this.partyId)
-                .title(this.title)
-                .initials(this.initials)
-                .familyName(this.familyName)
-                .givenName(this.givenName)
-                .email(this.email)
-                .phoneNumber(this.phoneNumber)
-                .birthdate(this.birthdate)
-                .address(this.address)
-                .build();
-    }
 }

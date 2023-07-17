@@ -1,8 +1,7 @@
 # Resource Store Module
 
 This module is responsible for storing User Account data resources in a Mongo database, and exposing a REST API to allow
-other components
-to interact with the store.
+other components to interact with the resource store.
 
 ## Sub-modules
 

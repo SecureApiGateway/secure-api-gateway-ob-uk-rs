@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.rs.resource.store.datamodel.user;
 
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.customerinfo.FRCustomerInfo;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

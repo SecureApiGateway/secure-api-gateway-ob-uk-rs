@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server;
+package com.forgerock.sapi.gateway.rs.resource.store.repo;
 
-import com.forgerock.sapi.gateway.rs.resource.store.api.ResourceStoreApiModuleConfiguration;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.MongoRepoPackageMarker;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.CloudClientModuleConfiguration;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
-
-@SpringBootApplication
-@Import({CloudClientModuleConfiguration.class, ConsentStoreClientConfiguration.class, ResourceStoreApiModuleConfiguration.class})
+@Configuration
+@ComponentScan(basePackageClasses = ResourceStoreRepoConfiguration.class)
 @EnableMongoRepositories(basePackageClasses = MongoRepoPackageMarker.class)
 @EnableMongoAuditing
-public class RSServerApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(RSServerApplication.class, args);
-    }
+public class ResourceStoreRepoConfiguration {
 }

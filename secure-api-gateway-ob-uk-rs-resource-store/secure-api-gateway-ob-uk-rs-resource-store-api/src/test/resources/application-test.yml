@@ -1,10 +1,10 @@
 # Spring config for "test" profile
 # This config extends/overrides config in the default profile (file: src/main/resources/application.yml)
-spring:
-  data:
-    mongodb:
-      # force SpringBoot tests to use a random port for mongo
-      port: 0
+#spring:
+#  data:
+#    mongodb:
+#      # force SpringBoot tests to use a random port for mongo
+#      port: 0
 
 consent:
   repo:
@@ -21,14 +21,24 @@ consent:
       delete: /repo/users/@UserId@
 
 rs:
-  discovery:
-    financialId: 0015800001041REAAY
+  # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
+  data:
+    customer_info:
+      enabled: false
+    upload:
+      limit:
+        accounts: 100
+        documents: 1000
+  obie:
+    validation:
+      # OBIE validation module to load, the "default" module is provided as standard with the simulator
+      module: default
 
-rcs:
-  consent:
-    store:
-      api:
-        baseUri: ignored
+#rcs:
+#  consent:
+#    store:
+#      api:
+#        baseUri: ignored
 
 testdata:
   # Configure Account Identifier for test users, if config is not provided for a particular user then randomised data is used
