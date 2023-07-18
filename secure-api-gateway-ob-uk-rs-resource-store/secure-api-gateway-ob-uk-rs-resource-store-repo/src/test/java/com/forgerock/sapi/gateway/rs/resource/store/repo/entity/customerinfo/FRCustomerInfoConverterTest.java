@@ -99,6 +99,7 @@ public class FRCustomerInfoConverterTest {
                 .partyId("party-Id")
                 .phoneNumber("+44 7777 777777").build();
     }
+
     public static FRCustomerInfoAddress aValidFRCustomerInfoAddress() {
         return FRCustomerInfoAddress.builder()
                 .streetAddress(List.of("999", "Letsbe Avenue", "Chelmsford", "Essex"))

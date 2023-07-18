@@ -17,8 +17,15 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRAddressTypeCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfoAddress;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -27,8 +34,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -176,4 +186,60 @@ public class JacksonMapperTest {
         assertEquals(serialized, expected);
     }
 
+    @Test
+    public void serializeCustomerInfo() throws JsonProcessingException {
+        LocalDate birthDate = new DateTime().toDateTimeISO().minusYears(20).toLocalDate();
+        FRCustomerInfo customerInfo = aValidFRCustomerInfo(UUID.randomUUID().toString(), "userName");
+        customerInfo.setBirthdate(birthDate);
+        String customerInfoSerialized = mapper.writeValueAsString(customerInfo);
+        assertThat(customerInfoSerialized).contains(DateTimeFormat.forPattern("dd/MM/yyyy").print(birthDate));
+    }
+
+    @Test
+    public void deserializeCustomerInfo() throws JsonProcessingException {
+        FRCustomerInfo customerInfo = mapper.readValue(getCustomerInfoString(), FRCustomerInfo.class);
+        assertThat(customerInfo.getBirthdate().toString()).isEqualTo("2001-02-16");
+    }
+
+    public static FRCustomerInfo aValidFRCustomerInfo(String userId, String userName) {
+        return FRCustomerInfo.builder()
+                .userID(userId)
+                .userName(userName)
+                .address(aValidFRCustomerInfoAddress())
+                .birthdate(new DateTime().toDateTimeISO().minusYears(19).toLocalDate())
+                .email("joe.doe@acme.com")
+                .familyName("Joe")
+                .givenName("Doe")
+                .initials("JD")
+                .title("Mr")
+                .partyId("party-Id")
+                .phoneNumber("+44 7777 777777").build();
+    }
+
+    public static FRCustomerInfoAddress aValidFRCustomerInfoAddress() {
+        return FRCustomerInfoAddress.builder()
+                .streetAddress(List.of("999", "Letsbe Avenue", "Chelmsford", "Essex"))
+                .addressType(FRAddressTypeCode.RESIDENTIAL)
+                .country("UK")
+                .postalCode("ES12 3RR").build();
+    }
+
+    private static String getCustomerInfoString() {
+        return "{\n" +
+                "   \"partyId\": \"32432-3242\",\n" +
+                "   \"title\": \"Mr\",\n" +
+                "   \"initials\": \"F\",\n" +
+                "   \"familyName\": \"Titmus\",\n" +
+                "   \"givenName\": \"Fred\",\n" +
+                "   \"email\": \"fred.titmus@acme.com\",\n" +
+                "   \"phoneNumber\": \"07743 234323\",\n" +
+                "   \"birthdate\": \"16/02/2001\",\n" +
+                "   \"address\": {\n" +
+                "     \"addressType\": \"Residential\",\n" +
+                "     \"streetAddress\": [\"999\", \"letsbe avenue\", \"colchester\", \"essex\"],\n" +
+                "     \"postalCode\": \"CO8 3JJ\",\n" +
+                "     \"country\": \"UK\"\n" +
+                "   }\n" +
+                " }\n";
+    }
 }

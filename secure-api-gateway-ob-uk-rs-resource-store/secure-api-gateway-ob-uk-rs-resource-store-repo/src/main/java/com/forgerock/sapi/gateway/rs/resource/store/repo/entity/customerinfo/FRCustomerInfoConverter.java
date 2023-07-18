@@ -53,7 +53,6 @@ public class FRCustomerInfoConverter {
                     .email(customerInfo.getEmail())
                     .phoneNumber(customerInfo.getPhoneNumber())
                     .birthdate(customerInfo.getBirthdate())
-                    .birthdate(customerInfo.getBirthdate())
                     .address(customerInfo.getAddress())
                     .build();
         }
