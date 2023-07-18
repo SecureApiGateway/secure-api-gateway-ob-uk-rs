@@ -9,7 +9,7 @@ all: clean test package
 clean:
 	mvn clean
 
-install: clean
+install:
 	mvn -U install
 
 docker: install

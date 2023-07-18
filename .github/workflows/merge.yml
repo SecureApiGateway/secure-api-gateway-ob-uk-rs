@@ -43,7 +43,7 @@ jobs:
 
       - name: test
         run: |
-          make install
+          make clean install
 
       - name: Deploy artifact package
         run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
