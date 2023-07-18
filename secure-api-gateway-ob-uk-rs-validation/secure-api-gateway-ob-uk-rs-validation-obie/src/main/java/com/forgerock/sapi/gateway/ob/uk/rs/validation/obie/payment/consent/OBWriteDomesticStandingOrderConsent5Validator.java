@@ -19,7 +19,6 @@ import static java.math.BigDecimal.ZERO;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.Set;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
@@ -32,15 +31,19 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataIni
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
 
+/**
+ * Validator of OBWriteDomesticStandingOrderConsent5 objects (OBIE Domestic Standing Order Consents)
+ */
 public class OBWriteDomesticStandingOrderConsent5Validator extends BaseOBValidator<OBWriteDomesticStandingOrderConsent5> {
 
     private static final String FIRST_PAYMENT_AMOUNT = "firstPaymentAmount";
     private static final String RECURRING_PAYMENT_AMOUNT = "recurringPaymentAmount";
     private static final String FINAL_PAYMENT_AMOUNT = "finalPaymentAmount";
-    private final Set<String> validPaymentCurrencies;
 
-    public OBWriteDomesticStandingOrderConsent5Validator(Set<String> validPaymentCurrencies) {
-        this.validPaymentCurrencies = Objects.requireNonNull(validPaymentCurrencies, "validPaymentCurrencies must be supplied");
+    private final BaseOBValidator<String> currencyCodeValidator;
+
+    public OBWriteDomesticStandingOrderConsent5Validator(BaseOBValidator<String> currencyCodeValidator) {
+        this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
     }
 
     @Override
@@ -66,9 +69,6 @@ public class OBWriteDomesticStandingOrderConsent5Validator extends BaseOBValidat
             validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                     String.format("Field: %s - the amount %s provided must be greater than 0", fieldName, amount)));
         }
-        if (!validPaymentCurrencies.contains(currency)) {
-            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                    String.format("Field: %s - the currency %s provided is not supported", fieldName, currency)));
-        }
+        validationResult.mergeResults(currencyCodeValidator.validate(currency));
     }
 }

@@ -21,6 +21,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 
+/**
+ * Validator of OBWriteFileConsent3 objects (OBIE File Payment Consents)
+ */
 public class OBWriteFileConsent3Validator extends BaseOBValidator<OBWriteFileConsent3> {
 
     @Override

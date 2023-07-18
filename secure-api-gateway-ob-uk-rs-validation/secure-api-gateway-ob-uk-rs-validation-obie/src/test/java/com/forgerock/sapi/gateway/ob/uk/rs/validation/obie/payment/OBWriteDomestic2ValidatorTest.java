@@ -99,7 +99,7 @@ class OBWriteDomestic2ValidatorTest {
 
             final OBWriteDomestic2ValidationContext validatorContext = new OBWriteDomestic2ValidationContext(paymentRequest, consent, invalidStatus.toString());
             validateErrorResult(obWriteDomestic2Validator.validate(validatorContext), List.of(new OBError1().errorCode("UK.OBIE.Resource.InvalidConsentStatus")
-                    .message("Confirmation is not allowed unless the consent status is Authorised. Currently, the consent is " + invalidStatus)));
+                    .message("Action can only be performed on consents with status: Authorised. Currently, the consent is: " + invalidStatus)));
         }
     }
 

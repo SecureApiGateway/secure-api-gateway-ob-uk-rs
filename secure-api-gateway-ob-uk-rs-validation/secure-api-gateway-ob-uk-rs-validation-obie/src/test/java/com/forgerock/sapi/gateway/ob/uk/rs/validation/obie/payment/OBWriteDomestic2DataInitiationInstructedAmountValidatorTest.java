@@ -16,9 +16,9 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
 
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +28,17 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstru
 public class OBWriteDomestic2DataInitiationInstructedAmountValidatorTest {
 
     public static OBWriteDomestic2DataInitiationInstructedAmountValidator createInstructedAmountValidator(String... currencies) {
-        return new OBWriteDomestic2DataInitiationInstructedAmountValidator(Set.of(currencies));
+        return new OBWriteDomestic2DataInitiationInstructedAmountValidator(CurrencyCodeValidatorTest.createCurrencyCodeValidator(currencies));
     }
 
 
     private final OBWriteDomestic2DataInitiationInstructedAmountValidator validator = createInstructedAmountValidator("USD", "GBP", "EUR", "CHF");
+
+    @Test
+    public void validationRulesPass() {
+        validateSuccessResult(validator.validate(
+                new OBWriteDomestic2DataInitiationInstructedAmount().amount("0.01").currency("GBP")));
+    }
 
     @Test
     public void failsValidationWhenInstructedAmountCurrencyInvalid() {

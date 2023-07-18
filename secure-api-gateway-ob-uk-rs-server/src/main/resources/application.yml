@@ -68,3 +68,12 @@ rs:
     validation:
       # OBIE validation module to load, the "default" module is provided as standard with the simulator
       module: default
+
+  # Exchange rate values to use in FX quotes
+  exchange:
+    rates:
+      default: "1.5123"
+      pairs:
+        GBPUSD: "1.3211"
+        GBPEUR: "1.1634"
+
