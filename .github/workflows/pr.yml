@@ -60,7 +60,7 @@ jobs:
 
       - name: test
         run: |
-          make verify
+          make install
 
       - run: |
           gcloud auth configure-docker
