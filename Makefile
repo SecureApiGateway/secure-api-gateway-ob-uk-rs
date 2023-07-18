@@ -9,11 +9,11 @@ all: clean test package
 clean:
 	mvn clean
 
-verify: clean
-	mvn -U verify
+install:
+	mvn -U install
 
-docker: clean
-	mvn install dockerfile:build dockerfile:push -DskipTests -DskipITs -Dtag=${tag} \
+docker: install
+	mvn dockerfile:build dockerfile:push -DskipTests -DskipITs -Dtag=${tag} \
 	  -DgcrRepo=${repo} --file secure-api-gateway-ob-uk-rs-server/pom.xml
 
 package_helm:
