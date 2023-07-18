@@ -171,8 +171,9 @@ public class DataApiController implements DataApi {
             User user = userClientService.getUserByName(userData.getUserName());
             // user exist, carry on to update the user data
             String userId = user.getId();
+            log.debug("userData: \n{}\n", userData);
             // update customer information
-            log.info("Customer information enabled: {}", isCustomerInfoEnabled);
+            log.debug("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
                 log.debug("Updating customer information");
                 dataUpdater.updateCustomerInfo(userData.getCustomerInfo(), userId);
@@ -239,8 +240,9 @@ public class DataApiController implements DataApi {
             FRUserData userDataResponse = new FRUserData();
             userDataResponse.setUserId(userId);
             userDataResponse.setUserName(user.getUserName());
+            log.debug("userData: \n{}\n", userData);
             // Customer info
-            log.info("Customer information enabled: {}", isCustomerInfoEnabled);
+            log.debug("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
                 log.debug("Creating customer information");
                 userDataResponse.setCustomerInfo(
