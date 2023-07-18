@@ -61,7 +61,7 @@ import static org.springframework.http.HttpMethod.PUT;
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-@TestPropertySource(properties = {"rs.data.upload.limit.accounts=10", "rs.data.upload.limit.documents=1", "rs.data.customer_info.enabled=true"})
+@TestPropertySource(properties = {"rs.data.upload.limit.accounts=10", "rs.data.upload.limit.documents=1", "rs.data.customerInfo.enabled=true"})
 public class DataApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
