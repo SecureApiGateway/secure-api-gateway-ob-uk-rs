@@ -93,7 +93,7 @@ public class DataApiController implements DataApi {
                              FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
                              DataCreator dataCreator, FRScheduledPaymentRepository scheduledPayment1Repository,
                              FRPartyRepository partyRepository, FRCustomerInfoRepository customerInfoRepository,
-                             @Value("${rs.data.customer_info.enabled:false}") Boolean isCustomerInfoEnabled,
+                             @Value("${rs.data.customerInfo.enabled:false}") Boolean isCustomerInfoEnabled,
                              DataUpdater dataUpdater, FROfferRepository offerRepository,
                              UserClientService userClientService
     ) {
@@ -172,7 +172,9 @@ public class DataApiController implements DataApi {
             // user exist, carry on to update the user data
             String userId = user.getId();
             // update customer information
+            log.info("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
+                log.debug("Updating customer information");
                 dataUpdater.updateCustomerInfo(userData.getCustomerInfo(), userId);
             }
 
@@ -237,8 +239,10 @@ public class DataApiController implements DataApi {
             FRUserData userDataResponse = new FRUserData();
             userDataResponse.setUserId(userId);
             userDataResponse.setUserName(user.getUserName());
-
+            // Customer info
+            log.info("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
+                log.debug("Creating customer information");
                 userDataResponse.setCustomerInfo(
                         FRCustomerInfoConverter.entityToDto(
                                 dataCreator.createCustomerInfo(userData.getCustomerInfo(), userId)
