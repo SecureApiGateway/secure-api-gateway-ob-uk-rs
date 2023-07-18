@@ -82,7 +82,7 @@ public class DataApiController implements DataApi {
     private final FROfferRepository offerRepository;
 
     private final FRCustomerInfoRepository customerInfoRepository;
-    private boolean isCustomerInfoEnabled;
+    private final boolean isCustomerInfoEnabled;
     private final DataUpdater dataUpdater;
     private final DataCreator dataCreator;
     private final UserClientService userClientService;
@@ -171,11 +171,11 @@ public class DataApiController implements DataApi {
             User user = userClientService.getUserByName(userData.getUserName());
             // user exist, carry on to update the user data
             String userId = user.getId();
-            log.debug("userData: \n{}\n", userData);
+            log.debug("user found with id: {}", userId);
             // update customer information
             log.debug("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
-                log.debug("Updating customer information");
+                log.debug("Creating customer information for user {}:{}", userData.getUserName(), userId);
                 dataUpdater.updateCustomerInfo(userData.getCustomerInfo(), userId);
             }
 
@@ -237,14 +237,14 @@ public class DataApiController implements DataApi {
             User user = userClientService.getUserByName(userData.getUserName());
             // user exist, carry on to create the user data
             String userId = user.getId();
+            log.debug("user found with id: {}", userId);
             FRUserData userDataResponse = new FRUserData();
             userDataResponse.setUserId(userId);
             userDataResponse.setUserName(user.getUserName());
-            log.debug("userData: \n{}\n", userData);
             // Customer info
             log.debug("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
-                log.debug("Creating customer information");
+                log.debug("Creating customer information for user {}:{}", userData.getUserName(), userId);
                 userDataResponse.setCustomerInfo(
                         FRCustomerInfoConverter.entityToDto(
                                 dataCreator.createCustomerInfo(userData.getCustomerInfo(), userId)
@@ -319,15 +319,33 @@ public class DataApiController implements DataApi {
 
     @Override
     public ResponseEntity<Boolean> deleteUserData(
-            @RequestParam("userId") String userId
-    ) {
-        log.debug("deleting user data by userId '{}'", userId);
-        customerInfoRepository.deleteFRCustomerInfoByUserID(userId);
-        Collection<FRAccount> accounts = accountsRepository.findByUserID(userId);
-        for (FRAccount account : accounts) {
-            deleteAccount(account, userId);
+            @RequestParam("userName") String userName
+    ) throws DataApiException {
+        log.debug("deleting user account data by userName '{}'", userName);
+        try {
+            User user = userClientService.getUserByName(userName);
+            if (user != null) {
+                log.debug("deleting user account data for user Id '{}'", user.getId());
+                customerInfoRepository.deleteFRCustomerInfoByUserID(user.getId());
+                Collection<FRAccount> accounts = accountsRepository.findByUserID(user.getId());
+                for (FRAccount account : accounts) {
+                    deleteAccount(account, user.getId());
+                }
+                return ResponseEntity.ok(accounts.size() > 0);
+            }
+        } catch (ExceptionClient exceptionClient) {
+            if (exceptionClient.getErrorClient().getErrorType().getHttpStatus().equals(HttpStatus.NOT_FOUND)) {
+                log.debug("No user details with user name {} found, no data has been deleted", userName);
+            } else {
+                log.error(
+                        "Status: {}, reason: {}",
+                        exceptionClient.getErrorClient().getErrorType().getHttpStatus(),
+                        exceptionClient.getReason()
+                );
+                throw new DataApiException(exceptionClient);
+            }
         }
-        return ResponseEntity.ok(accounts.size() > 0);
+        return ResponseEntity.ok(false);
     }
 
     private void deleteAccount(FRAccount account, String userId) {

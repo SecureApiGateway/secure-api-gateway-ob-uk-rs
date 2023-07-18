@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
 import io.swagger.annotations.*;
@@ -129,7 +130,7 @@ public interface DataApi {
             @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/user", method = RequestMethod.DELETE)
     ResponseEntity<Boolean> deleteUserData(
-            @ApiParam(value = "UserId", required = true)
-            @RequestParam("userId") String userId
-    );
+            @ApiParam(value = "UserName", required = true)
+            @RequestParam("userName") String userName
+    ) throws ExceptionClient;
 }
