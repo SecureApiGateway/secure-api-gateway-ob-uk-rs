@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.rs.resource.store.api.resource.customerinfo;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountWithBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
+import com.forgerock.sapi.gateway.rs.resource.store.api.resource.BaseResourceApi;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,9 +31,7 @@ import java.util.List;
 /**
  * "Resources" endpoints related to Accounts, which are not part of the official Open Banking Read/Write API.
  */
-@Api(value = "resources", description = "the Back Office Accounts API")
-@RequestMapping(value = "/resources")
-public interface CustomerInfoResourceApi {
+public interface CustomerInfoResourceApi extends BaseResourceApi {
 
     /**
      * Retrieves a user's bank customer information details.
