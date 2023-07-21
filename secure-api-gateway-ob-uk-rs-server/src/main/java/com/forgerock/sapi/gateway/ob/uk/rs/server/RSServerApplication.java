@@ -15,17 +15,21 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server;
 
+import com.forgerock.sapi.gateway.rs.resource.store.api.ResourceStoreApiModuleConfiguration;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.MongoRepoPackageMarker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.CloudClientModuleConfiguration;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientConfiguration;
 
 @SpringBootApplication
-@Import({CloudClientModuleConfiguration.class, ConsentStoreClientConfiguration.class})
-@EnableMongoRepositories(basePackages = "com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository")
+@Import({CloudClientModuleConfiguration.class, ConsentStoreClientConfiguration.class, ResourceStoreApiModuleConfiguration.class})
+@EnableMongoRepositories(basePackageClasses = MongoRepoPackageMarker.class)
+@EnableMongoAuditing
 public class RSServerApplication {
 
     public static void main(String[] args) {

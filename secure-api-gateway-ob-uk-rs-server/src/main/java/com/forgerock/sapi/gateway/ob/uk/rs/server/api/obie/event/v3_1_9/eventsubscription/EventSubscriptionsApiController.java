@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_9.eventsubscription;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.events.EventSubscriptionsRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.EventSubscriptionsRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_9.eventsubscription.EventSubscriptionsApi;
 import org.springframework.stereotype.Controller;
 

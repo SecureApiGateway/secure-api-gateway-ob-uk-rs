@@ -21,12 +21,11 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_9.file;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_9.file.FilePaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
-
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
 import org.springframework.stereotype.Controller;
 
 @Controller("FilePaymentsApiV3.1.9")
@@ -37,7 +36,7 @@ public class FilePaymentsApiController extends com.forgerock.sapi.gateway.ob.uk.
             PaymentSubmissionValidator paymentSubmissionValidator,
             FilePaymentConsentStoreClient consentStoreClient,
             OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator
-            ) {
+    ) {
         super(filePaymentSubmissionRepository, paymentSubmissionValidator, consentStoreClient, filePaymentRequestValidator);
     }
 }

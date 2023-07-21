@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1.party;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1.party.PartyApi;
 import org.springframework.stereotype.Controller;
 

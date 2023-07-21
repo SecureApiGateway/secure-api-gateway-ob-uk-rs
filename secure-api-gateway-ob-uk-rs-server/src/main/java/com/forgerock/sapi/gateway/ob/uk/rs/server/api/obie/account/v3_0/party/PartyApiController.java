@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.party;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRParty;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.party.PartyApi;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

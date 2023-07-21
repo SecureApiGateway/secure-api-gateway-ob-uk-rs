@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_2.eventsubscription;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.event.FREventSubscription;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.events.EventSubscriptionsRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventSubscription;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.EventSubscriptionsRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

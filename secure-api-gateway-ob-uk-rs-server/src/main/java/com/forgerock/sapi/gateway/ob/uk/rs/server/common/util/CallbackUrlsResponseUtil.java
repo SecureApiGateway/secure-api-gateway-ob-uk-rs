@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FRCallbackUrlData;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.event.FRCallbackUrl;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FRCallbackUrl;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import lombok.extern.slf4j.Slf4j;

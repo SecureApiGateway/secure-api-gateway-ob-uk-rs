@@ -20,7 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.PaymentSubmission;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;

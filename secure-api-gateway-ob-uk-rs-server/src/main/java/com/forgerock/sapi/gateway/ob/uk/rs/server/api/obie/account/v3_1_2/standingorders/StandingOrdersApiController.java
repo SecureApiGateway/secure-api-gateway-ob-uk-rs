@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_2.standingorders;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_2.standingorders.StandingOrdersApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

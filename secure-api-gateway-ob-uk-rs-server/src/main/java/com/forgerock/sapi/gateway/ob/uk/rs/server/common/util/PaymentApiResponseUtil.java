@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.payment.PaymentSubmission;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.springframework.http.ResponseEntity;
 

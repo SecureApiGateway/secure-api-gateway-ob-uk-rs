@@ -17,8 +17,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_0.transac
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.document.account.FRTransaction;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_0.transactions.TransactionsApi;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

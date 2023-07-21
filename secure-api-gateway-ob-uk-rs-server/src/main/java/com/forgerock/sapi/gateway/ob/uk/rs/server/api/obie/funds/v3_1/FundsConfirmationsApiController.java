@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.persistence.repository.funds.FundsConfirmationRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1.FundsConfirmationsApi;
 import lombok.extern.slf4j.Slf4j;
