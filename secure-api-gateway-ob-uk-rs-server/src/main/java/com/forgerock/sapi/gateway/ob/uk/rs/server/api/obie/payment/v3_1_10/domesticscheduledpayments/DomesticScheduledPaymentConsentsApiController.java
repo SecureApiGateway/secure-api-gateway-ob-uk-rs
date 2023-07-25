@@ -106,7 +106,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                                                                                                                  HttpServletRequest request,
                                                                                                                  Principal principal) throws OBErrorResponseException {
 
-        logger.info("Processing getDomesticScheduledPaymentConsentsConsentId request - consentId: {}, apiClient, x-fapi-interaction-id: {}",
+        logger.info("Processing getDomesticScheduledPaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 consentId, apiClientId, xFapiInteractionId);
 
         return ResponseEntity.ok(consentResponseFactory.buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));
