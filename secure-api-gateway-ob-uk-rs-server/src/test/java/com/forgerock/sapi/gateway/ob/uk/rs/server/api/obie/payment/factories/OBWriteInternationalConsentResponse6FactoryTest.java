@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalpayments.InternationalPaymentConsentsApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
@@ -41,7 +40,7 @@ class OBWriteInternationalConsentResponse6FactoryTest {
     void testCreateOBWriteInternationalConsentResponse6() {
         final OBWriteInternationalConsent5 consentRequest = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
         final OBWriteInternationalConsent5Data requestData = consentRequest.getData();
-        final InternationalPaymentConsent internationalPaymentConsent = InternationalPaymentConsentsApiControllerTest.buildAwaitingAuthorisationConsent(consentRequest);
+        final InternationalPaymentConsent internationalPaymentConsent = InternationalPaymentConsentsApiControllerTest.buildAwaitingAuthorisationConsentForAgreedRate(consentRequest);
         final OBWriteInternationalConsentResponse6 response = factory.buildConsentResponse(internationalPaymentConsent, DomesticPaymentConsentsApiController.class);
 
         final OBWriteInternationalConsentResponse6Data responseData = response.getData();
