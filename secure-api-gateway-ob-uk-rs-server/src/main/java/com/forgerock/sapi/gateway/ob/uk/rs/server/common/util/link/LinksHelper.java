@@ -160,6 +160,10 @@ public class LinksHelper {
         return createSelfLink(controllerClass, INTERNATIONAL_PAYMENT_CONSENTS, id);
     }
 
+    public static Links createInternationalPaymentConsentsFundsConfirmationLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_PAYMENT_CONSENTS, id, FUNDS_CONFIRMATION);
+    }
+
     /**
      * Creates an instance of the OB {@link Links} class with only the 'self' link populated for an international
      * payment.

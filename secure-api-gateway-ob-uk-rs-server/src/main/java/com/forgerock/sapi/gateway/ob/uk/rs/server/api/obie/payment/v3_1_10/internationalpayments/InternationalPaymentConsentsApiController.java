@@ -37,6 +37,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalpayments.InternationalPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteFundsConfirmationResponse1Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteInternationalConsentResponse6Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -118,7 +119,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
             DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String apiClientId, HttpServletRequest request, Principal principal) {
 
-        logger.info("Processing getInternationalPaymentConsentsConsentId request - consentId: {}, apiClient, x-fapi-interaction-id: {}",
+        logger.info("Processing getInternationalPaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                     consentId, apiClientId, xFapiInteractionId);
 
         return ResponseEntity.ok(consentResponseFactory.buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));
@@ -141,6 +142,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         final boolean fundsAvailable = fundsAvailabilityService.isFundsAvailable(consent.getAuthorisedDebtorAccountId(),
                                                                                  consent.getRequestObj().getData().getInitiation().getInstructedAmount().getAmount());
 
-        return ResponseEntity.ok(fundsConfirmationResponseFactory.create(fundsAvailable, consentId, getClass()));
+        return ResponseEntity.ok(fundsConfirmationResponseFactory.create(fundsAvailable, consentId,
+                id -> LinksHelper.createInternationalPaymentConsentsFundsConfirmationLink(getClass(), id)));
     }
 }

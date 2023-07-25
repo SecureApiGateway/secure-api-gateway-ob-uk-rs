@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalpayments;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter.*;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.*;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter.toFRExchangeRateInformation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalConsent;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.FundsConfirmationTestHelpers.validateConsentNotAuthorisedErrorResponse;
@@ -63,13 +63,11 @@ import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data.StatusEnum;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -193,7 +191,7 @@ public class InternationalPaymentConsentsApiControllerTest {
 
     @Test
     public void failsToCreateConsentIfRequestDoesNotPassJavaBeanValidation() {
-        final OBWriteDomesticConsent4 emptyConsent = new OBWriteDomesticConsent4();
+        final OBWriteInternationalConsent5 emptyConsent = new OBWriteInternationalConsent5();
 
         final ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
                 new HttpEntity<>(emptyConsent, HTTP_HEADERS), OBErrorResponse1.class);
@@ -212,7 +210,7 @@ public class InternationalPaymentConsentsApiControllerTest {
 
     @Test
     public void failsToCreateConsentIfRequestDoesNotPassBizLogicValidation() {
-        final OBWriteDomesticConsent4 consentWithInvalidAmount = OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4();
+        final OBWriteInternationalConsent5 consentWithInvalidAmount = createValidateConsentRequestWithAgreedRate();
         consentWithInvalidAmount.getData().getInitiation().getInstructedAmount().setAmount("0"); // Invalid amount
 
         final ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
