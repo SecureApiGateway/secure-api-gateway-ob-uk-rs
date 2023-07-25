@@ -40,6 +40,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomest
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
@@ -147,5 +149,10 @@ public class DefaultOBValidationModule {
     public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator() {
         return new OBValidationService<>(new OBWriteInternationalConsent5Validator(instructedAmountValidator(),
                 currencyCodeValidator(), exchangeRateInformationValidator()));
+    }
+
+    @Bean
+    public OBValidationService<OBWriteInternational3ValidationContext> internationalPaymentValidator() {
+        return new OBValidationService<>(new OBWriteInternational3Validator());
     }
 }

@@ -139,8 +139,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         consumePaymentRequest.setApiClientId(apiClientId);
         consentStoreClient.consumeConsent(consumePaymentRequest);
 
-        return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission)
-        );
+        return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
     }
 
     @Override

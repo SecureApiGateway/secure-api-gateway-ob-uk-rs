@@ -15,8 +15,11 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRFinancialAgent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRFinancialCreditor;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
@@ -44,5 +47,20 @@ public class RefundAccountService {
         } else {
             return Optional.empty();
         }
+    }
+
+    public Optional<FRInternationalResponseDataRefund> getInternationalRefundAccountData(FRReadRefundAccount readRefundAccount,
+            FRFinancialCreditor creditor, FRFinancialAgent agent, BasePaymentConsent<?> paymentConsent) {
+
+        if (readRefundAccount == FRReadRefundAccount.YES) {
+            return getRefundAccountData(readRefundAccount, paymentConsent).map(refundData -> FRInternationalResponseDataRefund.builder()
+                    .account(refundData.getAccount())
+                    .creditor(creditor)
+                    .agent(agent)
+                    .build());
+        } else {
+            return Optional.empty();
+        }
+
     }
 }

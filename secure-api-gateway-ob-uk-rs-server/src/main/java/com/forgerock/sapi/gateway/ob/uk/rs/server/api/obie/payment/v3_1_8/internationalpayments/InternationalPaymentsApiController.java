@@ -20,13 +20,15 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_8.internationalpayments;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_8.internationalpayments.InternationalPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalPaymentSubmissionRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_8.internationalpayments.InternationalPaymentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.v3_1_10.InternationalPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalPaymentSubmissionRepository;
 
 @Controller("InternationalPaymentsApiV3.1.8")
 public class InternationalPaymentsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_7.internationalpayments.InternationalPaymentsApiController implements InternationalPaymentsApi {
@@ -34,16 +36,16 @@ public class InternationalPaymentsApiController extends com.forgerock.sapi.gatew
     public InternationalPaymentsApiController(
             InternationalPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ConsentService consentService,
-            RiskValidationService riskValidationService,
-            FRAccountRepository frAccountRepository
+            InternationalPaymentConsentStoreClient consentStoreClient,
+            OBValidationService<OBWriteInternational3ValidationContext> paymentValidator,
+            RefundAccountService refundAccountService
     ) {
         super(
                 paymentSubmissionRepository,
                 paymentSubmissionValidator,
-                consentService,
-                riskValidationService,
-                frAccountRepository
+                consentStoreClient,
+                paymentValidator,
+                refundAccountService
         );
     }
 }
