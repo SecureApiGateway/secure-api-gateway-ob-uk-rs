@@ -41,6 +41,8 @@ public class LinksHelper {
     private static final String INTERNATIONAL_SCHEDULED_PAYMENT_CONSENTS = "international-scheduled-payment-consents";
     private static final String INTERNATIONAL_SCHEDULED_PAYMENTS = "international-scheduled-payments";
     private static final String INTERNATIONAL_STANDING_ORDER = "international-standing-orders";
+
+    private static final String INTERNATIONAL_STANDING_ORDER_CONSENTS = "international-standing-order-consents";
     private static final String CALLBACK_URLS = "callback-urls";
     private static final String EVENT_SUBSCRIPTIONS = "event-subscriptions";
     private static final String FUNDS_CONFIRMATION = "funds-confirmation";
@@ -219,6 +221,14 @@ public class LinksHelper {
      */
     public static Links createInternationalScheduledPaymentDetailsLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, INTERNATIONAL_SCHEDULED_PAYMENTS, id, DOMESTIC_PAYMENTS_DETAILS);
+    }
+
+    public static Links createInternationalStandingOrderConsentsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_STANDING_ORDER_CONSENTS, id);
+    }
+
+    public static Links createInternationalStandingOrderConsentsFundsConfirmationLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_STANDING_ORDER_CONSENTS, id, FUNDS_CONFIRMATION);
     }
 
     /**
