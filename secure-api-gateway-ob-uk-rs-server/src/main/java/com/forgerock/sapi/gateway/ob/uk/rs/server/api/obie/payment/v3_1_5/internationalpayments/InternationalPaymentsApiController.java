@@ -216,7 +216,8 @@ public class InternationalPaymentsApiController implements InternationalPayments
     ) {
         FRWriteInternationalData data = frPaymentSubmission.getPayment().getData();
 
-        final Optional<FRInternationalResponseDataRefund> refundAccountData = refundAccountService.getInternationalRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(),
+        final Optional<FRInternationalResponseDataRefund> refundAccountData = refundAccountService.getInternationalPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(),
                 consent.getRequestObj().getData().getInitiation().getCreditor(),
                 consent.getRequestObj().getData().getInitiation().getCreditorAgent(),
                 consent);

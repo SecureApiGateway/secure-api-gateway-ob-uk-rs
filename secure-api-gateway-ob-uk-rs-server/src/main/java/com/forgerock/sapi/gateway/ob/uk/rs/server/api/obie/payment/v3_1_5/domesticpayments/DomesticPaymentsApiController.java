@@ -205,7 +205,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     ) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
 
-        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         return new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()

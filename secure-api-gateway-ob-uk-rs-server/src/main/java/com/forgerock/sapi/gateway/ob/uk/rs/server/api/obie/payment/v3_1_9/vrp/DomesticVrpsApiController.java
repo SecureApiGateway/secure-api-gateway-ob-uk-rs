@@ -224,7 +224,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private OBDomesticVRPResponse responseEntity(DomesticVRPConsent consent, OBDomesticVRPRequest obDomesticVRPRequest,
                                                  FRDomesticVrpPaymentSubmission paymentSubmission) {
 
-        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         OBDomesticVRPResponse response = new OBDomesticVRPResponse()
                 .data(

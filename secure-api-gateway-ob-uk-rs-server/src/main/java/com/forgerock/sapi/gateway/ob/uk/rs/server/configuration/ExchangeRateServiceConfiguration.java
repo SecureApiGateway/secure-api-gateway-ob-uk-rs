@@ -27,6 +27,19 @@ import org.springframework.context.annotation.Configuration;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.DefaultExchangeRateService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
 
+/**
+ * Configuration for the ExchangeRateService, loads exchange rate test data from config.
+ *
+ * Example config:
+ *   exchange:
+ *     rates:
+ *       default: "1.5123"
+ *       pairs:
+ *         GBPUSD: "1.3211"
+ *         GBPEUR: "1.1634"
+ *
+ * The default rate is used when no rate is defined for a particular currency pair.
+ */
 @Configuration
 public class ExchangeRateServiceConfiguration {
 

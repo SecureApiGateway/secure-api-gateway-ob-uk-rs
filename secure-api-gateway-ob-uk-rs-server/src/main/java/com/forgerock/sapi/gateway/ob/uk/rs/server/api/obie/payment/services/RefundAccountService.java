@@ -40,7 +40,7 @@ public class RefundAccountService {
         this.accountRepository = accountRepository;
     }
 
-    public Optional<FRResponseDataRefund> getRefundAccountData(FRReadRefundAccount readRefundAccount, BasePaymentConsent<?> paymentConsent) {
+    public Optional<FRResponseDataRefund> getDomesticPaymentRefundData(FRReadRefundAccount readRefundAccount, BasePaymentConsent<?> paymentConsent) {
         if (readRefundAccount == FRReadRefundAccount.YES) {
             final FRAccount debtorAccount = accountRepository.byAccountId(paymentConsent.getAuthorisedDebtorAccountId());
             return FRResponseDataRefundFactory.frResponseDataRefund(debtorAccount.getAccount().getFirstAccount());
@@ -49,18 +49,14 @@ public class RefundAccountService {
         }
     }
 
-    public Optional<FRInternationalResponseDataRefund> getInternationalRefundAccountData(FRReadRefundAccount readRefundAccount,
+    public Optional<FRInternationalResponseDataRefund> getInternationalPaymentRefundData(FRReadRefundAccount readRefundAccount,
             FRFinancialCreditor creditor, FRFinancialAgent agent, BasePaymentConsent<?> paymentConsent) {
 
-        if (readRefundAccount == FRReadRefundAccount.YES) {
-            return getRefundAccountData(readRefundAccount, paymentConsent).map(refundData -> FRInternationalResponseDataRefund.builder()
-                    .account(refundData.getAccount())
-                    .creditor(creditor)
-                    .agent(agent)
-                    .build());
-        } else {
-            return Optional.empty();
-        }
-
+        return getDomesticPaymentRefundData(readRefundAccount, paymentConsent)
+                    .map(refundData -> FRInternationalResponseDataRefund.builder()
+                                                                        .account(refundData.getAccount())
+                                                                        .creditor(creditor)
+                                                                        .agent(agent)
+                                                                        .build());
     }
 }

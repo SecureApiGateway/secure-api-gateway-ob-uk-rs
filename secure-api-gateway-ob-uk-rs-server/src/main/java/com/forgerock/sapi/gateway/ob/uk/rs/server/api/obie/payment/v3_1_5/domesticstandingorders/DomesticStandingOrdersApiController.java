@@ -210,7 +210,8 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private OBWriteDomesticStandingOrderResponse6 responseEntity(DomesticStandingOrderConsent consent,
                                                                  FRDomesticStandingOrderPaymentSubmission frPaymentSubmission) {
 
-        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         FRWriteDataDomesticStandingOrder data = frPaymentSubmission.getStandingOrder().getData();
         return new OBWriteDomesticStandingOrderResponse6()
