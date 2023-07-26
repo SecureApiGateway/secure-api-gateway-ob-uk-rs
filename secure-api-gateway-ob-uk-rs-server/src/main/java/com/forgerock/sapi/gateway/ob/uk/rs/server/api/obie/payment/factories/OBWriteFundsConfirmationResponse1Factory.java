@@ -15,30 +15,32 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 
+
+import java.util.function.Function;
+
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-
+import uk.org.openbanking.datamodel.common.Links;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1DataFundsAvailableResult;
 
 /**
- * Factory capable of producing {@link OBWriteFundsConfirmationResponse1} objects. These schema objects are reused by
- * the funds confirmation endpoint of many of the Payment APIs.
+ * Factory capable of producing {@link OBWriteFundsConfirmationResponse1} objects.
+ * These schema objects are reused by the funds confirmation endpoint of many of the Payment APIs.
  */
 @Component
 public class OBWriteFundsConfirmationResponse1Factory {
 
-    public OBWriteFundsConfirmationResponse1 create(boolean fundsAvailable, String consentId, Class<?> controllerClass) {
+    public OBWriteFundsConfirmationResponse1 create(boolean fundsAvailable, String consentId, Function<String, Links> fundsConfirmationLinksFactory) {
         return new OBWriteFundsConfirmationResponse1()
                 .data(new OBWriteFundsConfirmationResponse1Data()
                         .fundsAvailableResult(new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
                                                         .fundsAvailable(fundsAvailable)
                                                         .fundsAvailableDateTime(DateTime.now())))
-                .links(LinksHelper.createDomesticPaymentConsentsFundsConfirmationLink(controllerClass, consentId))
+                .links(fundsConfirmationLinksFactory.apply(consentId))
                 .meta(new Meta());
     }
 

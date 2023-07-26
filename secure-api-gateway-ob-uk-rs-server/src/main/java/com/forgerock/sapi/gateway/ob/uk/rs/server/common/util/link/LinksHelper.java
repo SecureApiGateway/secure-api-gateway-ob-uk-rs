@@ -36,6 +36,7 @@ public class LinksHelper {
     private static final String DOMESTIC_STANDING_ORDER = "domestic-standing-orders";
     private static final String FILE_PAYMENT_CONSENTS = "file-payment-consents";
     private static final String FILE_PAYMENTS = "file-payments";
+    private static final String INTERNATIONAL_PAYMENT_CONSENTS = "international-payment-consents";
     private static final String INTERNATIONAL_PAYMENTS = "international-payments";
     private static final String INTERNATIONAL_SCHEDULED_PAYMENTS = "international-scheduled-payments";
     private static final String INTERNATIONAL_STANDING_ORDER = "international-standing-orders";
@@ -153,6 +154,14 @@ public class LinksHelper {
      */
     public static Links createFilePaymentsLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, FILE_PAYMENTS, id);
+    }
+
+    public static Links createInternationalPaymentConsentsLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_PAYMENT_CONSENTS, id);
+    }
+
+    public static Links createInternationalPaymentConsentsFundsConfirmationLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, INTERNATIONAL_PAYMENT_CONSENTS, id, FUNDS_CONFIRMATION);
     }
 
     /**

@@ -15,34 +15,28 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment;
 
-import static java.math.BigDecimal.ZERO;
-
-import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 
-public class OBWriteDomestic2DataInitiationInstructedAmountValidator extends BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> {
+public class CurrencyCodeValidator extends BaseOBValidator<String> {
 
-    private final BaseOBValidator<String> currencyCodeValidator;
+    private final Set<String> validCurrencyCodes;
 
-    public OBWriteDomestic2DataInitiationInstructedAmountValidator(BaseOBValidator<String> currencyCodeValidator) {
-        this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
+    public CurrencyCodeValidator(Set<String> validCurrencyCodes) {
+        this.validCurrencyCodes = Objects.requireNonNull(validCurrencyCodes, "validCurrencyCodes must be supplied");
     }
 
     @Override
-    protected void validate(OBWriteDomestic2DataInitiationInstructedAmount instructedAmount, ValidationResult<OBError1> validationResult) {
-        final String amount = instructedAmount.getAmount();
-        if (new BigDecimal(amount).compareTo(ZERO) <= 0) {
+    protected void validate(String currencyCode, ValidationResult<OBError1> validationResult) {
+        if (!validCurrencyCodes.contains(currencyCode)) {
             validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
-                    String.format("The amount %s provided must be greater than 0", amount)));
+                    String.format("The currency %s provided is not supported", currencyCode)));
         }
-        final String currency = instructedAmount.getCurrency();
-        validationResult.mergeResults(currencyCodeValidator.validate(currency));
     }
 }

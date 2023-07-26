@@ -36,6 +36,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteDomesticConsentResponse5Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteFundsConfirmationResponse1Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
@@ -106,7 +107,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
             DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String apiClientId, HttpServletRequest request, Principal principal) {
 
-        logger.info("Processing getDomesticPaymentConsentsConsentId request - consentId: {}, apiClient, x-fapi-interaction-id: {}",
+        logger.info("Processing getDomesticPaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                     consentId, apiClientId, xFapiInteractionId);
 
         return ResponseEntity.ok(consentResponseFactory.buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));
@@ -129,6 +130,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         final boolean fundsAvailable = fundsAvailabilityService.isFundsAvailable(consent.getAuthorisedDebtorAccountId(),
                                                                                  consent.getRequestObj().getData().getInitiation().getInstructedAmount().getAmount());
 
-        return ResponseEntity.ok(fundsConfirmationResponseFactory.create(fundsAvailable, consentId, getClass()));
+        return ResponseEntity.ok(fundsConfirmationResponseFactory.create(fundsAvailable, consentId,
+                id -> LinksHelper.createDomesticPaymentConsentsFundsConfirmationLink(getClass(), id)));
     }
 }

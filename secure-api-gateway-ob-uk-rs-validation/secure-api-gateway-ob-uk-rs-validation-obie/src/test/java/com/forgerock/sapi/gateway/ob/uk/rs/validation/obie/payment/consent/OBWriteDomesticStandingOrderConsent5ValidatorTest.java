@@ -19,11 +19,11 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTes
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
 
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidatorTest;
 
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
@@ -35,7 +35,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5
 
 class OBWriteDomesticStandingOrderConsent5ValidatorTest {
 
-    private final OBWriteDomesticStandingOrderConsent5Validator validator = new OBWriteDomesticStandingOrderConsent5Validator(Set.of("GBP", "EUR"));
+    private final OBWriteDomesticStandingOrderConsent5Validator validator = new OBWriteDomesticStandingOrderConsent5Validator(CurrencyCodeValidatorTest.createCurrencyCodeValidator("GBP", "EUR"));
 
     private static OBWriteDomesticStandingOrderConsent5 createValidConsent() {
         return new OBWriteDomesticStandingOrderConsent5().data(new OBWriteDomesticStandingOrderConsent5Data().initiation(
@@ -59,7 +59,7 @@ class OBWriteDomesticStandingOrderConsent5ValidatorTest {
         invalidConsent.getData().getInitiation().getFirstPaymentAmount().amount("0.0").currency("ZZZ");
         validateErrorResult(validator.validate(invalidConsent), List.of(
                 OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("Field: firstPaymentAmount - the amount 0.0 provided must be greater than 0"),
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("Field: firstPaymentAmount - the currency ZZZ provided is not supported")));
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("The currency ZZZ provided is not supported")));
     }
 
     @Test
@@ -68,7 +68,7 @@ class OBWriteDomesticStandingOrderConsent5ValidatorTest {
         invalidConsent.getData().getInitiation().getRecurringPaymentAmount().amount("0.0").currency("ZZZ");
         validateErrorResult(validator.validate(invalidConsent), List.of(
                 OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("Field: recurringPaymentAmount - the amount 0.0 provided must be greater than 0"),
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("Field: recurringPaymentAmount - the currency ZZZ provided is not supported")));
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("The currency ZZZ provided is not supported")));
     }
 
     @Test
@@ -77,7 +77,7 @@ class OBWriteDomesticStandingOrderConsent5ValidatorTest {
         invalidConsent.getData().getInitiation().getFinalPaymentAmount().amount("0.0").currency("ZZZ");
         validateErrorResult(validator.validate(invalidConsent), List.of(
                 OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("Field: finalPaymentAmount - the amount 0.0 provided must be greater than 0"),
-                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("Field: finalPaymentAmount - the currency ZZZ provided is not supported")));
+                OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("The currency ZZZ provided is not supported")));
     }
 
 }

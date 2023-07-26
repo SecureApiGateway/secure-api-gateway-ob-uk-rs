@@ -107,7 +107,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                                                                                                                   HttpServletRequest request,
                                                                                                                   Principal principal) throws OBErrorResponseException {
 
-        logger.info("Processing getDomesticStandingOrderConsentsConsentId request - consentId: {}, apiClient, x-fapi-interaction-id: {}",
+        logger.info("Processing getDomesticStandingOrderConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 consentId, apiClientId, xFapiInteractionId);
 
         return ResponseEntity.ok(consentResponseFactory.buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));

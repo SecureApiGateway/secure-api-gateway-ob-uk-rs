@@ -16,7 +16,6 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.validation;
 
 import java.util.Arrays;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,6 +27,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.vali
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
@@ -39,17 +39,22 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomest
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteFileConsent3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalConsent5Validator;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 
 /**
@@ -82,7 +87,7 @@ public class DefaultOBValidationModule {
 
     @Bean
     public BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator() {
-        return new OBWriteDomestic2DataInitiationInstructedAmountValidator(validPaymentCurrencies());
+        return new OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidator());
     }
 
     @Bean
@@ -97,7 +102,7 @@ public class DefaultOBValidationModule {
 
     @Bean
     public OBValidationService<OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidator() {
-        return new OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(validPaymentCurrencies()));
+        return new OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(currencyCodeValidator()));
     }
 
     @Bean
@@ -116,8 +121,8 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public Set<String> validPaymentCurrencies() {
-        return Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet());
+    public BaseOBValidator<String> currencyCodeValidator() {
+        return new CurrencyCodeValidator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
     }
 
     @Bean
@@ -133,5 +138,21 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator() {
         return new OBValidationService<>(new OBWriteFile2Validator());
+    }
+
+    @Bean
+    public OBWriteInternational3DataInitiationExchangeRateInformationValidator exchangeRateInformationValidator() {
+        return new OBWriteInternational3DataInitiationExchangeRateInformationValidator(currencyCodeValidator());
+    }
+
+    @Bean
+    public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator() {
+        return new OBValidationService<>(new OBWriteInternationalConsent5Validator(instructedAmountValidator(),
+                currencyCodeValidator(), exchangeRateInformationValidator()));
+    }
+
+    @Bean
+    public OBValidationService<OBWriteInternational3ValidationContext> internationalPaymentValidator() {
+        return new OBValidationService<>(new OBWriteInternational3Validator());
     }
 }

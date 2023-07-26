@@ -139,8 +139,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         consumePaymentRequest.setApiClientId(apiClientId);
         consentStoreClient.consumeConsent(consumePaymentRequest);
 
-        return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission)
-        );
+        return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
     }
 
     @Override
@@ -206,7 +205,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     ) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
 
-        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         return new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()

@@ -217,7 +217,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             FRDomesticScheduledPaymentSubmission frPaymentSubmission
     ) {
 
-        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getRefundAccountData(consent.getRequestObj().getData().getReadRefundAccount(), consent);
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         FRWriteDataDomesticScheduled data = frPaymentSubmission.getScheduledPayment().getData();
         return new OBWriteDomesticScheduledResponse5()
