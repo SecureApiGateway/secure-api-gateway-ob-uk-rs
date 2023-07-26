@@ -20,14 +20,16 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_9.internationalscheduledpayments;
 
+import org.springframework.stereotype.Controller;
+
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_9.internationalscheduledpayments.InternationalScheduledPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalScheduledPaymentSubmissionRepository;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import org.springframework.stereotype.Controller;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalScheduledPaymentSubmissionRepository;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.9")
 public class InternationalScheduledPaymentsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_8.internationalscheduledpayments.InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
@@ -36,17 +38,17 @@ public class InternationalScheduledPaymentsApiController extends com.forgerock.s
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             ScheduledPaymentService scheduledPaymentService,
-            ConsentService consentService,
-            RiskValidationService riskValidationService,
-            FRAccountRepository frAccountRepository
+            InternationalScheduledPaymentConsentStoreClient consentStoreClient,
+            OBValidationService<OBWriteInternationalScheduled3ValidationContext> paymentValidator,
+            RefundAccountService refundAccountService
     ) {
         super(
                 scheduledPaymentSubmissionRepository,
                 paymentSubmissionValidator,
                 scheduledPaymentService,
-                consentService,
-                riskValidationService,
-                frAccountRepository
+                consentStoreClient,
+                paymentValidator,
+                refundAccountService
         );
     }
 }
