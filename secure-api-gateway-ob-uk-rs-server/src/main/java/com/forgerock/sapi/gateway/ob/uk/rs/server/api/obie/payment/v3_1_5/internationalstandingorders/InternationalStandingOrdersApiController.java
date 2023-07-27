@@ -20,57 +20,62 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.internationalstandingorders;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrder;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderDataInitiation;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalstandingorders.InternationalStandingOrdersApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.RiskValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRInternationalStandingOrderPaymentSubmission;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalStandingOrderPaymentSubmissionRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import com.google.gson.JsonObject;
-import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.security.Principal;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalStandingOrderResponse7DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent6;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsentResponse7DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
+
+import java.security.Principal;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.joda.time.DateTime;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrder;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderData;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalstandingorders.InternationalStandingOrdersApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRInternationalStandingOrderPaymentSubmission;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalStandingOrderPaymentSubmissionRepository;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import lombok.extern.slf4j.Slf4j;
+import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse7;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse7Data;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataStatusDetail;
 
 @Controller("InternationalStandingOrdersApiV3.1.5")
 @Slf4j
@@ -79,24 +84,23 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     private final InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final StandingOrderService standingOrderService;
-    private final RiskValidationService riskValidationService;
-    private final ConsentService consentService;
-    private final FRAccountRepository frAccountRepository;
+    private final InternationalStandingOrderConsentStoreClient consentStoreClient;
+    private final OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator;
+    private final RefundAccountService refundAccountService;
 
     public InternationalStandingOrdersApiController(
             InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             StandingOrderService standingOrderService,
-            ConsentService consentService,
-            RiskValidationService riskValidationService,
-            FRAccountRepository frAccountRepository
-    ) {
+            InternationalStandingOrderConsentStoreClient consentStoreClient,
+            OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator,
+            RefundAccountService refundAccountService) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.standingOrderService = standingOrderService;
-        this.consentService = consentService;
-        this.riskValidationService = riskValidationService;
-        this.frAccountRepository = frAccountRepository;
+        this.consentStoreClient = consentStoreClient;
+        this.paymentValidator = paymentValidator;
+        this.refundAccountService = refundAccountService;
     }
 
     @Override
@@ -105,11 +109,11 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            String xAccountId,
             DateTime xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
@@ -118,37 +122,17 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalStandingOrder4.getRisk());
 
         String consentId = obWriteInternationalStandingOrder4.getData().getConsentId();
-        //get the consent
-        JsonObject intent = consentService.getIDMIntent(authorization, consentId);
-        log.debug("Retrieved consent from IDM");
-
-        //deserialize the intent to ob response object
-        OBWriteInternationalStandingOrderConsentResponse6 obConsentResponse6 = consentService.deserialize(
-                OBWriteInternationalStandingOrderConsentResponse6.class,
-                intent.getAsJsonObject("OBIntentObject"),
-                consentId
-        );
-        log.debug("Deserialized consent from IDM");
+        log.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);
+        final InternationalStandingOrderConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
+        log.debug("Got consent from store: {}", consent);
 
         FRWriteInternationalStandingOrder frStandingOrder = toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder4);
         log.trace("Converted to: '{}'", frStandingOrder);
 
         // validate the consent against the request
         log.debug("Validating International Standing Order submission");
-        try {
-            // validates the initiation
-            if (!obWriteInternationalStandingOrder4.getData().getInitiation().equals(obConsentResponse6.getData().getInitiation())) {
-                throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_INITIATION,
-                        "The initiation field from payment submitted does not match with the initiation field submitted for the consent"
-                );
-            }
-            riskValidationService.validate(obConsentResponse6.getRisk(), obWriteInternationalStandingOrder4.getRisk());
-        } catch (OBErrorException e) {
-            throw new OBErrorResponseException(
-                    e.getObriErrorType().getHttpStatus(),
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    e.getOBError());
-        }
+        paymentValidator.validate(new OBWriteInternationalStandingOrder4ValidationContext(obWriteInternationalStandingOrder4,
+                toOBWriteInternationalStandingOrderConsent6(consent.getRequestObj()), consent.getStatus()));
         log.debug("International Standing Order validation successful");
 
         FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
@@ -166,26 +150,16 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .idempotentSave(frPaymentSubmission);
 
         // Save the standing order data for the Accounts API
-        FRStandingOrderData standingOrderData = FRStandingOrderDataFactory.createFRStandingOrderData(frStandingOrder, xAccountId);
+        FRStandingOrderData standingOrderData = FRStandingOrderDataFactory.createFRStandingOrderData(frStandingOrder,
+                consent.getAuthorisedDebtorAccountId());
         standingOrderService.createStandingOrder(standingOrderData);
-        // Get the consent to update the response
-        OBWriteInternationalStandingOrderConsentResponse7 obConsentResponse7 = consentService.deserialize(
-                OBWriteInternationalStandingOrderConsentResponse7.class,
-                intent.getAsJsonObject("OBIntentObject"),
-                consentId
-        );
 
-        OBWriteInternationalStandingOrderResponse7 entity = responseEntity(frPaymentSubmission, obConsentResponse7);
+        final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
+        consumePaymentRequest.setConsentId(consentId);
+        consumePaymentRequest.setApiClientId(apiClientId);
+        consentStoreClient.consumeConsent(consumePaymentRequest);
 
-        // update the entity with refund
-        setRefund(
-                obConsentResponse6.getData().getReadRefundAccount(),
-                frPaymentSubmission.getStandingOrder().getData().getInitiation(),
-                intent,
-                entity
-        );
-
-        return ResponseEntity.status(CREATED).body(entity);
+        return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
     }
 
     @Override
@@ -196,6 +170,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
     ) {
@@ -209,28 +184,14 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         if (!ResourceVersionValidator.isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
             return PaymentApiResponseUtil.resourceConflictResponse(frPaymentSubmission, apiVersion);
         }
+
         //get the consent
-        JsonObject intent = consentService.getIDMIntent(authorization, frPaymentSubmission.getConsentId());
-        log.debug("Retrieved consent from IDM");
+        final String consentId = frPaymentSubmission.getConsentId();
+        log.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);
+        final InternationalStandingOrderConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
+        log.debug("Got consent from store: {}", consent);
 
-        // Get the consent to update the response
-        OBWriteInternationalStandingOrderConsentResponse7 obConsentResponse7 = consentService.deserialize(
-                OBWriteInternationalStandingOrderConsentResponse7.class,
-                intent.getAsJsonObject("OBIntentObject"),
-                frPaymentSubmission.getConsentId()
-        );
-
-        OBWriteInternationalStandingOrderResponse7 entity = responseEntity(frPaymentSubmission, obConsentResponse7);
-
-        // update the entity with refund
-        setRefund(
-                obConsentResponse7.getData().getReadRefundAccount(),
-                frPaymentSubmission.getStandingOrder().getData().getInitiation(),
-                intent,
-                entity
-        );
-
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok(responseEntity(consent, frPaymentSubmission));
     }
 
     @Override
@@ -241,6 +202,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
     ) {
@@ -259,13 +221,20 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     }
 
     private OBWriteInternationalStandingOrderResponse7 responseEntity(
-            FRInternationalStandingOrderPaymentSubmission frPaymentSubmission,
-            OBWriteInternationalStandingOrderConsentResponse7 obConsent
+            InternationalStandingOrderConsent consent,
+            FRInternationalStandingOrderPaymentSubmission frPaymentSubmission
     ) {
         FRWriteInternationalStandingOrderData data = frPaymentSubmission.getStandingOrder().getData();
+
+        final Optional<FRInternationalResponseDataRefund> refundAccountData = refundAccountService.getInternationalPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(),
+                consent.getRequestObj().getData().getInitiation().getCreditor(),
+                consent.getRequestObj().getData().getInitiation().getCreditorAgent(),
+                consent);
+
         return new OBWriteInternationalStandingOrderResponse7()
                 .data(new OBWriteInternationalStandingOrderResponse7Data()
-                        .charges(obConsent.getData().getCharges())
+                        .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
                         .internationalStandingOrderId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())
@@ -273,6 +242,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         .status(toOBWriteInternationalStandingOrderResponse7DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
+                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalStandingOrderResponse7DataRefund).orElse(null))
                 )
                 .links(LinksHelper.createInternationalStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
@@ -304,33 +274,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 )
                 .links(LinksHelper.createInternationalStandingOrderPaymentDetailsLink(this.getClass(), frStandingOrderSubmission.getId()))
                 .meta(new Meta());
-    }
-
-    private void setRefund(
-            OBReadRefundAccountEnum obReadRefundAccountEnum,
-            FRWriteInternationalStandingOrderDataInitiation initiation,
-            JsonObject intent,
-            OBWriteInternationalStandingOrderResponse7 entity
-    ) {
-        if (Objects.nonNull(obReadRefundAccountEnum) && obReadRefundAccountEnum.equals(OBReadRefundAccountEnum.YES)) {
-            String accountId = Objects.nonNull(intent.get("accountId")) ? intent.get("accountId").getAsString() : null;
-            log.debug("Account Id from consent '{}'", accountId);
-            if (Objects.nonNull(accountId)) {
-                FRAccount frAccount = Objects.nonNull(accountId) ? frAccountRepository.byAccountId(accountId) : null;
-                FRAccountIdentifier frAccountIdentifier = Objects.nonNull(frAccount) ?
-                        frAccount.getAccount().getFirstAccount() :
-                        null;
-                Optional<FRInternationalResponseDataRefund> refund = FRResponseDataRefundFactory.frInternationalResponseDataRefund(
-                        frAccountIdentifier,
-                        initiation
-                );
-                if(Objects.nonNull(refund)) {
-                    entity.getData().setRefund(
-                            refund.map(FRResponseDataRefundConverter::toOBWriteInternationalStandingOrderResponse7DataRefund).orElse(null)
-                    );
-                }
-            }
-        }
     }
 
 }

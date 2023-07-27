@@ -22,8 +22,10 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.inter
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalScheduledResponse6DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -40,10 +42,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledData;
@@ -137,7 +137,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         // validate the consent against the request
         log.debug("Validating International Payment submission");
         paymentValidator.validate(new OBWriteInternationalScheduled3ValidationContext(obWriteInternationalScheduled3,
-                FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5(consent.getRequestObj()), consent.getStatus()));
+                toOBWriteInternationalScheduledConsent5(consent.getRequestObj()), consent.getStatus()));
         log.debug("International Payment validation successful");
 
         FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
@@ -242,7 +242,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
         return new OBWriteInternationalScheduledResponse6()
                 .data(new OBWriteInternationalScheduledResponse6Data()
-                        .charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
+                        .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()))
                         .creationDateTime(frPaymentSubmission.getCreated())

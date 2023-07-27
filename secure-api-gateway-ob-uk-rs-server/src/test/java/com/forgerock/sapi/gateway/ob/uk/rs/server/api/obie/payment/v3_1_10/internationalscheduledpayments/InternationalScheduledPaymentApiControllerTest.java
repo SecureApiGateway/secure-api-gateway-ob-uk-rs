@@ -305,6 +305,9 @@ public class InternationalScheduledPaymentApiControllerTest {
                         "The Initiation field in the request does not match with the consent"
                 )
         );
+
+        verify(consentStoreClient).getConsent(eq(payment.getData().getConsentId()), eq(TEST_API_CLIENT_ID));
+        verifyNoMoreInteractions(consentStoreClient);
     }
 
     @Test

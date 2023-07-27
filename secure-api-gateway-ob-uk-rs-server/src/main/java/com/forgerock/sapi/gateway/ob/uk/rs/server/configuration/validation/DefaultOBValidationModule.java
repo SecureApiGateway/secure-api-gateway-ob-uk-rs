@@ -44,6 +44,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteIntern
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
@@ -51,6 +53,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWri
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteFileConsent3Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalConsent5Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalScheduledConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalStandingOrderConsent6Validator;
 
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
@@ -59,6 +62,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 
 /**
@@ -169,5 +173,16 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBWriteInternationalScheduled3ValidationContext> internationalScheduledPaymentValidator() {
         return new OBValidationService<>(new OBWriteInternationalScheduled3Validator());
+    }
+
+    @Bean
+    public OBValidationService<OBWriteInternationalStandingOrderConsent6> internationalStandingOrderConsentValidator() {
+        return new OBValidationService<>(new OBWriteInternationalStandingOrderConsent6Validator(instructedAmountValidator(),
+                                                                                                currencyCodeValidator()));
+    }
+
+    @Bean
+    public OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> internationalStandingOrderValidator() {
+        return new OBValidationService<>(new OBWriteInternationalStandingOrder4Validator());
     }
 }
