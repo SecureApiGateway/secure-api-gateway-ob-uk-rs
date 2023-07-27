@@ -15,16 +15,33 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
+import java.util.List;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 
 public class OBDomesticVRPConsentRequestValidator extends BaseOBValidator<OBDomesticVRPConsentRequest> {
 
+    public static final String SWEEPING_VRP_TYPE = "UK.OBIE.VRPType.Sweeping";
+
     @Override
     protected void validate(OBDomesticVRPConsentRequest obj, ValidationResult<OBError1> validationResult) {
-        // TODO impl VRP consent validation
+        final OBDomesticVRPControlParameters controlParameters = obj.getData().getControlParameters();
+        validateVrpType(controlParameters.getVrPType(), validationResult);
+    }
+
+    /**
+     * Only Sweeping VRPs are currently supported, the VRPType list must contain only this type.
+     */
+    private void validateVrpType(List<String> vrpType, ValidationResult<OBError1> validationResult) {
+        if (vrpType == null || vrpType.size() != 1 || !vrpType.get(0).equals(SWEEPING_VRP_TYPE)) {
+            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
+                    String.format("VRPType specified is not supported, only the following types are supported: %s", SWEEPING_VRP_TYPE)));
+        }
     }
 }
