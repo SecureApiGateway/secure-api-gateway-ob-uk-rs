@@ -33,6 +33,9 @@ public enum OBApiReference {
     /**
      * Account and Transactions Api
      **/
+    CREATE_ACCOUNT_ACCESS_CONSENT(AISP, "CreateAccountAccessConsent", POST, "/aisp/account-access-consents"),
+    GET_ACCOUNT_ACCESS_CONSENT(AISP, "GetAccountAccessConsent", GET, "/aisp/account-access-consents/{ConsentId}"),
+    DELETE_ACCOUNT_ACCESS_CONSENT(AISP, "DeleteAccountAccessConsent", DELETE, "/aisp/account-access-consents/{ConsentId}"),
 
     GET_ACCOUNTS(AISP, "GetAccounts", GET, "/aisp/accounts"),
     GET_ACCOUNT(AISP, "GetAccount", GET, "/aisp/accounts/{AccountId}"),
@@ -91,30 +94,48 @@ public enum OBApiReference {
     /**
      * Payments Api
      **/
+    CREATE_DOMESTIC_PAYMENT_CONSENT(PISP, "CreateDomesticPaymentConsent", POST, "/pisp/domestic-payment-consents"),
+    GET_DOMESTIC_PAYMENT_CONSENT(PISP, "GetDomesticPaymentConsent", GET, "/pisp/domestic-payment-consents/{ConsentId}"),
+    GET_DOMESTIC_PAYMENT_CONSENT_FUNDS_CONFIRMATION(PISP, "GetDomesticPaymentConsentsConsentIdFundsConfirmation", GET, "/pisp/domestic-payment-consents/{ConsentId}/funds-confirmation"),
     CREATE_DOMESTIC_PAYMENT(PISP, "CreateDomesticPayment", POST, "/pisp/domestic-payments"),
     GET_DOMESTIC_PAYMENT(PISP, "GetDomesticPayment", GET, "/pisp/domestic-payments/{DomesticPaymentId}"),
     GET_DOMESTIC_PAYMENT_DOMESTIC_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetDomesticPaymentDomesticPaymentIdPaymentDetails", GET, "/pisp/domestic-payments/{DomesticPaymentId}/payment-details"),
 
+
+    CREATE_DOMESTIC_SCHEDULED_PAYMENT_CONSENT(PISP, "CreateDomesticScheduledPaymentConsent", POST, "/pisp/domestic-scheduled-payment-consents"),
+    GET_DOMESTIC_SCHEDULED_PAYMENT_CONSENT(PISP, "GetDomesticScheduledPaymentConsent", GET, "/pisp/domestic-scheduled-payment-consents/{ConsentId}"),
     CREATE_DOMESTIC_SCHEDULED_PAYMENT(PISP, "CreateDomesticScheduledPayment", POST, "/pisp/domestic-scheduled-payments"),
     GET_DOMESTIC_SCHEDULED_PAYMENT(PISP, "GetDomesticScheduledPayment", GET, "/pisp/domestic-scheduled-payments/{DomesticScheduledPaymentId}"),
     GET_DOMESTIC_SCHEDULED_PAYMENT_DOMESTIC_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetDomesticScheduledPaymentDomesticPaymentIdPaymentDetails", GET, "/pisp/domestic-scheduled-payments/{DomesticScheduledPaymentId}/payment-details"),
 
+    CREATE_DOMESTIC_STANDING_ORDER_CONSENT(PISP, "CreateDomesticStandingOrderConsent", POST, "/pisp/domestic-standing-order-consents"),
+    GET_DOMESTIC_STANDING_ORDER_CONSENT(PISP, "GetDomesticStandingOrderConsent", GET, "/pisp/domestic-standing-order-consents/{ConsentId}"),
     CREATE_DOMESTIC_STANDING_ORDER(PISP, "CreateDomesticStandingOrder", POST, "/pisp/domestic-standing-orders"),
     GET_DOMESTIC_STANDING_ORDER(PISP, "GetDomesticStandingOrder", GET, "/pisp/domestic-standing-orders/{DomesticStandingOrderId}"),
     GET_DOMESTIC_STANDING_ORDER_ID_PAYMENT_DETAILS(PISP, "GetDomesticStandingOrderDomesticStandingOrderIdPaymentDetails", GET, "/pisp/domestic-standing-orders/{DomesticStandingOrderId}/payment-details"),
 
+    CREATE_INTERNATIONAL_PAYMENT_CONSENT(PISP, "CreateInternationalPaymentConsent", POST, "/pisp/international-payment-consents"),
+    GET_INTERNATIONAL_PAYMENT_CONSENT(PISP, "GetInternationalPaymentConsent", GET, "/pisp/international-payment-consents/{ConsentId}"),
+    GET_INTERNATIONAL_PAYMENT_CONSENT_FUNDS_CONFIRMATION(PISP, "GetInternationalPaymentConsentsConsentIdFundsConfirmation", GET, "/pisp/international-payment-consents/{ConsentId}/funds-confirmation"),
     CREATE_INTERNATIONAL_PAYMENT(PISP, "CreateInternationalPayment", POST, "/pisp/international-payments"),
     GET_INTERNATIONAL_PAYMENT(PISP, "GetInternationalPayment", GET, "/pisp/international-payments/{InternationalPaymentId}"),
     GET_INTERNATIONAL_PAYMENT_INTERNATIONAL_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetInternationalPaymentInternationalPaymentIdPaymentDetails", GET, "/pisp/international-payments/{InternationalPaymentId}/payment-details"),
 
+    CREATE_INTERNATIONAL_SCHEDULED_PAYMENT_CONSENT(PISP, "CreateInternationalScheduledPaymentConsent", POST, "/pisp/international-scheduled-payment-consents"),
+    GET_INTERNATIONAL_SCHEDULED_PAYMENT_CONSENT(PISP, "GetInternationalScheduledPaymentConsent", GET, "/pisp/international-scheduled-payment-consents/{ConsentId}"),
+    GET_INTERNATIONAL_SCHEDULED_PAYMENT_CONSENT_FUNDS_CONFIRMATION(PISP, "GetInternationalScheduledPaymentConsentsConsentIdFundsConfirmation", GET, "/pisp/international-scheduled-payment-consents/{ConsentId}/funds-confirmation"),
     CREATE_INTERNATIONAL_SCHEDULED_PAYMENT(PISP, "CreateInternationalScheduledPayment", POST, "/pisp/international-scheduled-payments"),
     GET_INTERNATIONAL_SCHEDULED_PAYMENT(PISP, "GetInternationalScheduledPayment", GET, "/pisp/international-scheduled-payments/{InternationalScheduledPaymentId}"),
     GET_INTERNATIONAL_SCHEDULED_PAYMENT_PAYMENT_ID_PAYMENT_DETAILS(PISP, "GetInternationalScheduledPaymentPaymentIdPaymentDetails", GET, "/pisp/international-scheduled-payments/{InternationalScheduledPaymentId}/payment-details"),
 
+    CREATE_INTERNATIONAL_STANDING_ORDER_CONSENT(PISP, "CreateInternationalStandingOrderConsent", POST, "/pisp/international-standing-order-consents"),
+    GET_INTERNATIONAL_STANDING_ORDER_CONSENT(PISP, "GetInternationalStandingOrderConsent", GET, "/pisp/international-standing-order-consents/{ConsentId}"),
     CREATE_INTERNATIONAL_STANDING_ORDER(PISP, "CreateInternationalStandingOrder", POST, "/pisp/international-standing-orders"),
     GET_INTERNATIONAL_STANDING_ORDER(PISP, "GetInternationalStandingOrder", GET, "/pisp/international-standing-orders/{InternationalStandingOrderPaymentId}"),
     GET_INTERNATIONAL_STANDING_ORDER_ID_PAYMENT_DETAILS(PISP, "GetInternationalStandingOrderInternationalStandingOrderIdPaymentDetails", GET, "/pisp/international-standing-orders/{InternationalStandingOrderPaymentId}/payment-details"),
 
+    CREATE_FILE_PAYMENT_CONSENT(PISP, "CreateFilePaymentConsent", POST, "/pisp/file-payment-consents"),
+    GET_FILE_PAYMENT_CONSENT(PISP, "GetFilePaymentConsent", GET, "/pisp/file-payment-consents/{ConsentId}"),
     CREATE_FILE_PAYMENT_FILE(PISP, "CreateFilePaymentFile", POST, "/pisp/file-payment-consents/{ConsentId}/file"),
     GET_FILE_PAYMENT_FILE(PISP, "GetFilePaymentFile", GET, "/pisp/file-payment-consents/{ConsentId}/file"),
 
@@ -123,6 +144,9 @@ public enum OBApiReference {
     GET_FILE_PAYMENT_REPORT(PISP, "GetFilePaymentReport", GET, "/pisp/file-payments/{ConsentId}/report-file"),
 
     // VRP payments
+    CREATE_DOMESTIC_VRP_CONSENT(PISP, "CreateDomesticVrpConsent", POST, "/pisp/domestic-vrp-consents"),
+    GET_DOMESTIC_VRP_CONSENT(PISP, "GetDomesticVrpConsent", GET, "/pisp/domestic-vrp-consents/{ConsentId}"),
+    DELETE_DOMESTIC_VRP_CONSENT(PISP, "DeleteDomesticVrpConsent", DELETE, "/pisp/domestic-vrp-consents/{ConsentId}"),
     CREATE_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "CreateDomesticVRPConsentsConsentIdFundsConfirmation", POST, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
     CREATE_DOMESTIC_VRP_PAYMENT(PISP, "CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
     GET_DOMESTIC_VRP_PAYMENT(PISP, "GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
