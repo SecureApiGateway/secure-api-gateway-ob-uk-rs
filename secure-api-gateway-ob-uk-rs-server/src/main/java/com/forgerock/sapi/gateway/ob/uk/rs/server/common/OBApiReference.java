@@ -144,13 +144,13 @@ public enum OBApiReference {
     GET_FILE_PAYMENT_REPORT(PISP, "GetFilePaymentReport", GET, "/pisp/file-payments/{ConsentId}/report-file"),
 
     // VRP payments
-    CREATE_DOMESTIC_VRP_CONSENT(PISP, "CreateDomesticVrpConsent", POST, "/pisp/domestic-vrp-consents"),
-    GET_DOMESTIC_VRP_CONSENT(PISP, "GetDomesticVrpConsent", GET, "/pisp/domestic-vrp-consents/{ConsentId}"),
-    DELETE_DOMESTIC_VRP_CONSENT(PISP, "DeleteDomesticVrpConsent", DELETE, "/pisp/domestic-vrp-consents/{ConsentId}"),
+    CREATE_DOMESTIC_VRP_CONSENT(PISP, "CreateDomesticVRPConsent", POST, "/pisp/domestic-vrp-consents"),
+    GET_DOMESTIC_VRP_CONSENT(PISP, "GetDomesticVRPConsent", GET, "/pisp/domestic-vrp-consents/{ConsentId}"),
+    DELETE_DOMESTIC_VRP_CONSENT(PISP, "DeleteDomesticVRPConsent", DELETE, "/pisp/domestic-vrp-consents/{ConsentId}"),
     CREATE_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "CreateDomesticVRPConsentsConsentIdFundsConfirmation", POST, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
-    CREATE_DOMESTIC_VRP_PAYMENT(PISP, "CreateDomesticVrpPayment", POST, "/pisp/domestic-vrps"),
-    GET_DOMESTIC_VRP_PAYMENT(PISP, "GetDomesticVrpPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
-    GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP, "GetDomesticVrpPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");
+    CREATE_DOMESTIC_VRP_PAYMENT(PISP, "CreateDomesticVRPPayment", POST, "/pisp/domestic-vrps"),
+    GET_DOMESTIC_VRP_PAYMENT(PISP, "GetDomesticVRPPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
+    GET_DOMESTIC_VRP_PAYMENT_DETAILS(PISP, "GetDomesticVRPPaymentDetails", GET, "/pisp/domestic-vrps/{DomesticVRPId}/payment-details");
 
     private static final OBApiReference[] VALUES = OBApiReference.values();
 
