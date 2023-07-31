@@ -38,7 +38,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.fund.FRFundsConfirmationConverter.toFRFundsConfirmationData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 
 @Controller("FundsConfirmationsApiV3.0")
 @Slf4j
