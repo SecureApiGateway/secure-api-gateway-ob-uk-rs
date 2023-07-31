@@ -30,7 +30,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Data
 @Document
-public class FRDomesticPaymentSubmission implements PaymentSubmission {
+public class FRDomesticPaymentSubmission implements PaymentSubmission<FRWriteDomestic> {
 
     @Id
     @Indexed

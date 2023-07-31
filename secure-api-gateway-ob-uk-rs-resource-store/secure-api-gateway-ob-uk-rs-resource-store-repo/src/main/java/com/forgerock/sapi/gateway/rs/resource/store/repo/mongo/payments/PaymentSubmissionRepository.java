@@ -22,8 +22,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface PaymentSubmissionRepository<T extends PaymentSubmission> extends MongoRepository<T, String> {
-
-    @Query("{'payment.data.consentId' : ?0}")
-    Optional<T> findByConsentId(@Param("consentId") String consentId);
+/**
+ * Repository for Payment Submission related queries
+ */
+public interface PaymentSubmissionRepository<T extends PaymentSubmission> {
+    Optional<T> findByConsentId(String consentId);
 }

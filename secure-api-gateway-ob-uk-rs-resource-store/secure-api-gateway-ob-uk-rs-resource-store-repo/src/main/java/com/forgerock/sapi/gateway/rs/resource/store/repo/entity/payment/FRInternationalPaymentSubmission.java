@@ -32,7 +32,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Data
 @Document
-public class FRInternationalPaymentSubmission implements PaymentSubmission {
+public class FRInternationalPaymentSubmission implements PaymentSubmission<FRWriteInternational> {
 
     @Id
     @Indexed

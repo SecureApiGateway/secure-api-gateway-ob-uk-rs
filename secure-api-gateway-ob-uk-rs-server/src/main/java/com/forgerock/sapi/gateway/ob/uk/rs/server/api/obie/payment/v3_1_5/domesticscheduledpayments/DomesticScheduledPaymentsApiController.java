@@ -35,6 +35,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -139,7 +140,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .build();
 
         // Save the scheduled payment
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
+        final IdempotentSaveResult savedPayment  = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
 
         // Save the scheduled payment data for the Accounts API

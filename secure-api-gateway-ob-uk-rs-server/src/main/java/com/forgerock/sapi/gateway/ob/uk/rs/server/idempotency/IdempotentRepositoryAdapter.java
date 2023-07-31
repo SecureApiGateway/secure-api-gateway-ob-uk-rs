@@ -24,7 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult.existingPayment;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult.newPayment;
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * This class allows reuse of idempotent save logic for payment submissions.
@@ -39,15 +43,41 @@ import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentT
  * @param <T> The type of the {@link PaymentSubmission} (e.g. FRDomesticPaymentSubmission).
  */
 @Slf4j
-public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
+public class IdempotentRepositoryAdapter<T extends PaymentSubmission, R extends PaymentSubmissionRepository<T> & MongoRepository<T, String>> {
 
-    private final PaymentSubmissionRepository<T> repository;
+    public static class IdempotentSaveResult<T extends PaymentSubmission> {
+        final T savedPayment;
+        final boolean isNewPayment;
 
-    public IdempotentRepositoryAdapter(PaymentSubmissionRepository<T> repository) {
+        public static <T extends PaymentSubmission> IdempotentSaveResult newPayment(T savedPayment) {
+            return new IdempotentSaveResult(savedPayment, true);
+        }
+
+        public static <T extends PaymentSubmission> IdempotentSaveResult existingPayment(T savedPayment) {
+            return new IdempotentSaveResult(savedPayment, false);
+        }
+
+        private IdempotentSaveResult(T savedPayment, boolean isNewPayment) {
+            this.savedPayment = savedPayment;
+            this.isNewPayment = isNewPayment;
+        }
+
+        public T getSavedPayment() {
+            return savedPayment;
+        }
+
+        public boolean isNewPayment() {
+            return isNewPayment;
+        }
+    }
+
+    private final R repository;
+
+    public IdempotentRepositoryAdapter(R repository) {
         this.repository = repository;
     }
 
-    public T idempotentSave(T paymentSubmission) throws OBErrorResponseException {
+    public IdempotentSaveResult idempotentSave(T paymentSubmission) throws OBErrorResponseException {
 
         IntentType intentType = IntentType.identify(paymentSubmission.getConsentId());
 
@@ -56,13 +86,13 @@ public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
             log.info("A payment with this consent id '{}' was already found. Checking idempotency key.", isPaymentSubmission.get().getConsentId());
             IdempotencyValidator.validateIdempotencyRequest(paymentSubmission, isPaymentSubmission.get());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-            return isPaymentSubmission.get();
+            return existingPayment(isPaymentSubmission.get());
         } else {
             log.info("No payment with this consent id '{}' exists. Proceed to create it.", paymentSubmission.getConsentId());
             log.debug("Saving new payment submission: {}", paymentSubmission);
             paymentSubmission = repository.save(paymentSubmission);
             log.info("Created new Payment Submission: {}", paymentSubmission.getId());
-            return paymentSubmission;
+            return newPayment(paymentSubmission);
         }
     }
 }

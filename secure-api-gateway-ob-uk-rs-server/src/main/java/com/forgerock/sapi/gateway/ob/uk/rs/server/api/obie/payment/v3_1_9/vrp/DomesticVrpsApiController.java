@@ -27,6 +27,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.v
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
@@ -208,7 +209,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .build();
 
         //save the domestic vrp
-        vrpPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
+        final IdempotentSaveResult savedPayment  = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(vrpPaymentSubmission);
 
         OBDomesticVRPResponse entity = responseEntity(consent, obDomesticVRPRequest, vrpPaymentSubmission);

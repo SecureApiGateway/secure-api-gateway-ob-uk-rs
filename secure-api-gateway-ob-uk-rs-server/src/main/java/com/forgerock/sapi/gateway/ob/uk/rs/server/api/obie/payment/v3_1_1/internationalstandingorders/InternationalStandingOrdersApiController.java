@@ -23,6 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRS
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalStandingOrderPaymentSubmissionRepository;
@@ -100,7 +101,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .build();
 
         // Save the international standing order
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(standingOrderPaymentSubmissionRepository)
+        final IdempotentSaveResult savedPayment  = new IdempotentRepositoryAdapter<>(standingOrderPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
 
         // Save the standing order data for the Accounts API

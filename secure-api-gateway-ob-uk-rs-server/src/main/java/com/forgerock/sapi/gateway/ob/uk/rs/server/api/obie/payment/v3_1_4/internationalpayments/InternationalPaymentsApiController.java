@@ -37,6 +37,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRe
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRInternationalPaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
@@ -152,7 +153,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                 .build();
 
         // Save the international payment
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
+        final IdempotentSaveResult savedPayment = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
 
         OBWriteInternationalResponse4 entity = responseEntity(frPaymentSubmission, obConsentResponse);

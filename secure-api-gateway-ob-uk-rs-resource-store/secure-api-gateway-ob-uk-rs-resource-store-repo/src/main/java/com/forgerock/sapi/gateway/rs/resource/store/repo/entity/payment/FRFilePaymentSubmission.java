@@ -30,7 +30,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Data
 @Document
-public class FRFilePaymentSubmission implements PaymentSubmission {
+public class FRFilePaymentSubmission implements PaymentSubmission<FRWriteFile> {
 
     @Id
     @Indexed
@@ -52,5 +52,10 @@ public class FRFilePaymentSubmission implements PaymentSubmission {
     @Override
     public String getConsentId() {
         return filePayment.getData().getConsentId();
+    }
+
+    @Override
+    public FRWriteFile getPayment() {
+        return filePayment;
     }
 }

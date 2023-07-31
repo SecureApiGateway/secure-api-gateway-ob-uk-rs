@@ -30,7 +30,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Data
 @Document
-public class FRDomesticStandingOrderPaymentSubmission implements PaymentSubmission {
+public class FRDomesticStandingOrderPaymentSubmission implements PaymentSubmission<FRWriteDomesticStandingOrder> {
     @Id
     @Indexed
     private String id;
@@ -51,5 +51,10 @@ public class FRDomesticStandingOrderPaymentSubmission implements PaymentSubmissi
     @Override
     public String getConsentId() {
         return standingOrder.getData().getConsentId();
+    }
+
+    @Override
+    public FRWriteDomesticStandingOrder getPayment() {
+        return standingOrder;
     }
 }

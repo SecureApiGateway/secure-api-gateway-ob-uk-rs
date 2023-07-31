@@ -25,6 +25,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResp
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticpayments.DomesticPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
@@ -32,6 +33,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponse
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SimpleIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -74,6 +78,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator;
     private final RefundAccountService refundAccountService;
 
+    private final IdempotentPaymentService<FRDomesticPaymentSubmission, FRWriteDomestic> idempotentPaymentService;
+
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
@@ -85,6 +91,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         this.paymentValidator = paymentValidator;
         this.consentStoreClient = consentStoreClient;
         this.refundAccountService = refundAccountService;
+        this.idempotentPaymentService = new SimpleIdempotentPaymentService<>(paymentSubmissionRepository);
     }
 
     @Override
@@ -99,7 +106,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             String xCustomerUserAgent,
             String apiClientId,
             HttpServletRequest request,
-            Principal principal) throws OBErrorResponseException {
+            Principal principal) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteDomestic2);
 
         paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
@@ -112,6 +119,13 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic2);
         log.trace("Converted to: '{}'", frDomesticPayment);
+
+        final Optional<FRDomesticPaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frDomesticPayment, consentId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}", xIdempotencyKey);
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, existingPayment.get()));
+        }
 
         // validate the consent against the request
         log.debug("Validating Domestic Payment submission");
@@ -130,14 +144,13 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
 
-        // Save the payment
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
-                .idempotentSave(frPaymentSubmission);
+        frPaymentSubmission = paymentSubmissionRepository.save(frPaymentSubmission);
 
         final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);
         consumePaymentRequest.setApiClientId(apiClientId);
         consentStoreClient.consumeConsent(consumePaymentRequest);
+
 
         return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
     }
