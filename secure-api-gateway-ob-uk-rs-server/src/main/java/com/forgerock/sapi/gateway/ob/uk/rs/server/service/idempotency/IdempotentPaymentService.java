@@ -19,23 +19,41 @@ import java.util.Optional;
 
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
 
 /**
- * Service which can find any existing payment for a particular idempotencyKey.
+ * Service which can find an existing payment for a particular idempotencyKey.
+ * If a payment already exists, then it is returned to the client as if it had just been created.
+ * Otherwise, the calling code may continue to validate the request and create the payment.
  *
- * This provides a simplified payment submission idempotency implementation. It is not guaranteed to work when there
- * are concurrent requests with the same idempotencyKey. This service is aimed at allowing TPPs to test idempotent
- * behaviour in a sequential fashion.
+ * This provides a simplified payment submission idempotency implementation, that is good enough for a test facility.
+ * The TPP is able to test the idempotent behaviour of the API serially, including error conditions such as idempotency
+ * key being reused but the request body being changed.
  *
- * A proper impl of idempotency should be handled in a gateway or as a request filter, a separate datastore is required
- * which tracks requests and responses.
+ * There is no idempotency guarantee when idempotent requests are submitted concurrently.
+ *
+ * A proper implementation should occur in a layer or component before the biz logic, and needs to handle concurrent
+ * access.
  *
  * @param <T> PaymentSubmission<R> type - the entity stored in the datastore for a particular payment type
  * @param <R> The FR data-model representation of the OB payment request
  */
 public interface IdempotentPaymentService<T extends PaymentSubmission<R>, R> {
 
-    Optional<T> findExistingPayment(R frPaymentRequest, String consentId, String idempotencyKey) throws OBErrorException;
+    Optional<T> findExistingPayment(R frPaymentRequest, String consentId, String apiClientId, String idempotencyKey) throws OBErrorException;
+
+    default void validateExistingPayment(R frPaymentRequest, String idempotencyKey, Optional<T> existingPayment) throws OBErrorException {
+        if (existingPayment.isPresent()) {
+            final T payment = existingPayment.get();
+            if (!payment.getIdempotencyKey().equals(idempotencyKey)) {
+                throw new OBErrorException(OBRIErrorType.PAYMENT_SUBMISSION_ALREADY_EXISTS, payment.getId());
+            } else {
+                if (!payment.getPayment().equals(frPaymentRequest)) {
+                    throw new OBErrorException(OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED, payment.getId());
+                }
+            }
+        }
+    }
 
 }

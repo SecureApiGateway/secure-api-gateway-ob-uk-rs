@@ -45,7 +45,11 @@ public class FRDomesticVrpPaymentSubmission implements PaymentSubmission<FRDomes
     @LastModifiedDate
     private DateTime updated;
 
+    private String apiClientId;
+
     private String idempotencyKey;
+
+    private DateTime idempotencyKeyExpiration;
 
     private String transactionId;
 

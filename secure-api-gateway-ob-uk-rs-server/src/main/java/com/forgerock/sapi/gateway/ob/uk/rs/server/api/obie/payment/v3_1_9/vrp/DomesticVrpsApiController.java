@@ -26,8 +26,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.Refu
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.VRPIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
@@ -55,6 +55,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @Controller("DomesticVrpsApiV3.1.9")
 @Slf4j
@@ -69,6 +70,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final RefundAccountService refundAccountService;
     private final DomesticVRPConsentStoreClient consentStoreClient;
+    private final IdempotentPaymentService<FRDomesticVrpPaymentSubmission, FRDomesticVrpRequest> idempotentPaymentService;
 
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
@@ -84,6 +86,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.refundAccountService = refundAccountService;
+        this.idempotentPaymentService = new VRPIdempotentPaymentService(paymentSubmissionRepository);
     }
 
     @Override
@@ -189,6 +192,15 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         FRDomesticVrpRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
 
+        final Optional<FRDomesticVrpPaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frDomesticVRPRequest, consentId, apiClientId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            final FRDomesticVrpPaymentSubmission paymentSubmission = existingPayment.get();
+            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, FRDomesticVrpPaymentSubmission.id: {}",
+                    xIdempotencyKey, paymentSubmission.getId());
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, paymentSubmission));
+        }
+
         // validate the consent against the instruction
         log.debug("Validating VRP submission");
         paymentRequestValidator.validate(new OBDomesticVRPRequestValidationContext(obDomesticVRPRequest,
@@ -200,6 +212,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .id(UUID.randomUUID().toString())
                 .transactionId(UUID.randomUUID().toString())
                 .idempotencyKey(xIdempotencyKey)
+                .idempotencyKeyExpiration(DateTime.now().plusHours(24))
+                .apiClientId(apiClientId)
                 .consentId(frDomesticVRPRequest.data.consentId)
                 .payment(frDomesticVRPRequest)
                 .status(toFRSubmissionStatus(OBDomesticVRPResponseData.StatusEnum.PENDING))
@@ -209,8 +223,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .build();
 
         //save the domestic vrp
-        final IdempotentSaveResult savedPayment  = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
-                .idempotentSave(vrpPaymentSubmission);
+        paymentSubmissionRepository.save(vrpPaymentSubmission);
 
         OBDomesticVRPResponse entity = responseEntity(consent, obDomesticVRPRequest, vrpPaymentSubmission);
 
@@ -244,8 +257,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .risk(obDomesticVRPRequest.getRisk());
 
         // just to meet the expected data defined by the spec
-        response.getData().expectedExecutionDateTime(DateTime.now())
-                .expectedSettlementDateTime(DateTime.now())
+        response.getData()
                 .charges(List.of(
                         new OBDomesticVRPResponseDataCharges()
                                 .type(OBExternalPaymentChargeType1Code.BALANCETRANSFEROUT)
