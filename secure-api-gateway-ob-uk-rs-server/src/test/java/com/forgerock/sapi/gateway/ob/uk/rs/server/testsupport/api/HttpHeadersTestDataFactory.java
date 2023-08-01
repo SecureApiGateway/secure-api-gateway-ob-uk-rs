@@ -128,6 +128,16 @@ public class HttpHeadersTestDataFactory {
         return headers;
     }
 
+    public static HttpHeaders requiredFundsConsentApiHeaders(String apiClientId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth("dummyAuthToken");
+        headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
+        headers.add("x-api-client-id", apiClientId);
+        return headers;
+    }
+
     /**
      * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Events API.
      *

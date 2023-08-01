@@ -47,6 +47,7 @@ public class LinksHelper {
     private static final String EVENT_SUBSCRIPTIONS = "event-subscriptions";
     private static final String FUNDS_CONFIRMATION = "funds-confirmation";
     private static final String FUNDS_CONFIRMATIONS = "funds-confirmations";
+    private static final String FUNDS_CONFIRMATIONS_CONSENT = "funds-confirmation-consents";
     private static final String DOMESTIC_VRP_PAYMENTS = "domestic-vrps";
     private static final String DOMESTIC_VRP_CONSENTS = "domestic-vrp-consents";
 
@@ -332,6 +333,9 @@ public class LinksHelper {
         return createSelfLink(controllerClass, FUNDS_CONFIRMATIONS, id);
     }
 
+    public static Links createFundsConfirmationConsentSelfLink(Class<?> controllerClass, String id) {
+        return createSelfLink(controllerClass, FUNDS_CONFIRMATIONS_CONSENT, id);
+    }
 
     public static Links createAccountAccessConsentsSelfLink(Class<?> controllerClass, String id) {
         return createSelfLink(controllerClass, ACCOUNT_ACCESS_CONSENTS, id);
