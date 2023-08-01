@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomest
 public interface DomesticVrpPaymentSubmissionRepository extends MongoRepository<FRDomesticVrpPaymentSubmission, String> {
 
     /**
-     * Find if a payment already exists with the same idempontencyKey within the expieration window.
+     * Find if a payment already exists with the same idempontencyKey within the expiration window.
      * <p>
      * The keys are scoped to particular apiClientId.
      *
