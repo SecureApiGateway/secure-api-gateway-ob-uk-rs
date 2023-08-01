@@ -30,7 +30,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.Cons
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRFilePaymentSubmission;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
@@ -129,7 +128,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .build();
 
         // Save the file payment(s)
-        final IdempotentSaveResult savedPayment = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
+        frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, obConsent));

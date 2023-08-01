@@ -56,7 +56,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -141,7 +140,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 toOBWriteInternationalScheduledConsent5(consent.getRequestObj()), consent.getStatus()));
         log.debug("International Payment validation successful");
 
-        final FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
+        FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
                 .id(obWriteInternationalScheduled3.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
                 .status(INITIATIONPENDING)
@@ -152,22 +151,20 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .build();
 
         // Save the international scheduled payment
-        final IdempotentSaveResult<FRInternationalScheduledPaymentSubmission> saveResult = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
+        frPaymentSubmission = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
 
-        if (saveResult.isNewPayment()) {
-            // Save the scheduled payment data for the Accounts API
-            FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment,
-                    consent.getAuthorisedDebtorAccountId());
-            scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
+        // Save the scheduled payment data for the Accounts API
+        FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment,
+                consent.getAuthorisedDebtorAccountId());
+        scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
 
-            final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
-            consumePaymentRequest.setConsentId(consentId);
-            consumePaymentRequest.setApiClientId(apiClientId);
-            consentStoreClient.consumeConsent(consumePaymentRequest);
-        }
+        final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
+        consumePaymentRequest.setConsentId(consentId);
+        consumePaymentRequest.setApiClientId(apiClientId);
+        consentStoreClient.consumeConsent(consumePaymentRequest);
 
-        OBWriteInternationalScheduledResponse6 entity = responseEntity(consent, saveResult.getSavedPayment());
+        OBWriteInternationalScheduledResponse6 entity = responseEntity(consent, frPaymentSubmission);
 
         return ResponseEntity.status(CREATED).body(entity);
     }
