@@ -23,7 +23,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRS
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter.IdempotentSaveResult;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticScheduledPaymentSubmission;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
@@ -100,7 +102,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .build();
 
         // Save the scheduled payment
-        frPaymentSubmission = scheduledPaymentSubmissionRepository.save(frPaymentSubmission);
+        final IdempotentSaveResult savedPayment = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
+                .idempotentSave(frPaymentSubmission);
 
         // Save the scheduled payment data for the Accounts API
         FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment, xAccountId);
