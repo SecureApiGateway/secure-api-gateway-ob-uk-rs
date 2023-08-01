@@ -24,6 +24,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticVrpPaymentSubmissionRepository;
 
+/**
+ * This implementation worked with VRP payments, there can be multiple of these payments per consent.
+ *
+ * See {@link IdempotentPaymentService} documentation for known limitations of this approach.
+ */
 public class VRPIdempotentPaymentService implements IdempotentPaymentService<FRDomesticVrpPaymentSubmission, FRDomesticVrpRequest> {
 
     private final DomesticVrpPaymentSubmissionRepository repository;
