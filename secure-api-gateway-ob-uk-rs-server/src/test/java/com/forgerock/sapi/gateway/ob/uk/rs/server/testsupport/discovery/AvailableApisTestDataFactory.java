@@ -69,6 +69,9 @@ public class AvailableApisTestDataFactory {
 
     public static List<AvailableApiEndpoint> generateFundApis() {
         List<Pair<OBApiReference, String>> content = ImmutableList.of(
+                Pair.of(OBApiReference.CREATE_FUNDS_CONFIRMATION_CONSENT, "/cbpii/funds-confirmation-consent"),
+                Pair.of(OBApiReference.GET_FUNDS_CONFIRMATION_CONSENT, "/cbpii/funds-confirmation-consent/{ConsentId}"),
+                Pair.of(OBApiReference.DELETE_FUNDS_CONFIRMATION_CONSENT, "/cbpii/funds-confirmation-consent/{ConsentId}"),
                 Pair.of(OBApiReference.CREATE_FUNDS_CONFIRMATION, "/cbpii/funds-confirmations")
         );
         return generateApi(OBGroupName.CBPII, content);
