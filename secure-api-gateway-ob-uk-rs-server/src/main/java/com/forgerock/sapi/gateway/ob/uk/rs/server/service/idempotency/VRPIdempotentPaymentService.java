@@ -40,7 +40,14 @@ public class VRPIdempotentPaymentService implements IdempotentPaymentService<FRD
     @Override
     public Optional<FRDomesticVrpPaymentSubmission> findExistingPayment(FRDomesticVrpRequest frPaymentRequest, String consentId, String apiClient, String idempotencyKey) throws OBErrorException {
         final Optional<FRDomesticVrpPaymentSubmission> existingPayment = repository.findByIdempotencyData(apiClient, idempotencyKey, DateTime.now());
-        validateExistingPayment(frPaymentRequest, idempotencyKey, existingPayment);
+        if (existingPayment.isPresent()) {
+            validateExistingPayment(frPaymentRequest, idempotencyKey, existingPayment.get());
+        }
         return existingPayment;
+    }
+
+    @Override
+    public FRDomesticVrpPaymentSubmission savePayment(FRDomesticVrpPaymentSubmission paymentSubmission, String idempotencyKey) throws OBErrorException {
+        return repository.save(paymentSubmission);
     }
 }

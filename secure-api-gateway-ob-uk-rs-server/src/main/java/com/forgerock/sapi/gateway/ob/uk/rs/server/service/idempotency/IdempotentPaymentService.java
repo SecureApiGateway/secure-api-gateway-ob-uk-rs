@@ -43,15 +43,14 @@ public interface IdempotentPaymentService<T extends PaymentSubmission<R>, R> {
 
     Optional<T> findExistingPayment(R frPaymentRequest, String consentId, String apiClientId, String idempotencyKey) throws OBErrorException;
 
-    default void validateExistingPayment(R frPaymentRequest, String idempotencyKey, Optional<T> existingPayment) throws OBErrorException {
-        if (existingPayment.isPresent()) {
-            final T payment = existingPayment.get();
-            if (!payment.getIdempotencyKey().equals(idempotencyKey)) {
-                throw new OBErrorException(OBRIErrorType.PAYMENT_SUBMISSION_ALREADY_EXISTS, payment.getId());
-            } else {
-                if (!payment.getPayment().equals(frPaymentRequest)) {
-                    throw new OBErrorException(OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED, payment.getId());
-                }
+    T savePayment(T paymentSubmission, String idempotencyKey) throws OBErrorException;
+
+    default void validateExistingPayment(R frPaymentRequest, String idempotencyKey, T existingPayment) throws OBErrorException {
+        if (!existingPayment.getIdempotencyKey().equals(idempotencyKey)) {
+            throw new OBErrorException(OBRIErrorType.PAYMENT_SUBMISSION_ALREADY_EXISTS, existingPayment.getId());
+        } else {
+            if (!existingPayment.getPayment().equals(frPaymentRequest)) {
+                throw new OBErrorException(OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED, existingPayment.getId());
             }
         }
     }

@@ -142,7 +142,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
 
-        frPaymentSubmission = paymentSubmissionRepository.save(frPaymentSubmission);
+        frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission, xIdempotencyKey);
 
         final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);

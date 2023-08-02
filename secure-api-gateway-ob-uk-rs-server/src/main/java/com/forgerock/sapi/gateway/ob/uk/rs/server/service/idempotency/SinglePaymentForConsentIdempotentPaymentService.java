@@ -17,16 +17,24 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency;
 
 import java.util.Optional;
 
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.PaymentSubmissionRepository;
 
 /**
- * This implementation is aimed at Payments which can have at most a single payment per consent (all payments except for VRP)
+ * This implementation is aimed at Payments which can have at most a single payment per consent (all payments except for VRP).
+ *
+ * These payments have a primary key matching the consentId, payments are inserted into the repo which will result in
+ * a {@link DuplicateKeyException} if the payment already exists. In which case, the existing payment is returned if
+ * it has matching idempotency data.
  *
  * See {@link IdempotentPaymentService} documentation for known limitations of this approach.
  */
-public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSubmission<R>, R, REPO extends PaymentSubmissionRepository<T>> implements IdempotentPaymentService<T, R> {
+public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSubmission<R>, R, REPO extends PaymentSubmissionRepository<T> & MongoRepository<T, String>>
+        implements IdempotentPaymentService<T, R> {
 
     private final REPO paymentRepo;
 
@@ -37,7 +45,25 @@ public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSu
     @Override
     public Optional<T> findExistingPayment(R frPaymentRequest, String consentId, String apiClientId, String idempotencyKey) throws OBErrorException {
         final Optional<T> existingPayment = paymentRepo.findByConsentId(consentId);
-        validateExistingPayment(frPaymentRequest, idempotencyKey, existingPayment);
+        if (existingPayment.isPresent()) {
+            validateExistingPayment(frPaymentRequest, idempotencyKey, existingPayment.get());
+        }
         return existingPayment;
+    }
+
+    @Override
+    public T savePayment(T paymentSubmission, String idempotencyKey) throws OBErrorException {
+        try {
+            return paymentRepo.insert(paymentSubmission);
+        } catch (DuplicateKeyException ex) {
+            final Optional<T> paymentQueryResult = paymentRepo.findById(paymentSubmission.getId());
+            if (paymentQueryResult.isPresent()) {
+                final T existingPayment = paymentQueryResult.get();
+                validateExistingPayment(paymentSubmission.getPayment(), idempotencyKey, existingPayment);
+                return existingPayment;
+            } else {
+                throw new IllegalStateException("Failed to insert payment - expected to find a payment for id: " + paymentSubmission.getId(), ex);
+            }
+        }
     }
 }
