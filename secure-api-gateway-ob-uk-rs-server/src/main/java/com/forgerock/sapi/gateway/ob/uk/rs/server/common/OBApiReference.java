@@ -70,8 +70,13 @@ public enum OBApiReference {
     /**
      * Funds Api
      **/
+    /**
+     * Funds Api
+     **/
+    CREATE_FUNDS_CONFIRMATION_CONSENT(CBPII,"CreateFundsConfirmationConsent", POST, "/cbpii/funds-confirmation-consents"),
+    GET_FUNDS_CONFIRMATION_CONSENT(CBPII,"GetFundsConfirmationConsent", GET, "/cbpii/funds-confirmation-consents/{ConsentId}"),
+    DELETE_FUNDS_CONFIRMATION_CONSENT(CBPII, "DeleteFundsConfirmationConsent", DELETE, "/cbpii/funds-confirmation-consents/{ConsentId}"),
     CREATE_FUNDS_CONFIRMATION(CBPII, "CreateFundsConfirmation", POST, "/cbpii/funds-confirmations"),
-    GET_FUNDS_CONFIRMATION(CBPII, "GetFundsConfirmation", GET, "/cbpii/funds-confirmations/{FundsConfirmationId}"),
 
     /**
      * Callback Api
