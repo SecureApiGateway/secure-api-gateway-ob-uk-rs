@@ -19,6 +19,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRInternationalStandingOrderPaymentSubmission;
 
-public interface InternationalStandingOrderPaymentSubmissionRepository extends MongoRepository<FRInternationalStandingOrderPaymentSubmission, String>,
-                                                                               InternationalStandingOrderPaymentSubmissionRepositoryExt {
+public interface InternationalStandingOrderPaymentSubmissionRepository extends MongoRepository<FRInternationalStandingOrderPaymentSubmission, String> {
 }

@@ -19,6 +19,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRInternationalScheduledPaymentSubmission;
 
-public interface InternationalScheduledPaymentSubmissionRepository extends MongoRepository<FRInternationalScheduledPaymentSubmission, String>,
-                                                                           InternationalScheduledPaymentSubmissionRepositoryExt {
+public interface InternationalScheduledPaymentSubmissionRepository extends MongoRepository<FRInternationalScheduledPaymentSubmission, String> {
 }

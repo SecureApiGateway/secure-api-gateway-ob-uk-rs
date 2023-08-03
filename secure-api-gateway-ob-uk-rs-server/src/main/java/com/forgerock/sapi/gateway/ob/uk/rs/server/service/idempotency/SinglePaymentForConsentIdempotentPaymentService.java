@@ -22,7 +22,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.PaymentSubmissionRepository;
 
 /**
  * This implementation is aimed at Payments which can have at most a single payment per consent (all payments except for VRP).
@@ -33,7 +32,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.PaymentS
  *
  * See {@link IdempotentPaymentService} documentation for known limitations of this approach.
  */
-public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSubmission<R>, R, REPO extends PaymentSubmissionRepository<T> & MongoRepository<T, String>>
+public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSubmission<R>, R, REPO extends MongoRepository<T, String>>
         implements IdempotentPaymentService<T, R> {
 
     private final REPO paymentRepo;
@@ -44,7 +43,7 @@ public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSu
 
     @Override
     public Optional<T> findExistingPayment(R frPaymentRequest, String consentId, String apiClientId, String idempotencyKey) throws OBErrorException {
-        final Optional<T> existingPayment = paymentRepo.findByConsentId(consentId);
+        final Optional<T> existingPayment = paymentRepo.findById(consentId);
         if (existingPayment.isPresent()) {
             validateExistingPayment(frPaymentRequest, idempotencyKey, existingPayment.get());
         }
@@ -54,8 +53,11 @@ public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSu
     @Override
     public T savePayment(T paymentSubmission, String idempotencyKey) throws OBErrorException {
         try {
+            // Force the paymentId to the consentId - guards against this being set incorrectly in the calling code
+            paymentSubmission.setId(paymentSubmission.getConsentId());
             return paymentRepo.insert(paymentSubmission);
         } catch (DuplicateKeyException ex) {
+            // Payment already exists for this consentId, return the existing payment if the idempotency fields are correct
             final Optional<T> paymentQueryResult = paymentRepo.findById(paymentSubmission.getId());
             if (paymentQueryResult.isPresent()) {
                 final T existingPayment = paymentQueryResult.get();

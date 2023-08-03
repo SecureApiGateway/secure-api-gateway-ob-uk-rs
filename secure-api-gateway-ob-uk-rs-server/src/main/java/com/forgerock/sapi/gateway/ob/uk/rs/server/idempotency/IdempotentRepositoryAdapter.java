@@ -17,7 +17,6 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.PaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.IdempotencyValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  */
 @Slf4j
 @Deprecated
-public class IdempotentRepositoryAdapter<T extends PaymentSubmission, R extends PaymentSubmissionRepository<T> & MongoRepository<T, String>> {
+public class IdempotentRepositoryAdapter<T extends PaymentSubmission, R extends MongoRepository<T, String>> {
 
     private final R repository;
 
@@ -55,7 +54,7 @@ public class IdempotentRepositoryAdapter<T extends PaymentSubmission, R extends 
 
         IntentType intentType = IntentType.identify(paymentSubmission.getConsentId());
 
-        Optional<T> isPaymentSubmission = repository.findByConsentId(paymentSubmission.getConsentId());
+        Optional<T> isPaymentSubmission = repository.findById(paymentSubmission.getConsentId());
         if (isPaymentSubmission.isPresent() && (intentType == null || !intentType.equals(DOMESTIC_VRP_PAYMENT_CONSENT))) {
             log.info("A payment with this consent id '{}' was already found. Checking idempotency key.", isPaymentSubmission.get().getConsentId());
             IdempotencyValidator.validateIdempotencyRequest(paymentSubmission, isPaymentSubmission.get());

@@ -21,6 +21,8 @@ import org.joda.time.DateTime;
 public interface PaymentSubmission<T> {
     String getId();
 
+    void setId(String id);
+
     String getConsentId();
 
     DateTime getCreated();
