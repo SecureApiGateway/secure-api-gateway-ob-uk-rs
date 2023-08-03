@@ -15,34 +15,18 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import javax.annotation.PostConstruct;
 
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
+import org.joda.time.DateTimeZone;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TestConfiguration {
 
-    /**
-     * Ensure the local {@link TimeZone} (Europe/London) is used.
-     *
-     * @return the {@link Jackson2ObjectMapperBuilderCustomizer} with the default {@link TimeZone}.
-     */
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jacksonObjectMapperCustomization() {
-        return (jacksonObjectMapperBuilder) -> {
-            jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
-            jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_NULL);
-            jacksonObjectMapperBuilder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            jacksonObjectMapperBuilder.featuresToEnable(MapperFeature.USE_BASE_TYPE_AS_DEFAULT_IMPL);
-            jacksonObjectMapperBuilder.modules(new JodaModule());
-            jacksonObjectMapperBuilder.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ"));
-        };
+    @PostConstruct
+    void postConstruct() {
+        // This is needed when decoding Mongo dates to ensure they are in UTC otherwise we get test failures when
+        // doing equality checks on OB data-model objects that include dates when the local timezone is not UTC.
+        DateTimeZone.setDefault(DateTimeZone.UTC);
     }
 }

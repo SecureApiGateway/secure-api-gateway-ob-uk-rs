@@ -20,6 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticscheduledpayments;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
@@ -95,7 +96,7 @@ public interface DomesticScheduledPaymentsApi {
 
             HttpServletRequest request,
 
-            Principal principal) throws OBErrorResponseException;
+            Principal principal) throws OBErrorResponseException, OBErrorException;
 
 
     @ApiOperation(value = "Get Domestic Scheduled Payments", nickname = "getDomesticScheduledPaymentsDomesticScheduledPaymentId", notes = "", response = OBWriteDomesticScheduledResponse5.class, authorizations = {
