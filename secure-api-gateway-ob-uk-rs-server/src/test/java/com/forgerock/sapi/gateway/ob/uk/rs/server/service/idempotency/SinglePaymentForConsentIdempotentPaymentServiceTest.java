@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
 
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ import org.springframework.test.context.ActiveProfiles;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticPaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -91,4 +95,43 @@ class SinglePaymentForConsentIdempotentPaymentServiceTest {
         assertThat(domesticPaymentRepository.count()).isEqualTo(1);
     }
 
+    @Test
+    void shouldFailToCreateIfPaymentExistsAndIdempotencyKeyIsDifferent() throws OBErrorException {
+        final FRWriteDomestic obPayment = FRWriteDomesticConverter.toFRWriteDomestic(aValidOBWriteDomestic2());
+        final FRDomesticPaymentSubmission paymentSubmission = FRDomesticPaymentSubmission.builder()
+                .obVersion(OBVersion.v3_1_10)
+                .idempotencyKey(UUID.randomUUID().toString())
+                .status(FRSubmissionStatus.PENDING)
+                .payment(obPayment)
+                .created(DateTime.now())
+                .updated(DateTime.now())
+                .build();
+
+        idempotentPaymentService.savePayment(paymentSubmission);
+
+        // Change the idempotencyKey then try saving again
+        paymentSubmission.setIdempotencyKey(UUID.randomUUID().toString());
+        final OBErrorException obErrorException = assertThrows(OBErrorException.class, () -> idempotentPaymentService.savePayment(paymentSubmission));
+        assertThat(obErrorException.getObriErrorType()).isEqualTo(OBRIErrorType.PAYMENT_SUBMISSION_ALREADY_EXISTS);
+    }
+
+    @Test
+    void shouldFailToCreateIfPaymentExistsAndRequestBodyIsDifferent() throws OBErrorException {
+        final FRWriteDomestic obPayment = FRWriteDomesticConverter.toFRWriteDomestic(aValidOBWriteDomestic2());
+        final FRDomesticPaymentSubmission paymentSubmission = FRDomesticPaymentSubmission.builder()
+                .obVersion(OBVersion.v3_1_10)
+                .idempotencyKey(UUID.randomUUID().toString())
+                .status(FRSubmissionStatus.PENDING)
+                .payment(obPayment)
+                .created(DateTime.now())
+                .updated(DateTime.now())
+                .build();
+
+        idempotentPaymentService.savePayment(paymentSubmission);
+
+        // Change the payment request data then try saving again
+        obPayment.getData().getInitiation().setLocalInstrument("different value");
+        final OBErrorException obErrorException = assertThrows(OBErrorException.class, () -> idempotentPaymentService.savePayment(paymentSubmission));
+        assertThat(obErrorException.getObriErrorType()).isEqualTo(OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED);
+    }
 }
