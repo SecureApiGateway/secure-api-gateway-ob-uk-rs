@@ -70,7 +70,7 @@ public interface IdempotentPaymentService<T extends PaymentSubmission<R>, R> {
             throw new OBErrorException(OBRIErrorType.PAYMENT_SUBMISSION_ALREADY_EXISTS, existingPayment.getId());
         } else {
             if (!existingPayment.getPayment().equals(newPaymentRequest)) {
-                throw new OBErrorException(OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED, existingPayment.getId());
+                throw new OBErrorException(OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED, newPaymentIdempotencyKey);
             }
         }
     }
