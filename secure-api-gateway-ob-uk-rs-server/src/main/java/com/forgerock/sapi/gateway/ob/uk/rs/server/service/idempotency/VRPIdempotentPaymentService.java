@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 
 import org.joda.time.DateTime;
@@ -38,16 +40,19 @@ public class VRPIdempotentPaymentService implements IdempotentPaymentService<FRD
     }
 
     @Override
-    public Optional<FRDomesticVrpPaymentSubmission> findExistingPayment(FRDomesticVrpRequest frPaymentRequest, String consentId, String apiClient, String idempotencyKey) throws OBErrorException {
-        final Optional<FRDomesticVrpPaymentSubmission> existingPayment = repository.findByIdempotencyData(apiClient, idempotencyKey, DateTime.now());
+    public Optional<FRDomesticVrpPaymentSubmission> findExistingPayment(FRDomesticVrpRequest frPaymentRequest, String consentId, String apiClientId, String idempotencyKey) throws OBErrorException {
+        final Optional<FRDomesticVrpPaymentSubmission> existingPayment = repository.findByIdempotencyData(apiClientId, idempotencyKey, DateTime.now());
         if (existingPayment.isPresent()) {
-            validateExistingPayment(frPaymentRequest, idempotencyKey, existingPayment.get());
+            validateExistingPaymentIdempotencyData(frPaymentRequest, idempotencyKey, existingPayment.get());
         }
         return existingPayment;
     }
 
     @Override
-    public FRDomesticVrpPaymentSubmission savePayment(FRDomesticVrpPaymentSubmission paymentSubmission, String idempotencyKey) throws OBErrorException {
+    public FRDomesticVrpPaymentSubmission savePayment(FRDomesticVrpPaymentSubmission paymentSubmission) {
+        requireNonNull(paymentSubmission.getIdempotencyKey());
+        requireNonNull(paymentSubmission.getIdempotencyKeyExpiration());
+        requireNonNull(paymentSubmission.getApiClientId());
         return repository.save(paymentSubmission);
     }
 }

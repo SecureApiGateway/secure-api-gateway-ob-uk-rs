@@ -41,15 +41,35 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentS
  */
 public interface IdempotentPaymentService<T extends PaymentSubmission<R>, R> {
 
+
+    /**
+     * Finds any existing payments for the consentId + apiClientId + idempotencyKey combination.
+     *
+     * This can be used to check if a payment exists before running the biz logic.
+     */
     Optional<T> findExistingPayment(R frPaymentRequest, String consentId, String apiClientId, String idempotencyKey) throws OBErrorException;
 
-    T savePayment(T paymentSubmission, String idempotencyKey) throws OBErrorException;
+    /**
+     * Saves a new payment into the repository
+     */
+    T savePayment(T paymentSubmission) throws OBErrorException;
 
-    default void validateExistingPayment(R frPaymentRequest, String idempotencyKey, T existingPayment) throws OBErrorException {
-        if (!existingPayment.getIdempotencyKey().equals(idempotencyKey)) {
+    /**
+     * Validates that any existing payment found has an idempotencyKey and OB data-model request object that matches
+     * with the newly submitted payment.
+     *
+     * Validation errors result in OBErrorException being raised.
+     *
+     * @param newPaymentRequest the new payment that is being submitted
+     * @param newPaymentIdempotencyKey the idempotency key used in the new payment request
+     * @param existingPayment the payment that has been found in the repo that we are validating against
+     * @throws OBErrorException with either PAYMENT_SUBMISSION_ALREADY_EXISTS or IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED error
+     */
+    default void validateExistingPaymentIdempotencyData(R newPaymentRequest, String newPaymentIdempotencyKey, T existingPayment) throws OBErrorException {
+        if (!existingPayment.getIdempotencyKey().equals(newPaymentIdempotencyKey)) {
             throw new OBErrorException(OBRIErrorType.PAYMENT_SUBMISSION_ALREADY_EXISTS, existingPayment.getId());
         } else {
-            if (!existingPayment.getPayment().equals(frPaymentRequest)) {
+            if (!existingPayment.getPayment().equals(newPaymentRequest)) {
                 throw new OBErrorException(OBRIErrorType.IDEMPOTENCY_KEY_REQUEST_BODY_CHANGED, existingPayment.getId());
             }
         }

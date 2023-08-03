@@ -223,7 +223,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .build();
 
         //save the domestic vrp
-        paymentSubmissionRepository.save(vrpPaymentSubmission);
+        idempotentPaymentService.savePayment(vrpPaymentSubmission);
 
         OBDomesticVRPResponse entity = responseEntity(consent, obDomesticVRPRequest, vrpPaymentSubmission);
 

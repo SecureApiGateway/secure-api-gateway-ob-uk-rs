@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -45,14 +47,16 @@ public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSu
     public Optional<T> findExistingPayment(R frPaymentRequest, String consentId, String apiClientId, String idempotencyKey) throws OBErrorException {
         final Optional<T> existingPayment = paymentRepo.findById(consentId);
         if (existingPayment.isPresent()) {
-            validateExistingPayment(frPaymentRequest, idempotencyKey, existingPayment.get());
+            validateExistingPaymentIdempotencyData(frPaymentRequest, idempotencyKey, existingPayment.get());
         }
         return existingPayment;
     }
 
     @Override
-    public T savePayment(T paymentSubmission, String idempotencyKey) throws OBErrorException {
+    public T savePayment(T paymentSubmission) throws OBErrorException {
         try {
+            requireNonNull(paymentSubmission.getIdempotencyKey());
+
             // Force the paymentId to the consentId - guards against this being set incorrectly in the calling code
             paymentSubmission.setId(paymentSubmission.getConsentId());
             return paymentRepo.insert(paymentSubmission);
@@ -61,7 +65,7 @@ public class SinglePaymentForConsentIdempotentPaymentService<T extends PaymentSu
             final Optional<T> paymentQueryResult = paymentRepo.findById(paymentSubmission.getId());
             if (paymentQueryResult.isPresent()) {
                 final T existingPayment = paymentQueryResult.get();
-                validateExistingPayment(paymentSubmission.getPayment(), idempotencyKey, existingPayment);
+                validateExistingPaymentIdempotencyData(paymentSubmission.getPayment(), paymentSubmission.getIdempotencyKey(), existingPayment);
                 return existingPayment;
             } else {
                 throw new IllegalStateException("Failed to insert payment - expected to find a payment for id: " + paymentSubmission.getId(), ex);
