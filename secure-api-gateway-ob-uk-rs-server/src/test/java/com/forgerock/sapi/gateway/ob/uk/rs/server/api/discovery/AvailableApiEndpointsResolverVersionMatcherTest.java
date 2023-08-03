@@ -33,7 +33,7 @@ public class AvailableApiEndpointsResolverVersionMatcherTest {
         final String urlTemplate = "/open-banking/%s/pisp/domestic-payments";
         for (OBVersion version : OBVersion.values()) {
             final String url = String.format(urlTemplate, version.getCanonicalName());
-            assertTrue(resolver.matchUrlPattern(url).matches(), "url must be accepted: " + url);
+            assertTrue(resolver.matchUrlPattern(url).matches(), "uriPath must be accepted: " + url);
         }
     }
 }

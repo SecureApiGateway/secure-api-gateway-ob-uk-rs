@@ -16,6 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.OBApiReference;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +31,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import uk.org.openbanking.datamodel.discovery.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -159,6 +170,26 @@ public class DiscoveryControllerTest {
                 .get(OBApiReference.GET_TRANSACTIONS.getReference());
         String expectedUrl = BASE_URL + port + "/open-banking/" + version + OBApiReference.GET_TRANSACTIONS.getRelativePath();
         assertThat(transactionsUrl).isEqualTo(expectedUrl);
+    }
+
+    @Test
+    public void shouldHandleConcurrentRequests() throws Exception {
+        final int numConcurrentRequests = 16;
+        final ExecutorService executorService = Executors.newFixedThreadPool(numConcurrentRequests);
+        final List<Callable<ResponseEntity<OBDiscoveryResponse>>> tasks = Collections.nCopies(numConcurrentRequests, () ->  restTemplate.getForEntity(discoveryUrl(), OBDiscoveryResponse.class));
+        final List<Future<ResponseEntity<OBDiscoveryResponse>>> futures = executorService.invokeAll(tasks);
+        final List<ResponseEntity<OBDiscoveryResponse>> responses = new ArrayList<>();
+        for (final Future<ResponseEntity<OBDiscoveryResponse>> future : futures) {
+            responses.add(future.get(2, TimeUnit.SECONDS));
+        }
+
+        // Verify that all requests succeeded and got the same response body
+        final Set<OBDiscoveryResponse> discoveryResponses = new HashSet<>();
+        for (ResponseEntity<OBDiscoveryResponse> response : responses) {
+            Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            discoveryResponses.add(response.getBody());
+        }
+        assertThat(discoveryResponses.size()).isEqualTo(1);
     }
 
     private boolean containsVersions(List<OBDiscoveryAPI<OBDiscoveryAPILinks>> api, String... versions) {

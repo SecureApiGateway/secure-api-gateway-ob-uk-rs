@@ -19,7 +19,13 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.OBApiReference;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.discovery.AvailableApisTestDataFactory;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBGroupName;
 import com.google.common.collect.ImmutableMap;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
 
@@ -36,17 +42,34 @@ import static org.mockito.Mockito.when;
  */
 public class DiscoveryApiServiceTest {
 
+    /**
+     * The RequestContext baseUri produced by HATEOAS when running this with the MockHttpServletRequest
+     */
+    private static final String BASE_URI = "http://localhost";
+
     private static final String TEST_VERSION = "v3.1.1";
 
     private AvailableApiEndpointsResolver availableApisResolver = mock(AvailableApiEndpointsResolver.class);
 
-    private ControllerEndpointBlacklistHandler blacklistHandler = mock(ControllerEndpointBlacklistHandler.class);
+    @BeforeEach
+    void setup() {
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
+    }
+
+    /**
+     * Helper method used in assertions. This builds URL we expect to see in the discovery doc for a particular
+     * endpoint and version.
+     */
+    private static String buildDiscoveryDocumentUrl(String version, String endpointPath) {
+        return BASE_URI + AvailableApisTestDataFactory.BASE_URL + version + endpointPath;
+    }
 
     @Test
     public void shouldGetDiscoveryApisByVersionAndGroupName() {
         // Given
         DiscoveryApiConfigurationProperties discoveryProperties = new DiscoveryApiConfigurationProperties();
-        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver, blacklistHandler);
+        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver);
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
@@ -65,7 +88,7 @@ public class DiscoveryApiServiceTest {
         // Given
         DiscoveryApiConfigurationProperties discoveryProperties = new DiscoveryApiConfigurationProperties();
         discoveryProperties.setVersions(ImmutableMap.of(TEST_VERSION, false));
-        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver, blacklistHandler);
+        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver);
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
@@ -84,7 +107,7 @@ public class DiscoveryApiServiceTest {
         // Given
         DiscoveryApiConfigurationProperties discoveryProperties = new DiscoveryApiConfigurationProperties();
         discoveryProperties.setApis(ImmutableMap.of(OBApiReference.GET_ACCOUNT, false));
-        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver, blacklistHandler);
+        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver);
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
@@ -96,9 +119,9 @@ public class DiscoveryApiServiceTest {
         Map<String, String> links = ((GenericOBDiscoveryAPILinks) accountApis.get(TEST_VERSION).getLinks()).getLinks();
         // assert GET_ACCOUNT is excluded but GET_ACCOUNTS is present
         assertThat(links.containsKey(OBApiReference.GET_ACCOUNT.getReference())).isFalse();
-        assertThat(links.containsValue(AvailableApisTestDataFactory.BASE_URL + TEST_VERSION + "/aisp/accounts/{AccountId}")).isFalse();
+        assertThat(links.containsValue(buildDiscoveryDocumentUrl(TEST_VERSION, "/aisp/accounts/{AccountId}"))).isFalse();
         assertThat(links.containsKey(OBApiReference.GET_ACCOUNTS.getReference())).isTrue();
-        assertThat(links.containsValue(AvailableApisTestDataFactory.BASE_URL + TEST_VERSION + "/aisp/accounts")).isTrue();
+        assertThat(links.containsValue(buildDiscoveryDocumentUrl(TEST_VERSION, "/aisp/accounts"))).isTrue();
     }
 
     @Test
@@ -106,7 +129,7 @@ public class DiscoveryApiServiceTest {
         // Given
         DiscoveryApiConfigurationProperties discoveryProperties = new DiscoveryApiConfigurationProperties();
         discoveryProperties.setVersionApiOverrides(ImmutableMap.of("v3_1_2", ImmutableMap.of(OBApiReference.GET_ACCOUNTS, false)));
-        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver, blacklistHandler);
+        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver);
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When
@@ -117,24 +140,24 @@ public class DiscoveryApiServiceTest {
         String version = "v3.1.2";
         Map<String, String> links = ((GenericOBDiscoveryAPILinks) accountApis.get(version).getLinks()).getLinks();
         assertThat(links.containsKey(OBApiReference.GET_ACCOUNT.getReference())).isTrue();
-        assertThat(links.containsValue(AvailableApisTestDataFactory.BASE_URL + version + "/aisp/accounts/{AccountId}")).isTrue();
+        assertThat(links.containsValue(buildDiscoveryDocumentUrl(version, "/aisp/accounts/{AccountId}"))).isTrue();
         // assert GET_ACCOUNTS is excluded
         assertThat(links.containsKey(OBApiReference.GET_ACCOUNTS.getReference())).isFalse();
-        assertThat(links.containsValue(AvailableApisTestDataFactory.BASE_URL + version + "/aisp/accounts")).isFalse();
+        assertThat(links.containsValue(buildDiscoveryDocumentUrl( version, "/aisp/accounts"))).isFalse();
 
         // check another version and assert both links are included
         links = ((GenericOBDiscoveryAPILinks) accountApis.get(TEST_VERSION).getLinks()).getLinks();
         assertThat(links.containsKey(OBApiReference.GET_ACCOUNT.getReference())).isTrue();
-        assertThat(links.containsValue(AvailableApisTestDataFactory.BASE_URL + TEST_VERSION + "/aisp/accounts/{AccountId}")).isTrue();
+        assertThat(links.containsValue(buildDiscoveryDocumentUrl( TEST_VERSION, "/aisp/accounts/{AccountId}"))).isTrue();
         assertThat(links.containsKey(OBApiReference.GET_ACCOUNTS.getReference())).isTrue();
-        assertThat(links.containsValue(AvailableApisTestDataFactory.BASE_URL + TEST_VERSION + "/aisp/accounts")).isTrue();
+        assertThat(links.containsValue(buildDiscoveryDocumentUrl(TEST_VERSION, "/aisp/accounts"))).isTrue();
     }
 
     @Test
     public void shouldGetEmptyDiscoveryApisGivenNoAvailableEndpoints() {
         // Given
         DiscoveryApiConfigurationProperties discoveryProperties = new DiscoveryApiConfigurationProperties();
-        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver, blacklistHandler);
+        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver);
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(emptyList());
 
         // When
@@ -149,7 +172,7 @@ public class DiscoveryApiServiceTest {
         // Given
         DiscoveryApiConfigurationProperties discoveryProperties = new DiscoveryApiConfigurationProperties();
         discoveryProperties.setVersions(allVersionsDisabled());
-        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver, blacklistHandler);
+        DiscoveryApiService discoveryApiService = new DiscoveryApiService(discoveryProperties, availableApisResolver);
         when(availableApisResolver.getAvailableApiEndpoints()).thenReturn(AvailableApisTestDataFactory.getAvailableApiEndpoints());
 
         // When

@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class AvailableApisTestDataFactory {
 
-    public static final String BASE_URL = "http://rs/open-banking/";
+    public static final String BASE_URL = "/rs/open-banking/";
     public static final String VERSION_PREFIX = "v3.1.";
     public static final int PATCHES = 6;
 
@@ -86,7 +86,7 @@ public class AvailableApisTestDataFactory {
                         .groupName(groupName)
                         .version(VERSION_PREFIX + patch)
                         .apiReference(refAndPath.getKey())
-                        .url(url)
+                        .uriPath(url)
                         .build();
                 apiVersions.add(apiEndpoint);
             }
