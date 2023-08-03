@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,12 +44,14 @@ public class AvailableApiEndpointsResolver {
      */
     private final Pattern OB_URI_PATTERN = Pattern.compile("^\\/open-banking\\/(v\\d+\\.\\d+(?:.\\d+)?)(\\/.+?)$");
 
-    private final Map<RequestMappingInfo, HandlerMethod> handlerMethods;
-
-    private List<AvailableApiEndpoint> availableApis = new ArrayList<>();
+    private final List<AvailableApiEndpoint> availableApis;
 
     public AvailableApiEndpointsResolver(RequestMappingHandlerMapping requestHandlerMapping) {
-        this.handlerMethods = requestHandlerMapping.getHandlerMethods();
+        this.availableApis = findAvailableApiEndpoints(requestHandlerMapping);
+    }
+
+    public List<AvailableApiEndpoint> getAvailableApiEndpoints() {
+        return availableApis;
     }
 
     /**
@@ -61,8 +63,9 @@ public class AvailableApiEndpointsResolver {
      *
      * @return the {@link List} of {@link AvailableApiEndpoint} instances.
      */
-    public List<AvailableApiEndpoint> getAvailableApiEndpoints() {
-        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
+    private List<AvailableApiEndpoint> findAvailableApiEndpoints(RequestMappingHandlerMapping requestHandlerMapping) {
+        final List<AvailableApiEndpoint> availableApiEndpoints = new ArrayList<>();
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : requestHandlerMapping.getHandlerMethods().entrySet()) {
             RequestMappingInfo requestMapping = entry.getKey();
             HandlerMethod method = entry.getValue();
 
@@ -70,21 +73,19 @@ public class AvailableApiEndpointsResolver {
 
             if (apiReference != null) {
                 String version = getVersion(requestMapping);
-                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-                String url = baseUrl + requestMapping.getPatternsCondition().getPatterns().iterator().next();
+                String uriPath = requestMapping.getPatternsCondition().getPatterns().iterator().next();
 
                 AvailableApiEndpoint availableApi = AvailableApiEndpoint.builder()
                         .groupName(apiReference.getGroupName())
                         .version(version)
                         .controllerMethod(ControllerMethod.of(method.getBeanType(), method.getMethod()))
                         .apiReference(apiReference)
-                        .url(url)
+                        .uriPath(uriPath)
                         .build();
-                availableApis.add(availableApi);
+                availableApiEndpoints.add(availableApi);
             }
         }
-
-        return availableApis;
+        return Collections.unmodifiableList(availableApiEndpoints);
     }
 
     private OBApiReference getMatchingApiReference(RequestMappingInfo requestMapping) {

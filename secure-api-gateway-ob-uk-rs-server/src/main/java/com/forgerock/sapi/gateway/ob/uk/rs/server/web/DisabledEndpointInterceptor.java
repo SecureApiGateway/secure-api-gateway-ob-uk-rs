@@ -15,31 +15,41 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.web;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery.ControllerEndpointBlacklistHandler;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery.DiscoveryApiService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery.ControllerEndpointBlacklistHandler;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery.DiscoveryApiService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Returns a 404 error response if a request is for an API endpoint that has been disabled in the configuration.
+ *
+ * The blackListHandler is provided by the DiscoveryApiService, this bean cannot depend on this service directly as we
+ * then get into a cyclic dependency. This is due to this interceptor needing to be created before the WebMvc can be
+ * created and the Discovery data is determined by processing the HandlerMappings created by the WebMvc
+ *
+ * The {@link com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.ApplicationStartupListener} is doing the late
+ * binding of the beans.
  */
 @Component
 @Slf4j
 public class DisabledEndpointInterceptor implements HandlerInterceptor {
 
-    private final DiscoveryApiService discoveryApiService;
+    private ControllerEndpointBlacklistHandler blacklistHandler;
 
-    // @Lazy due to spring wiring circular dependency issue
-    public DisabledEndpointInterceptor(@Lazy DiscoveryApiService discoveryApiService) {
-        this.discoveryApiService = discoveryApiService;
+    public DisabledEndpointInterceptor() {
+    }
+
+    public void setDiscoveryApiService(DiscoveryApiService discoveryApiService) {
+        this.blacklistHandler = discoveryApiService.getBlacklistHandler();
     }
 
     /**
@@ -54,7 +64,6 @@ public class DisabledEndpointInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
-            ControllerEndpointBlacklistHandler blacklistHandler = discoveryApiService.getControllerBlackListHandler();
             if (blacklistHandler.isBlacklisted(handlerMethod.getBeanType(), handlerMethod.getMethod())) {
                 log.warn("Request URI {} was BLOCKED due to RS configuration settings. " +
                         "Handler method: {}", request.getRequestURI(), handlerMethod.getMethod());

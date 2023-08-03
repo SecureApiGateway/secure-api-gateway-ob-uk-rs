@@ -38,6 +38,13 @@ public class AvailableApiEndpoint {
     private OBGroupName groupName;
     private String version;
     private OBApiReference apiReference;
-    private String url;
+
+    /**
+     * The path portion of the URI that can be used to access this endpoint e.g. /open-banking/v3.1.10/pisp/domestic-payments
+     *
+     * This needs to be combined with the baseUri used to access this component, this can be done using Spring HATEOAS
+     */
+    private String uriPath;
+
     private ControllerMethod controllerMethod;
 }

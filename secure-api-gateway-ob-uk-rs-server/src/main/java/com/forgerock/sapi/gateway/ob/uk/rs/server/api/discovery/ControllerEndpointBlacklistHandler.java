@@ -16,7 +16,6 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -28,7 +27,6 @@ import java.util.Set;
  * needing to use regex matches (which may match the same URL, but the wrong HTTP method).
  */
 @Slf4j
-@Component
 public class ControllerEndpointBlacklistHandler {
     /**
      * Set of all controller methods that are not provided by the Discovery endpoint.

@@ -18,13 +18,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domesticpayments.DomesticPaymentsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.OBApiReference;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBGroupName;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -43,16 +39,9 @@ import static org.mockito.Mockito.mock;
  */
 public class AvailableApiEndpointsResolverTest {
 
-    private static final String BASE_URL = "http://localhost";
     private static final String VERSION = "v3.1.5";
     private static final String CREATE_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments";
     private static final String GET_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments/{DomesticPaymentId}";
-
-    @BeforeEach
-    void setup() {
-        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequest));
-    }
 
     @Test
     public void shouldGetAvailableApiEndpoints() {
@@ -68,13 +57,13 @@ public class AvailableApiEndpointsResolverTest {
         AvailableApiEndpoint getPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.GET_DOMESTIC_PAYMENT);
         assertThat(getPaymentEndpoint.getVersion()).isEqualTo(VERSION);
         assertThat(getPaymentEndpoint.getGroupName()).isEqualTo(OBGroupName.PISP);
-        assertThat(getPaymentEndpoint.getUrl()).isEqualTo(BASE_URL + GET_PAYMENT_URI);
+        assertThat(getPaymentEndpoint.getUriPath()).isEqualTo( GET_PAYMENT_URI);
         assertThat(getPaymentEndpoint.getControllerMethod()).isNotNull();
 
         AvailableApiEndpoint createPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.CREATE_DOMESTIC_PAYMENT);
         assertThat(createPaymentEndpoint.getVersion()).isEqualTo(VERSION);
         assertThat(createPaymentEndpoint.getGroupName()).isEqualTo(OBGroupName.PISP);
-        assertThat(createPaymentEndpoint.getUrl()).isEqualTo(BASE_URL + CREATE_PAYMENT_URI);
+        assertThat(createPaymentEndpoint.getUriPath()).isEqualTo(CREATE_PAYMENT_URI);
         assertThat(createPaymentEndpoint.getControllerMethod()).isNotNull();
     }
 
