@@ -20,6 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalstandingorders;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
@@ -96,7 +97,7 @@ public interface InternationalStandingOrdersApi {
             HttpServletRequest request,
 
             Principal principal
-    ) throws OBErrorResponseException;
+    ) throws OBErrorResponseException, OBErrorException;
 
 
     @ApiOperation(value = "Get International Standing Orders", nickname = "getInternationalStandingOrdersInternationalStandingOrderPaymentId", notes = "", response = OBWriteInternationalStandingOrderResponse7.class, authorizations = {

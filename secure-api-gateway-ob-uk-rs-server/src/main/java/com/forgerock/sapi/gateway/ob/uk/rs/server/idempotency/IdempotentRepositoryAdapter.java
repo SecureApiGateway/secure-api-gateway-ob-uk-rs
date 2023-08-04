@@ -17,7 +17,6 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.PaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.IdempotencyValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * This class allows reuse of idempotent save logic for payment submissions.
@@ -37,13 +38,15 @@ import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentT
  * </ul>
  *
  * @param <T> The type of the {@link PaymentSubmission} (e.g. FRDomesticPaymentSubmission).
+ * @deprecated Use {@link com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService} instead
  */
 @Slf4j
-public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
+@Deprecated
+public class IdempotentRepositoryAdapter<T extends PaymentSubmission, R extends MongoRepository<T, String>> {
 
-    private final PaymentSubmissionRepository<T> repository;
+    private final R repository;
 
-    public IdempotentRepositoryAdapter(PaymentSubmissionRepository<T> repository) {
+    public IdempotentRepositoryAdapter(R repository) {
         this.repository = repository;
     }
 
@@ -51,7 +54,7 @@ public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
 
         IntentType intentType = IntentType.identify(paymentSubmission.getConsentId());
 
-        Optional<T> isPaymentSubmission = repository.findByConsentId(paymentSubmission.getConsentId());
+        Optional<T> isPaymentSubmission = repository.findById(paymentSubmission.getConsentId());
         if (isPaymentSubmission.isPresent() && (intentType == null || !intentType.equals(DOMESTIC_VRP_PAYMENT_CONSENT))) {
             log.info("A payment with this consent id '{}' was already found. Checking idempotency key.", isPaymentSubmission.get().getConsentId());
             IdempotencyValidator.validateIdempotencyRequest(paymentSubmission, isPaymentSubmission.get());

@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -193,6 +194,27 @@ public class InternationalScheduledPaymentApiControllerTest {
 
         verifyConsentConsumed(consentId);
     }
+
+    @Test
+    public void testIdempotentSubmission() {
+        OBWriteInternationalScheduled3 payment = aValidOBWriteInternationalScheduled3();
+        final String consentId = payment.getData().getConsentId();
+        HttpEntity<OBWriteInternationalScheduled3> request = new HttpEntity<>(payment, HTTP_HEADERS);
+
+        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+
+        ResponseEntity<OBWriteInternationalScheduledResponse6> firstSubmissionResponse = restTemplate.postForEntity(paymentsUrl(), request, OBWriteInternationalScheduledResponse6.class);
+        assertThat(firstSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // Send the same request again (same payload + idempotencyKey)
+        ResponseEntity<OBWriteInternationalScheduledResponse6> secondSubmissionResponse = restTemplate.postForEntity(paymentsUrl(), request, OBWriteInternationalScheduledResponse6.class);
+        assertThat(secondSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(secondSubmissionResponse.getBody()).isEqualTo(firstSubmissionResponse.getBody());
+
+        verify(consentStoreClient, times(2)).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
+        verifyConsentConsumed(consentId); // Verifies consume was only called once
+    }
+
 
     @Test
     public void shouldCreateInternationalScheduledPayment_refundNo() {

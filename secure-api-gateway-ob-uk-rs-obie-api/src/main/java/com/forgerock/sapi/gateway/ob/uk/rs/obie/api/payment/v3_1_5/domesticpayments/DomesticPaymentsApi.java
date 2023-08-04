@@ -20,6 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticpayments;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
@@ -94,7 +95,7 @@ public interface DomesticPaymentsApi {
 
             HttpServletRequest request,
 
-            Principal principal) throws OBErrorResponseException;
+            Principal principal) throws OBErrorResponseException, OBErrorException;
 
     @ApiOperation(value = "Get Domestic Payments", nickname = "getDomesticPaymentsDomesticPaymentId", notes = "", response = OBWriteDomesticResponse5.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {

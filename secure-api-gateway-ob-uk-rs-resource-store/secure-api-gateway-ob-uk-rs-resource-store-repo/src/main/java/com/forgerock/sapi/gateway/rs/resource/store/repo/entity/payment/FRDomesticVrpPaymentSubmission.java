@@ -30,7 +30,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Data
 @Document
-public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
+public class FRDomesticVrpPaymentSubmission implements PaymentSubmission<FRDomesticVrpRequest> {
 
     @Id
     @Indexed
@@ -45,7 +45,11 @@ public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
     @LastModifiedDate
     private DateTime updated;
 
+    private String apiClientId;
+
     private String idempotencyKey;
+
+    private DateTime idempotencyKeyExpiration;
 
     private String transactionId;
 
@@ -58,4 +62,5 @@ public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
     public String getConsentId() {
         return payment.getData().getConsentId();
     }
+
 }

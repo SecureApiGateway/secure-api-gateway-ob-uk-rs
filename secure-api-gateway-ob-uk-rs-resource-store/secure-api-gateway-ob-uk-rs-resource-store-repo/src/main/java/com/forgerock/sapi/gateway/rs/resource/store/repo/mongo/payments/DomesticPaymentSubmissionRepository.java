@@ -15,7 +15,9 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
+
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticPaymentSubmission;
 
-public interface DomesticPaymentSubmissionRepository extends PaymentSubmissionRepository<FRDomesticPaymentSubmission> {
+public interface DomesticPaymentSubmissionRepository extends MongoRepository<FRDomesticPaymentSubmission, String> {
 }

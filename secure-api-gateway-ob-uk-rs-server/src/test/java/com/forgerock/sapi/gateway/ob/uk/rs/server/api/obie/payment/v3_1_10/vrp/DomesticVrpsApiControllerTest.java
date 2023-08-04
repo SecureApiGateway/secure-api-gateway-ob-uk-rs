@@ -327,6 +327,25 @@ public class DomesticVrpsApiControllerTest {
                 error.getMessage());
     }
 
+    @Test
+    public void testPaymentSubmissionIsIdempotent() {
+        OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        HttpEntity<OBDomesticVRPRequest> request = new HttpEntity<>(obDomesticVRPRequest, HTTP_HEADERS);
+
+        final DomesticVRPConsent consent = createAuthorisedConsent(obDomesticVRPRequest.getData().getConsentId());
+        consent.getRequestObj().getData().setReadRefundAccount(FRReadRefundAccount.YES);
+
+        given(consentStoreClient.getConsent(eq(obDomesticVRPRequest.getData().getConsentId()), eq(TEST_API_CLIENT))).willReturn(consent);
+
+        ResponseEntity<OBDomesticVRPResponse> firstResponse = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBDomesticVRPResponse.class);
+        assertThat(firstResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // Send the same request with the same idempotencyKey, verify we get the same response
+        ResponseEntity<OBDomesticVRPResponse> secondResponse = restTemplate.postForEntity(vrpPaymentsUrl(), request, OBDomesticVRPResponse.class);
+        assertThat(secondResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(secondResponse.getBody()).isEqualTo(firstResponse.getBody());
+    }
+
     private String vrpPaymentsUrl() {
         return BASE_URL + port + PAYMENTS_URI + VRP_PAYMENTS_URI;
     }

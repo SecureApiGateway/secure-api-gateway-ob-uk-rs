@@ -46,6 +46,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResp
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrder;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderData;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalstandingorders.InternationalStandingOrdersApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory;
@@ -54,7 +55,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponse
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -87,6 +89,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     private final InternationalStandingOrderConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator;
     private final RefundAccountService refundAccountService;
+    private final IdempotentPaymentService<FRInternationalStandingOrderPaymentSubmission, FRWriteInternationalStandingOrder> idempotentPaymentService;
 
     public InternationalStandingOrdersApiController(
             InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
@@ -101,6 +104,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         this.consentStoreClient = consentStoreClient;
         this.paymentValidator = paymentValidator;
         this.refundAccountService = refundAccountService;
+        this.idempotentPaymentService = new SinglePaymentForConsentIdempotentPaymentService<>(standingOrderPaymentSubmissionRepository);
     }
 
     @Override
@@ -116,7 +120,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             String apiClientId,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder4);
 
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalStandingOrder4.getRisk());
@@ -128,6 +132,14 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
         FRWriteInternationalStandingOrder frStandingOrder = toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder4);
         log.trace("Converted to: '{}'", frStandingOrder);
+
+        final Optional<FRInternationalStandingOrderPaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frStandingOrder, consentId, apiClientId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, consentId: {}",
+                    xIdempotencyKey, consentId);
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, existingPayment.get()));
+        }
 
         // validate the consent against the request
         log.debug("Validating International Standing Order submission");
@@ -146,8 +158,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .build();
 
         // Save the international standing order
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(standingOrderPaymentSubmissionRepository)
-                .idempotentSave(frPaymentSubmission);
+        frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
 
         // Save the standing order data for the Accounts API
         FRStandingOrderData standingOrderData = FRStandingOrderDataFactory.createFRStandingOrderData(frStandingOrder,

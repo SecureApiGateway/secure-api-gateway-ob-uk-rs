@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -197,6 +198,26 @@ public class DomesticScheduledPaymentsApiControllerTest {
         assertThat(response.getBody().getLinks().getSelf().toString().endsWith("/domestic-scheduled-payments/" + responseData.getDomesticScheduledPaymentId())).isTrue();
 
         verifyConsentConsumed(payment.getData().getConsentId());
+    }
+
+    @Test
+    public void testIdempotentSubmission() {
+        OBWriteDomesticScheduled2 payment = aValidOBWriteDomesticScheduled2();
+        final String consentId = payment.getData().getConsentId();
+        HttpEntity<OBWriteDomesticScheduled2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+
+        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+
+        ResponseEntity<OBWriteDomesticScheduledResponse5> firstSubmissionResponse = restTemplate.postForEntity(scheduledPaymentsUrl(), request, OBWriteDomesticScheduledResponse5.class);
+        assertThat(firstSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // Send the same request again (same payload + idempotencyKey)
+        ResponseEntity<OBWriteDomesticScheduledResponse5> secondSubmissionResponse = restTemplate.postForEntity(scheduledPaymentsUrl(), request, OBWriteDomesticScheduledResponse5.class);
+        assertThat(secondSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(secondSubmissionResponse.getBody()).isEqualTo(firstSubmissionResponse.getBody());
+
+        verify(consentStoreClient, times(2)).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
+        verifyConsentConsumed(consentId); // Verifies consume was only called once
     }
 
     @Test

@@ -24,6 +24,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChar
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataFile;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteFile;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -31,8 +32,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.file.FilePaym
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRFilePaymentSubmission;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -68,11 +70,9 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     private final FilePaymentSubmissionRepository filePaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-
     private final FilePaymentConsentStoreClient consentStoreClient;
-
     private final OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator;
-
+    private final IdempotentPaymentService<FRFilePaymentSubmission, FRWriteFile> idempotentPaymentService;
 
     public FilePaymentsApiController(
             FilePaymentSubmissionRepository filePaymentSubmissionRepository,
@@ -83,6 +83,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentStoreClient = consentStoreClient;
         this.filePaymentRequestValidator = filePaymentRequestValidator;
+        this.idempotentPaymentService = new SinglePaymentForConsentIdempotentPaymentService<>(filePaymentSubmissionRepository);
     }
 
     public ResponseEntity<OBWriteFileResponse3> createFilePayments(
@@ -97,7 +98,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             String apiClientId,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received file payment submission: '{}', apiClientId: {}", obWriteFile2, apiClientId);
 
         paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
@@ -105,11 +106,19 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         final String consentId = obWriteFile2.getData().getConsentId();
         final FilePaymentConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
 
-        final OBWriteFileConsent3 obConsent = FRWriteFileConsentConverter.toOBWriteFileConsent3(consent.getRequestObj());
-        filePaymentRequestValidator.validate(new OBWriteFile2ValidationContext(obWriteFile2, obConsent, consent.getStatus()));
-
         FRWriteFile frWriteFile = toFRWriteFile(obWriteFile2);
         log.trace("Converted to: '{}'", frWriteFile);
+
+        final Optional<FRFilePaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frWriteFile, consentId, apiClientId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, consentId: {}",
+                     xIdempotencyKey, consentId);
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, existingPayment.get()));
+        }
+
+        final OBWriteFileConsent3 obConsent = FRWriteFileConsentConverter.toOBWriteFileConsent3(consent.getRequestObj());
+        filePaymentRequestValidator.validate(new OBWriteFile2ValidationContext(obWriteFile2, obConsent, consent.getStatus()));
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(consentId)
@@ -122,8 +131,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .build();
 
         // Save the file payment(s)
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
-                .idempotentSave(frPaymentSubmission);
+        frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
 
         final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);

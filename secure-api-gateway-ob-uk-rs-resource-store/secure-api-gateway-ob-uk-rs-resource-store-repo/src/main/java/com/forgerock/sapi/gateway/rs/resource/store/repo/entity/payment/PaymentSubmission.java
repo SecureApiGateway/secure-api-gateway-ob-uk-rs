@@ -18,8 +18,10 @@ package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.joda.time.DateTime;
 
-public interface PaymentSubmission {
+public interface PaymentSubmission<T> {
     String getId();
+
+    void setId(String id);
 
     String getConsentId();
 
@@ -28,4 +30,6 @@ public interface PaymentSubmission {
     String getIdempotencyKey();
 
     OBVersion getObVersion();
+
+    T getPayment();
 }

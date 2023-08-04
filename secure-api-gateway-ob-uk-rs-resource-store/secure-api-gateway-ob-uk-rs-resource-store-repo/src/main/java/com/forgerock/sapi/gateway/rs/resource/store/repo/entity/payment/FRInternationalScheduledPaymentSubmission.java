@@ -32,7 +32,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Data
 @Document
-public class FRInternationalScheduledPaymentSubmission implements PaymentSubmission {
+public class FRInternationalScheduledPaymentSubmission implements PaymentSubmission<FRWriteInternationalScheduled> {
     @Id
     @Indexed
     private String id;
@@ -58,5 +58,10 @@ public class FRInternationalScheduledPaymentSubmission implements PaymentSubmiss
     @Override
     public String getConsentId() {
         return scheduledPayment.getData().getConsentId();
+    }
+
+    @Override
+    public FRWriteInternationalScheduled getPayment() {
+        return scheduledPayment;
     }
 }

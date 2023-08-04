@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.dome
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -25,7 +26,18 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,6 +187,53 @@ public class DomesticPaymentsApiControllerTest {
         verify(domesticPaymentConsentStoreClient).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
 
         verifyConsentConsumed(consentId);
+    }
+
+    @Test
+    public void testIdempotentSubmission() {
+        OBWriteDomestic2 payment = aValidOBWriteDomestic2();
+        final String consentId = payment.getData().getConsentId();
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+
+        mockConsentStoreGetResponseWithRefundAccount(consentId);
+
+        ResponseEntity<OBWriteDomesticResponse5> firstSubmissionResponse = restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse5.class);
+        assertThat(firstSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // Send the same request again (same payload + idempotencyKey)
+        ResponseEntity<OBWriteDomesticResponse5> secondSubmissionResponse = restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse5.class);
+        assertThat(secondSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(secondSubmissionResponse.getBody()).isEqualTo(firstSubmissionResponse.getBody());
+
+        verify(domesticPaymentConsentStoreClient, times(2)).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
+        verifyConsentConsumed(consentId); // Verifies consume was only called once
+    }
+
+    @Test
+    public void testIdempotentSubmissionConcurrent() throws InterruptedException, ExecutionException, TimeoutException {
+        OBWriteDomestic2 payment = aValidOBWriteDomestic2();
+        final String consentId = payment.getData().getConsentId();
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
+
+        mockConsentStoreGetResponseWithRefundAccount(consentId);
+
+        int numConcurrentRequests = 16;
+        final ExecutorService executorService = Executors.newFixedThreadPool(numConcurrentRequests);
+        final List<Callable<ResponseEntity<OBWriteDomesticResponse5>>> tasks = Collections.nCopies(numConcurrentRequests,
+                () -> restTemplate.postForEntity(paymentsUrl(), request, OBWriteDomesticResponse5.class));
+
+        final List<Future<ResponseEntity<OBWriteDomesticResponse5>>> futures = executorService.invokeAll(tasks);
+        final List<ResponseEntity<OBWriteDomesticResponse5>> responses = new ArrayList<>();
+        for (final Future<ResponseEntity<OBWriteDomesticResponse5>> future : futures) {
+            responses.add(future.get(2, TimeUnit.SECONDS));
+        }
+
+        final Set<OBWriteDomesticResponse5> paymentResponses = new HashSet<>();
+        for (ResponseEntity<OBWriteDomesticResponse5> response : responses) {
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+            paymentResponses.add(response.getBody());
+        }
+        assertThat(paymentResponses.size()).isEqualTo(1);
     }
 
     private void verifyConsentConsumed(String consentId) {
