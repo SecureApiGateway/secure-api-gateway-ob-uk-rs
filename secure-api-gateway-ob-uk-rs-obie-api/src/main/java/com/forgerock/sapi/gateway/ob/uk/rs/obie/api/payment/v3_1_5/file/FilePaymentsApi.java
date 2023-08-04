@@ -20,6 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.file;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
@@ -97,7 +98,7 @@ public interface FilePaymentsApi {
 
             HttpServletRequest request,
 
-            Principal principal) throws OBErrorResponseException;
+            Principal principal) throws OBErrorResponseException, OBErrorException;
 
 
     @ApiOperation(value = "Get File Payments", nickname = "getFilePaymentsFilePaymentId", notes = "", response = OBWriteFileResponse3.class, authorizations = {
