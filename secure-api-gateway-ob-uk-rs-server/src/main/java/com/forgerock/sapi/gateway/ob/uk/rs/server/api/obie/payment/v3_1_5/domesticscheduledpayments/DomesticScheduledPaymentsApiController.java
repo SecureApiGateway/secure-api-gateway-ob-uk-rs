@@ -80,7 +80,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private final DomesticScheduledPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator;
     private final RefundAccountService refundAccountService;
-
     private final IdempotentPaymentService<FRDomesticScheduledPaymentSubmission, FRWriteDomesticScheduled> idempotentPaymentService;
 
     public DomesticScheduledPaymentsApiController(

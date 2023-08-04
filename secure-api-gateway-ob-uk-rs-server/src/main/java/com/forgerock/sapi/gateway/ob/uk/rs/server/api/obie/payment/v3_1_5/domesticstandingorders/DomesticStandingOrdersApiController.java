@@ -27,6 +27,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResp
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomesticStandingOrder;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrder;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.domesticstandingorders.DomesticStandingOrdersApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory;
@@ -35,7 +36,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponse
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -78,6 +80,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private final DomesticStandingOrderConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> paymentValidator;
     private final RefundAccountService refundAccountService;
+    private final IdempotentPaymentService<FRDomesticStandingOrderPaymentSubmission, FRWriteDomesticStandingOrder> idempotentPaymentService;
 
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
@@ -92,6 +95,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         this.consentStoreClient = consentStoreClient;
         this.paymentValidator = paymentValidator;
         this.refundAccountService = refundAccountService;
+        this.idempotentPaymentService = new SinglePaymentForConsentIdempotentPaymentService<>(standingOrderPaymentSubmissionRepository);
     }
 
     @Override
@@ -107,7 +111,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             String apiClientId,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteDomesticStandingOrder3);
 
         paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
@@ -117,15 +121,23 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         final DomesticStandingOrderConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
         log.debug("Got consent from store: {}", consent);
 
+        final FRWriteDomesticStandingOrder frStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder3);
+        log.trace("Converted to: '{}'", frStandingOrder);
+
+        final Optional<FRDomesticStandingOrderPaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frStandingOrder, consentId, apiClientId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, consentId: {}",
+                    xIdempotencyKey, consentId);
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, existingPayment.get()));
+        }
+
         // validate the consent against the request
         log.debug("Validating Domestic Scheduled Payment submission");
         final OBWriteDomesticStandingOrder3ValidationContext validationCtxt = new OBWriteDomesticStandingOrder3ValidationContext(obWriteDomesticStandingOrder3,
                 FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5(consent.getRequestObj()), consent.getStatus());
         paymentValidator.validate(validationCtxt);
         log.debug("Domestic Scheduled Payment validation successful");
-
-        FRWriteDomesticStandingOrder frStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder3);
-        log.trace("Converted to: '{}'", frStandingOrder);
 
         FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(obWriteDomesticStandingOrder3.getData().getConsentId())
@@ -138,8 +150,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .build();
 
         // Save the standing order
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(standingOrderPaymentSubmissionRepository)
-                .idempotentSave(frPaymentSubmission);
+        frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
 
         // Save the standing order data for the Accounts API
         FRStandingOrderData standingOrderData = FRStandingOrderDataFactory.createFRStandingOrderData(frStandingOrder, consent.getAuthorisedDebtorAccountId());

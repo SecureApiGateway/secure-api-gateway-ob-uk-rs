@@ -190,6 +190,26 @@ public class DomesticStandingOrdersApiControllerTest {
     }
 
     @Test
+    public void testIdempotentSubmission() {
+        OBWriteDomesticStandingOrder3 payment = aValidOBWriteDomesticStandingOrder3();
+        final String consentId = payment.getData().getConsentId();
+        HttpEntity<OBWriteDomesticStandingOrder3> request = new HttpEntity<>(payment, HTTP_HEADERS);
+
+        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+
+        ResponseEntity<OBWriteDomesticScheduledResponse5> firstSubmissionResponse = restTemplate.postForEntity(standingOrderUrl(), request, OBWriteDomesticScheduledResponse5.class);
+        assertThat(firstSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // Send the same request again (same payload + idempotencyKey)
+        ResponseEntity<OBWriteDomesticScheduledResponse5> secondSubmissionResponse = restTemplate.postForEntity(standingOrderUrl(), request, OBWriteDomesticScheduledResponse5.class);
+        assertThat(secondSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(secondSubmissionResponse.getBody()).isEqualTo(firstSubmissionResponse.getBody());
+
+        verify(consentStoreClient, times(2)).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
+        verifyConsentConsumed(consentId); // Verifies consume was only called once
+    }
+
+    @Test
     public void shouldCreateDomesticStandingOrderPayment_refundNo() {
         // Given
         OBWriteDomesticStandingOrder3 paymentRequest = aValidOBWriteDomesticStandingOrder3();
