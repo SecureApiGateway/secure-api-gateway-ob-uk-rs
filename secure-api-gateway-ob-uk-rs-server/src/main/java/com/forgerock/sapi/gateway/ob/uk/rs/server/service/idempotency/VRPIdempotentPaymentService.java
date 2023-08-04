@@ -29,6 +29,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.Domestic
 /**
  * This implementation works with VRP payments, there can be multiple of these payments per consent.
  *
+ * As we are not able to know the id ahead of time (unlike {@link SinglePaymentForConsentIdempotentPaymentService} then
+ * we cannot guard against duplicate payments being inserted concurrently. This is deemed good enough for a test
+ * facility as no payments are actually being made.
+ *
  * See {@link IdempotentPaymentService} documentation for known limitations of this approach.
  */
 public class VRPIdempotentPaymentService implements IdempotentPaymentService<FRDomesticVrpPaymentSubmission, FRDomesticVrpRequest> {

@@ -28,9 +28,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentS
 /**
  * This implementation is aimed at Payments which can have at most a single payment per consent (all payments except for VRP).
  *
- * These payments have a primary key matching the consentId, payments are inserted into the repo which will result in
- * a {@link DuplicateKeyException} if the payment already exists. In which case, the existing payment is returned if
- * it has matching idempotency data.
+ * These payments have a primary key matching the consentId.
+ * When payments are inserted into the repo a {@link DuplicateKeyException} is raised if the payment already exists,
+ * when this occurs the idempotency data for the payment is checked and if it matches then the existing payment is
+ * returned as if it were created by this call.
  *
  * See {@link IdempotentPaymentService} documentation for known limitations of this approach.
  */
