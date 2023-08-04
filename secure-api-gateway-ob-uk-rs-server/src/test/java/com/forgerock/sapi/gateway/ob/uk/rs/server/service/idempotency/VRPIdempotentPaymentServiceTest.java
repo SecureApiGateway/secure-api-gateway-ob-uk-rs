@@ -19,12 +19,12 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.Sin
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
 
 import java.util.Optional;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +32,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticPaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticVrpPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -63,6 +60,20 @@ class VRPIdempotentPaymentServiceTest {
         idempotentPaymentService = new VRPIdempotentPaymentService(vrpPaymentSubmissionRepository);
     }
 
+    private FRDomesticVrpPaymentSubmission createVRPSubmission(FRDomesticVrpRequest obPayment, String idempotencyKey) {
+        return FRDomesticVrpPaymentSubmission.builder()
+                .id(UUID.randomUUID().toString())
+                .obVersion(OBVersion.v3_1_10)
+                .apiClientId(apiClientId)
+                .idempotencyKey(idempotencyKey)
+                .idempotencyKeyExpiration(DateTime.now().withZone(DateTimeZone.UTC).plusMinutes(1))
+                .status(FRSubmissionStatus.PENDING)
+                .payment(obPayment)
+                .created(DateTime.now().withZone(DateTimeZone.UTC))
+                .updated(DateTime.now().withZone(DateTimeZone.UTC))
+                .build();
+    }
+
 
     @Test
     void testCreatePayment() throws Exception {
@@ -73,16 +84,7 @@ class VRPIdempotentPaymentServiceTest {
         final Optional<FRDomesticVrpPaymentSubmission> expectNoPayment = idempotentPaymentService.findExistingPayment(obPayment, consentId, apiClientId, idempotencyKey);
         assertThat(expectNoPayment.isPresent()).isFalse();
 
-        final FRDomesticVrpPaymentSubmission paymentSubmission = FRDomesticVrpPaymentSubmission.builder()
-                .obVersion(OBVersion.v3_1_10)
-                .apiClientId(apiClientId)
-                .idempotencyKey(idempotencyKey)
-                .idempotencyKeyExpiration(DateTime.now().plusMinutes(1))
-                .status(FRSubmissionStatus.PENDING)
-                .payment(obPayment)
-                .created(DateTime.now())
-                .updated(DateTime.now())
-                .build();
+        final FRDomesticVrpPaymentSubmission paymentSubmission = createVRPSubmission(obPayment, idempotencyKey);
         final FRDomesticVrpPaymentSubmission persistedPaymentSubmission = idempotentPaymentService.savePayment(paymentSubmission);
 
         final Optional<FRDomesticVrpPaymentSubmission> existingPayment = idempotentPaymentService.findExistingPayment(obPayment, consentId, apiClientId, idempotencyKey);
@@ -99,16 +101,7 @@ class VRPIdempotentPaymentServiceTest {
     void shouldFailToFindPaymentIfIdempotencyKeyMatchesButRequestBodyHasBeenChanged() {
         final FRDomesticVrpRequest obPayment = FRDomesticVrpConverters.toFRDomesticVRPRequest(OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest());
         final String idempotencyKey = UUID.randomUUID().toString();
-        final FRDomesticVrpPaymentSubmission paymentSubmission = FRDomesticVrpPaymentSubmission.builder()
-                .obVersion(OBVersion.v3_1_10)
-                .apiClientId(apiClientId)
-                .idempotencyKey(idempotencyKey)
-                .idempotencyKeyExpiration(DateTime.now().plusMinutes(1))
-                .status(FRSubmissionStatus.PENDING)
-                .payment(obPayment)
-                .created(DateTime.now())
-                .updated(DateTime.now())
-                .build();
+        final FRDomesticVrpPaymentSubmission paymentSubmission = createVRPSubmission(obPayment, idempotencyKey);
         idempotentPaymentService.savePayment(paymentSubmission);
 
         // Change the payment request data then try saving again

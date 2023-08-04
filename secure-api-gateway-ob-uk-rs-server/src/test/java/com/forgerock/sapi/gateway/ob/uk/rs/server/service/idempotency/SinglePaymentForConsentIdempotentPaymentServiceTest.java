@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Assertions;
+import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +66,17 @@ class SinglePaymentForConsentIdempotentPaymentServiceTest {
                 .isEqualTo(expectedPayment);
     }
 
+    private static FRDomesticPaymentSubmission createSubmission(String idempotencyKey, FRWriteDomestic obPayment) {
+        return FRDomesticPaymentSubmission.builder()
+                .obVersion(OBVersion.v3_1_10)
+                .idempotencyKey(idempotencyKey)
+                .status(FRSubmissionStatus.PENDING)
+                .payment(obPayment)
+                .created(DateTime.now().withZone(DateTimeZone.UTC))
+                .updated(DateTime.now().withZone(DateTimeZone.UTC))
+                .build();
+    }
+
     @Test
     void testCreatePayment() throws Exception {
         final FRWriteDomestic obPayment = FRWriteDomesticConverter.toFRWriteDomestic(aValidOBWriteDomestic2());
@@ -75,14 +86,7 @@ class SinglePaymentForConsentIdempotentPaymentServiceTest {
         final Optional<FRDomesticPaymentSubmission> expectNoPayment = idempotentPaymentService.findExistingPayment(obPayment, consentId, apiClientId, idempotencyKey);
         assertThat(expectNoPayment.isPresent()).isFalse();
 
-        final FRDomesticPaymentSubmission paymentSubmission = FRDomesticPaymentSubmission.builder()
-                .obVersion(OBVersion.v3_1_10)
-                .idempotencyKey(idempotencyKey)
-                .status(FRSubmissionStatus.PENDING)
-                .payment(obPayment)
-                .created(DateTime.now())
-                .updated(DateTime.now())
-                .build();
+        final FRDomesticPaymentSubmission paymentSubmission = createSubmission(idempotencyKey, obPayment);
         final FRDomesticPaymentSubmission persistedPaymentSubmission = idempotentPaymentService.savePayment(paymentSubmission);
 
         final Optional<FRDomesticPaymentSubmission> existingPayment = idempotentPaymentService.findExistingPayment(obPayment, consentId, apiClientId, idempotencyKey);
@@ -98,14 +102,7 @@ class SinglePaymentForConsentIdempotentPaymentServiceTest {
     @Test
     void shouldFailToCreateIfPaymentExistsAndIdempotencyKeyIsDifferent() throws OBErrorException {
         final FRWriteDomestic obPayment = FRWriteDomesticConverter.toFRWriteDomestic(aValidOBWriteDomestic2());
-        final FRDomesticPaymentSubmission paymentSubmission = FRDomesticPaymentSubmission.builder()
-                .obVersion(OBVersion.v3_1_10)
-                .idempotencyKey(UUID.randomUUID().toString())
-                .status(FRSubmissionStatus.PENDING)
-                .payment(obPayment)
-                .created(DateTime.now())
-                .updated(DateTime.now())
-                .build();
+        final FRDomesticPaymentSubmission paymentSubmission = createSubmission(UUID.randomUUID().toString(), obPayment);
 
         idempotentPaymentService.savePayment(paymentSubmission);
 
@@ -118,14 +115,7 @@ class SinglePaymentForConsentIdempotentPaymentServiceTest {
     @Test
     void shouldFailToCreateIfPaymentExistsAndRequestBodyIsDifferent() throws OBErrorException {
         final FRWriteDomestic obPayment = FRWriteDomesticConverter.toFRWriteDomestic(aValidOBWriteDomestic2());
-        final FRDomesticPaymentSubmission paymentSubmission = FRDomesticPaymentSubmission.builder()
-                .obVersion(OBVersion.v3_1_10)
-                .idempotencyKey(UUID.randomUUID().toString())
-                .status(FRSubmissionStatus.PENDING)
-                .payment(obPayment)
-                .created(DateTime.now())
-                .updated(DateTime.now())
-                .build();
+        final FRDomesticPaymentSubmission paymentSubmission = createSubmission(UUID.randomUUID().toString(), obPayment);
 
         idempotentPaymentService.savePayment(paymentSubmission);
 
