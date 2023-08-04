@@ -197,11 +197,11 @@ public class DomesticStandingOrdersApiControllerTest {
 
         mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
 
-        ResponseEntity<OBWriteDomesticScheduledResponse5> firstSubmissionResponse = restTemplate.postForEntity(standingOrderUrl(), request, OBWriteDomesticScheduledResponse5.class);
+        ResponseEntity<OBWriteDomesticStandingOrderResponse6> firstSubmissionResponse = restTemplate.postForEntity(standingOrderUrl(), request, OBWriteDomesticStandingOrderResponse6.class);
         assertThat(firstSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         // Send the same request again (same payload + idempotencyKey)
-        ResponseEntity<OBWriteDomesticScheduledResponse5> secondSubmissionResponse = restTemplate.postForEntity(standingOrderUrl(), request, OBWriteDomesticScheduledResponse5.class);
+        ResponseEntity<OBWriteDomesticStandingOrderResponse6> secondSubmissionResponse = restTemplate.postForEntity(standingOrderUrl(), request, OBWriteDomesticStandingOrderResponse6.class);
         assertThat(secondSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(secondSubmissionResponse.getBody()).isEqualTo(firstSubmissionResponse.getBody());
 

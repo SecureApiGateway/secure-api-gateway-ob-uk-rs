@@ -46,13 +46,15 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExc
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternational;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalData;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalpayments.InternationalPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -80,12 +82,10 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
     private final InternationalPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-
     private final InternationalPaymentConsentStoreClient consentStoreClient;
-
     private final OBValidationService<OBWriteInternational3ValidationContext> paymentValidator;
-
     private final RefundAccountService refundAccountService;
+    private final IdempotentPaymentService<FRInternationalPaymentSubmission, FRWriteInternational> idempotentPaymentService;
 
     public InternationalPaymentsApiController(
             InternationalPaymentSubmissionRepository paymentSubmissionRepository,
@@ -98,6 +98,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
         this.consentStoreClient = consentStoreClient;
         this.paymentValidator = paymentValidator;
         this.refundAccountService = refundAccountService;
+        this.idempotentPaymentService = new SinglePaymentForConsentIdempotentPaymentService<>(paymentSubmissionRepository);
     }
 
     @Override
@@ -113,7 +114,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             String apiClientId,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteInternational3);
 
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternational3.getRisk());
@@ -126,6 +127,14 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         FRWriteInternational frInternationalPayment = toFRWriteInternational(obWriteInternational3);
         log.trace("Converted to: '{}'", frInternationalPayment);
+
+        final Optional<FRInternationalPaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frInternationalPayment, consentId, apiClientId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, consentId: {}",
+                    xIdempotencyKey, consentId);
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, existingPayment.get()));
+        }
 
         // validate the consent against the request
         log.debug("Validating International Payment submission");
@@ -144,8 +153,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                 .build();
 
         // Save the international payment
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
-                .idempotentSave(frPaymentSubmission);
+        frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
 
         final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);
