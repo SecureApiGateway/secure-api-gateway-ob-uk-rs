@@ -47,6 +47,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExc
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledData;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_5.internationalscheduledpayments.InternationalScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRScheduledPaymentDataFactory;
@@ -55,7 +56,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponse
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.idempotency.IdempotentRepositoryAdapter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
@@ -85,12 +87,10 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     private final InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final ScheduledPaymentService scheduledPaymentService;
-
     private final InternationalScheduledPaymentConsentStoreClient consentStoreClient;
-
     private final OBValidationService<OBWriteInternationalScheduled3ValidationContext> paymentValidator;
-
     private final RefundAccountService refundAccountService;
+    private final IdempotentPaymentService<FRInternationalScheduledPaymentSubmission, FRWriteInternationalScheduled> idempotentPaymentService;
 
     public InternationalScheduledPaymentsApiController(
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
@@ -105,6 +105,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         this.consentStoreClient = consentStoreClient;
         this.paymentValidator = paymentValidator;
         this.refundAccountService = refundAccountService;
+        this.idempotentPaymentService = new SinglePaymentForConsentIdempotentPaymentService<>(scheduledPaymentSubmissionRepository);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             String apiClientId,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteInternationalScheduled3);
 
         paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalScheduled3.getRisk());
@@ -133,6 +134,14 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
         FRWriteInternationalScheduled frScheduledPayment = toFRWriteInternationalScheduled(obWriteInternationalScheduled3);
         log.trace("Converted to: '{}'", frScheduledPayment);
+
+        final Optional<FRInternationalScheduledPaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frScheduledPayment, consentId, apiClientId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, consentId: {}",
+                    xIdempotencyKey, consentId);
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, existingPayment.get()));
+        }
 
         // validate the consent against the request
         log.debug("Validating International Payment submission");
@@ -151,8 +160,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .build();
 
         // Save the international scheduled payment
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(scheduledPaymentSubmissionRepository)
-                .idempotentSave(frPaymentSubmission);
+        frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
 
         // Save the scheduled payment data for the Accounts API
         FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment,
