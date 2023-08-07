@@ -117,7 +117,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
     ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteInternational3);
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternational3.getRisk());
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         String consentId = obWriteInternational3.getData().getConsentId();
 

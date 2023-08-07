@@ -20,6 +20,7 @@ import java.util.Objects;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
@@ -30,13 +31,17 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDomesticConsent4> {
 
     private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
+    private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteDomesticConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator) {
+    public OBWriteDomesticConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
+                                            BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
+        this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }
 
     @Override
     protected void validate(OBWriteDomesticConsent4 domesticPaymentConsent, ValidationResult<OBError1> validationResult) {
         validationResult.mergeResults(instructedAmountValidator.validate(domesticPaymentConsent.getData().getInitiation().getInstructedAmount()));
+        validationResult.mergeResults(riskValidator.validate(domesticPaymentConsent.getRisk()));
     }
 }

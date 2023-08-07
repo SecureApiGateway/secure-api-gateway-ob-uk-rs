@@ -27,18 +27,32 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
 
-class OBRisk1ValidatorTest {
+public class OBRisk1ValidatorTest {
+
+    /**
+     * @return OBRisk1Validator with the default validation rules, currently no rules applied
+     */
+    public static OBRisk1Validator createDefaultRiskValidator() {
+        return new OBRisk1Validator(false);
+    }
+
+    /**
+     * @return OBRisk1Validator with risk.paymentContextCode validation rule enabled
+     */
+    public static OBRisk1Validator createPaymentContextCodeRiskValidator() {
+        return new OBRisk1Validator(true);
+    }
 
     @Test
     void shouldAllowEmptyPaymentContextCodeBasedOnConfig() {
-        final OBRisk1Validator obRisk1Validator = new OBRisk1Validator(false);
+        final OBRisk1Validator obRisk1Validator = createDefaultRiskValidator();
         validateSuccessResult(obRisk1Validator.validate(new OBRisk1()));
         validateSuccessResult(obRisk1Validator.validate(new OBRisk1().paymentContextCode(OBExternalPaymentContext1Code.BILLPAYMENT)));
     }
 
     @Test
     void shouldRequirePaymentContextCodeBasedOnConfig() {
-        final OBRisk1Validator obRisk1Validator = new OBRisk1Validator(true);
+        final OBRisk1Validator obRisk1Validator = createPaymentContextCodeRiskValidator();
         validateSuccessResult(obRisk1Validator.validate(new OBRisk1().paymentContextCode(OBExternalPaymentContext1Code.BILLPAYMENT)));
         validateErrorResult(obRisk1Validator.validate(new OBRisk1()), List.of(OBRIErrorType.PAYMENT_CODE_CONTEXT_INVALID.toOBError1()));
     }

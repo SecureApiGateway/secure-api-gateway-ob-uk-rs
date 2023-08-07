@@ -21,9 +21,9 @@ import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
@@ -33,14 +33,18 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
  */
 public class OBWriteDomesticScheduledConsent4Validator extends BaseOBValidator<OBWriteDomesticScheduledConsent4> {
 
-    private final Validator<OBWriteDomestic2DataInitiationInstructedAmount, OBError1> instructedAmountValidator;
+    private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
+    private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteDomesticScheduledConsent4Validator(Validator<OBWriteDomestic2DataInitiationInstructedAmount, OBError1> instructedAmountValidator) {
+    public OBWriteDomesticScheduledConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
+                                                     BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
+        this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }
 
     @Override
     protected void validate(OBWriteDomesticScheduledConsent4 consent, ValidationResult<OBError1> validationResult) {
+        validationResult.mergeResults(riskValidator.validate(consent.getRisk()));
         validationResult.mergeResults(instructedAmountValidator.validate(consent.getData().getInitiation().getInstructedAmount()));
 
         final DateTime requestedExecutionDateTime = consent.getData().getInitiation().getRequestedExecutionDateTime();

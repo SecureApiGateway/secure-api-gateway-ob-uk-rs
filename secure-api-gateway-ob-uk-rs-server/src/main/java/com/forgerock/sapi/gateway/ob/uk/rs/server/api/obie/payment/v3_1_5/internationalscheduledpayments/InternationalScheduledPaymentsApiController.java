@@ -124,7 +124,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteInternationalScheduled3);
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalScheduled3.getRisk());
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         String consentId = obWriteInternationalScheduled3.getData().getConsentId();
         //get the consent

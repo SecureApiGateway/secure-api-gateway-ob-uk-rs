@@ -23,6 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
@@ -37,16 +38,22 @@ public class OBWriteInternationalScheduledConsent5Validator extends BaseOBValida
     private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
     private final BaseOBValidator<String> currencyCodeValidator;
     private final BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator;
+    private final BaseOBValidator<OBRisk1> riskValidator;
 
     public OBWriteInternationalScheduledConsent5Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-            BaseOBValidator<String> currencyCodeValidator, BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator) {
+                                                          BaseOBValidator<String> currencyCodeValidator,
+                                                          BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator,
+                                                          BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator);
         this.currencyCodeValidator     = Objects.requireNonNull(currencyCodeValidator);
         this.exchangeRateInfoValidator = Objects.requireNonNull(exchangeRateInfoValidator);
+        this.riskValidator             = Objects.requireNonNull(riskValidator);
     }
 
     @Override
     protected void validate(OBWriteInternationalScheduledConsent5 consent, ValidationResult<OBError1> validationResult) {
+        validationResult.mergeResults(riskValidator.validate(consent.getRisk()));
+
         final OBWriteInternationalScheduled3DataInitiation initiation = consent.getData().getInitiation();
         validationResult.mergeResults(instructedAmountValidator.validate(initiation.getInstructedAmount()));
         validationResult.mergeResults(currencyCodeValidator.validate(initiation.getCurrencyOfTransfer()));

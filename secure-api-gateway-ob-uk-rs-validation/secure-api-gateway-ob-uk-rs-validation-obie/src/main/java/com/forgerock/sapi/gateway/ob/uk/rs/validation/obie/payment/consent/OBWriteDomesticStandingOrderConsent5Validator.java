@@ -24,6 +24,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount;
@@ -41,15 +42,19 @@ public class OBWriteDomesticStandingOrderConsent5Validator extends BaseOBValidat
     private static final String FINAL_PAYMENT_AMOUNT = "finalPaymentAmount";
 
     private final BaseOBValidator<String> currencyCodeValidator;
+    private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteDomesticStandingOrderConsent5Validator(BaseOBValidator<String> currencyCodeValidator) {
+    public OBWriteDomesticStandingOrderConsent5Validator(BaseOBValidator<String> currencyCodeValidator,
+                                                         BaseOBValidator<OBRisk1> riskValidator) {
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
+        this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }
 
     @Override
     protected void validate(OBWriteDomesticStandingOrderConsent5 consent, ValidationResult<OBError1> validationResult) {
-        final OBWriteDomesticStandingOrder3DataInitiation initiation = consent.getData().getInitiation();
+        validationResult.mergeResults(riskValidator.validate(consent.getRisk()));
 
+        final OBWriteDomesticStandingOrder3DataInitiation initiation = consent.getData().getInitiation();
         final OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount firstPaymentAmount = initiation.getFirstPaymentAmount();
         validateAmount(firstPaymentAmount.getAmount(), firstPaymentAmount.getCurrency(), FIRST_PAYMENT_AMOUNT, validationResult);
 
