@@ -17,15 +17,19 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidatorTest.createCurrencyCodeValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createDefaultRiskValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createPaymentContextCodeRiskValidator;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidatorTest;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
 import uk.org.openbanking.datamodel.common.OBRisk1;
+import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount;
@@ -35,7 +39,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5
 
 class OBWriteDomesticStandingOrderConsent5ValidatorTest {
 
-    private final OBWriteDomesticStandingOrderConsent5Validator validator = new OBWriteDomesticStandingOrderConsent5Validator(CurrencyCodeValidatorTest.createCurrencyCodeValidator("GBP", "EUR"));
+    private final OBWriteDomesticStandingOrderConsent5Validator validator = new OBWriteDomesticStandingOrderConsent5Validator(
+            createCurrencyCodeValidator("GBP", "EUR"), createDefaultRiskValidator());
 
     private static OBWriteDomesticStandingOrderConsent5 createValidConsent() {
         return new OBWriteDomesticStandingOrderConsent5().data(new OBWriteDomesticStandingOrderConsent5Data().initiation(
@@ -78,6 +83,16 @@ class OBWriteDomesticStandingOrderConsent5ValidatorTest {
         validateErrorResult(validator.validate(invalidConsent), List.of(
                 OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("Field: finalPaymentAmount - the amount 0.0 provided must be greater than 0"),
                 OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("The currency ZZZ provided is not supported")));
+    }
+
+    @Test
+    public void failsRiskValidation() {
+        final OBWriteDomesticStandingOrderConsent5 consent = createValidConsent();
+        consent.getRisk().setPaymentContextCode(null);
+        final ValidationResult<OBError1> validationResult = new OBWriteDomesticStandingOrderConsent5Validator(
+                createCurrencyCodeValidator("GBP"), createPaymentContextCodeRiskValidator()).validate(consent);
+
+        validateErrorResult(validationResult, List.of(OBRIErrorType.PAYMENT_CODE_CONTEXT_INVALID.toOBError1()));
     }
 
 }

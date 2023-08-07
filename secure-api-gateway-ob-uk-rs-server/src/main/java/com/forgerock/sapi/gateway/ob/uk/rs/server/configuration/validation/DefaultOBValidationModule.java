@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.validation;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
@@ -55,6 +57,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWri
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalScheduledConsent5Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalStandingOrderConsent6Validator;
 
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
@@ -89,8 +92,8 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator() {
-        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidator()));
+    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidator(), riskValidator));
     }
 
     @Bean
@@ -99,8 +102,8 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator() {
-        return new OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(instructedAmountValidator()));
+    public OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(instructedAmountValidator(), riskValidator));
     }
 
     @Bean
@@ -109,8 +112,8 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidator() {
-        return new OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(currencyCodeValidator()));
+    public OBValidationService<OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(currencyCodeValidator(), riskValidator));
     }
 
     @Bean
@@ -119,8 +122,8 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator() {
-        return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator());
+    public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator(riskValidator));
     }
 
     @Bean
@@ -154,9 +157,9 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator() {
+    public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
         return new OBValidationService<>(new OBWriteInternationalConsent5Validator(instructedAmountValidator(),
-                currencyCodeValidator(), exchangeRateInformationValidator()));
+                currencyCodeValidator(), exchangeRateInformationValidator(), riskValidator));
     }
 
     @Bean
@@ -165,9 +168,9 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalScheduledConsent5> internationalScheduledPaymentConsentValidator() {
+    public OBValidationService<OBWriteInternationalScheduledConsent5> internationalScheduledPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
         return new OBValidationService<>(new OBWriteInternationalScheduledConsent5Validator(instructedAmountValidator(),
-                currencyCodeValidator(), exchangeRateInformationValidator()));
+                currencyCodeValidator(), exchangeRateInformationValidator(), riskValidator));
     }
 
     @Bean
@@ -176,13 +179,21 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalStandingOrderConsent6> internationalStandingOrderConsentValidator() {
+    public OBValidationService<OBWriteInternationalStandingOrderConsent6> internationalStandingOrderConsentValidator(
+            BaseOBValidator<OBRisk1> riskValidator) {
+
         return new OBValidationService<>(new OBWriteInternationalStandingOrderConsent6Validator(instructedAmountValidator(),
-                                                                                                currencyCodeValidator()));
+                currencyCodeValidator(), riskValidator));
     }
 
     @Bean
     public OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> internationalStandingOrderValidator() {
         return new OBValidationService<>(new OBWriteInternationalStandingOrder4Validator());
+    }
+
+    @Bean
+    public OBRisk1Validator paymentRiskValidator(@Value("${rs.obie.validation.config.payments.requirePaymentContextCode:false}")
+                                                 boolean requirePaymentContextCode) {
+        return new OBRisk1Validator(requirePaymentContextCode);
     }
 }

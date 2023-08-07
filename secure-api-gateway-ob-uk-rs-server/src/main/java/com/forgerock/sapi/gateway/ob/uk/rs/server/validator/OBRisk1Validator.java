@@ -29,9 +29,11 @@ import uk.org.openbanking.datamodel.common.OBRisk1;
  * that the optional field {@code PaymentContextCode} within the {@code OBRisk1} class is provided.
  *
  * @see <a href="https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/payment-initiation-api-profile.html#obrisk1">OB specifications</a>
+ * @deprecated this validator has been ported to the rs-validation module, use {@link com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1Validator}
  */
 @Component
 @Slf4j
+@Deprecated
 public class OBRisk1Validator {
 
     private boolean requirePaymentContextCode;

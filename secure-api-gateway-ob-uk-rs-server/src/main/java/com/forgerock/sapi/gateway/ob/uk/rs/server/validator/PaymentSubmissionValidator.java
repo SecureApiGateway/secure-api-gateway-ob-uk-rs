@@ -43,7 +43,11 @@ public class PaymentSubmissionValidator {
      * @param xIdempotencyKey The 'x-idempotency-key' header ensuring every request is processed only once per key.
      * @param obRisk1 Additional details for risk scoring a Payment.
      * @throws OBErrorResponseException if a validation error occurs.
+     * @deprecated obRisk1 should be validated as part of consent validation when the consent is submitted, this should
+     * be done by a validator in the rs-validation module.
+     * Example validator: {@link com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator}
      */
+    @Deprecated
     public void validateIdempotencyKeyAndRisk(String xIdempotencyKey, OBRisk1 obRisk1) throws OBErrorResponseException {
         try {
             idempotencyValidator.verifyIdempotencyKeyLength(xIdempotencyKey);

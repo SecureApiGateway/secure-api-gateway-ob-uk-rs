@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidatorTest.createCurrencyCodeValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createDefaultRiskValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createPaymentContextCodeRiskValidator;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidatorTest.createInstructedAmountValidator;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidatorTest.createExchangeRateInfoValidator;
 
@@ -27,7 +29,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
+import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
@@ -36,17 +40,22 @@ class OBWriteInternationalConsent5ValidatorTest {
 
     private final String[] currencies = new String[]{"GBP", "USD", "EUR"};
     private final OBWriteInternationalConsent5Validator validator = new OBWriteInternationalConsent5Validator(
-            createInstructedAmountValidator(currencies), createCurrencyCodeValidator(currencies), createExchangeRateInfoValidator(currencies));
+            createInstructedAmountValidator(currencies), createCurrencyCodeValidator(currencies),
+            createExchangeRateInfoValidator(currencies), createDefaultRiskValidator());
+
+    private static OBWriteInternationalConsent5 createValidConsent() {
+        return OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
+    }
 
     @Test
     void validationRulesPass() {
-        validateSuccessResult(validator.validate(OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5()));
+        validateSuccessResult(validator.validate(createValidConsent()));
         validateSuccessResult(validator.validate(OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5MandatoryFields()));
     }
 
     @Test
     void failsWhenCurrencyOfTransferInvalid() {
-        final OBWriteInternationalConsent5 consent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
+        final OBWriteInternationalConsent5 consent = createValidConsent();
         consent.getData().getInitiation().setCurrencyOfTransfer("ZZZ");
 
         validateErrorResult(validator.validate(consent), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
@@ -55,7 +64,7 @@ class OBWriteInternationalConsent5ValidatorTest {
 
     @Test
     void failsWhenInstructedAmountInvalid() {
-        final OBWriteInternationalConsent5 consent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
+        final OBWriteInternationalConsent5 consent = createValidConsent();
         consent.getData().getInitiation().getInstructedAmount().amount("0.00");
 
         validateErrorResult(validator.validate(consent), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
@@ -64,11 +73,22 @@ class OBWriteInternationalConsent5ValidatorTest {
 
     @Test
     void failsWhenExchangeRateInformationInvalid() {
-        final OBWriteInternationalConsent5 consent = OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5();
+        final OBWriteInternationalConsent5 consent = createValidConsent();
         consent.getData().getInitiation().getExchangeRateInformation().rateType(OBExchangeRateType2Code.INDICATIVE).exchangeRate(new BigDecimal("1.2"));
 
         validateErrorResult(validator.validate(consent), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                 "A PISP must not specify ExchangeRate and/or ContractIdentification when requesting an Indicative RateType.")));
     }
 
+    @Test
+    public void failsRiskValidation() {
+        final OBWriteInternationalConsent5 consent = createValidConsent();
+        consent.getRisk().setPaymentContextCode(null);
+
+        final ValidationResult<OBError1> validationResult = new OBWriteInternationalConsent5Validator(
+                createInstructedAmountValidator(currencies), createCurrencyCodeValidator(currencies),
+                createExchangeRateInfoValidator(currencies), createPaymentContextCodeRiskValidator()).validate(consent);
+
+        validateErrorResult(validationResult, List.of(OBRIErrorType.PAYMENT_CODE_CONTEXT_INVALID.toOBError1()));
+    }
 }

@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidatorTest.createCurrencyCodeValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createDefaultRiskValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createPaymentContextCodeRiskValidator;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidatorTest.createInstructedAmountValidator;
 
 import java.util.List;
@@ -25,7 +27,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
+import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
 
@@ -33,7 +37,8 @@ class OBWriteInternationalStandingOrderConsent6ValidatorTest {
 
     private final String[] currencies = new String[]{"GBP", "USD", "EUR"};
     private final OBWriteInternationalStandingOrderConsent6Validator validator =
-            new OBWriteInternationalStandingOrderConsent6Validator(createInstructedAmountValidator(currencies), createCurrencyCodeValidator(currencies));
+            new OBWriteInternationalStandingOrderConsent6Validator(createInstructedAmountValidator(currencies),
+                    createCurrencyCodeValidator(currencies), createDefaultRiskValidator());
 
 
     private static OBWriteInternationalStandingOrderConsent6 createValidConsent() {
@@ -63,4 +68,13 @@ class OBWriteInternationalStandingOrderConsent6ValidatorTest {
                 "The currency ZZZ provided is not supported")));
     }
 
+    @Test
+    public void failsRiskValidation() {
+        final OBWriteInternationalStandingOrderConsent6 consent = createValidConsent();
+        consent.getRisk().setPaymentContextCode(null);
+        final ValidationResult<OBError1> validationResult = new OBWriteInternationalStandingOrderConsent6Validator(createInstructedAmountValidator(currencies),
+                createCurrencyCodeValidator(currencies), createPaymentContextCodeRiskValidator()).validate(consent);
+
+        validateErrorResult(validationResult, List.of(OBRIErrorType.PAYMENT_CODE_CONTEXT_INVALID.toOBError1()));
+    }
 }

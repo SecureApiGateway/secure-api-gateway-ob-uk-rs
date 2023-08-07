@@ -16,21 +16,31 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
 
 public class OBDomesticVRPConsentRequestValidator extends BaseOBValidator<OBDomesticVRPConsentRequest> {
 
-    public static final String SWEEPING_VRP_TYPE = "UK.OBIE.VRPType.Sweeping";
+    private static final String SWEEPING_VRP_TYPE = "UK.OBIE.VRPType.Sweeping";
+
+    private final BaseOBValidator<OBRisk1> riskValidator;
+
+    public OBDomesticVRPConsentRequestValidator(BaseOBValidator<OBRisk1> riskValidator) {
+        this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
+    }
 
     @Override
     protected void validate(OBDomesticVRPConsentRequest obj, ValidationResult<OBError1> validationResult) {
+        validationResult.mergeResults(riskValidator.validate(obj.getRisk()));
+
         final OBDomesticVRPControlParameters controlParameters = obj.getData().getControlParameters();
         validateVrpType(controlParameters.getVrPType(), validationResult);
     }

@@ -123,7 +123,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder4);
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obWriteInternationalStandingOrder4.getRisk());
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         String consentId = obWriteInternationalStandingOrder4.getData().getConsentId();
         log.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);

@@ -18,6 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidatorTest.createCurrencyCodeValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createDefaultRiskValidator;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createPaymentContextCodeRiskValidator;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidatorTest.createInstructedAmountValidator;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidatorTest.createExchangeRateInfoValidator;
 
@@ -39,17 +41,22 @@ class OBWriteInternationalScheduledConsent5ValidatorTest {
 
     private final String[] currencies = new String[]{"GBP", "USD", "EUR"};
     private final OBWriteInternationalScheduledConsent5Validator validator = new OBWriteInternationalScheduledConsent5Validator(
-            createInstructedAmountValidator(currencies), createCurrencyCodeValidator(currencies), createExchangeRateInfoValidator(currencies));
+            createInstructedAmountValidator(currencies), createCurrencyCodeValidator(currencies),
+            createExchangeRateInfoValidator(currencies), createDefaultRiskValidator());
+
+    private static OBWriteInternationalScheduledConsent5 createValidConsent() {
+        return OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5();
+    }
 
     @Test
     void validationRulesPass() {
-        validateSuccessResult(validator.validate(OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5()));
+        validateSuccessResult(validator.validate(createValidConsent()));
         validateSuccessResult(validator.validate(OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5MandatoryFields()));
     }
 
     @Test
     void failsWhenCurrencyOfTransferInvalid() {
-        final OBWriteInternationalScheduledConsent5 consent = OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5();
+        final OBWriteInternationalScheduledConsent5 consent = createValidConsent();
         consent.getData().getInitiation().setCurrencyOfTransfer("ZZZ");
 
         validateErrorResult(validator.validate(consent), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
@@ -58,7 +65,7 @@ class OBWriteInternationalScheduledConsent5ValidatorTest {
 
     @Test
     void failsWhenInstructedAmountInvalid() {
-        final OBWriteInternationalScheduledConsent5 consent = OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5();
+        final OBWriteInternationalScheduledConsent5 consent = createValidConsent();
         consent.getData().getInitiation().getInstructedAmount().amount("0.00");
 
         validateErrorResult(validator.validate(consent), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
@@ -67,7 +74,7 @@ class OBWriteInternationalScheduledConsent5ValidatorTest {
 
     @Test
     void failsWhenExchangeRateInformationInvalid() {
-        final OBWriteInternationalScheduledConsent5 consent = OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5();
+        final OBWriteInternationalScheduledConsent5 consent = createValidConsent();
         consent.getData().getInitiation().getExchangeRateInformation().rateType(OBExchangeRateType2Code.INDICATIVE).exchangeRate(new BigDecimal("1.2"));
 
         validateErrorResult(validator.validate(consent), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
@@ -76,11 +83,23 @@ class OBWriteInternationalScheduledConsent5ValidatorTest {
 
     @Test
     public void failsValidationWhenRequestExecutionDateTimeInPast() {
-        final OBWriteInternationalScheduledConsent5 consent = OBWriteInternationalScheduledConsentTestDataFactory.aValidOBWriteInternationalScheduledConsent5();
+        final OBWriteInternationalScheduledConsent5 consent = createValidConsent();
         consent.getData().getInitiation().setRequestedExecutionDateTime(DateTime.now().minusSeconds(1));
 
         final ValidationResult<OBError1> validationResult = validator.validate(consent);
         validateErrorResult(validationResult, List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("RequestedExecutionDateTime must be in the future")));
+    }
+
+    @Test
+    public void failsRiskValidation() {
+        final OBWriteInternationalScheduledConsent5 consent = createValidConsent();
+        consent.getRisk().setPaymentContextCode(null);
+
+        final ValidationResult<OBError1> validationResult = new OBWriteInternationalScheduledConsent5Validator(
+                createInstructedAmountValidator(currencies), createCurrencyCodeValidator(currencies),
+                createExchangeRateInfoValidator(currencies), createPaymentContextCodeRiskValidator()).validate(consent);
+
+        validateErrorResult(validationResult, List.of(OBRIErrorType.PAYMENT_CODE_CONTEXT_INVALID.toOBError1()));
     }
 
 }

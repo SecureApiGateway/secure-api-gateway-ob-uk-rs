@@ -20,6 +20,7 @@ import java.util.Objects;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
+import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
@@ -32,16 +33,20 @@ public class OBWriteInternationalStandingOrderConsent6Validator extends BaseOBVa
 
     private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
     private final BaseOBValidator<String> currencyCodeValidator;
+    private final BaseOBValidator<OBRisk1> riskValidator;
 
     public OBWriteInternationalStandingOrderConsent6Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-                                                              BaseOBValidator<String> currencyCodeValidator) {
+                                                              BaseOBValidator<String> currencyCodeValidator, BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
+        this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }
 
     @Override
-    protected void validate(OBWriteInternationalStandingOrderConsent6 obj, ValidationResult<OBError1> validationResult) {
-        final OBWriteInternationalStandingOrder4DataInitiation initiation = obj.getData().getInitiation();
+    protected void validate(OBWriteInternationalStandingOrderConsent6 consent, ValidationResult<OBError1> validationResult) {
+        validationResult.mergeResults(riskValidator.validate(consent.getRisk()));
+
+        final OBWriteInternationalStandingOrder4DataInitiation initiation = consent.getData().getInitiation();
         validationResult.mergeResults(currencyCodeValidator.validate(initiation.getCurrencyOfTransfer()));
         validationResult.mergeResults(instructedAmountValidator.validate(initiation.getInstructedAmount()));
     }

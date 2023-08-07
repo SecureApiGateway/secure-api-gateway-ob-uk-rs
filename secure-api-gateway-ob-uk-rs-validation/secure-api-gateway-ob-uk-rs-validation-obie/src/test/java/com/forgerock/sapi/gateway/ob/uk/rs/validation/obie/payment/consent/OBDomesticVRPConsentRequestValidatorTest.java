@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1ValidatorTest.createDefaultRiskValidator;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFac
 
 class OBDomesticVRPConsentRequestValidatorTest {
 
-    private final OBDomesticVRPConsentRequestValidator validator = new OBDomesticVRPConsentRequestValidator();
+    private final OBDomesticVRPConsentRequestValidator validator = new OBDomesticVRPConsentRequestValidator(createDefaultRiskValidator());
 
     private static OBDomesticVRPConsentRequest createValidConsent() {
         return OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequestMandatoryFields();

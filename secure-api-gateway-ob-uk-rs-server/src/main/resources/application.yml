@@ -68,7 +68,10 @@ rs:
     validation:
       # OBIE validation module to load, the "default" module is provided as standard with the simulator
       module: default
-
+      config:
+        payments:
+          # Controls whether the optional schema field in payment consents: consent.risk.paymentContextCode should be made mandatory
+          requirePaymentContextCode: false
   # Exchange rate values to use in FX quotes
   exchange:
     rates:

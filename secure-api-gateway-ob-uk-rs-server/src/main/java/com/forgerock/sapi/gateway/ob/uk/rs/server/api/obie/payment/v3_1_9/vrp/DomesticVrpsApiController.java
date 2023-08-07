@@ -181,7 +181,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     ) throws OBErrorResponseException, OBErrorException {
         log.debug("Received VRP payment submission: '{}'", obDomesticVRPRequest);
 
-        paymentSubmissionValidator.validateIdempotencyKeyAndRisk(xIdempotencyKey, obDomesticVRPRequest.getRisk());
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
 
         String consentId = obDomesticVRPRequest.getData().getConsentId();
         final DomesticVRPConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
