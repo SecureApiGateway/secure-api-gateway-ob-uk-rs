@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_3;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_3.FundsConfirmationsApi;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,23 +39,23 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     @Override
     public ResponseEntity createFundsConfirmations(
             @Valid OBFundsConfirmation1 obFundsConfirmation1,
-            String accountId,
             String authorization,
             DateTime xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
+            String apiClientId,
             HttpServletRequest request,
             Principal principal
-    ) {
+    ) throws OBErrorResponseException {
         return previousVersionController.createFundsConfirmation(
                 obFundsConfirmation1,
-                accountId,
                 authorization,
                 xFapiAuthDate,
                 xFapiCustomerIpAddress,
                 xFapiInteractionId,
                 xCustomerUserAgent,
+                apiClientId,
                 request,
                 principal);
     }

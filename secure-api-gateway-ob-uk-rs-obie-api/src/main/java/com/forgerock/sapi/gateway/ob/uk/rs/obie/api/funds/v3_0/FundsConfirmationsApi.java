@@ -62,9 +62,6 @@ public interface FundsConfirmationsApi {
             @Valid
             @RequestBody OBFundsConfirmation1 obFundsConfirmation1,
 
-            @ApiParam(value = "The ID of the account to check if funds are available.", required = true)
-            @RequestHeader("x-account-id") String accountId,
-
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -80,6 +77,9 @@ public interface FundsConfirmationsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId,
 
             HttpServletRequest request,
 

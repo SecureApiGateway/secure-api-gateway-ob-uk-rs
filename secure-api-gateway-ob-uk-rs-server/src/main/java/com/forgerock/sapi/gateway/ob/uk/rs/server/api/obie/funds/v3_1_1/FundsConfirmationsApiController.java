@@ -15,18 +15,29 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_1;
 
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_1.FundsConfirmationsApi;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_1.FundsConfirmationsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller("FundsConfirmationsApiV3.1.1")
 @Slf4j
 public class FundsConfirmationsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1.FundsConfirmationsApiController implements FundsConfirmationsApi {
 
-    public FundsConfirmationsApiController(FundsConfirmationRepository fundsConfirmationRepository,
-                                           FundsAvailabilityService fundsAvailabilityService) {
-        super(fundsConfirmationRepository, fundsAvailabilityService);
+    public FundsConfirmationsApiController(
+            FundsConfirmationRepository fundsConfirmationRepository,
+            FundsAvailabilityService fundsAvailabilityService,
+            FRAccountRepository accountRepository,
+            OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
+            FundsConfirmationConsentStoreClient consentStoreClient
+    ) {
+        super(fundsConfirmationRepository, fundsAvailabilityService, accountRepository, fundsConfirmationValidator, consentStoreClient);
     }
 }
