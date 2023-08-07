@@ -22,7 +22,8 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
 
 /**
@@ -34,12 +35,21 @@ public class TestPaymentFileResources {
 
     public static final String PAYMENT_INITIATION_3_1_FILE_PATH = "src/test/resources/payment/files/UK_OBIE_PaymentInitiation_3_1.json";
 
+    private static final TestPaymentFileResources INSTANCE = new TestPaymentFileResources();
+
+    public static TestPaymentFileResources getInstance() {
+        return INSTANCE;
+    }
+
     private final Map<String, TestPaymentFile> paymentFiles;
 
-    public TestPaymentFileResources() {
+    private TestPaymentFileResources() {
         paymentFiles = new HashMap<>();
-        paymentFiles.put(PAIN_001_001_08_FILE_PATH, loadTestPaymentFile(PAIN_001_001_08_FILE_PATH, PaymentFileType.UK_OBIE_PAIN_001, 3, new BigDecimal("11500000")));
-        paymentFiles.put(PAYMENT_INITIATION_3_1_FILE_PATH, loadTestPaymentFile(PAYMENT_INITIATION_3_1_FILE_PATH, PaymentFileType.UK_OBIE_PAYMENT_INITIATION_V3_1, 4, new BigDecimal("87")));
+        paymentFiles.put(PAIN_001_001_08_FILE_PATH, loadTestPaymentFile(PAIN_001_001_08_FILE_PATH,
+                DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType(), 3, new BigDecimal("11500000")));
+
+        paymentFiles.put(PAYMENT_INITIATION_3_1_FILE_PATH, loadTestPaymentFile(PAYMENT_INITIATION_3_1_FILE_PATH,
+                DefaultPaymentFileType.UK_OBIE_PAYMENT_INITIATION_V3_1.getPaymentFileType(), 4, new BigDecimal("87")));
     }
 
     public Map<String, TestPaymentFile> getPaymentFiles() {

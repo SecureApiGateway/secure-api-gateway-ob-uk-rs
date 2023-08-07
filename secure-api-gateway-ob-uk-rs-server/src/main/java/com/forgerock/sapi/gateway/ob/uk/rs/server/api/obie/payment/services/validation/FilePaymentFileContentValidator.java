@@ -17,16 +17,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.val
 
 import java.math.BigDecimal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFile;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFileFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFileType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
@@ -42,19 +35,23 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
  */
 public class FilePaymentFileContentValidator extends BaseOBValidator<FilePaymentFileContentValidationContext> {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     public static class FilePaymentFileContentValidationContext {
-        private final String fileContent;
+        private final String fileHash;
+        private final PaymentFile paymentFile;
         private final OBWriteFileConsent3 obFileConsent;
 
-        public FilePaymentFileContentValidationContext(String fileContent, OBWriteFileConsent3 obFileConsent) {
-            this.fileContent = fileContent;
+        public FilePaymentFileContentValidationContext(String fileHash, PaymentFile paymentFile, OBWriteFileConsent3 obFileConsent) {
+            this.fileHash = fileHash;
+            this.paymentFile = paymentFile;
             this.obFileConsent = obFileConsent;
         }
 
-        public String getFileContent() {
-            return fileContent;
+        public String getFileHash() {
+            return fileHash;
+        }
+
+        public PaymentFile getPaymentFile() {
+            return paymentFile;
         }
 
         public OBWriteFileConsent3 getObFileConsent() {
@@ -63,38 +60,30 @@ public class FilePaymentFileContentValidator extends BaseOBValidator<FilePayment
     }
 
     @Override
-    protected void validate(FilePaymentFileContentValidationContext filePaymentFileContentValidationContext,
+    protected void validate(FilePaymentFileContentValidationContext validationContext,
                             ValidationResult<OBError1> validationResult) {
 
-        final String fileContent = filePaymentFileContentValidationContext.getFileContent();
-        final OBWriteFileConsent3 obFileConsent = filePaymentFileContentValidationContext.getObFileConsent();
+        final OBWriteFileConsent3 obFileConsent = validationContext.getObFileConsent();
 
-        final String fileHash = HashUtils.computeSHA256FullHash(fileContent);
+        final String fileHash = validationContext.getFileHash();
         final String consentHash = obFileConsent.getData().getInitiation().getFileHash();
         if (!fileHash.equals(consentHash)) {
             validationResult.addError(OBRIErrorType.REQUEST_FILE_INCORRECT_FILE_HASH.toOBError1(fileHash, consentHash));
+            // Fail fast if the hash is invalid as the file has been tampered with
             return;
         }
 
-        PaymentFile paymentFile;
-        try {
-            paymentFile = PaymentFileFactory.createPaymentFile(PaymentFileType.fromFileType(obFileConsent.getData().getInitiation().getFileType()), fileContent);
+        final PaymentFile paymentFile = validationContext.getPaymentFile();
 
-            final String numTransactionsInConsent = obFileConsent.getData().getInitiation().getNumberOfTransactions();
-            final String numTransactionsInFile = String.valueOf(paymentFile.getNumberOfTransactions());
-            if (!numTransactionsInFile.equals(numTransactionsInConsent)) {
-                validationResult.addError(OBRIErrorType.REQUEST_FILE_WRONG_NUMBER_OF_TRANSACTIONS.toOBError1(numTransactionsInFile, numTransactionsInConsent));
-            }
-            final BigDecimal consentControlSum = obFileConsent.getData().getInitiation().getControlSum();
-            if (paymentFile.getControlSum().compareTo(consentControlSum) != 0) {
-                validationResult.addError(OBRIErrorType.REQUEST_FILE_INCORRECT_CONTROL_SUM.toOBError1(paymentFile.getControlSum(), consentControlSum));
-            }
-
-        } catch (OBErrorException e) {
-           logger.warn("Failed to parse payment file", e);
-           validationResult.addError(e.getOBError());
+        final int numTransactionsInConsent = Integer.parseInt(obFileConsent.getData().getInitiation().getNumberOfTransactions());
+        final int numTransactionsInFile = paymentFile.getNumberOfTransactions();
+        if (numTransactionsInFile != numTransactionsInConsent) {
+            validationResult.addError(OBRIErrorType.REQUEST_FILE_WRONG_NUMBER_OF_TRANSACTIONS.toOBError1(numTransactionsInFile, numTransactionsInConsent));
         }
-
+        final BigDecimal consentControlSum = obFileConsent.getData().getInitiation().getControlSum();
+        if (paymentFile.getControlSum().compareTo(consentControlSum) != 0) {
+            validationResult.addError(OBRIErrorType.REQUEST_FILE_INCORRECT_CONTROL_SUM.toOBError1(paymentFile.getControlSum(), consentControlSum));
+        }
     }
 
 }

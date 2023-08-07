@@ -48,7 +48,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
@@ -85,7 +86,7 @@ public class FilePaymentConsentsApiControllerTest {
     @MockBean
     private FilePaymentConsentStoreClient consentStoreClient;
 
-    private final TestPaymentFileResources testPaymentFileResources = new TestPaymentFileResources();
+    private final TestPaymentFileResources testPaymentFileResources = TestPaymentFileResources.getInstance();
 
     private String controllerBaseUri() {
         return "http://localhost:" + port + "/open-banking/v3.1.10/pisp/file-payment-consents";
@@ -105,7 +106,8 @@ public class FilePaymentConsentsApiControllerTest {
         final String fileHash = "fileHash";
         final int numTransactions = 1;
         final BigDecimal controlSum = BigDecimal.ONE;
-        final OBWriteFileConsent3 consentRequest = createValidateConsentRequest(PaymentFileType.UK_OBIE_PAIN_001, fileHash,  numTransactions, controlSum);
+        final OBWriteFileConsent3 consentRequest = createValidateConsentRequest(DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType(),
+                                                                                fileHash, numTransactions, controlSum);
         final FilePaymentConsent consentStoreResponse = buildAwaitingUploadConsent(consentRequest);
         when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
             final CreateFilePaymentConsentRequest createConsentArg = invocation.getArgument(0, CreateFilePaymentConsentRequest.class);
