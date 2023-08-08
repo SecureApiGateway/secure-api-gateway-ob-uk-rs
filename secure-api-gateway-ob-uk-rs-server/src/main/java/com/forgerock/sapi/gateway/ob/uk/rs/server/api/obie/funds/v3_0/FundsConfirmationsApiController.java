@@ -77,7 +77,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     }
 
     @Override
-    public ResponseEntity createFundsConfirmation(
+    public ResponseEntity<OBFundsConfirmationResponse1> createFundsConfirmation(
             @Valid OBFundsConfirmation1 obFundsConfirmation1,
             String authorization,
             DateTime xFapiCustomerLastLoggedTime,
@@ -136,25 +136,6 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(packageResponse(frFundsConfirmation, request));
-    }
-
-    @Override
-    public ResponseEntity getFundsConfirmationId(
-            String fundsConfirmationId,
-            String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
-            String xFapiCustomerIpAddress,
-            String xFapiInteractionId,
-            String xCustomerUserAgent,
-            HttpServletRequest request,
-            Principal principal
-    ) {
-        Optional<FRFundsConfirmation> isFundsConfirmation = fundsConfirmationRepository.findById(fundsConfirmationId);
-        if (!isFundsConfirmation.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Payment submission '" + fundsConfirmationId + "' can't be found");
-        }
-        return ResponseEntity.ok(packageResponse(isFundsConfirmation.get(), request));
     }
 
     private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, HttpServletRequest request) {

@@ -15,15 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_2;
 
+import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_2.FundsConfirmationsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_2.FundsConfirmationsApi;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 
 @Controller("FundsConfirmationsApiV3.1.2")
 @Slf4j

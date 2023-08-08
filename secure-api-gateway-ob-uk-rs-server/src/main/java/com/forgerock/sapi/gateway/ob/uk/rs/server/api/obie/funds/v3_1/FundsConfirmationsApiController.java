@@ -40,4 +40,5 @@ public class FundsConfirmationsApiController extends com.forgerock.sapi.gateway.
     ) {
         super(fundsConfirmationRepository, fundsAvailabilityService, accountRepository, fundsConfirmationValidator, consentStoreClient);
     }
+
 }

@@ -15,14 +15,26 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_9;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_9.FundsConfirmationsApi;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_9.FundsConfirmationsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
 
 @Controller("FundsConfirmationsApiV3.1.9")
 public class FundsConfirmationsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_8.FundsConfirmationsApiController implements FundsConfirmationsApi {
 
-    public FundsConfirmationsApiController(@Qualifier("FundsConfirmationsApiV3.1.2") com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_2.FundsConfirmationsApiController baseController) {
-        super(baseController);
+    public FundsConfirmationsApiController(
+            FundsConfirmationRepository fundsConfirmationRepository,
+            FundsAvailabilityService fundsAvailabilityService,
+            FRAccountRepository accountRepository,
+            OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
+            FundsConfirmationConsentStoreClient consentStoreClient
+    ) {
+        super(fundsConfirmationRepository, fundsAvailabilityService, accountRepository, fundsConfirmationValidator, consentStoreClient);
     }
 }
