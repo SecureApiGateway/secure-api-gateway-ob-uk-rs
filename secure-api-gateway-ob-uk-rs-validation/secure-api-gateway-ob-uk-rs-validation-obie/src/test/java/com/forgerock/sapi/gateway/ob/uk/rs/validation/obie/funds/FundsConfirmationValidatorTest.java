@@ -18,6 +18,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
+import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
+import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,8 +47,9 @@ public class FundsConfirmationValidatorTest {
 
     @Test
     void fundsConfirmationMeetsValidationRequirements() {
+        OBFundsConfirmationConsent1 obConsent = createValidOBFundsConfirmationConsent1();
         FundsConfirmationValidator.FundsConfirmationValidationContext confirmationValidationContext = new FundsConfirmationValidator.FundsConfirmationValidationContext(
-                aValidOBFundsConfirmation1(), createValidOBFundsConfirmationConsent1(), ACCOUNT_CURRENCY
+                aValidOBFundsConfirmation1(), obConsent.getData().getExpirationDateTime(), AUTHORISED.toString(), ACCOUNT_CURRENCY
         );
         ValidationResult<?> result = fundsConfirmationValidator.validate(confirmationValidationContext);
         assertTrue(result.isValid());
@@ -58,7 +62,7 @@ public class FundsConfirmationValidatorTest {
         OBFundsConfirmation1 fundsConfirmation1Request = aValidOBFundsConfirmation1();
         OBFundsConfirmationConsent1 obConsent = createValidOBFundsConfirmationConsent1(dateTime);
         FundsConfirmationValidator.FundsConfirmationValidationContext confirmationValidationContext = new FundsConfirmationValidator.FundsConfirmationValidationContext(
-                fundsConfirmation1Request, obConsent, ACCOUNT_CURRENCY
+                fundsConfirmation1Request, obConsent.getData().getExpirationDateTime(), AUTHORISED.toString(), ACCOUNT_CURRENCY
         );
         List<OBError1> expectedErrors = List.of(
                 OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(obConsent.getData().getExpirationDateTime().toString())
@@ -75,10 +79,25 @@ public class FundsConfirmationValidatorTest {
         fundsConfirmation1Request.getData().getInstructedAmount().setCurrency(currency);
         OBFundsConfirmationConsent1 obConsent = createValidOBFundsConfirmationConsent1();
         FundsConfirmationValidator.FundsConfirmationValidationContext confirmationValidationContext = new FundsConfirmationValidator.FundsConfirmationValidationContext(
-                fundsConfirmation1Request, obConsent, ACCOUNT_CURRENCY
+                fundsConfirmation1Request, obConsent.getData().getExpirationDateTime(), AUTHORISED.toString(), ACCOUNT_CURRENCY
         );
         List<OBError1> expectedErrors = List.of(
                 OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(currency, ACCOUNT_CURRENCY)
+        );
+        ValidationResult<?> result = fundsConfirmationValidator.validate(confirmationValidationContext);
+        assertFalse(result.isValid());
+        assertEquals(expectedErrors, result.getErrors());
+    }
+
+    @Test
+    void fundsConfirmationConsentStatusNotAuthorised() {
+        OBFundsConfirmation1 fundsConfirmation1Request = aValidOBFundsConfirmation1();
+        OBFundsConfirmationConsent1 obConsent = createValidOBFundsConfirmationConsent1();
+        FundsConfirmationValidator.FundsConfirmationValidationContext confirmationValidationContext = new FundsConfirmationValidator.FundsConfirmationValidationContext(
+                fundsConfirmation1Request, obConsent.getData().getExpirationDateTime(), REVOKED.toString(), ACCOUNT_CURRENCY
+        );
+        List<OBError1> expectedErrors = List.of(
+                OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(REVOKED.toString())
         );
         ValidationResult<?> result = fundsConfirmationValidator.validate(confirmationValidationContext);
         assertFalse(result.isValid());
@@ -93,11 +112,12 @@ public class FundsConfirmationValidatorTest {
         fundsConfirmation1Request.getData().getInstructedAmount().setCurrency(currency);
         OBFundsConfirmationConsent1 obConsent = createValidOBFundsConfirmationConsent1(dateTime);
         FundsConfirmationValidator.FundsConfirmationValidationContext confirmationValidationContext = new FundsConfirmationValidator.FundsConfirmationValidationContext(
-                fundsConfirmation1Request, obConsent, ACCOUNT_CURRENCY
+                fundsConfirmation1Request, obConsent.getData().getExpirationDateTime(), REJECTED.toString(), ACCOUNT_CURRENCY
         );
         List<OBError1> expectedErrors = List.of(
                 OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(currency, ACCOUNT_CURRENCY),
-                OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(obConsent.getData().getExpirationDateTime().toString())
+                OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(obConsent.getData().getExpirationDateTime().toString()),
+                OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(REJECTED.toString())
         );
         ValidationResult<?> result = fundsConfirmationValidator.validate(confirmationValidationContext);
         assertFalse(result.isValid());

@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds;
 
+import java.util.Objects;
+
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
@@ -25,6 +27,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmati
 
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
@@ -34,30 +37,49 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
 public class FundsConfirmationValidator extends BaseOBValidator<FundsConfirmationValidationContext> {
 
     public static class FundsConfirmationValidationContext {
-        private final OBFundsConfirmation1 obFundsConfirmation1;
-        private final OBFundsConfirmationConsent1 obFundsConfirmationConsent1;
+        /**
+         * The funds confirmation availability request
+         */
+        private final OBFundsConfirmation1 fundsConfirmationRequest;
+        /**
+         * The consent expiration date time
+         */
+        private final DateTime expirationDateTime;
+        /**
+         * The Consent Status
+         */
+        private final String consentStatus;
+        /**
+         * The currency of the account associated with the consent
+         */
         private final String accountCurrency;
 
         public FundsConfirmationValidationContext(
-                OBFundsConfirmation1 obFundsConfirmation1,
-                OBFundsConfirmationConsent1 obFundsConfirmationConsent1,
+                OBFundsConfirmation1 fundsConfirmationRequest,
+                DateTime expirationDateTime,
+                String consentStatus,
                 String accountCurrency
         ) {
-            this.obFundsConfirmation1 = obFundsConfirmation1;
-            this.accountCurrency = accountCurrency;
-            this.obFundsConfirmationConsent1 = obFundsConfirmationConsent1;
+            this.fundsConfirmationRequest = Objects.requireNonNull(fundsConfirmationRequest, "fundsConfirmationRequest must be supplied");
+            this.accountCurrency = Objects.requireNonNull(accountCurrency, "accountCurrency must be supplied");
+            this.consentStatus = Objects.requireNonNull(consentStatus, "consentStatus must be supplied");
+            this.expirationDateTime = Objects.requireNonNull(expirationDateTime, "expirationDateTime must be supplied");
         }
 
-        public OBFundsConfirmation1 getObFundsConfirmation1() {
-            return obFundsConfirmation1;
+        public OBFundsConfirmation1 getFundsConfirmationRequest() {
+            return fundsConfirmationRequest;
         }
 
         public String getAccountCurrency() {
             return accountCurrency;
         }
 
-        public OBFundsConfirmationConsent1 getObFundsConfirmationConsent1() {
-            return obFundsConfirmationConsent1;
+        public DateTime getExpirationDateTime() {
+            return expirationDateTime;
+        }
+
+        public String getConsentStatus() {
+            return consentStatus;
         }
     }
 
@@ -67,19 +89,25 @@ public class FundsConfirmationValidator extends BaseOBValidator<FundsConfirmatio
             ValidationResult<OBError1> validationResult
     ) {
         final String accountCurrency = fundsConfirmationValidationContext.getAccountCurrency();
-        final String requestCurrency = fundsConfirmationValidationContext.getObFundsConfirmation1().getData().getInstructedAmount().getCurrency();
+        final String requestCurrency = fundsConfirmationValidationContext.getFundsConfirmationRequest().getData().getInstructedAmount().getCurrency();
         if(!accountCurrency.equals(requestCurrency)) {
             validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(requestCurrency, accountCurrency));
         }
-        validateExpirationDateTime(fundsConfirmationValidationContext.getObFundsConfirmationConsent1().getData(),  validationResult);
+        validateExpirationDateTime(fundsConfirmationValidationContext.getExpirationDateTime(),  validationResult);
+        validateConsentStatus(fundsConfirmationValidationContext.getConsentStatus(), validationResult);
     }
 
-    private void validateExpirationDateTime(OBFundsConfirmationConsentData1 consentData, ValidationResult<OBError1> validationResult) {
-        final DateTime expirationDateTime = consentData.getExpirationDateTime();
+    private void validateExpirationDateTime(DateTime expirationDateTime, ValidationResult<OBError1> validationResult) {
         if (expirationDateTime != null) {
             if (expirationDateTime.isBeforeNow()) {
                 validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(expirationDateTime.toString()));
             }
+        }
+    }
+
+    private void validateConsentStatus(String consentStatus, ValidationResult<OBError1> validationResult){
+        if(!Objects.equals(consentStatus, OBExternalRequestStatus1Code.AUTHORISED.toString())) {
+            validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consentStatus));
         }
     }
 }

@@ -15,17 +15,20 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_3;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_3.FundsConfirmationsApi;
+import java.security.Principal;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.security.Principal;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_3.FundsConfirmationsApi;
+
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 
 @Controller("FundsConfirmationsApiV3.1.3")
 public class FundsConfirmationsApiController implements FundsConfirmationsApi {
@@ -70,7 +73,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ) {
+    ) throws OBErrorResponseException {
         return previousVersionController.getFundsConfirmationId(
                 fundsConfirmationId,
                 authorization,

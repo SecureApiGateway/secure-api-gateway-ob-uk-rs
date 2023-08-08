@@ -29,7 +29,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationData;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
@@ -119,7 +118,8 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
         }
         final FundsConfirmationValidationContext validationContext = new FundsConfirmationValidationContext(
                 obFundsConfirmation1,
-                FRFundsConfirmationConsentConverter.toOBFundsConfirmationConsent1(consent.getRequestObj()),
+                consent.getRequestObj().getData().getExpirationDateTime(),
+                consent.getStatus(),
                 account.getAccount().getCurrency()
         );
 

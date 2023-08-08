@@ -22,6 +22,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
+import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
+import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -71,6 +73,7 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
@@ -87,6 +90,7 @@ public class FundsConfirmationsApiControllerTest {
     private static final String BASE_URL = "http://localhost:";
     private static final String FUNDS_CONFIRMATION_URI = "/open-banking/v3.1.10/cbpii/funds-confirmations";
     private static final String DEBTOR_ACCOUNT_ID = UUID.randomUUID().toString();
+    public static final String DEFAULT_CURRENCY = "GBP";
 
     @LocalServerPort
     private int port;
@@ -114,6 +118,10 @@ public class FundsConfirmationsApiControllerTest {
         fundsConfirmationRepository.deleteAll();
     }
 
+    private void mockAccountRepository() {
+        mockAccountRepository(DEFAULT_CURRENCY);
+    }
+
     private void mockAccountRepository(String currency) {
         final FRAccount debtorAccount = FRAccount.builder()
                 .account(
@@ -136,22 +144,44 @@ public class FundsConfirmationsApiControllerTest {
     }
 
     private void mockConsentStoreGetResponse(String consentId) {
-        mockConsentStoreGetResponse(consentId, aValidOBFundsConfirmationConsent(), DateTime.now().plusMonths(3).withZone(DateTimeZone.UTC));
+        mockConsentStoreGetResponse(
+                consentId,
+                AUTHORISED,
+                aValidOBFundsConfirmationConsent(),
+                DateTime.now().plusMonths(3).withZone(DateTimeZone.UTC)
+        );
+    }
+
+    private void mockConsentStoreGetResponse(String consentId, OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
+        mockConsentStoreGetResponse(consentId, status, aValidOBFundsConfirmationConsent(), DateTime.now().plusMonths(3).withZone(DateTimeZone.UTC));
     }
 
     private void mockConsentStoreGetResponse(String consentId, DateTime expirationDateTime) {
-        mockConsentStoreGetResponse(consentId, aValidOBFundsConfirmationConsent(), expirationDateTime);
+        mockConsentStoreGetResponse(consentId, AUTHORISED, aValidOBFundsConfirmationConsent(), expirationDateTime);
     }
 
-    private void mockConsentStoreGetResponse(String consentId, OBFundsConfirmationConsent1 consentRequest, DateTime expirationDateTime) {
+    private void mockConsentStoreGetResponse(String consentId, DateTime expirationDateTime, OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
+        mockConsentStoreGetResponse(consentId, status, aValidOBFundsConfirmationConsent(), expirationDateTime);
+    }
+
+    private void mockConsentStoreGetResponse(
+            String consentId,
+            OBFundsConfirmationConsentResponse1Data.StatusEnum status,
+            OBFundsConfirmationConsent1 consentRequest,
+            DateTime expirationDateTime
+    ) {
         final FundsConfirmationConsent consent = new FundsConfirmationConsent();
         consent.setId(consentId);
-        consent.setStatus(AUTHORISED.toString());
+        consent.setStatus(status.toString());
         FRFundsConfirmationConsent frConfirmationConsent = FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(consentRequest);
         frConfirmationConsent.getData().setExpirationDateTime(expirationDateTime);
         consent.setRequestObj(frConfirmationConsent);
         consent.setAuthorisedDebtorAccountId(DEBTOR_ACCOUNT_ID);
         when(consentStoreClient.getConsent(eq(consentId), eq(API_CLIENT_ID))).thenReturn(consent);
+    }
+
+    private void mockBalanceStoreService(String amount) {
+        mockBalanceStoreService(amount, DEFAULT_CURRENCY);
     }
 
     private void mockBalanceStoreService(String amount, String currency) {
@@ -171,11 +201,10 @@ public class FundsConfirmationsApiControllerTest {
     public void shouldCreateFundsConfirmationAvailabilityTrue() {
         // Given
         final String consentId = IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId();
-        final String currency = "GBP";
-        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId, currency);
-        mockAccountRepository(currency);
+        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId);
+        mockAccountRepository();
         String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("1000.000")).toPlainString();
-        mockBalanceStoreService(balanceAmount, currency);
+        mockBalanceStoreService(balanceAmount);
         mockConsentStoreGetResponse(consentId);
         HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
 
@@ -196,11 +225,10 @@ public class FundsConfirmationsApiControllerTest {
     public void shouldCreateFundsConfirmationAvailabilityFalse() {
         // Given
         final String consentId = IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId();
-        final String currency = "GBP";
-        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId, currency);
-        mockAccountRepository(currency);
+        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId);
+        mockAccountRepository();
         String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("-10.00")).toPlainString();
-        mockBalanceStoreService(balanceAmount, currency);
+        mockBalanceStoreService(balanceAmount);
         mockConsentStoreGetResponse(consentId);
         HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
 
@@ -221,10 +249,9 @@ public class FundsConfirmationsApiControllerTest {
     public void shouldThrowsDebtorAccountNotFound() {
         // Given
         final String consentId = IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId();
-        final String currency = "GBP";
-        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId, currency);
-        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("-10.00")).toPlainString();
-        mockBalanceStoreService(balanceAmount, currency);
+        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId);
+        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("100.00")).toPlainString();
+        mockBalanceStoreService(balanceAmount);
         mockConsentStoreGetResponse(consentId);
         HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
 
@@ -246,14 +273,14 @@ public class FundsConfirmationsApiControllerTest {
     @Test
     public void shouldFundsConfirmationCurrencyMismatch() {
         // Given
+        final String otherCurrency = "EUR";
         final String consentId = IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId();
-        final String currency = "GBP";
-        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId, currency);
-        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("-10.00")).toPlainString();
-        mockAccountRepository("EUR");
+        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId);
+        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("100.00")).toPlainString();
+        mockAccountRepository(otherCurrency);
         ValidationResult<OBError1> validationResult = new ValidationResult<>();
-        validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(currency, "EUR"));
-        mockBalanceStoreService(balanceAmount, currency);
+        validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(DEFAULT_CURRENCY, otherCurrency));
+        mockBalanceStoreService(balanceAmount);
         mockConsentStoreGetResponse(consentId);
         HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
 
@@ -271,11 +298,10 @@ public class FundsConfirmationsApiControllerTest {
     public void shouldFundsConfirmationExpired() {
         // Given
         final String consentId = IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId();
-        final String currency = "GBP";
-        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId, currency);
-        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("-10.00")).toPlainString();
-        mockAccountRepository(currency);
-        mockBalanceStoreService(balanceAmount, currency);
+        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId);
+        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("100.00")).toPlainString();
+        mockAccountRepository();
+        mockBalanceStoreService(balanceAmount);
         DateTime expirationDateTime = DateTime.now().minusMinutes(1).withZone(DateTimeZone.UTC);
         ValidationResult<OBError1> validationResult = new ValidationResult<>();
         validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(expirationDateTime));
@@ -293,19 +319,16 @@ public class FundsConfirmationsApiControllerTest {
     }
 
     @Test
-    public void shouldFundsConfirmationValidationFailsAll() {
+    public void shouldFundsConfirmationConsentStatusNotAuthorised() {
         // Given
         final String consentId = IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId();
-        final String currency = "GBP";
-        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId, currency);
-        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("-10.00")).toPlainString();
-        mockAccountRepository("EUR");
-        mockBalanceStoreService(balanceAmount, currency);
-        DateTime expirationDateTime = DateTime.now().minusMinutes(1).withZone(DateTimeZone.UTC);
+        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId);
+        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("100.00")).toPlainString();
+        mockAccountRepository();
+        mockBalanceStoreService(balanceAmount);
         ValidationResult<OBError1> validationResult = new ValidationResult<>();
-        validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(currency, "EUR"));
-        validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(expirationDateTime));
-        mockConsentStoreGetResponse(consentId, expirationDateTime);
+        validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(REJECTED));
+        mockConsentStoreGetResponse(consentId, REJECTED);
         HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
 
         // When
@@ -316,6 +339,37 @@ public class FundsConfirmationsApiControllerTest {
         OBErrorResponse1 errorResponse = exception.getBody();
         assertThat(errorResponse.getErrors()).isNotEmpty();
         assertEquals(validationResult.getErrors(), errorResponse.getErrors());
+    }
+
+    @Test
+    public void shouldFundsConfirmationValidationFailsAll() {
+        // Given
+        final String otherCurrency = "EUR";
+        final String consentId = IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId();
+        OBFundsConfirmation1 fundsConfirmationRequest = aValidOBFundsConfirmation(consentId);
+        String balanceAmount = new BigDecimal(fundsConfirmationRequest.getData().getInstructedAmount().getAmount()).add(new BigDecimal("-10.00")).toPlainString();
+        mockAccountRepository(otherCurrency);
+        mockBalanceStoreService(balanceAmount);
+        DateTime expirationDateTime = DateTime.now().minusMinutes(1).withZone(DateTimeZone.UTC);
+        ValidationResult<OBError1> validationResult = new ValidationResult<>();
+        validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(DEFAULT_CURRENCY, otherCurrency));
+        validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(expirationDateTime));
+        validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(REVOKED));
+        mockConsentStoreGetResponse(consentId, expirationDateTime, REVOKED);
+        HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
+
+        // When
+        ResponseEntity<OBErrorResponse1> exception = restTemplate.postForEntity(fundsConfirmationUrl(), request, OBErrorResponse1.class);
+
+        // Then
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        OBErrorResponse1 errorResponse = exception.getBody();
+        assertThat(errorResponse.getErrors()).isNotEmpty();
+        assertEquals(validationResult.getErrors(), errorResponse.getErrors());
+    }
+
+    private OBFundsConfirmation1 aValidOBFundsConfirmation(String consentId) {
+        return aValidOBFundsConfirmation(consentId, DEFAULT_CURRENCY);
     }
 
     private OBFundsConfirmation1 aValidOBFundsConfirmation(String consentId, String currency) {
