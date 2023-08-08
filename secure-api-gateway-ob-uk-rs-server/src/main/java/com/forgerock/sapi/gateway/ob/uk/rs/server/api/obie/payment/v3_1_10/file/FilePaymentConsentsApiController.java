@@ -37,7 +37,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.file.FilePaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteFileConsentResponse4Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorRegistry;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
@@ -60,7 +60,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     private final OBValidationService<OBWriteFileConsent3> consentValidator;
 
-    private final PaymentFileProcessorRegistry paymentFileProcessorRegistry;
+    private final PaymentFileProcessorService paymentFileProcessorService;
 
     private final OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator;
 
@@ -68,12 +68,12 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     public FilePaymentConsentsApiController(FilePaymentConsentStoreClient consentStoreApiClient,
                                             OBValidationService<OBWriteFileConsent3> consentValidator,
-                                            PaymentFileProcessorRegistry paymentFileProcessorRegistry,
+                                            PaymentFileProcessorService paymentFileProcessorService,
                                             OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator,
                                             OBWriteFileConsentResponse4Factory consentResponseFactory) {
         this.consentStoreApiClient = consentStoreApiClient;
         this.consentValidator = consentValidator;
-        this.paymentFileProcessorRegistry = paymentFileProcessorRegistry;
+        this.paymentFileProcessorService = paymentFileProcessorService;
         this.fileContentValidator = fileContentValidator;
         this.consentResponseFactory = consentResponseFactory;
     }
@@ -136,7 +136,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         final FilePaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
 
         final String fileType = consent.getRequestObj().getData().getInitiation().getFileType();
-        final PaymentFile paymentFile = paymentFileProcessorRegistry.processFile(fileType, fileParam);
+        final PaymentFile paymentFile = paymentFileProcessorService.processFile(fileType, fileParam);
 
         fileContentValidator.validate(new FilePaymentFileContentValidationContext(HashUtils.computeSHA256FullHash(fileParam),
                 paymentFile, FRWriteFileConsentConverter.toOBWriteFileConsent3(consent.getRequestObj())));
@@ -187,7 +187,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             throw new OBErrorException(OBRIErrorType.NO_FILE_FOR_CONSENT);
         }
         final String fileType = consent.getRequestObj().getData().getInitiation().getFileType();
-        final PaymentFileType paymentFileType = paymentFileProcessorRegistry.findPaymentFileType(fileType);
+        final PaymentFileType paymentFileType = paymentFileProcessorService.findPaymentFileType(fileType);
 
         return ResponseEntity.status(HttpStatus.OK)
                              .contentType(paymentFileType.getContentType())

@@ -29,14 +29,25 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFil
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
 
-public class PaymentFileProcessorRegistry {
+/**
+ * Service which is capable of processing uploaded files for OBIE File Payments.
+ *
+ * This service contains a registry which maps OBIE schema OBFile2/FileType String values to {@link PaymentFileProcessor}
+ * objects. The PaymentFileProcessors are then delegated to for the real processing work.
+ *
+ * An exception is raised when attempting to process an unsupported FileType.
+ */
+public class PaymentFileProcessorService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<String, PaymentFileType> fileTypeRegistry;
     private final Map<PaymentFileType, PaymentFileProcessor> fileTypeProcessorRegistry;
 
-    public PaymentFileProcessorRegistry(List<PaymentFileProcessor> paymentFileProcessors) {
+    public PaymentFileProcessorService(List<PaymentFileProcessor> paymentFileProcessors) {
+        if (paymentFileProcessors == null || paymentFileProcessors.isEmpty()) {
+            throw new IllegalArgumentException("1 or more paymentFileProcessors must be supplied");
+        }
         Map<String, PaymentFileType> fileTypeRegistry = new HashMap<>();
         Map<PaymentFileType, PaymentFileProcessor> fileTypeProcessorRegistry = new HashMap<>();
         for (final PaymentFileProcessor paymentFileProcessor : paymentFileProcessors) {
@@ -45,9 +56,9 @@ public class PaymentFileProcessorRegistry {
             if (oldFileTypeValue != null) {
                 throw new IllegalStateException("Duplicate paymentFileProcessor for fileType: " + supportedFileType.getFileType());
             }
-
             fileTypeProcessorRegistry.put(supportedFileType, paymentFileProcessor);
         }
+
         this.fileTypeRegistry = Collections.unmodifiableMap(fileTypeRegistry);
         this.fileTypeProcessorRegistry = Collections.unmodifiableMap(fileTypeProcessorRegistry);
         logger.info("Supported File Payment Types: {}", fileTypeProcessorRegistry);
@@ -71,6 +82,7 @@ public class PaymentFileProcessorRegistry {
         } catch (OBErrorException ex) {
             throw ex;
         } catch (Throwable t) {
+            // Guard against unexpected exceptions being raised by the processor impl
             logger.error("Unexpected exception raised processing payment file of type: {}, processorClass: {}",
                     fileType, paymentFileProcessor, t);
             throw new OBErrorException(OBRIErrorType.REQUEST_FILE_INVALID, "Failed to parse");

@@ -21,33 +21,34 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorRegistry;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
 
 /**
- * Configure the {@link PaymentFileProcessorRegistry}.
+ * Configure the {@link PaymentFileProcessorService}.
  *
- * The configuration registers all PaymentFileProcessor into the registry.
+ * The configuration registers all PaymentFileProcessor into the service.
  *
- * To add new processors to the registry, create a PaymentFileProcessor impl class and create a Spring Bean for this impl
+ * To add new processors to the service, create a PaymentFileProcessor impl class and create a Spring Bean for this impl
  * (ether via Component Scanning or creating the bean in another Spring Configuration class).
  *
- * Alternatively, this configuration file can be disabled by creating a PaymentFileProcessorRegistry bean in a
+ * Alternatively, this configuration file can be disabled by creating a PaymentFileProcessorService bean in a
  * configuration file that is run before this one.
  */
 @Configuration
-@ConditionalOnMissingBean(value = PaymentFileProcessorRegistry.class)
+@ConditionalOnMissingBean(value = PaymentFileProcessorService.class)
 public class PaymentFileProcessorConfiguration {
 
     /**
-     * Create the PaymentFileProcessRegistry wiring in all available PaymentFileProcessor beans
+     * Create the {@link PaymentFileProcessorService} wiring in all available {@link PaymentFileProcessor} beans
      *
-     * @param paymentFileProcessors List<PaymentFileProcessor> all PaymentFileProcessor beans
-     * @return PaymentFileProcessorRegistry with all PaymentFileProcessors registered
+     * @param paymentFileProcessors List<PaymentFileProcessor> all PaymentFileProcessor beans available in the
+     *                              Spring Context
+     * @return PaymentFileProcessorService that supports the paymentFileProcessors supplied
      */
     @Bean
-    public PaymentFileProcessorRegistry paymentFileProcessorRegistry(List<PaymentFileProcessor> paymentFileProcessors) {
-        return new PaymentFileProcessorRegistry(paymentFileProcessors);
+    public PaymentFileProcessorService paymentFileProcessorService(List<PaymentFileProcessor> paymentFileProcessors) {
+        return new PaymentFileProcessorService(paymentFileProcessors);
     }
 
 }

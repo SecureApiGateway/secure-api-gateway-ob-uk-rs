@@ -28,7 +28,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
 
-abstract class BasePaymentFileProcessorTest {
+public abstract class BasePaymentFileProcessorTest {
 
     private final TestPaymentFileResources testPaymentFileResources = TestPaymentFileResources.getInstance();
 
@@ -44,12 +44,16 @@ abstract class BasePaymentFileProcessorTest {
 
         for (final TestPaymentFile testPaymentFile : files) {
             final PaymentFile paymentFile = paymentFileProcessor.processFile(testPaymentFile.getFileContent());
-            assertThat(paymentFile).isNotNull();
-            assertThat(paymentFile.getControlSum()).isEqualByComparingTo(testPaymentFile.getControlSum());
-            assertThat(paymentFile.getNumberOfTransactions()).isEqualTo(testPaymentFile.getNumTransactions());
-            assertThat(paymentFile.getFileType()).isEqualTo(testPaymentFile.getFileType());
+            validateProcessedPaymentFileResult(testPaymentFile, paymentFile);
         }
 
+    }
+
+    public static void validateProcessedPaymentFileResult(TestPaymentFile testPaymentFile, PaymentFile paymentFileResult) {
+        assertThat(paymentFileResult).isNotNull();
+        assertThat(paymentFileResult.getControlSum()).isEqualByComparingTo(testPaymentFile.getControlSum());
+        assertThat(paymentFileResult.getNumberOfTransactions()).isEqualTo(testPaymentFile.getNumTransactions());
+        assertThat(paymentFileResult.getFileType()).isEqualTo(testPaymentFile.getFileType());
     }
 
     @Test

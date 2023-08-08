@@ -27,11 +27,12 @@ import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 
 /**
- * Validator which verifies that the Content of the Payment File uploaded is valid.
+ * Validator which verifies that the Payment File uploaded is valid for the Consent
  *
- * Checks applied:
- * - Parses the file as the fileType defined in the consent
- * - Validates the fileHash
+ * The following properties of the uploaded file are validated against the Consent:
+ * - fileHash
+ * - controlSum
+ * - numberOfTransactions
  */
 public class FilePaymentFileContentValidator extends BaseOBValidator<FilePaymentFileContentValidationContext> {
 
