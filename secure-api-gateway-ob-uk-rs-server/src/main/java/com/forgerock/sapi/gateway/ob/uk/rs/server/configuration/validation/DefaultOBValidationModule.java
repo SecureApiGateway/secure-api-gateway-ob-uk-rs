@@ -28,6 +28,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.vali
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator.FundsConfirmationValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
@@ -70,12 +72,12 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 
 /**
  * Spring Boot configuration for the Open Banking validation module with the default set of rules.
- *
+ * <p>
  * Creates Beans that can be used by services and controllers in this simulator for validation purposes.
- *
+ * <p>
  * This can be enabled by setting the following property:
  * rs.obie.validation.module: default
- *
+ * <p>
  * Different validation rules may be implemented by creating a new module that creates the same set of beans, such a
  * module should include the @ConditionalOnProperty annotation as below but with a different havingValue.
  */
@@ -195,5 +197,10 @@ public class DefaultOBValidationModule {
     public OBRisk1Validator paymentRiskValidator(@Value("${rs.obie.validation.config.payments.requirePaymentContextCode:false}")
                                                  boolean requirePaymentContextCode) {
         return new OBRisk1Validator(requirePaymentContextCode);
+    }
+
+    @Bean
+    public OBValidationService<FundsConfirmationValidationContext> fundsConfirmationValidator() {
+        return new OBValidationService<>(new FundsConfirmationValidator());
     }
 }

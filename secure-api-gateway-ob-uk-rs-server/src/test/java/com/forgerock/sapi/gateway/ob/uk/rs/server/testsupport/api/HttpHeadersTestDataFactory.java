@@ -156,15 +156,19 @@ public class HttpHeadersTestDataFactory {
         return headers;
     }
 
-    public static HttpHeaders requiredFundsHttpHeaders(String resourceUrl, String accountId) {
+    public static HttpHeaders requiredFundsHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
-        headers.add("x-account-id", accountId);
-        headers.add("x-ob-url", resourceUrl);
         return headers;
+    }
+
+    public static HttpHeaders requiredFundsHttpHeadersWithApiClientId(String apiClientId) {
+        final HttpHeaders httpHeaders = requiredFundsHttpHeaders();
+        httpHeaders.add("x-api-client-id", apiClientId);
+        return httpHeaders;
     }
 
     /**
