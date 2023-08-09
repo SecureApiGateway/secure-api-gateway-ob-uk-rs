@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
  * Enum containing PaymentFileType information for the default set of file types supported by the OBIE schema
  */
 public enum DefaultPaymentFileType {
+
     UK_OBIE_PAYMENT_INITIATION_V3_1("UK.OBIE.PaymentInitiation.3.1", MediaType.APPLICATION_JSON),
     UK_OBIE_PAIN_001("UK.OBIE.pain.001.001.08", MediaType.TEXT_XML);
 

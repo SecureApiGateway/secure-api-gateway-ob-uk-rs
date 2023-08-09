@@ -25,8 +25,8 @@ public class PaymentFileType {
     private final MediaType contentType;
 
     public PaymentFileType(String fileType, MediaType contentType) {
-        this.fileType = fileType;
-        this.contentType = contentType;
+        this.fileType = Objects.requireNonNull(fileType, "fileType must be supplied");
+        this.contentType = Objects.requireNonNull(contentType, "contentType must be supplied");
     }
 
     public MediaType getContentType() {

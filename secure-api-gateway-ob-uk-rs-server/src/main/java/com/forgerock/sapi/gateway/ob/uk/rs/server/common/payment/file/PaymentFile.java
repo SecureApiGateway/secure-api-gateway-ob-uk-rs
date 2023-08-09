@@ -25,6 +25,7 @@ import java.util.Objects;
  * Represents a parsed valid payment file
  */
 public class PaymentFile {
+
     private final BigDecimal controlSum;
     private final PaymentFileType fileType;
     private final List<FRFilePayment> payments;
@@ -36,7 +37,6 @@ public class PaymentFile {
         if (payments.isEmpty()) {
             throw new IllegalArgumentException("payments parameter must contain 1 or more payment objects");
         }
-
     }
 
     /**

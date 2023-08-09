@@ -29,15 +29,24 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 
+/**
+ * Abstract class that can be used as a base for PaymentFileProcessor implementations.
+ *
+ * Subclasses need to implement the processFileImpl method.
+ */
 public abstract class BasePaymentFileProcessor implements PaymentFileProcessor {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private final PaymentFileType supportedPaymentFileType;
 
     protected BasePaymentFileProcessor(PaymentFileType supportedPaymentFileType) {
-        this.supportedPaymentFileType = Objects.requireNonNull(supportedPaymentFileType, "supportedPaymentFileType must be supplied");
+        this.supportedPaymentFileType = Objects.requireNonNull(supportedPaymentFileType,
+                "supportedPaymentFileType must be supplied");
     }
 
+    /**
+     * FileType specific processing implementation
+     */
     protected abstract PaymentFile processFileImpl(String fileContent) throws FileParseException;
 
     @Override
