@@ -48,7 +48,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
@@ -85,7 +87,7 @@ public class FilePaymentConsentsApiControllerTest {
     @MockBean
     private FilePaymentConsentStoreClient consentStoreClient;
 
-    private final TestPaymentFileResources testPaymentFileResources = new TestPaymentFileResources();
+    private final TestPaymentFileResources testPaymentFileResources = TestPaymentFileResources.getInstance();
 
     private String controllerBaseUri() {
         return "http://localhost:" + port + "/open-banking/v3.1.10/pisp/file-payment-consents";
@@ -105,7 +107,8 @@ public class FilePaymentConsentsApiControllerTest {
         final String fileHash = "fileHash";
         final int numTransactions = 1;
         final BigDecimal controlSum = BigDecimal.ONE;
-        final OBWriteFileConsent3 consentRequest = createValidateConsentRequest(PaymentFileType.UK_OBIE_PAIN_001, fileHash,  numTransactions, controlSum);
+        final OBWriteFileConsent3 consentRequest = createValidConsentRequest(DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType(),
+                                                                                fileHash, numTransactions, controlSum);
         final FilePaymentConsent consentStoreResponse = buildAwaitingUploadConsent(consentRequest);
         when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
             final CreateFilePaymentConsentRequest createConsentArg = invocation.getArgument(0, CreateFilePaymentConsentRequest.class);
@@ -154,7 +157,7 @@ public class FilePaymentConsentsApiControllerTest {
         final HttpEntity<String> entity = new HttpEntity<>(paymentFile.getFileContent(), createHeadersForFileUpload(idempotencyKey, paymentFile.getFileType()));
 
         given(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).willReturn(buildAwaitingUploadConsent(
-                createValidateConsentRequest(paymentFile.getFileType(), paymentFile.getFileHash(), paymentFile.getNumTransactions(), paymentFile.getControlSum())));
+                createValidConsentRequest(paymentFile.getFileType(), paymentFile.getFileHash(), paymentFile.getNumTransactions(), paymentFile.getControlSum())));
 
         final ResponseEntity<Void> createResponse = restTemplate.exchange(controllerUploadFileUri(consentId), HttpMethod.POST,
                 entity, Void.class);
@@ -180,7 +183,7 @@ public class FilePaymentConsentsApiControllerTest {
 
         // Num transactions in consent != num in file
         given(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).willReturn(buildAwaitingUploadConsent(
-                createValidateConsentRequest(paymentFile.getFileType(), paymentFile.getFileHash(), 1000, paymentFile.getControlSum())));
+                createValidConsentRequest(paymentFile.getFileType(), paymentFile.getFileHash(), 1000, paymentFile.getControlSum())));
 
         final ResponseEntity<OBErrorResponse1> fileUploadResponse = restTemplate.exchange(controllerUploadFileUri(consentId), HttpMethod.POST,
                 entity, OBErrorResponse1.class);
@@ -233,8 +236,40 @@ public class FilePaymentConsentsApiControllerTest {
         assertThat(consentNotFoundResponse.getBody().getCode()).isEqualTo(OBRI_PERMISSION_INVALID.toString());
     }
 
+    @Test
+    public void testGetFileForConsent() {
+        final String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
+        final FilePaymentConsent consent = new FilePaymentConsent();
+        final PaymentFileType paymentFileType = DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType();
+        consent.setRequestObj(FRWriteFileConsentConverter.toFRWriteFileConsent(createValidConsentRequest(paymentFileType,
+                "dfsfsd", 1, BigDecimal.ONE)));
+        final String expectedFileContent = "<xml>";
+        consent.setFileContent(expectedFileContent);
+        when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consent);
 
-    private static OBWriteFileConsent3 createValidateConsentRequest(PaymentFileType paymentFileType, String fileHash,
+        final ResponseEntity<String> fileContentResponse = restTemplate.exchange(controllerUploadFileUri(consentId),
+                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), String.class);
+
+        assertThat(fileContentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(fileContentResponse.getHeaders().getContentType()).isEqualTo(paymentFileType.getContentType());
+        assertThat(fileContentResponse.getBody()).isEqualTo(expectedFileContent);
+    }
+
+    @Test
+    public void failsToGetFileForConsentNoFileUploaded() {
+        final String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
+        when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(new FilePaymentConsent());
+
+        final ResponseEntity<OBErrorResponse1> errorResponse = restTemplate.exchange(controllerUploadFileUri(consentId),
+                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBErrorResponse1.class);
+
+
+        assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(errorResponse.getBody().getErrors()).hasSize(1).singleElement().isEqualTo(OBRIErrorType.NO_FILE_FOR_CONSENT.toOBError1());
+    }
+
+
+    private static OBWriteFileConsent3 createValidConsentRequest(PaymentFileType paymentFileType, String fileHash,
                                                                     int numTransactions, BigDecimal controlSum) {
         final OBWriteFileConsent3 consentRequest = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3(
                 paymentFileType.getFileType(), fileHash, String.valueOf(numTransactions), controlSum);

@@ -37,8 +37,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.file.FilePaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteFileConsentResponse4Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.filepayment.PaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
@@ -57,16 +60,20 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     private final OBValidationService<OBWriteFileConsent3> consentValidator;
 
+    private final PaymentFileProcessorService paymentFileProcessorService;
+
     private final OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator;
 
     private final OBWriteFileConsentResponse4Factory consentResponseFactory;
 
     public FilePaymentConsentsApiController(FilePaymentConsentStoreClient consentStoreApiClient,
                                             OBValidationService<OBWriteFileConsent3> consentValidator,
+                                            PaymentFileProcessorService paymentFileProcessorService,
                                             OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator,
                                             OBWriteFileConsentResponse4Factory consentResponseFactory) {
         this.consentStoreApiClient = consentStoreApiClient;
         this.consentValidator = consentValidator;
+        this.paymentFileProcessorService = paymentFileProcessorService;
         this.fileContentValidator = fileContentValidator;
         this.consentResponseFactory = consentResponseFactory;
     }
@@ -127,8 +134,12 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         }
 
         final FilePaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
-        fileContentValidator.validate(new FilePaymentFileContentValidationContext(fileParam,
-                FRWriteFileConsentConverter.toOBWriteFileConsent3(consent.getRequestObj())));
+
+        final String fileType = consent.getRequestObj().getData().getInitiation().getFileType();
+        final PaymentFile paymentFile = paymentFileProcessorService.processFile(fileType, fileParam);
+
+        fileContentValidator.validate(new FilePaymentFileContentValidationContext(HashUtils.computeSHA256FullHash(fileParam),
+                paymentFile, FRWriteFileConsentConverter.toOBWriteFileConsent3(consent.getRequestObj())));
 
         final FileUploadRequest fileUploadRequest = new FileUploadRequest();
         fileUploadRequest.setApiClientId(apiClientId);
@@ -176,7 +187,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             throw new OBErrorException(OBRIErrorType.NO_FILE_FOR_CONSENT);
         }
         final String fileType = consent.getRequestObj().getData().getInitiation().getFileType();
-        final PaymentFileType paymentFileType = PaymentFileType.fromFileType(fileType);
+        final PaymentFileType paymentFileType = paymentFileProcessorService.findPaymentFileType(fileType);
 
         return ResponseEntity.status(HttpStatus.OK)
                              .contentType(paymentFileType.getContentType())

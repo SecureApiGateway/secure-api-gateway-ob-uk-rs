@@ -20,12 +20,16 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestP
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRFilePayment;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
@@ -37,47 +41,39 @@ import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 class FilePaymentFileContentValidatorTest {
 
-    private final TestPaymentFileResources testPaymentFileResources = new TestPaymentFileResources();
+    private final TestPaymentFileResources testPaymentFileResources = TestPaymentFileResources.getInstance();
 
     private final FilePaymentFileContentValidator validator = new FilePaymentFileContentValidator();
 
 
+    private static PaymentFile createPaymentFile(TestPaymentFile testPaymentFile) {
+        // Payments are not validated, supply a dummy value in order to create the PaymentFile object
+        final List<FRFilePayment> payments = Collections.nCopies(testPaymentFile.getNumTransactions(), new FRFilePayment());
+        return new PaymentFile(testPaymentFile.getFileType(), payments, testPaymentFile.getControlSum());
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {PAYMENT_INITIATION_3_1_FILE_PATH, PAIN_001_001_08_FILE_PATH})
     void fileContentValidationSucceeds(String filePath) {
-        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(filePath);
-        final OBWriteFileConsent3 obFileConsent = createConsent(paymentFile);
+        final TestPaymentFile testPaymentFile = testPaymentFileResources.getPaymentFile(filePath);
+        final OBWriteFileConsent3 obFileConsent = createConsent(testPaymentFile);
 
-        final ValidationResult<OBError1> validationResult = validator.validate(new FilePaymentFileContentValidationContext(paymentFile.getFileContent(), obFileConsent));
+        final String fileHash = computeFileHash(testPaymentFile);
+        final ValidationResult<OBError1> validationResult = validator.validate(
+                new FilePaymentFileContentValidationContext(fileHash, createPaymentFile(testPaymentFile), obFileConsent));
         assertThat(validationResult.isValid()).isTrue();
     }
 
 
-    @ParameterizedTest
-    @ValueSource(strings = {PAYMENT_INITIATION_3_1_FILE_PATH, PAIN_001_001_08_FILE_PATH})
-    void validationFailsDueToFileParseError(String filePath) {
-        final String fileContent = "junk";
-        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(filePath);
-
-        final ValidationResult<OBError1> validationResult = validator.validate(new FilePaymentFileContentValidationContext(fileContent,
-                OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3(
-                        paymentFile.getFileType().getFileType(), HashUtils.computeSHA256FullHash(fileContent),
-                        String.valueOf(paymentFile.getNumTransactions()), paymentFile.getControlSum())));
-
-        assertThat(validationResult.isValid()).isFalse();
-        final OBError1 obError1 = validationResult.getErrors().get(0);
-        assertThat(obError1.getErrorCode()).startsWith("OBRI.Request.Object.file.invalid");
-        assertThat(obError1.getMessage()).startsWith("The file received was not parsable");
-    }
-
     @Test
     void validationFailsDueToFileHashMismatch() {
-        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(PAIN_001_001_08_FILE_PATH);
+        final TestPaymentFile testPaymentFile = testPaymentFileResources.getPaymentFile(PAIN_001_001_08_FILE_PATH);
         final OBWriteFileConsent3 obFileConsent = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3(
-                paymentFile.getFileType().getFileType(), HashUtils.computeSHA256FullHash("different file"),
-                String.valueOf(paymentFile.getNumTransactions()), paymentFile.getControlSum());
+                testPaymentFile.getFileType().getFileType(), "consentHashValue",
+                String.valueOf(testPaymentFile.getNumTransactions()), testPaymentFile.getControlSum());
 
-        final ValidationResult<OBError1> validationResult = validator.validate(new FilePaymentFileContentValidationContext(paymentFile.getFileContent(), obFileConsent));
+        final ValidationResult<OBError1> validationResult = validator.validate(
+                new FilePaymentFileContentValidationContext("different hash value", createPaymentFile(testPaymentFile), obFileConsent));
 
         assertThat(validationResult.isValid()).isFalse();
         final OBError1 obError1 = validationResult.getErrors().get(0);
@@ -87,14 +83,14 @@ class FilePaymentFileContentValidatorTest {
 
     @Test
     void validationFailsDueToNumberOfTransactionsMismatch() {
-        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(PAIN_001_001_08_FILE_PATH);
+        final TestPaymentFile testPaymentFile = testPaymentFileResources.getPaymentFile(PAIN_001_001_08_FILE_PATH);
 
         final OBWriteFileConsent3 consent = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3(
-                paymentFile.getFileType().getFileType(), paymentFile.getFileHash(),
-                "999", paymentFile.getControlSum());
+                testPaymentFile.getFileType().getFileType(), testPaymentFile.getFileHash(),
+                "999", testPaymentFile.getControlSum());
 
         final ValidationResult<OBError1> validationResult = validator.validate(new FilePaymentFileContentValidationContext(
-                paymentFile.getFileContent(), consent));
+                computeFileHash(testPaymentFile), createPaymentFile(testPaymentFile), consent));
 
         assertThat(validationResult.isValid()).isFalse();
         final OBError1 obError1 = validationResult.getErrors().get(0);
@@ -102,21 +98,26 @@ class FilePaymentFileContentValidatorTest {
         assertThat(obError1.getMessage()).isEqualTo("The file received contains 3 transactions but the file consent metadata indicated that we are expecting a file with 999 transactions'");
     }
 
+
     @Test
     void validationFailsDueToControlSumMismatch() {
-        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(PAIN_001_001_08_FILE_PATH);
+        final TestPaymentFile testPaymentFile = testPaymentFileResources.getPaymentFile(PAIN_001_001_08_FILE_PATH);
 
         final OBWriteFileConsent3 consent = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3(
-                paymentFile.getFileType().getFileType(), paymentFile.getFileHash(),
-                String.valueOf(paymentFile.getNumTransactions()), paymentFile.getControlSum().multiply(BigDecimal.valueOf(2)));
+                testPaymentFile.getFileType().getFileType(), testPaymentFile.getFileHash(),
+                String.valueOf(testPaymentFile.getNumTransactions()), testPaymentFile.getControlSum().multiply(BigDecimal.valueOf(2)));
 
         final ValidationResult<OBError1> validationResult = validator.validate(new FilePaymentFileContentValidationContext(
-                paymentFile.getFileContent(), consent));
+                computeFileHash(testPaymentFile), createPaymentFile(testPaymentFile), consent));
 
         assertThat(validationResult.isValid()).isFalse();
         final OBError1 obError1 = validationResult.getErrors().get(0);
         assertThat(obError1.getErrorCode()).isEqualTo("OBRI.Request.Object.file.wrong.control.sum");
         assertThat(obError1.getMessage()).isEqualTo("The file received contains total transaction value of: 11500000 but the file consent metadata indicated a control sum value of 23000000.0000'");
+    }
+
+    private static String computeFileHash(TestPaymentFile testPaymentFile) {
+        return HashUtils.computeSHA256FullHash(testPaymentFile.getFileContent());
     }
 
     private static OBWriteFileConsent3 createConsent(TestPaymentFile paymentFile) {
