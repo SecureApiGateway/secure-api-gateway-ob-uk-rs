@@ -15,77 +15,39 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Set;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
 
 /**
- * Service which is capable of processing uploaded files for OBIE File Payments.
- *
- * This service contains a registry which maps OBIE schema OBFile2/FileType String values to {@link PaymentFileProcessor}
- * objects. The PaymentFileProcessors are then delegated to for the real processing work.
- *
- * An exception is raised when attempting to process an unsupported FileType.
+ * Service which is capable of processing uploaded files for OBIE File Payments and extracting the transactions and
+ * metadata.
  */
-public class PaymentFileProcessorService {
+public interface PaymentFileProcessorService {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    /**
+     * Processes uploaded fileContents and returns a PaymentFile object containing the transactions described in the
+     * file and associated metadata.
+     *
+     * @param fileType     String the OBIE schema fileType format that the fileContent is expected to be in
+     * @param fileContents String the uploaded file content
+     * @return PaymentFile object representing the parsed file
+     * @throws OBErrorException if an error parsing the file occurs
+     */
+    PaymentFile processFile(String fileType, String fileContents) throws OBErrorException;
 
-    private final Map<String, PaymentFileType> fileTypeRegistry;
-    private final Map<PaymentFileType, PaymentFileProcessor> fileTypeProcessorRegistry;
+    /**
+     * @return Set<String> all OBIE schema fileTypes supported by this service
+     */
+    Set<String> getSupportedFileTypes();
 
-    public PaymentFileProcessorService(List<PaymentFileProcessor> paymentFileProcessors) {
-        if (paymentFileProcessors == null || paymentFileProcessors.isEmpty()) {
-            throw new IllegalArgumentException("1 or more paymentFileProcessors must be supplied");
-        }
-        Map<String, PaymentFileType> fileTypeRegistry = new HashMap<>();
-        Map<PaymentFileType, PaymentFileProcessor> fileTypeProcessorRegistry = new HashMap<>();
-        for (final PaymentFileProcessor paymentFileProcessor : paymentFileProcessors) {
-            final PaymentFileType supportedFileType = paymentFileProcessor.getSupportedFileType();
-            final PaymentFileType oldFileTypeValue = fileTypeRegistry.put(supportedFileType.getFileType(), supportedFileType);
-            if (oldFileTypeValue != null) {
-                throw new IllegalStateException("Duplicate paymentFileProcessor for fileType: " + supportedFileType.getFileType());
-            }
-            fileTypeProcessorRegistry.put(supportedFileType, paymentFileProcessor);
-        }
+    /**
+     * @param fileType String OBIE schema fileType value
+     * @return PaymentFileType object representing the fileType
+     * @throws OBErrorException thrown if the fileType is not supported
+     */
+    PaymentFileType findPaymentFileType(String fileType) throws OBErrorException;
 
-        this.fileTypeRegistry = Collections.unmodifiableMap(fileTypeRegistry);
-        this.fileTypeProcessorRegistry = Collections.unmodifiableMap(fileTypeProcessorRegistry);
-        logger.info("Supported File Payment Types: {}", fileTypeProcessorRegistry);
-    }
-
-    public PaymentFileType findPaymentFileType(String fileType) throws OBErrorException {
-        final PaymentFileType paymentFileType = fileTypeRegistry.get(fileType);
-        if (paymentFileType == null) {
-            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_TYPE_NOT_SUPPORTED, fileType);
-        }
-        return paymentFileType;
-    }
-
-    public PaymentFile processFile(String fileType, String fileContents) throws OBErrorException {
-        final PaymentFileProcessor paymentFileProcessor = fileTypeProcessorRegistry.get(findPaymentFileType(fileType));
-        if (paymentFileProcessor == null) {
-            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_TYPE_NOT_SUPPORTED, fileType);
-        }
-        try {
-            return paymentFileProcessor.processFile(fileContents);
-        } catch (OBErrorException ex) {
-            throw ex;
-        } catch (Throwable t) {
-            // Guard against unexpected exceptions being raised by the processor impl
-            logger.error("Unexpected exception raised processing payment file of type: {}, processorClass: {}",
-                    fileType, paymentFileProcessor, t);
-            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_INVALID, "Failed to parse");
-        }
-    }
 }

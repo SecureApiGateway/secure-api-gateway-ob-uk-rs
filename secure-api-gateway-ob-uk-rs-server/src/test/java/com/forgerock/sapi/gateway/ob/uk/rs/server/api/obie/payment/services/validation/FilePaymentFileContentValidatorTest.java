@@ -20,12 +20,16 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestP
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRFilePayment;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
@@ -42,6 +46,12 @@ class FilePaymentFileContentValidatorTest {
     private final FilePaymentFileContentValidator validator = new FilePaymentFileContentValidator();
 
 
+    private static PaymentFile createPaymentFile(TestPaymentFile testPaymentFile) {
+        // Payments are not validated, supply a dummy value in order to create the PaymentFile object
+        final List<FRFilePayment> payments = Collections.nCopies(testPaymentFile.getNumTransactions(), new FRFilePayment());
+        return new PaymentFile(testPaymentFile.getFileType(), payments, testPaymentFile.getControlSum());
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {PAYMENT_INITIATION_3_1_FILE_PATH, PAIN_001_001_08_FILE_PATH})
     void fileContentValidationSucceeds(String filePath) {
@@ -50,7 +60,7 @@ class FilePaymentFileContentValidatorTest {
 
         final String fileHash = computeFileHash(testPaymentFile);
         final ValidationResult<OBError1> validationResult = validator.validate(
-                new FilePaymentFileContentValidationContext(fileHash, testPaymentFile.toPaymentFile(), obFileConsent));
+                new FilePaymentFileContentValidationContext(fileHash, createPaymentFile(testPaymentFile), obFileConsent));
         assertThat(validationResult.isValid()).isTrue();
     }
 
@@ -63,7 +73,7 @@ class FilePaymentFileContentValidatorTest {
                 String.valueOf(testPaymentFile.getNumTransactions()), testPaymentFile.getControlSum());
 
         final ValidationResult<OBError1> validationResult = validator.validate(
-                new FilePaymentFileContentValidationContext("different hash value", testPaymentFile.toPaymentFile(), obFileConsent));
+                new FilePaymentFileContentValidationContext("different hash value", createPaymentFile(testPaymentFile), obFileConsent));
 
         assertThat(validationResult.isValid()).isFalse();
         final OBError1 obError1 = validationResult.getErrors().get(0);
@@ -80,7 +90,7 @@ class FilePaymentFileContentValidatorTest {
                 "999", testPaymentFile.getControlSum());
 
         final ValidationResult<OBError1> validationResult = validator.validate(new FilePaymentFileContentValidationContext(
-                computeFileHash(testPaymentFile), testPaymentFile.toPaymentFile(), consent));
+                computeFileHash(testPaymentFile), createPaymentFile(testPaymentFile), consent));
 
         assertThat(validationResult.isValid()).isFalse();
         final OBError1 obError1 = validationResult.getErrors().get(0);
@@ -98,7 +108,7 @@ class FilePaymentFileContentValidatorTest {
                 String.valueOf(testPaymentFile.getNumTransactions()), testPaymentFile.getControlSum().multiply(BigDecimal.valueOf(2)));
 
         final ValidationResult<OBError1> validationResult = validator.validate(new FilePaymentFileContentValidationContext(
-                computeFileHash(testPaymentFile), testPaymentFile.toPaymentFile(), consent));
+                computeFileHash(testPaymentFile), createPaymentFile(testPaymentFile), consent));
 
         assertThat(validationResult.isValid()).isFalse();
         final OBError1 obError1 = validationResult.getErrors().get(0);

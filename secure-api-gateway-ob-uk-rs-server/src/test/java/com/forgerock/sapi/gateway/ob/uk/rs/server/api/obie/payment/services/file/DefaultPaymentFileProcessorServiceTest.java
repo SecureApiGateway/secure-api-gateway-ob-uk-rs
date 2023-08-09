@@ -1,3 +1,18 @@
+/*
+ * Copyright © 2020-2022 ForgeRock AS (obst@forgerock.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.BasePaymentFileProcessorTest.validateProcessedPaymentFileResult;
@@ -24,7 +39,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
 
-class PaymentFileProcessorServiceTest {
+class DefaultPaymentFileProcessorServiceTest {
 
     public static final List<PaymentFileProcessor> OBIE_FILE_TYPE_PROCESSORS = List.of(new OBIEPaymentInitiation31FileProcessor(),
                                                                                        new OBIEPain001FileProcessor());
@@ -57,7 +72,7 @@ class PaymentFileProcessorServiceTest {
     void failsToConstructProcessorServiceForDuplicatePaymentFileTypes() {
         // Attempt to create service with duplicate file processor impl
         IllegalStateException illegalStateException = assertThrows(IllegalStateException.class,
-                () -> new PaymentFileProcessorService(List.of(new OBIEPaymentInitiation31FileProcessor(), new OBIEPaymentInitiation31FileProcessor())));
+                () -> new DefaultPaymentFileProcessorService(List.of(new OBIEPaymentInitiation31FileProcessor(), new OBIEPaymentInitiation31FileProcessor())));
         assertThat(illegalStateException.getMessage()).isEqualTo("Duplicate paymentFileProcessor for fileType: UK.OBIE.PaymentInitiation.3.1");
 
         // Create another impl of processor with the UK_OBIE_PAYMENT_INITIATION_V3_1 fileType
@@ -73,7 +88,7 @@ class PaymentFileProcessorServiceTest {
             }
         };
         illegalStateException = assertThrows(IllegalStateException.class,
-                () -> new PaymentFileProcessorService(List.of(diffImplOfOBIEPaymentInitiationv31FileProcessor, new OBIEPaymentInitiation31FileProcessor())));
+                () -> new DefaultPaymentFileProcessorService(List.of(diffImplOfOBIEPaymentInitiationv31FileProcessor, new OBIEPaymentInitiation31FileProcessor())));
         assertThat(illegalStateException.getMessage()).isEqualTo("Duplicate paymentFileProcessor for fileType: UK.OBIE.PaymentInitiation.3.1");
     }
 
@@ -81,14 +96,14 @@ class PaymentFileProcessorServiceTest {
     @ParameterizedTest
     void failsToConstructServiceIfProcessorListNullOrEmpty(List<PaymentFileProcessor> paymentFileProcessors) {
         final IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-                () -> new PaymentFileProcessorService(paymentFileProcessors));
+                () -> new DefaultPaymentFileProcessorService(paymentFileProcessors));
         assertThat(illegalArgumentException.getMessage()).isEqualTo("1 or more paymentFileProcessors must be supplied");
     }
 
     @Test
     void shouldSupportProcessingDefaultObieFilePaymentTypes() throws OBErrorException {
         // Create the service with the default OBIE File Payment types supported
-        final PaymentFileProcessorService paymentFileProcessorService = new PaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS);
+        final DefaultPaymentFileProcessorService paymentFileProcessorService = new DefaultPaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS);
 
         // Verify the findPaymentFileType lookup works
         for (PaymentFileProcessor paymentFileProcessor : OBIE_FILE_TYPE_PROCESSORS) {
@@ -109,10 +124,10 @@ class PaymentFileProcessorServiceTest {
     void shouldSupportProcessingCustomFilePaymentTypes() throws OBErrorException {
         final List<PaymentFileProcessor> fileTypeProcessors = new ArrayList<>(OBIE_FILE_TYPE_PROCESSORS);
         // Configure the UnitTestPaymentFileType processor to return some pre-canned data
-        final PaymentFile processorPaymentFileResponse = new PaymentFile(7, new BigDecimal("343434.34"), UNIT_TEST_TYPE, List.of(new FRFilePayment()));
+        final PaymentFile processorPaymentFileResponse = new PaymentFile(UNIT_TEST_TYPE, List.of(new FRFilePayment()), new BigDecimal("343434.34"));
         fileTypeProcessors.add(new UnitTestPaymentFileTypeProcessor(processorPaymentFileResponse));
 
-        final PaymentFileProcessorService paymentFileProcessorService = new PaymentFileProcessorService(fileTypeProcessors);
+        final DefaultPaymentFileProcessorService paymentFileProcessorService = new DefaultPaymentFileProcessorService(fileTypeProcessors);
         assertThat(paymentFileProcessorService.findPaymentFileType(UNIT_TEST_TYPE.getFileType())).isEqualTo(UNIT_TEST_TYPE);
         assertThat(paymentFileProcessorService.processFile(UNIT_TEST_TYPE.getFileType(), "example file")).isEqualTo(processorPaymentFileResponse);
     }
@@ -120,7 +135,7 @@ class PaymentFileProcessorServiceTest {
     @Test
     void failsToFindPaymentFileTypeForUnknownType() {
         final OBErrorException obErrorException = assertThrows(OBErrorException.class,
-                () -> new PaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS).findPaymentFileType("weird format"));
+                () -> new DefaultPaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS).findPaymentFileType("weird format"));
         assertThat(obErrorException.getOBError().getErrorCode()).isEqualTo("OBRI.Request.File.Payment.FileType.Not.Supported");
         assertThat(obErrorException.getMessage()).contains("The Payment FileType: 'weird format' is not supported");
     }
@@ -128,7 +143,7 @@ class PaymentFileProcessorServiceTest {
     @Test
     void failsToProcessFileForUnknownType() {
         final OBErrorException obErrorException = assertThrows(OBErrorException.class,
-                () -> new PaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS).processFile("weird format", "fgdfgdgdgdfg"));
+                () -> new DefaultPaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS).processFile("weird format", "fgdfgdgdgdfg"));
         assertThat(obErrorException.getOBError().getErrorCode()).isEqualTo("OBRI.Request.File.Payment.FileType.Not.Supported");
         assertThat(obErrorException.getMessage()).contains("The Payment FileType: 'weird format' is not supported");
     }
@@ -136,14 +151,14 @@ class PaymentFileProcessorServiceTest {
     @Test
     void failsWhenFileProcessorRaisesOBException() {
         final OBErrorException obErrorException = assertThrows(OBErrorException.class,
-                () -> new PaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS).processFile(
+                () -> new DefaultPaymentFileProcessorService(OBIE_FILE_TYPE_PROCESSORS).processFile(
                         DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType().getFileType(), "junk"));
         assertThat(obErrorException.getOBError().getErrorCode()).isEqualTo("OBRI.Request.Object.file.invalid");
     }
 
     @Test
     void failsWhenFileProcessorRaisesUnexpectedException() {
-        final PaymentFileProcessorService paymentFileProcessorService = new PaymentFileProcessorService(List.of(new PaymentFileProcessor(){
+        final DefaultPaymentFileProcessorService paymentFileProcessorService = new DefaultPaymentFileProcessorService(List.of(new PaymentFileProcessor(){
             @Override
             public PaymentFileType getSupportedFileType() {
                 return UNIT_TEST_TYPE;

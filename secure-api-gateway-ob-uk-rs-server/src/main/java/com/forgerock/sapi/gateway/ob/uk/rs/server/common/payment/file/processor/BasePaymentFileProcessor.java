@@ -60,6 +60,6 @@ public abstract class BasePaymentFileProcessor implements PaymentFileProcessor {
     }
 
     protected PaymentFile createPaymentFile(List<FRFilePayment> payments, BigDecimal controlSum) {
-        return new PaymentFile(payments.size(), controlSum, supportedPaymentFileType, payments);
+        return new PaymentFile(supportedPaymentFileType, payments, controlSum);
     }
 }

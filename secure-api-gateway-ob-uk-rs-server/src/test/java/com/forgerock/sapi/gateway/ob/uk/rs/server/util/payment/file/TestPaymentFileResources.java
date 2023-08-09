@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
 
@@ -108,10 +107,6 @@ public class TestPaymentFileResources {
 
         public String getFileHash() {
             return fileHash;
-        }
-
-        public PaymentFile toPaymentFile() {
-            return new PaymentFile(numTransactions, controlSum, fileType, null);
         }
     }
 

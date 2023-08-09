@@ -19,29 +19,31 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRFilePayment;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a parsed valid payment file
  */
 public class PaymentFile {
-
-    private final int numberOfTransactions;
     private final BigDecimal controlSum;
     private final PaymentFileType fileType;
     private final List<FRFilePayment> payments;
 
-    public PaymentFile(int numberOfTransactions, BigDecimal controlSum, PaymentFileType fileType, List<FRFilePayment> payments) {
-        this.numberOfTransactions = numberOfTransactions;
-        this.controlSum = controlSum;
-        this.fileType = fileType;
-        this.payments = payments;
+    public PaymentFile(PaymentFileType fileType, List<FRFilePayment> payments, BigDecimal controlSum) {
+        this.controlSum = Objects.requireNonNull(controlSum);
+        this.fileType = Objects.requireNonNull(fileType);
+        this.payments = Objects.requireNonNull(payments);
+        if (payments.isEmpty()) {
+            throw new IllegalArgumentException("payments parameter must contain 1 or more payment objects");
+        }
+
     }
 
     /**
      * @return Number of transactions in payment file
      */
     public int getNumberOfTransactions() {
-        return numberOfTransactions;
+        return payments.size();
     }
 
     /**

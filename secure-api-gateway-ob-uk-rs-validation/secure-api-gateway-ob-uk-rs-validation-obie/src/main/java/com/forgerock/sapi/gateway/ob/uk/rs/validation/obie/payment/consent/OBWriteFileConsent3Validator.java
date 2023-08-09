@@ -15,6 +15,10 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
+import java.util.Objects;
+import java.util.Set;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
@@ -26,7 +30,17 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
  */
 public class OBWriteFileConsent3Validator extends BaseOBValidator<OBWriteFileConsent3> {
 
+    private final Set<String> supportedFileTypes;
+
+    public OBWriteFileConsent3Validator(Set<String> supportedFileTypes) {
+        this.supportedFileTypes = Objects.requireNonNull(supportedFileTypes);
+    }
+
     @Override
     protected void validate(OBWriteFileConsent3 obj, ValidationResult<OBError1> validationResult) {
+        final String fileType = obj.getData().getInitiation().getFileType();
+        if (!supportedFileTypes.contains(fileType)) {
+            validationResult.addError(OBRIErrorType.REQUEST_FILE_TYPE_NOT_SUPPORTED.toOBError1(fileType));
+        }
     }
 }

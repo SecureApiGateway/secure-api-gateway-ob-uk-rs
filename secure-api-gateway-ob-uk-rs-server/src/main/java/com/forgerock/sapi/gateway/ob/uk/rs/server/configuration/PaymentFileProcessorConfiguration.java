@@ -21,13 +21,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.DefaultPaymentFileProcessorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
 
 /**
- * Configure the {@link PaymentFileProcessorService}.
+ * Configuration that creates the {@link PaymentFileProcessorService} bean.
  *
- * The configuration registers all PaymentFileProcessor into the service.
+ * The configuration registers all PaymentFileProcessor into a {@link DefaultPaymentFileProcessorService} instance.
  *
  * To add new processors to the service, create a PaymentFileProcessor impl class and create a Spring Bean for this impl
  * (ether via Component Scanning or creating the bean in another Spring Configuration class).
@@ -40,7 +41,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.
 public class PaymentFileProcessorConfiguration {
 
     /**
-     * Create the {@link PaymentFileProcessorService} wiring in all available {@link PaymentFileProcessor} beans
+     * Creates a {@link DefaultPaymentFileProcessorService} wiring in all available {@link PaymentFileProcessor} beans
      *
      * @param paymentFileProcessors List<PaymentFileProcessor> all PaymentFileProcessor beans available in the
      *                              Spring Context
@@ -48,7 +49,7 @@ public class PaymentFileProcessorConfiguration {
      */
     @Bean
     public PaymentFileProcessorService paymentFileProcessorService(List<PaymentFileProcessor> paymentFileProcessors) {
-        return new PaymentFileProcessorService(paymentFileProcessors);
+        return new DefaultPaymentFileProcessorService(paymentFileProcessors);
     }
 
 }
