@@ -51,7 +51,7 @@
 
     <properties>
         <uk.bom.version>2.0.0</uk.bom.version>
-        <consent.api.version>2.0.1</consent.api.version>
+        <consent.api.version>2.0.2-SNAPSHOT</consent.api.version>
     </properties>
 
     <dependencyManagement>
