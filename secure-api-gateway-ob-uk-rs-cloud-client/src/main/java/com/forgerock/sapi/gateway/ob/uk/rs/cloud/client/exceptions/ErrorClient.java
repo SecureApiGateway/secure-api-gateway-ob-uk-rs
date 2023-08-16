@@ -23,7 +23,6 @@ import lombok.Data;
 public class ErrorClient {
     ErrorType errorType;
     String reason;
-    String intentId;
     String apiClientId;
     String userId;
     String userName;

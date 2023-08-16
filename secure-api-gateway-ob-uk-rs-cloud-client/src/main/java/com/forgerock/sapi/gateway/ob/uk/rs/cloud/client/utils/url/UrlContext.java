@@ -15,50 +15,17 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url;
 
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
 @Slf4j
 public class UrlContext {
 
-    public static final String INTENT_ID = "@IntentId@";
     public static final String USER_ID = "@UserId@";
-    public static String replaceParameterContextIntentId(String context, String intentId) throws ExceptionClient {
-
-        try {
-            requireNonNull(context, "(UrlContextUtil#replaceParameterContextIntentId) parameter 'context' cannot be null");
-            requireNonNull(intentId, "(UrlContextUtil#replaceParameterContextIntentId) parameter 'consentId' cannot be null");
-        } catch (NullPointerException exception) {
-            throw new ExceptionClient(
-                    ErrorClient.builder()
-                            .errorType(ErrorType.PARAMETER_ERROR)
-                            .intentId(intentId)
-                            .build(),
-                    exception.getMessage(),
-                    exception
-            );
-        }
-        IntentType intentType = IntentType.identify(intentId);
-        if (Objects.isNull(intentType)) {
-            String errorMessage = String.format("It has not been possible identify the intent type '%s' to replace the context.", intentId);
-            log.error("(UrlContextUtil#replaceParameterContextIntentId) {}", errorMessage);
-            throw new ExceptionClient(
-                    ErrorClient.builder()
-                            .errorType(ErrorType.UNKNOWN_INTENT_TYPE)
-                            .intentId(intentId)
-                            .build(),
-                    errorMessage
-            );
-        }
-        return context.replace(INTENT_ID, intentId);
-    }
 
     public static String replaceParameterContextValue(
             String context,
