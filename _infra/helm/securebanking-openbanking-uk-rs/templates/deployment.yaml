@@ -71,11 +71,11 @@ spec:
                 key: MONGODB_TEST_FACILITY_PASSWORD
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
-          - name: CONSENT_REPO_URI
+          - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
               configMapKeyRef:
                 name: deployment-config
-                key: CONSENT_REPO_URI
+                key: GATEWAY_DATA_REPO_URI
           - name: RCS_CONSENT_STORE_API_BASEURI
             valueFrom:
               configMapKeyRef:

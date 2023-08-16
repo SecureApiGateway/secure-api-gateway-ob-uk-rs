@@ -5,11 +5,11 @@
 # application, this config is deployment specific.
 #
 #
-# Consent Repo Configuration
-#consent:
-#  repo:
-#    # Connection string to the Consent Repo base URI
-#    uri:
+# Cloud Client API settings
+#cloud:
+#  client:
+#    # Connection string to connect to the Cloud Data API
+#    baseUri:
 #
 #rs:
 #  discovery:
@@ -41,15 +41,10 @@ logging:
     com.forgerock: DEBUG
     uk.org.openbanking: DEBUG
 
-# Configuration for calling the Consent Repository
-# See: com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration
-consent:
-  repo:
-    contexts_repo_consent:
-      get: /repo/consents/@IntentId@
-      put: /repo/consents/@IntentId@
-      patch: /repo/consents/@IntentId@
-      delete: /repo/consents/@IntentId@
+# Configuration for calling the Cloud Data API
+# com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.CloudClientConfiguration
+cloud:
+  client:
     contexts_user:
       get: /repo/users/@UserId@
       put: /repo/users/@UserId@

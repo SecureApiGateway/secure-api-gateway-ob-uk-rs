@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.CloudClientConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
@@ -52,7 +52,7 @@ public class UserClientServiceTest {
     private UserClientService userClientService;
 
     @Mock
-    protected ConsentRepoConfiguration configurationPropertiesClient;
+    protected CloudClientConfiguration configurationPropertiesClient;
 
     @Mock
     protected RestTemplate restTemplate;

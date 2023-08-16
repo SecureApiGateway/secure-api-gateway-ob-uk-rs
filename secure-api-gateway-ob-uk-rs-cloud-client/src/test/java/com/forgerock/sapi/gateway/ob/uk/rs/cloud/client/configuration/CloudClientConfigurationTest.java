@@ -27,19 +27,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for {@link ConsentRepoConfiguration}
+ * Unit test for {@link CloudClientConfiguration}
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ConsentRepoConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
-@EnableConfigurationProperties(value = ConsentRepoConfiguration.class)
+@ContextConfiguration(classes = {CloudClientConfiguration.class}, initializers = ConfigFileApplicationContextInitializer.class)
+@EnableConfigurationProperties(value = CloudClientConfiguration.class)
 @ActiveProfiles("test")
-public class ConsentRepoConfigurationTest {
+public class CloudClientConfigurationTest {
 
     @Autowired
-    private ConsentRepoConfiguration consentRepoConfiguration;
+    private CloudClientConfiguration cloudClientConfiguration;
 
     @Test
     public void shouldConfigureIgBaseUri(){
-        assertThat(consentRepoConfiguration.getConsentRepoBaseUri()).isEqualTo("http://ig:80");
+        assertThat(cloudClientConfiguration.getBaseUri()).isEqualTo("http://ig:80");
     }
 }

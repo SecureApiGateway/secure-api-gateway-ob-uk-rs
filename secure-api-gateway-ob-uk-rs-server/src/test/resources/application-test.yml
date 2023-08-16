@@ -6,14 +6,9 @@ spring:
       # force SpringBoot tests to use a random port for mongo
       port: 0
 
-consent:
-  repo:
-    uri: http://ig:80
-    contexts_repo_consent:
-      get: /repo/consents/@IntentId@
-      put: /repo/consents/@IntentId@
-      patch: /repo/consents/@IntentId@
-      delete: /repo/consents/@IntentId@
+cloud:
+  client:
+    baseUri: http://ig:80
     contexts_user:
       get: /repo/users/@UserId@
       put: /repo/users/@UserId@

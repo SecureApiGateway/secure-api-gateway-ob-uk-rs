@@ -17,20 +17,21 @@ package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration;
 
 import lombok.Data;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.Map;
 
-@Configuration
-@ConfigurationProperties(prefix = "consent.repo")
-@Data
-public class ConsentRepoConfiguration {
+import javax.annotation.PostConstruct;
 
-    @Value("${consent.repo.uri}")
+@Configuration
+@ConfigurationProperties(prefix = "cloud.client")
+@Data
+public class CloudClientConfiguration {
+
     private String baseUri;
+
     /*
      * Spring maps the properties, the keys from file will be the map keys
      * @see: application-test.yml
@@ -40,8 +41,14 @@ public class ConsentRepoConfiguration {
      */
     private Map<String, String> contextsUser = new LinkedCaseInsensitiveMap<>();
 
-
-    public String getConsentRepoBaseUri() {
-        return baseUri;
+    @PostConstruct
+    private void validateConfig() {
+        if (baseUri == null || baseUri.isBlank()) {
+            throw new IllegalStateException("Required configuration: cloud.client.baseUri is missing");
+        }
+        if (contextsUser.isEmpty()) {
+            throw new IllegalStateException("Required configuration: cloud.client.contextsUser map is missing");
+        }
     }
+
 }
