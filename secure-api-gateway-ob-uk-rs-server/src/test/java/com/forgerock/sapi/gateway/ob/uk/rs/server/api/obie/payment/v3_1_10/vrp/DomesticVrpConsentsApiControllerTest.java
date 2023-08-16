@@ -55,7 +55,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIn
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.test.support.DomesticVrpPaymentConsentDetailsTestFactory;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
@@ -388,7 +387,7 @@ public class DomesticVrpConsentsApiControllerTest {
 
     private FRBalance aValidBalance(BigDecimal amountBalance) {
         FRCashBalance cashBalance2 = new FRCashBalance();
-        cashBalance2.setAccountId(DomesticVrpPaymentConsentDetailsTestFactory.DEFAULT_ACCOUNT_ID);
+        cashBalance2.setAccountId("23242423424");
         FRAmount frAmount = new FRAmount();
         frAmount.setAmount(amountBalance.toPlainString());
         frAmount.setCurrency("GBP");

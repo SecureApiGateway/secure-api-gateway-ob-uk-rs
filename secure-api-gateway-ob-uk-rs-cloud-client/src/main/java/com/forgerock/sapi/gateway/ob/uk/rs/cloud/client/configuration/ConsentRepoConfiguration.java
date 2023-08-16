@@ -38,7 +38,6 @@ public class ConsentRepoConfiguration {
      * @Use pattern: contextMap.get(http-verb-any-case)
      * @Use: contextsRepoConsent.get("GeT")
      */
-    private Map<String, String> contextsRepoConsent = new LinkedCaseInsensitiveMap<>();
     private Map<String, String> contextsUser = new LinkedCaseInsensitiveMap<>();
 
 

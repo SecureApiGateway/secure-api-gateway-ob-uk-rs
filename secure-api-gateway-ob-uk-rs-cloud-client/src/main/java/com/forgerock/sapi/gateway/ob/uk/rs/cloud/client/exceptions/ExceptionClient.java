@@ -38,7 +38,6 @@ public class ExceptionClient extends Exception {
         super(ErrorType.INTERNAL_SERVER_ERROR.getDescription());
         this.errorClient = ErrorClient.builder()
                 .errorType(ErrorType.INTERNAL_SERVER_ERROR)
-                .intentId(clientRequest.getIntentId())
                 .build();
     }
 
@@ -46,7 +45,6 @@ public class ExceptionClient extends Exception {
         super(errorType != null ? errorType.getDescription() : ErrorType.INTERNAL_SERVER_ERROR.getDescription());
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
-                .intentId(clientRequest.getIntentId())
                 .build();
     }
 
@@ -61,7 +59,6 @@ public class ExceptionClient extends Exception {
         super(reason);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
-                .intentId(clientRequest.getIntentId())
                 .build();
     }
 
@@ -69,7 +66,6 @@ public class ExceptionClient extends Exception {
         super(reason, exception);
         this.errorClient = ErrorClient.builder()
                 .errorType(errorType != null ? errorType : ErrorType.INTERNAL_SERVER_ERROR)
-                .intentId(clientRequest.getIntentId())
                 .build();
     }
 

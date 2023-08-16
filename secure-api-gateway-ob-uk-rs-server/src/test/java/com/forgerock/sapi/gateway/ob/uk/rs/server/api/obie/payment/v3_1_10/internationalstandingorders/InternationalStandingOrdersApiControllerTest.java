@@ -52,7 +52,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentif
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.ConsentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsentStoreClient;
@@ -101,9 +100,6 @@ public class InternationalStandingOrdersApiControllerTest {
 
     @MockBean
     private FRAccountRepository frAccountRepository;
-
-    @MockBean
-    private ConsentService consentService;
 
     @MockBean
     private InternationalStandingOrderConsentStoreClient consentStoreClient;
