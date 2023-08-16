@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.ConsentRepoConfiguration;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.CloudClientConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
@@ -41,11 +41,11 @@ import static org.springframework.http.HttpMethod.GET;
 @Slf4j
 public class UserClientService {
     private final RestTemplate restTemplate;
-    private final ConsentRepoConfiguration consentRepoConfiguration;
+    private final CloudClientConfiguration cloudClientConfiguration;
 
-    public UserClientService(RestTemplate restTemplate, ConsentRepoConfiguration consentRepoConfiguration) {
+    public UserClientService(RestTemplate restTemplate, CloudClientConfiguration cloudClientConfiguration) {
         this.restTemplate = restTemplate;
-        this.consentRepoConfiguration = consentRepoConfiguration;
+        this.cloudClientConfiguration = cloudClientConfiguration;
     }
 
     public User getUserByName(String userName) throws ExceptionClient {
@@ -68,9 +68,9 @@ public class UserClientService {
 
     private User request(String userName, HttpMethod httpMethod) throws ExceptionClient {
         String userFilter = "?_queryFilter=userName+eq+\"" + userName + "\"";
-        String userFilterURL = consentRepoConfiguration.getConsentRepoBaseUri() +
+        String userFilterURL = cloudClientConfiguration.getBaseUri() +
                 UrlContext.UrlUserQueryFilter(
-                        consentRepoConfiguration.getContextsUser().get(httpMethod.name()),
+                        cloudClientConfiguration.getContextsUser().get(httpMethod.name()),
                         userFilter);
 
         log.debug("(UserServiceClient#request) request the user details from platform: {}", userFilterURL);
