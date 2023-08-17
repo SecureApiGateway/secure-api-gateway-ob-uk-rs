@@ -262,8 +262,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleOBErrorResponse(OBErrorResponseException ex,
                                                            WebRequest request) {
 
-        final String fapiInteractionId = request.getHeader("x-fapi-interaction-id");
-        log.info("({}) Request failed due to OBErrorResponseException - status: {}, category: {}, errors: {}", fapiInteractionId, ex.getStatus(), ex.getCategory(), ex.getErrors());
+        final String fapiInteractionId = getFapiInteractionId(request);
+        log.info("({}) Request failed due to OBErrorResponseException - status: {}, category: {}, errors: {}",
+                fapiInteractionId, ex.getStatus(), ex.getCategory(), ex.getErrors());
 
         return ResponseEntity.status(ex.getStatus()).body(
                 new OBErrorResponse1()
@@ -278,35 +279,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleOBError(OBErrorException ex,
                                                    WebRequest request) {
 
-        final String fapiInteractionId = request.getHeader("x-fapi-interaction-id");
+        final String fapiInteractionId = getFapiInteractionId(request);
         log.info("({}) Request failed due to exception - message: {}", fapiInteractionId, ex.getMessage());
 
         HttpStatus httpStatus = ex.getObriErrorType().getHttpStatus();
         return ResponseEntity.status(httpStatus).body(
                 new OBErrorResponse1()
                         .code(httpStatus.name())
-                        .id(request.getHeader("x-fapi-interaction-id"))
+                        .id(getFapiInteractionId(request))
                         .message(httpStatus.getReasonPhrase())
                         .errors(Collections.singletonList(ex.getOBError())));
-    }
-
-    // Required here because these programming errors can get lost in Spring handlers making debug very difficult
-    @ExceptionHandler(value = {IllegalArgumentException.class})
-    protected ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex,
-                                                           WebRequest request) {
-        log.error("Internal server error from an IllegalArgumentException", ex);
-        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        return ResponseEntity.status(httpStatus).body(
-                new OBErrorResponse1()
-                        .code(httpStatus.name())
-                        .id(request.getHeader("x-fapi-interaction-id"))
-                        .message(httpStatus.getReasonPhrase()));
     }
 
     @ExceptionHandler(value = {HttpMessageConversionException.class})
     protected ResponseEntity<Object> handleHttpMessageConversionException(HttpMessageConversionException ex,
                                                                           WebRequest request) {
-        log.debug("An invalid resource format ", ex);
+
+        log.info("({}) An invalid resource format ", getFapiInteractionId(request),ex);
         return handleOBErrorResponse(
                 new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -320,23 +309,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 request);
     }
 
-    @ExceptionHandler(value = {InvalidConsentException.class})
-    protected ResponseEntity<Object> handleInvalidConsentException(InvalidConsentException ex, WebRequest request) {
-        HttpStatus httpStatus = ex.getObriErrorType().getHttpStatus();
-        return ResponseEntity.status(httpStatus).body(
-                new OBErrorResponse1()
-                        .code(httpStatus.name())
-                        .id(request.getHeader("x-fapi-interaction-id"))
-                        .message(httpStatus.getReasonPhrase())
-                        .errors(
-                                Collections.singletonList(new OBError1().message(ex.getMessage()))
-                        )
-        );
-    }
-
     @ExceptionHandler(ConsentStoreClientException.class)
     protected ResponseEntity<OBErrorResponse1> handleConsentStoreClientException(ConsentStoreClientException ex, WebRequest request) {
-        final String fapiInteractionId = request.getHeader("x-fapi-interaction-id");
+        final String fapiInteractionId = getFapiInteractionId(request);
 
         // Omit the stacktrace as most of the exceptions are due to bad client requests
         log.info("({}) request failed due to Consent Store Exception: {}", fapiInteractionId, ex.getMessage());
@@ -380,5 +355,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .message(httpStatus.getReasonPhrase())
                 .errors(List.of(new OBError1().errorCode(errorCode)
                                               .message(message))));
+    }
+
+    /**
+     * Handler for unexpected RuntimeExceptions (such as NullPointerException).
+     *
+     * Spring will only call this handler if a more specific handler cannot be found, the ConsentStoreException is a
+     * RuntimeException but this has its own handler method.
+     *
+     * As these are unexpected, then we log at error level and include the stacktrace to aid debugging.
+     */
+    @ExceptionHandler(value = {RuntimeException.class})
+    protected ResponseEntity<Object> handleUnexpectedRuntimeException(RuntimeException ex,
+                                                                      WebRequest request) {
+        log.error("({}) Unexpected exception thrown processing request - returning 500 error", getFapiInteractionId(request), ex);
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(httpStatus).body(
+                new OBErrorResponse1()
+                        .code(httpStatus.name())
+                        .id(getFapiInteractionId(request))
+                        .message(httpStatus.getReasonPhrase()));
+    }
+
+    private static String getFapiInteractionId(WebRequest request) {
+        return request.getHeader("x-fapi-interaction-id");
     }
 }
