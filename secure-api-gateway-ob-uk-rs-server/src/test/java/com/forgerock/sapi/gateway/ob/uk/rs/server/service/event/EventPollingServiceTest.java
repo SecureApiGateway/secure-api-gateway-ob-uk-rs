@@ -18,8 +18,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.service.event;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPolling;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPollingError;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventNotification;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FRPendingEventsRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class EventPollingServiceTest {
     private static final String TPP_ID = "abc123";
 
     @Mock
-    private FRPendingEventsRepository mockRepo;
+    private FREventMessageRepository mockRepo;
     @InjectMocks
     private EventPollingService eventPollingService;
 
@@ -60,8 +60,8 @@ public class EventPollingServiceTest {
         eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
 
         // Then
-        verify(mockRepo).deleteByTppIdAndJti(eq(TPP_ID), eq("11111"));
-        verify(mockRepo).deleteByTppIdAndJti(eq(TPP_ID), eq("11111"));
+        verify(mockRepo).deleteByApiClientIdAndJti(eq(TPP_ID), eq("11111"));
+        verify(mockRepo).deleteByApiClientIdAndJti(eq(TPP_ID), eq("11111"));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class EventPollingServiceTest {
     @Test
     public void recordTppEventErrors_notificationExists_addError() {
         // Given
-        FREventNotification existingNotification = FREventNotification.builder()
+        FREventMessageEntity existingNotification = FREventMessageEntity.builder()
                 .id("1")
                 .jti("11111")
                 .errors(null)
@@ -103,7 +103,7 @@ public class EventPollingServiceTest {
         FREventPolling pollingRequest = FREventPolling.builder()
                 .setErrs(Collections.singletonMap("11111", FREventPollingError.builder().error("err1").description("error msg").build()))
                 .build();
-        when(mockRepo.findByTppIdAndJti(any(), any())).thenReturn(Optional.of(existingNotification));
+        when(mockRepo.findByApiClientIdAndJti(any(), any())).thenReturn(Optional.of(existingNotification));
 
         // When
         eventPollingService.recordTppEventErrors(pollingRequest, TPP_ID);
@@ -120,7 +120,7 @@ public class EventPollingServiceTest {
         FREventPolling pollingRequest = FREventPolling.builder()
                 .setErrs(Collections.singletonMap("11111", FREventPollingError.builder().error("err1").description("error msg").build()))
                 .build();
-        when(mockRepo.findByTppIdAndJti(any(), any())).thenReturn(Optional.empty());
+        when(mockRepo.findByApiClientIdAndJti(any(), any())).thenReturn(Optional.empty());
 
         // When
         eventPollingService.recordTppEventErrors(pollingRequest, TPP_ID);
@@ -146,17 +146,17 @@ public class EventPollingServiceTest {
     @Test
     public void fetchNewEvents_getAll() throws Exception{
         // Given
-        FREventNotification existingNotification1 = FREventNotification.builder()
+        FREventMessageEntity existingNotification1 = FREventMessageEntity.builder()
                 .id("1")
                 .jti("11111")
-                .signedJwt("test111")
+                .set("test111")
                 .build();
-        FREventNotification existingNotification2 = FREventNotification.builder()
+        FREventMessageEntity existingNotification2 = FREventMessageEntity.builder()
                 .id("2")
                 .jti("22222")
-                .signedJwt("test222")
+                .set("test222")
                 .build();
-        when(mockRepo.findByTppId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotification1, existingNotification2));
+        when(mockRepo.findByApiClientId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotification1, existingNotification2));
 
         // When
         FREventPolling pollingRequest = FREventPolling.builder()
@@ -174,18 +174,18 @@ public class EventPollingServiceTest {
     @Test
     public void fetchNewEvents_excludeEventsWithErrorsFromResults() throws Exception{
         // Given
-        FREventNotification existingNotificationWithoutError = FREventNotification.builder()
+        FREventMessageEntity existingNotificationWithoutError = FREventMessageEntity.builder()
                 .id("1")
                 .jti("11111")
-                .signedJwt("test111")
+                .set("test111")
                 .build();
-        FREventNotification existingNotificationWithError = FREventNotification.builder()
+        FREventMessageEntity existingNotificationWithError = FREventMessageEntity.builder()
                 .id("2")
                 .jti("22222")
-                .signedJwt("test222")
+                .set("test222")
                 .errors(FREventPollingError.builder().error("err1").description("error").build())
                 .build();
-        when(mockRepo.findByTppId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotificationWithoutError, existingNotificationWithError));
+        when(mockRepo.findByApiClientId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotificationWithoutError, existingNotificationWithError));
 
         // When
         FREventPolling pollingRequest = FREventPolling.builder()

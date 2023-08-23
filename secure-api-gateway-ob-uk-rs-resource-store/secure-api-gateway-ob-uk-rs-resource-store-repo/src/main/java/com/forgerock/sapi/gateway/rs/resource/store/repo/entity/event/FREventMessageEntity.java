@@ -39,7 +39,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Builder
 @Document
-public class FREventNotification implements Persistable<String> {
+public class FREventMessageEntity implements Persistable<String> {
 
     @Id
     @Indexed
@@ -48,10 +48,10 @@ public class FREventNotification implements Persistable<String> {
     @Indexed
     private String jti;
 
-    private String signedJwt;
+    private String set;
 
     @Indexed
-    private String tppId;
+    private String apiClientId;
 
     @CreatedDate
     private DateTime created;

@@ -19,8 +19,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPolling;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventNotification;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FRPendingEventsRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,13 +38,13 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class EventPollingService {
-    private final FRPendingEventsRepository frPendingEventsRepository;
+    private final FREventMessageRepository frEventMessageRepository;
 
     // The TPP can never request more events than this.
     private static final Integer MAX_EVENTS = 50;
 
-    public EventPollingService(FRPendingEventsRepository frPendingEventsRepository) {
-        this.frPendingEventsRepository = frPendingEventsRepository;
+    public EventPollingService(FREventMessageRepository frEventMessageRepository) {
+        this.frEventMessageRepository = frEventMessageRepository;
     }
 
     public void acknowledgeEvents(FREventPolling frEventPolling, String tppId) {
@@ -55,7 +55,7 @@ public class EventPollingService {
             log.debug("TPP '{}' is acknowledging (and therefore deleting) the following event notifications: {}", tppId, frEventPolling.getAck());
             frEventPolling.getAck()
                     .forEach(
-                            jti -> frPendingEventsRepository.deleteByTppIdAndJti(tppId, jti)
+                            jti -> frEventMessageRepository.deleteByApiClientIdAndJti(tppId, jti)
                     );
         }
     }
@@ -66,10 +66,10 @@ public class EventPollingService {
         if (frEventPolling.getSetErrs() != null && !frEventPolling.getSetErrs().isEmpty()) {
             log.debug("Persisting {} event notification errors for keys: {}", frEventPolling.getSetErrs().size(), frEventPolling.getSetErrs().keySet());
             frEventPolling.getSetErrs()
-                    .forEach((key, value) -> frPendingEventsRepository.findByTppIdAndJti(tppId, key)
+                    .forEach((key, value) -> frEventMessageRepository.findByApiClientIdAndJti(tppId, key)
                             .ifPresent(event -> {
                                 event.setErrors(value);
-                                frPendingEventsRepository.save(event);
+                                frEventMessageRepository.save(event);
                             }));
         }
 
@@ -95,9 +95,9 @@ public class EventPollingService {
 
         // Load all event notifications for TPP
         log.debug("Loading all notifications for TPP: {}", tppId);
-        return frPendingEventsRepository.findByTppId(tppId).stream()
+        return frEventMessageRepository.findByApiClientId(tppId).stream()
                 .filter(event -> !event.hasErrors())
-                .collect(Collectors.toMap(FREventNotification::getJti, FREventNotification::getSignedJwt));
+                .collect(Collectors.toMap(FREventMessageEntity::getJti, FREventMessageEntity::getSet));
     }
 
     public Map<String, String> truncateEvents(Integer maxEvents, Map<String, String> eventNotifications, String tppId) {
