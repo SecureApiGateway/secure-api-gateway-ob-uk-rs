@@ -65,11 +65,11 @@ public class AggregatedPollingApiControllerTest {
     @Test
     public void shouldPollEvents() {
         // Given
-        String tppId = UUID.randomUUID().toString();
-        FREventMessageEntity frEventMessageEntity = aValidFREventNotificationEntityBuilder(tppId).build();
+        String apiClientId = UUID.randomUUID().toString();
+        FREventMessageEntity frEventMessageEntity = aValidFREventNotificationEntityBuilder(apiClientId).build();
         pendingEventsRepository.save(frEventMessageEntity);
         OBEventPolling1 obEventPolling = aValidOBEventPolling1();
-        HttpHeaders headers = HttpHeadersTestDataFactory.requiredEventHttpHeaders(eventsUrl(), tppId);
+        HttpHeaders headers = HttpHeadersTestDataFactory.requiredEventHttpHeaders(eventsUrl(), apiClientId);
         HttpEntity<OBEventPolling1> request = new HttpEntity<>(obEventPolling, headers);
 
         // When
@@ -84,13 +84,13 @@ public class AggregatedPollingApiControllerTest {
     @Test
     public void shouldAcknowledgeEvents() {
         // Given
-        String tppId = UUID.randomUUID().toString();
-        FREventMessageEntity frEventMessageEntity = aValidFREventNotificationEntityBuilder(tppId).build();
+        String apiClientId = UUID.randomUUID().toString();
+        FREventMessageEntity frEventMessageEntity = aValidFREventNotificationEntityBuilder(apiClientId).build();
         pendingEventsRepository.save(frEventMessageEntity);
         OBEventPolling1 obEventPolling = aValidOBEventPolling1();
         // set the ACK for acknowledgement
         obEventPolling.setAck(List.of(frEventMessageEntity.getJti()));
-        HttpHeaders headers = HttpHeadersTestDataFactory.requiredEventHttpHeaders(eventsUrl(), tppId);
+        HttpHeaders headers = HttpHeadersTestDataFactory.requiredEventHttpHeaders(eventsUrl(), apiClientId);
         HttpEntity<OBEventPolling1> request = new HttpEntity<>(obEventPolling, headers);
 
         // When
@@ -106,12 +106,12 @@ public class AggregatedPollingApiControllerTest {
         return BASE_URL + port + EVENTS_URI;
     }
 
-    private FREventMessageEntity.FREventMessageEntityBuilder aValidFREventNotificationEntityBuilder(String tppId) {
+    private FREventMessageEntity.FREventMessageEntityBuilder aValidFREventNotificationEntityBuilder(String apiClientId) {
         return FREventMessageEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .jti(UUID.randomUUID().toString())
                 .set("eyJraWQiOiJkOGFiMzI4N2QxZTI4MDc0NDFjMWM4Yjc0MGNjYWQ3MTBiMjM2MDI4IiwiYWxnIjoiUFMyNTYifQ.eyJhdWQiOiI3dW14NW5UUjMzODExUXlRZmkiLCJzdWIiOiJodHRwczpcL1wvZXhhbXBsZWJhbmsuY29tXC9hcGlcL29wZW4tYmFua2luZ1wvdjMuMS4yXC9waXNwXC9kb21lc3RpYy1wYXltZW50c1wvcG10LTcyOTAtMDAzIiwiaXNzIjoiaHR0cHM6XC9cL2FzLmFzcHNwLnNhbmRib3gubGxveWRzYmFua2luZy5jb21cL29hdXRoMiIsInR4biI6ImRmYzUxNjI4LTM0NzktNGI4MS1hZDYwLTIxMGI0M2QwMjMwNiIsInRvZSI6MTUxNjIzOTAyMiwiaWF0IjoxNjE2NTk2NTg1LCJqdGkiOiJkYzY0OTkzMy0zMDc3LTRhZGItOGFjNy0xYmRjODA1Y2M2MTEiLCJldmVudHMiOnsidXJuOnVrOm9yZzpvcGVuYmFua2luZzpldmVudHM6cmVzb3VyY2UtdXBkYXRlIjp7InN1YmplY3QiOnsiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC9yaWQiOiJwbXQtNzI5MC0wMDMiLCJzdWJqZWN0X3R5cGUiOiJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL3JpZF9odHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL3J0eSIsImh0dHA6XC9cL29wZW5iYW5raW5nLm9yZy51a1wvcmxrIjpbeyJsaW5rIjoiaHR0cHM6XC9cL2V4YW1wbGViYW5rLmNvbVwvYXBpXC9vcGVuLWJhbmtpbmdcL3YzLjEuMlwvcGlzcFwvZG9tZXN0aWMtcGF5bWVudHNcL3BtdC03MjkwLTAwMyIsInZlcnNpb24iOiIzLjEuMiJ9XSwiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC9ydHkiOiJkb21lc3RpYy1wYXltZW50In19fX0.kgaGq6mN3Gso7er_bKXLQF0cTc4LtHKaVRErtTOhIYzLds2af8NKPhCHcqs74epEfYb_IZc8onKJEUpjiCKDKCipLyzHUD2DFxPd3BCTVAlP1eXDTDuWSa5ZwcrINEwNfeBLbyqOp1oTS5VUJ_ld9d7ovERr271DipZ4OXTC5AR04T2BzK4GlU4ekjqOaYulVD3GLWNZuFfoVXeyPPr9t-q1SPZLGmR_e3kRETxn_v32JzIQx8iN8ACOkOvMEXYA_mKhbSiwj4i_9_O9lOYBJo2BQClfC5vcxrnNSmg5tu0V-nYw-4q4IajwhNKBIbO7yZhS6y7QWXPgeUbZEv3luA")
-                .apiClientId(tppId);
+                .apiClientId(apiClientId);
     }
 
     private OBEventPolling1 aValidOBEventPolling1() {

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 public class EventPollingServiceTest {
-    private static final String TPP_ID = "abc123";
+    private static final String API_CLIENT_ID = "abc123";
 
     @Mock
     private FREventMessageRepository mockRepo;
@@ -57,11 +57,11 @@ public class EventPollingServiceTest {
                 .build();
 
         // When
-        eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
+        eventPollingService.acknowledgeEvents(pollingRequest, API_CLIENT_ID);
 
         // Then
-        verify(mockRepo).deleteByApiClientIdAndJti(eq(TPP_ID), eq("11111"));
-        verify(mockRepo).deleteByApiClientIdAndJti(eq(TPP_ID), eq("11111"));
+        verify(mockRepo).deleteByApiClientIdAndJti(eq(API_CLIENT_ID), eq("11111"));
+        verify(mockRepo).deleteByApiClientIdAndJti(eq(API_CLIENT_ID), eq("11111"));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class EventPollingServiceTest {
                 .build();
 
         // When
-        eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
+        eventPollingService.acknowledgeEvents(pollingRequest, API_CLIENT_ID);
 
         // Then
         verifyNoMoreInteractions(mockRepo);
@@ -86,7 +86,7 @@ public class EventPollingServiceTest {
                 .build();
 
         // When
-        eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
+        eventPollingService.acknowledgeEvents(pollingRequest, API_CLIENT_ID);
 
         // Then
         verifyNoMoreInteractions(mockRepo);
@@ -106,7 +106,7 @@ public class EventPollingServiceTest {
         when(mockRepo.findByApiClientIdAndJti(any(), any())).thenReturn(Optional.of(existingNotification));
 
         // When
-        eventPollingService.recordTppEventErrors(pollingRequest, TPP_ID);
+        eventPollingService.recordTppEventErrors(pollingRequest, API_CLIENT_ID);
 
         // Then
         verify(mockRepo, times(1)).save(any());
@@ -123,7 +123,7 @@ public class EventPollingServiceTest {
         when(mockRepo.findByApiClientIdAndJti(any(), any())).thenReturn(Optional.empty());
 
         // When
-        eventPollingService.recordTppEventErrors(pollingRequest, TPP_ID);
+        eventPollingService.recordTppEventErrors(pollingRequest, API_CLIENT_ID);
 
         // Then
         verify(mockRepo, times(0)).save(any());
@@ -137,7 +137,7 @@ public class EventPollingServiceTest {
                 .build();
 
         // When
-        eventPollingService.recordTppEventErrors(pollingRequest, TPP_ID);
+        eventPollingService.recordTppEventErrors(pollingRequest, API_CLIENT_ID);
 
         // Then
         verifyNoMoreInteractions(mockRepo);
@@ -156,14 +156,14 @@ public class EventPollingServiceTest {
                 .jti("22222")
                 .set("test222")
                 .build();
-        when(mockRepo.findByApiClientId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotification1, existingNotification2));
+        when(mockRepo.findByApiClientId(eq(API_CLIENT_ID))).thenReturn(ImmutableList.of(existingNotification1, existingNotification2));
 
         // When
         FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(100)
                 .returnImmediately(true)
                 .build();
-        Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, TPP_ID);
+        Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, API_CLIENT_ID);
 
         // Then
         assertThat(eventNotifications.size()).isEqualTo(2);
@@ -185,14 +185,14 @@ public class EventPollingServiceTest {
                 .set("test222")
                 .errors(FREventPollingError.builder().error("err1").description("error").build())
                 .build();
-        when(mockRepo.findByApiClientId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotificationWithoutError, existingNotificationWithError));
+        when(mockRepo.findByApiClientId(eq(API_CLIENT_ID))).thenReturn(ImmutableList.of(existingNotificationWithoutError, existingNotificationWithError));
 
         // When
         FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(null) // Do not restrict
                 .returnImmediately(true)
                 .build();
-        Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, TPP_ID);
+        Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, API_CLIENT_ID);
 
         // Then
         assertThat(eventNotifications.size()).isEqualTo(1);
@@ -206,7 +206,7 @@ public class EventPollingServiceTest {
                 .maxEvents(0)
                 .returnImmediately(true)
                 .build();
-        Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, TPP_ID);
+        Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, API_CLIENT_ID);
 
         // Then
         assertThat(eventNotifications.size()).isEqualTo(0);
@@ -224,7 +224,7 @@ public class EventPollingServiceTest {
 
         assertThatThrownBy(() ->
                 // When
-                eventPollingService.fetchNewEvents(pollingRequest, TPP_ID))
+                eventPollingService.fetchNewEvents(pollingRequest, API_CLIENT_ID))
                 // Then
                 .isInstanceOf(OBErrorResponseException.class);
     }
@@ -236,7 +236,7 @@ public class EventPollingServiceTest {
         ImmutableMap<String, String> allEventsMap = ImmutableMap.of("11111", "jwt1", "22222", "jwt2", "33333", "jwt3");
 
         // When
-        Map<String, String> truncatedEvents = eventPollingService.truncateEvents(maxEventsParam, allEventsMap, TPP_ID);
+        Map<String, String> truncatedEvents = eventPollingService.truncateEvents(maxEventsParam, allEventsMap, API_CLIENT_ID);
 
         // Then
         assertThat(truncatedEvents.size()).isEqualTo(2);
@@ -245,7 +245,7 @@ public class EventPollingServiceTest {
     @Test
     public void truncateEvents_noEvents_doNothing() {
         // When
-        Map<String, String> truncatedEvents = eventPollingService.truncateEvents(2, Collections.emptyMap(), TPP_ID);
+        Map<String, String> truncatedEvents = eventPollingService.truncateEvents(2, Collections.emptyMap(), API_CLIENT_ID);
 
         // Then
         assertThat(truncatedEvents.size()).isEqualTo(0);
