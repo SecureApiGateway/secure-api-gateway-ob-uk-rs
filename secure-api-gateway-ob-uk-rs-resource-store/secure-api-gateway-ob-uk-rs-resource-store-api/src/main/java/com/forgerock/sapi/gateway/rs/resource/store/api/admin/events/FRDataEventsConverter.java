@@ -37,7 +37,7 @@ public class FRDataEventsConverter {
         List<FREventMessageEntity> frEventMessageEntityList = new ArrayList<>();
         frEventMessages.getEvents().forEach(
                 frEventMessage -> {
-                    FREventMessageEntity eventMessageEntity = toFREventMessageEntity(frEventMessages.getTppId(), frEventMessage);
+                    FREventMessageEntity eventMessageEntity = toFREventMessageEntity(frEventMessages.getApiClientId(), frEventMessage);
                     frEventMessageEntityList.add(eventMessageEntity);
                 }
         );

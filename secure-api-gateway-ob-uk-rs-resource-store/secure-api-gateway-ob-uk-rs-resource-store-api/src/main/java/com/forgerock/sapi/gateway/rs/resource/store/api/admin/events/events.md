@@ -1,95 +1,39 @@
 # Data Events
+An admin api to import, export, update and delete event messages by api client for test facility bank
 
-## Objects
+All events operations are filtered by api client, so that each api client only can manage his owned events.
 
-### FRDataEvent
+| operation | endpoint                                                        | description                                            |
+|-----------|-----------------------------------------------------------------|--------------------------------------------------------|
+| POST      | /rs/admin/data/events                                           | import event messages                                  |
+| PUT       | /rs/admin/data/events?apiClientId={{api client id}}             | update event messages for a tpp (api client)           |
+| PUT       | /rs/admin/data/events?apiClientId={{api client id}}&jti={{jti}} | update an event messages for a tpp (api client) by jti |
+| GET       | /rs/admin/data/events?apiClientId={{api client id}}             | export all event messages for a tpp                    |
+| DELETE    | /rs/admin/data/events?apiClientId={{api client id}}             | delete all event messages for a tpp                    |
+| DELETE    | /rs/admin/data/events?apiClientId={{api client id}}&jti={{jti}} | delete an event message for a tpp by jti               |
 
-| Field | Description | Class | Occurrence |
-| --- | --- | --- | --- |
-| tppId | The tpp user name, user for import, update and export | Max 128 text | 1..1 |
-| jti | JWT ID to export and update | Max 128 text | 0..1 |  
-| events | Event to import and update | OBEventNotification2 Object | 0..1 |
+The API is protected by IG and must be used with a proper client certificate and access token with all scopes (openid, payment, account, fundsconfirmation)
 
-### OBEventNotification2
+An Event Notification message needs to be structured as JWT aligned with Security Event Token standard (SET) (https://datatracker.ietf.org/doc/html/rfc8417)
+and must be signed for non-repudiation.
 
-| Field | Description | Class | Occurrence |
-| --- | --- | --- | --- |
-| iat | Issued at | int | 1..1 |
-| jti | JWT ID | Max 128 text | 1..1 |
-| sub | Subject | anyURI | 1..1 |
-| aud | Audience | Max 128 text | 1..1 |
-| txn | Transaction Identifier | Max 128 text | 1..1 |
-| toe | Time of event | int | 1..1 |
-| events | Collection of events | OBEvent | 1..1 |
+IG have the responsibility of:
+* Sign each event from the request payload to be import through admin/data/events RS API as Signed JWT SET
 
-## Context 
-- GET `/api/data/events`: export event by tppId
-- GET `/api/data/events/all`: export all events
-- POST `/api/data/events`: import events
-- PUT `/api/data/events`: update events
-
-## Request Examples
-### GET `/api/data/events` export events by tppId
-> The field `tppId` is mandatory.
-```json
-{ "tppId": "3ffb98cc-be98-4b10-a405-bde41e88c2c7"}
-```
-### GET `/api/data/events/all` export all events
-- EMPTY Body
-
-### POST `/api/data/events` import events by tppId
-> The field `tppId` is mandatory.
-
-> The Array field `events` cannot be empty.
-```json
-{ 
-"apiClientId": "3ffb98cc-be98-4b10-a405-bde41e88c2c7",
-"events":
-  [
-    {"set": "eyJraWQiOiJkOGFiMzI4N2QxZTI4M....." }      
-  ]
-}
-```
-**Stored FREventNotification example**
+#### Payload example
 ```json
 {
-  "_id": {
-    "$oid": "605b4e69dc6d66001587b759"
-  },
-  "jti": "5a9658ba-590e-4daf-b18f-86fc1e558510",
-  "set": "eyJraWQiOiJkOGFiMzI4N2QxZTI4MDc0NDFjMWM4Yjc0MGNjYWQ3MTBiMjM2MDI4IiwiYWxnIjoiUFMyNTYifQ.eyJhdWQiOiI3dW14NW5UUjMzODExUXlRZmkiLCJzdWIiOiJodHRwczpcL1wvZXhhbXBsZWJhbmsuY29tXC9hcGlcL29wZW4tYmFua2luZ1wvdjMuMS4yXC9waXNwXC9kb21lc3RpYy1wYXltZW50c1wvcG10LTcyOTAtMDAzIiwiaXNzIjoiaHR0cHM6XC9cL2FzLmFzcHNwLnNhbmRib3gubGxveWRzYmFua2luZy5jb21cL29hdXRoMiIsInR4biI6ImRmYzUxNjI4LTM0NzktNGI4MS1hZDYwLTIxMGI0M2QwMjMwNiIsInRvZSI6MTUxNjIzOTAyMiwiaWF0IjoxNjE2NTk2NTg1LCJqdGkiOiJkYzY0OTkzMy0zMDc3LTRhZGItOGFjNy0xYmRjODA1Y2M2MTEiLCJldmVudHMiOnsidXJuOnVrOm9yZzpvcGVuYmFua2luZzpldmVudHM6cmVzb3VyY2UtdXBkYXRlIjp7InN1YmplY3QiOnsiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC9yaWQiOiJwbXQtNzI5MC0wMDMiLCJzdWJqZWN0X3R5cGUiOiJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL3JpZF9odHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL3J0eSIsImh0dHA6XC9cL29wZW5iYW5raW5nLm9yZy51a1wvcmxrIjpbeyJsaW5rIjoiaHR0cHM6XC9cL2V4YW1wbGViYW5rLmNvbVwvYXBpXC9vcGVuLWJhbmtpbmdcL3YzLjEuMlwvcGlzcFwvZG9tZXN0aWMtcGF5bWVudHNcL3BtdC03MjkwLTAwMyIsInZlcnNpb24iOiIzLjEuMiJ9XSwiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC9ydHkiOiJkb21lc3RpYy1wYXltZW50In19fX0.kgaGq6mN3Gso7er_bKXLQF0cTc4LtHKaVRErtTOhIYzLds2af8NKPhCHcqs74epEfYb_IZc8onKJEUpjiCKDKCipLyzHUD2DFxPd3BCTVAlP1eXDTDuWSa5ZwcrINEwNfeBLbyqOp1oTS5VUJ_ld9d7ovERr271DipZ4OXTC5AR04T2BzK4GlU4ekjqOaYulVD3GLWNZuFfoVXeyPPr9t-q1SPZLGmR_e3kRETxn_v32JzIQx8iN8ACOkOvMEXYA_mKhbSiwj4i_9_O9lOYBJo2BQClfC5vcxrnNSmg5tu0V-nYw-4q4IajwhNKBIbO7yZhS6y7QWXPgeUbZEv3luA",
-  "apiClientId": "6a067bec-a0e7-43d9-9f93-bf42d4ee2f75",
-  "created": {
-    "$date": "2021-03-24T14:36:25.643Z"
-  },
-  "updated": {
-    "$date": "2021-03-24T14:36:41.767Z"
-  },
-  "errors": {
-    "error": "jwtIss",
-    "description": "Issuer is invalid or could not be verified"
-  },
-  "_class": "com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification"
-}
-```
-        
-### PUT `/api/data/events` update events by tppId
-> The field `tppId` is mandatory.
-
-> The field `events[].jti` must be an existing jti.
-```json
-{ 
-"apiClientId": "3ffb98cc-be98-4b10-a405-bde41e88c2c7",
-"events":
+  "apiClientId": "3ffb98cc-be98-4b10-a405-bde41e88c2c7",
+  "events":
   [
     {
       "iss": "https://examplebank.com/",
-      "iat": "1516239022",
+      "iat": 1516239022,
       "jti": "b460a07c-4962-43d1-85ee-9dc10fbb8f6c",
       "sub": "https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003",
       "aud": "7umx5nTR33811QyQfi",
       "txn": "dfc51628-3479-4b81-ad60-210b43d02306",
-      "toe": "1516239022",
+      "toe": 1516239022,
       "events": {
         "urn:uk:org:openbanking:events:resource-update": {
           "subject": {
@@ -113,248 +57,138 @@
   ]
 }
 ```
-## The Swagger Specification for Event
-[read write api specs swagger](https://github.com/OpenBankingUK/read-write-api-specs)
+<details>
+<summary>JSON payload schema</summary>
 
 ```json
 {
-  "swagger": "2.0",
-  "info": {
-    "title": "Event Notification API Specification - TPP Endpoints",
-    "description": "Swagger for Event Notification API Specification - TPP Endpoints",
-    "termsOfService": "https://www.openbanking.org.uk/terms",
-    "contact": {
-      "name": "Service Desk",
-      "email": "ServiceDesk@openbanking.org.uk"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Schema for events notification messages, to be processed and imported by SAPIG",
+  "type": "object",
+  "properties": {
+    "apiClientId": {
+      "type": "string",
+      "description": "A value that represents the identification value assigned a tpp application after registration (api client Id)"
     },
-    "license": {
-      "name": "open-licence",
-      "url": "https://www.openbanking.org.uk/open-licence"
-    },
-    "version": "v3.0.0"
-  },
-  "basePath": "/open-banking/v3.0",
-  "schemes": [
-    "https"
-  ],
-  "paths": {
-    "/event-notifications": {
-      "post": {
-        "summary": "Send an event notification",
-        "operationId": "CreateEventNotification",
-        "consumes": [
-          "application/jwt"
-        ],
-        "tags": [
-          "Event Notification"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/OBEventNotification1Param"
+    "events": {
+      "type": "array",
+      "description": "Security Event Token (SET) claims, https://datatracker.ietf.org/doc/html/rfc8417#section-2.2",
+      "items": {
+        "type": "object",
+        "properties": {
+          "iss": {
+            "type": "string",
+            "description": "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1"
           },
-          {
-            "$ref": "#/parameters/x-fapi-financial-id-Param"
+          "iat": {
+            "type": "number",
+            "description": "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6"
           },
-          {
-            "$ref": "#/parameters/x-fapi-interaction-id-Param"
+          "jti": {
+            "type": "string",
+            "description": "Unique identifier for the SET, https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7"
+          },
+          "sub": {
+            "type": "string",
+            "description": "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2"
+          },
+          "aud": {
+            "type": "string",
+            "description": "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3"
+          },
+          "txn": {
+            "type": "string",
+            "description": "Transaction Identifier"
+          },
+          "toe": {
+            "type": "number",
+            "description": "A value that represents the date and time at which the event occurred.  This value is a NumericDate"
+          },
+          "events": {
+            "type": "object",
+            "description": "This claim contains a set of event statements that each provide information describing a single logical event that has occurred",
+            "properties": {
+              "urn:uk:org:openbanking:events:resource-update": {
+                "type": "object",
+                "properties": {
+                  "subject": {
+                    "type": "object",
+                    "properties": {
+                      "subject_type": {
+                        "type": "string"
+                      },
+                      "http://openbanking.org.uk/rid": {
+                        "type": "string"
+                      },
+                      "http://openbanking.org.uk/rty": {
+                        "type": "string"
+                      },
+                      "http://openbanking.org.uk/rlk": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "version": {
+                              "type": "string"
+                            },
+                            "link": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "version",
+                            "link"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "subject_type",
+                      "http://openbanking.org.uk/rid",
+                      "http://openbanking.org.uk/rty",
+                      "http://openbanking.org.uk/rlk"
+                    ]
+                  }
+                },
+                "required": [
+                  "subject"
+                ]
+              }
+            },
+            "required": [
+              "urn:uk:org:openbanking:events:resource-update"
+            ]
           }
-        ],
-        "responses": {
-          "202": {
-            "description": "Accepted"
-          }
-        }
+        },
+        "required": [
+          "iss",
+          "iat",
+          "jti",
+          "sub",
+          "aud",
+          "events"
+        ]
       }
     }
   },
-  "parameters": {
-    "OBEventNotification1Param": {
-      "in": "body",
-      "name": "OBEventNotification1Param",
-      "description": "Create an Callback URI",
-      "required": true,
-      "schema": {
-        "type": "string",
-        "format": "base64"
-      }
-    },
-    "x-fapi-financial-id-Param": {
-      "in": "header",
-      "name": "x-fapi-financial-id",
-      "type": "string",
-      "required": true,
-      "description": "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB."
-    },
-    "x-fapi-interaction-id-Param": {
-      "in": "header",
-      "name": "x-fapi-interaction-id",
-      "type": "string",
-      "required": false,
-      "description": "An RFC4122 UID used as a correlation id."
+  "required": [
+    "apiClientId",
+    "events"
+  ]
+}
+```
+</details>
+
+### Response examples
+**Import and update**
+```json
+{
+  "apiClientId": "3ffb98cc-be98-4b10-a405-bde41e88c2c7",
+  "events": [
+    {
+      "jti": "b460a07c-4962-43d1-85ee-9dc10fbb8f6c",
+      "set": "eyJ0eXAiOiJKV1QiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lhdCI6MTY5MjM3MzAxNy4zNzksImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvdGFuIjoib3BlbmJhbmtpbmcub3JnLnVrIiwiY3JpdCI6WyJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lhdCIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaXNzIiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay90YW4iXSwia2lkIjoieGNKZVZ5dFRrRkwyMWxISVVWa0FkNlFWaTRNIiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pc3MiOiIwMDE1ODAwMDAxMDQxUkVBQVkiLCJhbGciOiJQUzI1NiJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGViYW5rLmNvbS8iLCJpYXQiOjE1MTYyMzkwMjIsImp0aSI6ImI0NjBhMDdjLTQ5NjItNDNkMS04NWVlLTlkYzEwZmJiOGY2YyIsInN1YiI6Imh0dHBzOi8vZXhhbXBsZWJhbmsuY29tL2FwaS9vcGVuLWJhbmtpbmcvdjMuMC9waXNwL2RvbWVzdGljLXBheW1lbnRzL3BtdC03MjkwLTAwMyIsImF1ZCI6Ijd1bXg1blRSMzM4MTFReVFmaSIsInR4biI6ImRmYzUxNjI4LTM0NzktNGI4MS1hZDYwLTIxMGI0M2QwMjMwNiIsInRvZSI6MTUxNjIzOTAyMiwiZXZlbnRzIjp7InVybjp1azpvcmc6b3BlbmJhbmtpbmc6ZXZlbnRzOnJlc291cmNlLXVwZGF0ZSI6eyJzdWJqZWN0Ijp7InN1YmplY3RfdHlwZSI6Imh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvcmlkX2h0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvcnR5IiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9yaWQiOiJwbXQtNzI5MC0wMDMiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3J0eSI6ImRvbWVzdGljLXBheW1lbnQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3JsayI6W3sidmVyc2lvbiI6InYzLjAiLCJsaW5rIjoiaHR0cHM6Ly9leGFtcGxlYmFuay5jb20vYXBpL29wZW4tYmFua2luZy92My4wL3Bpc3AvZG9tZXN0aWMtcGF5bWVudHMvcG10LTcyOTAtMDAzIn0seyJ2ZXJzaW9uIjoidjEuMSIsImxpbmsiOiJodHRwczovL2V4YW1wbGViYW5rLmNvbS9hcGkvb3Blbi1iYW5raW5nL3YxLjEvcGF5bWVudC1zdWJtaXNzaW9ucy9wbXQtNzI5MC0wMDMifV19fX19.MNhxg1ujcn0y-NW7DrSRw-HUaRqO28ifX7lHSxW_xcnupo9tMsP2Z0hkLIRquRa1gRE--WLWc_E7prUmsUYUqr4MTcX1XQgAYs3FHW5mX6x5wLrP7zC4Hs5SKqjPiEPqov27ZlBTpbXRRXe5L8COCRPEr7AGyP0QvOQ1xOUxWd1PVLaJHVi7RNI2V--YJAAopwSu_oIadE1CBPxuqiyVmXqeQUXG-q9O6nkjF_2SusBTz_EBh91wRIanZa47Hcwj1zb4DDWOu0nY5E3zFq98iWkTvChnMn1EHKLn-fBMT9X7thbK5g3q4iduJCprRJCLZnLYqHIy03XcgcwR3vZgpA"
     }
-  },
-  "securityDefinitions": {
-    "TPPOAuth2Security": {
-      "type": "oauth2",
-      "flow": "application",
-      "tokenUrl": "https://authserver.example/token",
-      "scopes": {
-        "accounts": "Ability to read Accounts information",
-        "fundsconfirmation": "Ability to confirm funds",
-        "payments": "Generic payment scope"
-      },
-      "description": "TPP client credential authorisation flow with the ASPSP"
-    }
-  },
-  "definitions": {
-    "OBEvent1": {
-      "description": "Events.",
-      "type": "object",
-      "properties": {
-        "urn:uk:org:openbanking:events:resource-update": {
-          "$ref": "#/definitions/OBEventResourceUpdate1"
-        }
-      },
-      "required": [
-        "urn:uk:org:openbanking:events:resource-update"
-      ],
-      "additionalProperties": false
-    },
-    "OBEventLink1": {
-      "description": "Resource links to other available versions of the resource.",
-      "type": "object",
-      "properties": {
-        "version": {
-          "description": "Resource version.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 10
-        },
-        "link": {
-          "description": "Resource link.",
-          "type": "string"
-        }
-      },
-      "required": [
-        "version",
-        "link"
-      ],
-      "additionalProperties": false,
-      "minProperties": 1
-    },
-    "OBEventNotification1": {
-      "description": "The resource-update event.",
-      "type": "object",
-      "properties": {
-        "iss": {
-          "description": "Issuer.",
-          "type": "string"
-        },
-        "iat": {
-          "description": "Issued At. ",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 10,
-          "pattern": "[0-9]{1,10}"
-        },
-        "jti": {
-          "description": "JWT ID.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128
-        },
-        "aud": {
-          "description": "Audience.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128
-        },
-        "sub": {
-          "description": "Subject",
-          "type": "string",
-          "format": "uri"
-        },
-        "txn": {
-          "description": "Transaction Identifier.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128
-        },
-        "toe": {
-          "description": "Time of Event.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 10,
-          "pattern": "[0-9]{1,10}"
-        },
-        "events": {
-          "$ref": "#/definitions/OBEvent1"
-        }
-      },
-      "required": [
-        "iss",
-        "iat",
-        "jti",
-        "aud",
-        "sub",
-        "txn",
-        "toe",
-        "events"
-      ],
-      "additionalProperties": false
-    },
-    "OBEventResourceUpdate1": {
-      "description": "Resource-Update Event.",
-      "type": "object",
-      "properties": {
-        "subject": {
-          "$ref": "#/definitions/OBEventSubject1"
-        }
-      },
-      "required": [
-        "subject"
-      ],
-      "additionalProperties": false
-    },
-    "OBEventSubject1": {
-      "description": "The resource-update event.",
-      "type": "object",
-      "properties": {
-        "subject_type": {
-          "description": "Subject type for the updated resource. ",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128
-        },
-        "http://openbanking.org.uk/rid": {
-          "description": "Resource Id for the updated resource.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128
-        },
-        "http://openbanking.org.uk/rty": {
-          "description": "Resource Type for the updated resource.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128
-        },
-        "http://openbanking.org.uk/rlk": {
-          "items": {
-            "$ref": "#/definitions/OBEventLink1"
-          },
-          "type": "array",
-          "description": "Resource links to other available versions of the resource.",
-          "minItems": 1
-        }
-      },
-      "required": [
-        "subject_type",
-        "http://openbanking.org.uk/rid",
-        "http://openbanking.org.uk/rty",
-        "http://openbanking.org.uk/rlk"
-      ],
-      "additionalProperties": false
-    }
-  }
+  ]
 }
 ```

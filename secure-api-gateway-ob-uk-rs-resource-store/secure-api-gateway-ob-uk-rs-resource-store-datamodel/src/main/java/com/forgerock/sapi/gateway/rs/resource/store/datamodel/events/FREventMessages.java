@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class FREventMessages {
-    private String tppId;
+    private String apiClientId;
     private List<FREventMessage> events;
 
     public FREventMessages events(List<FREventMessage> events) {

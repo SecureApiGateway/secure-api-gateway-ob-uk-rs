@@ -16,8 +16,6 @@
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin.events;
 
 
-import java.util.Collection;
-
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.events.FREventMessages;
 
@@ -43,7 +42,7 @@ public interface DataEventsApi {
             @ApiParam(value = "Default", required = true)
             @Valid
             @RequestBody FREventMessages frEventMessages
-    ) throws OBErrorResponseException;
+    ) throws OBErrorException;
 
     @RequestMapping(value = "/events",
             produces = {"application/json; charset=utf-8"},
@@ -53,36 +52,27 @@ public interface DataEventsApi {
             @ApiParam(value = "Default", required = true)
             @Valid
             @RequestBody FREventMessages frEventMessages
-    ) throws OBErrorResponseException;
-
-    @RequestMapping(value = "/events/all",
-            produces = {"application/json; charset=utf-8"},
-            method = RequestMethod.GET
-    )
-    ResponseEntity<Collection<FREventMessages>> exportEvents();
+    ) throws OBErrorException;
 
     @RequestMapping(value = "/events",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET
     )
-    ResponseEntity<FREventMessages> exportEventsByTppId(
+    ResponseEntity<FREventMessages> exportEvents(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestParam String tppId
-    );
+            @RequestParam String apiClientId
+    ) throws OBErrorException;
 
     @RequestMapping(value = "/events",
             method = RequestMethod.DELETE
     )
-    ResponseEntity<Void> removeEvents(
-            @ApiParam(value = "The client ID")
-            @RequestParam(value = "tppId") String tppId,
+    ResponseEntity removeEvents(
+            @ApiParam(value = "The client ID", required = true)
+            @Valid
+            @RequestParam(value = "apiClientId") String apiClientId,
             @ApiParam(value = "Unique identification of event message")
             @RequestParam(value = "jti", required = false) String jti
-    );
+    ) throws OBErrorException;
 
-    @RequestMapping(value = "/events/all",
-            method = RequestMethod.DELETE
-    )
-    ResponseEntity<Void> removeAllEvents();
 }
