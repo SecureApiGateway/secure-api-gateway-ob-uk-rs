@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events;
 
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventNotification;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 
@@ -23,18 +23,18 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Persistence for pending events generated within the sandbox so that we can track acknowledgement, error status and event history.
+ * Persistence for event messages generated within the sandbox so that we can track acknowledgement, error status and event history.
  * <p>
  * Events sent to a callback URL will not be stored here. If TPP does not have a callback URL then all events will be stored here until they are polled AND acknowledged.
- * Event polled but not acknowledged will remain here. Events with TPP reported errors against them will remain here for ever (for audit/investigation)
+ * Event polled but not acknowledged will remain here. Events with TPP reported errors against them will remain here forever (for audit/investigation)
  */
-public interface FRPendingEventsRepository extends MongoRepository<FREventNotification, String> {
+public interface FREventMessageRepository extends MongoRepository<FREventMessageEntity, String> {
 
-    Collection<FREventNotification> findByTppId(@Param("tppId") String tppId);
+    Collection<FREventMessageEntity> findByApiClientId(@Param("apiClientId") String apiClientId);
 
-    Optional<FREventNotification> findByTppIdAndJti(@Param("tppId") String tppId, @Param("jti") String jti);
+    Optional<FREventMessageEntity> findByApiClientIdAndJti(@Param("apiClientId") String apiClientId, @Param("jti") String jti);
 
-    void deleteByTppIdAndJti(@Param("tppId") String tppId, @Param("jti") String jti);
+    void deleteByApiClientIdAndJti(@Param("apiClientId") String apiClientId, @Param("jti") String jti);
 
-    void deleteByTppId(@Param("tppId") String tppId);
+    void deleteByApiClientId(@Param("apiClientId") String apiClientId);
 }

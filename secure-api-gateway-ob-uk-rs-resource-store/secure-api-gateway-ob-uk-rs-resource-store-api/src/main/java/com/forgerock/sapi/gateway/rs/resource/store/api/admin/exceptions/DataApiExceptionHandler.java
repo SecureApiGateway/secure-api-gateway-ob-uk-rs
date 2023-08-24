@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin.exceptions;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.rs.resource.store.api.ResourceStoreApiModuleConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,21 @@ public class DataApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleDataApiException(DataApiException ex, WebRequest request) {
         HttpStatus httpStatus = ex.getErrorType().getHttpStatus();
         log.debug("Error in admin data user API, reason {}", ex.getMessage());
+        return ResponseEntity.status(httpStatus).body(
+                new OBErrorResponse1()
+                        .code(httpStatus.name())
+                        .id(request.getHeader("x-fapi-interaction-id"))
+                        .message(httpStatus.getReasonPhrase())
+                        .errors(
+                                Collections.singletonList(new OBError1().message(ex.getMessage()))
+                        )
+        );
+    }
+
+    @ExceptionHandler(value = {OBErrorException.class})
+    protected ResponseEntity<Object> handleOBErrorException(OBErrorException ex, WebRequest request) {
+        HttpStatus httpStatus = ex.getObriErrorType().getHttpStatus();
+        log.debug("Error in admin data API, reason {}", ex.getMessage());
         return ResponseEntity.status(httpStatus).body(
                 new OBErrorResponse1()
                         .code(httpStatus.name())

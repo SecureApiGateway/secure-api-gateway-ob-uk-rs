@@ -53,12 +53,15 @@ cloud:
 
 # RS config
 rs:
-  # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)
+  # Data creation limits
+  # see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator
+  # see com.forgerock.sapi.gateway.rs.resource.store.api.admin.events.DataEventsApiController
   data:
     upload:
       limit:
         accounts: 100
         documents: 1000
+        events: 10
   obie:
     validation:
       # OBIE validation module to load, the "default" module is provided as standard with the simulator

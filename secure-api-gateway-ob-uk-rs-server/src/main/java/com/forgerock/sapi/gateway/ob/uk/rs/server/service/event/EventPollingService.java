@@ -19,8 +19,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPolling;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventNotification;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FRPendingEventsRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,55 +38,55 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class EventPollingService {
-    private final FRPendingEventsRepository frPendingEventsRepository;
+    private final FREventMessageRepository frEventMessageRepository;
 
     // The TPP can never request more events than this.
     private static final Integer MAX_EVENTS = 50;
 
-    public EventPollingService(FRPendingEventsRepository frPendingEventsRepository) {
-        this.frPendingEventsRepository = frPendingEventsRepository;
+    public EventPollingService(FREventMessageRepository frEventMessageRepository) {
+        this.frEventMessageRepository = frEventMessageRepository;
     }
 
-    public void acknowledgeEvents(FREventPolling frEventPolling, String tppId) {
-        Preconditions.checkNotNull(tppId);
+    public void acknowledgeEvents(FREventPolling frEventPolling, String apiClientId) {
+        Preconditions.checkNotNull(apiClientId);
         Preconditions.checkNotNull(frEventPolling);
 
         if (frEventPolling.getAck() != null && !frEventPolling.getAck().isEmpty()) {
-            log.debug("TPP '{}' is acknowledging (and therefore deleting) the following event notifications: {}", tppId, frEventPolling.getAck());
+            log.debug("TPP '{}' is acknowledging (and therefore deleting) the following event notifications: {}", apiClientId, frEventPolling.getAck());
             frEventPolling.getAck()
                     .forEach(
-                            jti -> frPendingEventsRepository.deleteByTppIdAndJti(tppId, jti)
+                            jti -> frEventMessageRepository.deleteByApiClientIdAndJti(apiClientId, jti)
                     );
         }
     }
 
-    public void recordTppEventErrors(FREventPolling frEventPolling, String tppId) {
-        Preconditions.checkNotNull(tppId);
+    public void recordTppEventErrors(FREventPolling frEventPolling, String apiClientId) {
+        Preconditions.checkNotNull(apiClientId);
         Preconditions.checkNotNull(frEventPolling);
         if (frEventPolling.getSetErrs() != null && !frEventPolling.getSetErrs().isEmpty()) {
             log.debug("Persisting {} event notification errors for keys: {}", frEventPolling.getSetErrs().size(), frEventPolling.getSetErrs().keySet());
             frEventPolling.getSetErrs()
-                    .forEach((key, value) -> frPendingEventsRepository.findByTppIdAndJti(tppId, key)
+                    .forEach((key, value) -> frEventMessageRepository.findByApiClientIdAndJti(apiClientId, key)
                             .ifPresent(event -> {
                                 event.setErrors(value);
-                                frPendingEventsRepository.save(event);
+                                frEventMessageRepository.save(event);
                             }));
         }
 
     }
 
-    public Map<String, String> fetchNewEvents(FREventPolling frEventPolling, String tppId) throws OBErrorResponseException {
-        Preconditions.checkNotNull(tppId);
+    public Map<String, String> fetchNewEvents(FREventPolling frEventPolling, String apiClientId) throws OBErrorResponseException {
+        Preconditions.checkNotNull(apiClientId);
         Preconditions.checkNotNull(frEventPolling);
         if (frEventPolling.getMaxEvents() != null && frEventPolling.getMaxEvents() <= 0) {
             // Zero notifications can be requested by TPP when they just want to send acknowledgements and/or errors to sandbox
-            log.debug("Polling request for TPP: '{}' requested no event notifications so none will be returned", tppId);
+            log.debug("Polling request for TPP: '{}' requested no event notifications so none will be returned", apiClientId);
             return Collections.emptyMap();
         }
 
         // Long polling is currently optional in OB specs and as it requires more work to implement it will be left out for now.
         if (frEventPolling.getReturnImmediately() != null && !frEventPolling.isReturnImmediately()) {
-            log.warn("TPP: {} requested long polling on the event notification API but it is not supported", tppId);
+            log.warn("TPP: {} requested long polling on the event notification API but it is not supported", apiClientId);
             throw new OBErrorResponseException(
                     HttpStatus.NOT_IMPLEMENTED,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -94,21 +94,21 @@ public class EventPollingService {
         }
 
         // Load all event notifications for TPP
-        log.debug("Loading all notifications for TPP: {}", tppId);
-        return frPendingEventsRepository.findByTppId(tppId).stream()
+        log.debug("Loading all notifications for TPP: {}", apiClientId);
+        return frEventMessageRepository.findByApiClientId(apiClientId).stream()
                 .filter(event -> !event.hasErrors())
-                .collect(Collectors.toMap(FREventNotification::getJti, FREventNotification::getSignedJwt));
+                .collect(Collectors.toMap(FREventMessageEntity::getJti, FREventMessageEntity::getSet));
     }
 
-    public Map<String, String> truncateEvents(Integer maxEvents, Map<String, String> eventNotifications, String tppId) {
-        Preconditions.checkNotNull(tppId);
+    public Map<String, String> truncateEvents(Integer maxEvents, Map<String, String> eventNotifications, String apiClientId) {
+        Preconditions.checkNotNull(apiClientId);
         log.debug("Request to truncate {} event notification to be max of {}", eventNotifications.size(), maxEvents);
         if (eventNotifications.isEmpty()) {
             return eventNotifications; // Nothing to do
         }
 
         if (maxEvents == null || maxEvents > MAX_EVENTS) {
-            log.debug("TPP {} requested a number of event notifications ({}) on polling that exceeds that allowed maximum on the sandbox ({}). Only {} will be returned.", tppId, maxEvents, MAX_EVENTS, MAX_EVENTS);
+            log.debug("TPP {} requested a number of event notifications ({}) on polling that exceeds that allowed maximum on the sandbox ({}). Only {} will be returned.", apiClientId, maxEvents, MAX_EVENTS, MAX_EVENTS);
             maxEvents = MAX_EVENTS;
         }
 
