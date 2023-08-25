@@ -42,12 +42,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DataEventsApiController implements DataEventsApi {
     private final FREventMessageRepository frEventMessageRepository;
-    private final Integer eventsLimit;
+    private final int eventsLimit;
 
     @Autowired
     public DataEventsApiController(
             FREventMessageRepository frEventMessageRepository,
-            @Value("${rs.data.upload.limit.events}") Integer eventsLimit
+            @Value("${rs.data.upload.limit.events:10}") int eventsLimit
     ) {
         this.frEventMessageRepository = frEventMessageRepository;
         this.eventsLimit = eventsLimit;
