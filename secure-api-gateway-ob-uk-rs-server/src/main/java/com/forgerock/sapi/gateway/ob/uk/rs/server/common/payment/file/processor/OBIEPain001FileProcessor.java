@@ -29,7 +29,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRFilePayment;
-import com.forgerock.sapi.gateway.ob.uk.common.error.FileParseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001.CreditTransferTransaction26;
@@ -48,7 +49,7 @@ public class OBIEPain001FileProcessor extends BasePaymentFileProcessor {
     }
 
     @Override
-    protected PaymentFile processFileImpl(String fileContent) throws FileParseException {
+    protected PaymentFile processFileImpl(String fileContent) throws OBErrorException {
         try {
             logger.debug("Attempt to unmarshal XML '{}'", fileContent);
             Document document = JAXB.unmarshal(new StringReader(fileContent), Document.class);
@@ -66,7 +67,7 @@ public class OBIEPain001FileProcessor extends BasePaymentFileProcessor {
             return createPaymentFile(payments, controlSum);
         } catch (Exception e) {
             logger.warn("JAXB exception while attempting to unmarshal: {}", fileContent, e);
-            throw new FileParseException("Invalid XML", e);
+            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_INVALID, e.getMessage());
         }
     }
     
