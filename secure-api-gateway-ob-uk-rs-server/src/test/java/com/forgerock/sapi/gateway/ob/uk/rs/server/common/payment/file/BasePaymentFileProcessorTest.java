@@ -22,8 +22,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
@@ -54,6 +57,17 @@ public abstract class BasePaymentFileProcessorTest {
         assertThat(paymentFileResult.getControlSum()).isEqualByComparingTo(testPaymentFile.getControlSum());
         assertThat(paymentFileResult.getNumberOfTransactions()).isEqualTo(testPaymentFile.getNumTransactions());
         assertThat(paymentFileResult.getFileType()).isEqualTo(testPaymentFile.getFileType());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldThrowOBErrorForEmptyFile(String fileContent) {
+        final Throwable throwable = catchThrowable(() -> paymentFileProcessor.processFile(fileContent));
+        assertThat(throwable).isInstanceOf(OBErrorException.class);
+
+        final OBErrorException obErrorException = (OBErrorException) throwable;
+        assertThat(obErrorException.getOBError().getErrorCode()).isEqualTo(OBRIErrorType.REQUEST_FILE_EMPTY.getCode().toString());
+        assertThat(obErrorException.getOBError().getMessage()).startsWith(OBRIErrorType.REQUEST_FILE_EMPTY.getMessage());
     }
 
     @Test

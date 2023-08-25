@@ -15,6 +15,12 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
+
+import org.junit.jupiter.api.Test;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.OBIEPaymentInitiation31FileProcessor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
 
@@ -23,5 +29,23 @@ class OBIEPaymentInitiation31FileProcessorTest extends BasePaymentFileProcessorT
     @Override
     protected PaymentFileProcessor createFileProcessor() {
         return new OBIEPaymentInitiation31FileProcessor();
+    }
+
+    @Test
+    void failsWhenDomesticPaymentJsonObjectIsInvalid() {
+        final Throwable throwable = catchThrowable(() -> createFileProcessor().processFile("{\n" +
+                "  \"Data\": {\n" +
+                "    \"DomesticPayments\": [\n" +
+                "      {\n" +
+                "       \"invalidKey\": \"invalidValue\"" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}\n"));
+        assertThat(throwable).isInstanceOf(OBErrorException.class);
+
+        final OBErrorException obErrorException = (OBErrorException) throwable;
+        assertThat(obErrorException.getOBError().getErrorCode()).isEqualTo("OBRI.Request.Object.file.invalid");
+        assertThat(obErrorException.getOBError().getMessage()).startsWith("The Payment file uploaded is invalid");
     }
 }

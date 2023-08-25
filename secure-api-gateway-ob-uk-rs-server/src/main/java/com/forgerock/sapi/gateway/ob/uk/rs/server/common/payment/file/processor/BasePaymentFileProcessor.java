@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRFilePayment;
-import com.forgerock.sapi.gateway.ob.uk.common.error.FileParseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
@@ -47,7 +46,7 @@ public abstract class BasePaymentFileProcessor implements PaymentFileProcessor {
     /**
      * FileType specific processing implementation
      */
-    protected abstract PaymentFile processFileImpl(String fileContent) throws FileParseException;
+    protected abstract PaymentFile processFileImpl(String fileContent) throws OBErrorException;
 
     @Override
     public PaymentFileType getSupportedFileType() {
@@ -56,16 +55,14 @@ public abstract class BasePaymentFileProcessor implements PaymentFileProcessor {
 
     @Override
     public PaymentFile processFile(String fileContent) throws OBErrorException {
-        logger.debug("Parsing file content: {}", fileContent);
-        try {
-            final PaymentFile paymentFile = processFileImpl(fileContent);
-            logger.debug("Parsed payment file, numTransactions: {}, controlSum: {}",
-                    paymentFile.getNumberOfTransactions(), paymentFile.getControlSum());
-            return paymentFile;
-        } catch (FileParseException e) {
-            logger.warn("Unable to parse content for '{}' file", getSupportedFileType(), e);
-            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_INVALID, e.getMessage());
+        if (fileContent == null || fileContent.isEmpty()) {
+            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_EMPTY);
         }
+        logger.debug("Parsing file content: {}", fileContent);
+        final PaymentFile paymentFile = processFileImpl(fileContent);
+        logger.debug("Parsed payment file, numTransactions: {}, controlSum: {}",
+                     paymentFile.getNumberOfTransactions(), paymentFile.getControlSum());
+        return paymentFile;
     }
 
     protected PaymentFile createPaymentFile(List<FRFilePayment> payments, BigDecimal controlSum) {

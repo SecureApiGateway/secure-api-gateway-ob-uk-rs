@@ -23,14 +23,14 @@ import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRFilePayment;
-import com.forgerock.sapi.gateway.ob.uk.common.error.FileParseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.JsonUtils;
@@ -52,10 +52,7 @@ public class OBIEPaymentInitiation31FileProcessor extends BasePaymentFileProcess
     }
 
     @Override
-    protected PaymentFile processFileImpl(String fileContent) throws FileParseException {
-        if (StringUtils.isEmpty(fileContent)) {
-            throw new FileParseException("Unable to parse empty file content");
-        }
+    protected PaymentFile processFileImpl(String fileContent) throws OBErrorException {
         try {
             final JsonNode dataNode = objectMapper.readTree(fileContent).path(DATA_NODE);
 
@@ -73,14 +70,14 @@ public class OBIEPaymentInitiation31FileProcessor extends BasePaymentFileProcess
             return createPaymentFile(payments, controlSumRef.get());
         } catch (Exception e) {
             logger.error("Error parsing JSON file. File content: '{}'", fileContent, e);
-            throw new FileParseException("Failed to read file content", e);
+            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_INVALID, e.getMessage());
         }
     }
     private OBDomestic2 toOBDomestic(JsonNode paymentNode) {
         try {
             return objectMapper.treeToValue(paymentNode, OBDomestic2.class);
-        } catch (JsonProcessingException e) { // Needs to be a unchecked exception
-            throw new FileParseException("Unable to parse a node: " + paymentNode, e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
