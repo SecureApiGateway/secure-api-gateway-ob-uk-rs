@@ -19,7 +19,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.event.EventPollingServ
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_5.aggregatedpolling.AggregatedPollingApi;
 import org.springframework.stereotype.Controller;
 
-@Controller("AggregatedPollingApi3.1.5")
+@Controller("AggregatedPollingApiV3.1.5")
 public class AggregatedPollingApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_4.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {
 
     public AggregatedPollingApiController(EventPollingService eventPollingService) {

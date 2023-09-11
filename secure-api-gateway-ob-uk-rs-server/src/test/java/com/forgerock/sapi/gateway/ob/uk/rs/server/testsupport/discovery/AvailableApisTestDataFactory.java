@@ -15,14 +15,15 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.discovery;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery.AvailableApiEndpoint;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.OBApiReference;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBGroupName;
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Test data factory to generate a list of Read/Write APIs that are supported by the application (though not
@@ -32,7 +33,7 @@ public class AvailableApisTestDataFactory {
 
     public static final String BASE_URL = "/rs/open-banking/";
     public static final String VERSION_PREFIX = "v3.1.";
-    public static final int PATCHES = 6;
+    public static final int PATCHES = 10;
 
     public static List<AvailableApiEndpoint> getAvailableApiEndpoints() {
         List<AvailableApiEndpoint> availableApis = new ArrayList<>();
@@ -62,7 +63,14 @@ public class AvailableApisTestDataFactory {
     public static List<AvailableApiEndpoint> generateEventApis() {
         List<Pair<OBApiReference, String>> content = ImmutableList.of(
                 Pair.of(OBApiReference.CREATE_CALLBACK_URL, "/callback-urls"),
-                Pair.of(OBApiReference.GET_CALLBACK_URLS, "/callback-urls/{CallbackUrlId}")
+                Pair.of(OBApiReference.GET_CALLBACK_URLS, "/callback-urls/{CallbackUrlId}"),
+                Pair.of(OBApiReference.AMEND_CALLBACK_URL, "/callback-urls/{CallbackUrlId}"),
+                Pair.of(OBApiReference.DELETE_CALLBACK_URL, "/callback-urls/{CallbackUrlId}"),
+                Pair.of(OBApiReference.CREATE_EVENT_SUBSCRIPTION, "/event-subscriptions"),
+                Pair.of(OBApiReference.GET_EVENT_SUBSCRIPTION, "/event-subscriptions"),
+                Pair.of(OBApiReference.AMEND_EVENT_SUBSCRIPTION, "/event-subscriptions/{EventSubscriptionId}"),
+                Pair.of(OBApiReference.DELETE_EVENT_SUBSCRIPTION, "/event-subscriptions/{EventSubscriptionId}"),
+                Pair.of(OBApiReference.EVENT_AGGREGATED_POLLING, "/events")
         );
         return generateApi(OBGroupName.EVENT, content);
     }
