@@ -32,7 +32,7 @@ import java.util.Map;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.FREventPollingConverter.toFREventPolling;
 
-@Controller("AggregatedPollingApi3.1.4")
+@Controller("AggregatedPollingApiV3.1.4")
 @Slf4j
 public class AggregatedPollingApiController implements AggregatedPollingApi {
 

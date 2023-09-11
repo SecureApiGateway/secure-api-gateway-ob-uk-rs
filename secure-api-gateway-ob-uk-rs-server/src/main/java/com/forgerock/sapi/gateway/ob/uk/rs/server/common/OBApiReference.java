@@ -94,7 +94,7 @@ public enum OBApiReference {
     AMEND_EVENT_SUBSCRIPTION(EVENT, "AmendEventSubscription", PUT, "/event-subscriptions/{EventSubscriptionId}"),
     DELETE_EVENT_SUBSCRIPTION(EVENT, "DeleteEventSubscription", DELETE, "/event-subscriptions/{EventSubscriptionId}"),
 
-    EVENT_AGGREGATED_POLLING(EVENT, "EventAggregatedPolling", GET, "/events"),
+    EVENT_AGGREGATED_POLLING(EVENT, "EventAggregatedPolling", POST, "/events"),
 
     /**
      * Payments Api
