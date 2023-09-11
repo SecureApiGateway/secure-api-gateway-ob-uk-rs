@@ -12,7 +12,7 @@ clean:
 install:
 	mvn -U install
 
-docker: # install
+docker: install
 	mvn dockerfile:build dockerfile:push -DskipTests -DskipITs -Dtag=${tag} \
 	  -DgcrRepo=${repo} --file secure-api-gateway-ob-uk-rs-server/pom.xml
 
