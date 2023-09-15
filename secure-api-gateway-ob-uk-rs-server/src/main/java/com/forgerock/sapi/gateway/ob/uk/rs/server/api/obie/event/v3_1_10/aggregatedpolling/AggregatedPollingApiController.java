@@ -15,14 +15,55 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.aggregatedpolling;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.event.EventPollingService;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_10.aggregatedpolling.AggregatedPollingApi;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.FREventPollingConverter.toFREventPolling;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPolling;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_10.aggregatedpolling.AggregatedPollingApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.event.EventPollingService;
+
+import lombok.extern.slf4j.Slf4j;
+import uk.org.openbanking.datamodel.event.OBEventPolling1;
+import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
+
 @Controller("AggregatedPollingApiV3.1.10")
-public class AggregatedPollingApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_9.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {
+@Slf4j
+public class AggregatedPollingApiController implements AggregatedPollingApi {
+    private final EventPollingService eventPollingService;
 
     public AggregatedPollingApiController(EventPollingService eventPollingService) {
-        super(eventPollingService);
+        this.eventPollingService = eventPollingService;
+    }
+
+    @Override
+    public ResponseEntity<OBEventPollingResponse1> pollEvents(
+            OBEventPolling1 obEventPolling,
+            String authorization,
+            String xFapiInteractionId,
+            String apiClientId,
+            HttpServletRequest request
+    ) throws OBErrorResponseException {
+        FREventPolling frEventPolling = toFREventPolling(obEventPolling);
+        log.debug("apiClient '{}' sent aggregated polling request: {}", apiClientId, obEventPolling);
+        eventPollingService.acknowledgeEvents(frEventPolling, apiClientId);
+        eventPollingService.recordTppEventErrors(frEventPolling, apiClientId);
+        Map<String, String> allEventNotifications = eventPollingService.fetchNewEvents(frEventPolling, apiClientId);
+
+        // Apply limit on returned events
+        Map<String, String> truncatedEventNotifications = eventPollingService.truncateEvents(obEventPolling.getMaxEvents(), allEventNotifications, apiClientId);
+        boolean moreAvailable = truncatedEventNotifications.size() < allEventNotifications.size();
+
+        ResponseEntity<OBEventPollingResponse1> response = ResponseEntity.ok(new OBEventPollingResponse1()
+                .sets(truncatedEventNotifications)
+                .moreAvailable((truncatedEventNotifications.isEmpty()) ? null : moreAvailable));
+        log.debug("apiClient '{}' aggregated polling response: {}", apiClientId, response.getBody());
+        return response;
     }
 }

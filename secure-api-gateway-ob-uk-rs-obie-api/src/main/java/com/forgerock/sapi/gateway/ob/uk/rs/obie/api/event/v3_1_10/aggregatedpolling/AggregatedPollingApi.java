@@ -15,21 +15,28 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_10.aggregatedpolling;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
-import io.swagger.annotations.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import io.swagger.annotations.AuthorizationScope;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.event.OBEventPolling1;
 import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.security.Principal;
 
 @Api(tags = {"v3.1.10", SwaggerApiTags.EVENT_NOTIFICATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.10/events")
@@ -64,16 +71,15 @@ public interface AggregatedPollingApi {
             @RequestBody OBEventPolling1 obEventPolling,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
+            @RequestHeader(value = "Authorization") String authorization,
 
             @ApiParam(value = "An RFC4122 UID used as a correlation id.")
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
-            @ApiParam(value = "The PISP Client ID")
-            @RequestHeader(value = "x-ob-client-id", required = true) String clientId,
+            @ApiParam(value = "OAuth2.0 client_id of the ApiClient making the request")
+            @RequestHeader(value = "x-api-client-id") String apiClientId,
 
-            HttpServletRequest request,
+            HttpServletRequest request
 
-            Principal principal
     ) throws OBErrorResponseException;
 }

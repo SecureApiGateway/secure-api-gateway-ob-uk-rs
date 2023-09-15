@@ -156,6 +156,22 @@ public class HttpHeadersTestDataFactory {
         return headers;
     }
 
+    /**
+     * Provides an instance of {@link HttpHeaders} with the minimal set of required headers for the Events API.
+     *
+     * @param apiClientId The ID of the TPP in question.
+     * @return the {@link HttpHeaders} instance.
+     */
+    public static HttpHeaders requiredEventNotificationsHttpHeaders(String apiClientId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth("dummyAuthToken");
+        headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
+        headers.add("x-api-client-id", apiClientId);
+        return headers;
+    }
+
     public static HttpHeaders requiredFundsHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
