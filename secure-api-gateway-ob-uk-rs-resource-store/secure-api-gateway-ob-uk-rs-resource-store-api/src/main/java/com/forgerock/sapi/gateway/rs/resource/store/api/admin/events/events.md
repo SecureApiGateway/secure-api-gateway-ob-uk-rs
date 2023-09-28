@@ -23,7 +23,7 @@ IG have the responsibility of:
 #### Payload example
 ```json
 {
-  "apiClientId": "3ffb98cc-be98-4b10-a405-bde41e88c2c7",
+  "client_id": "3ffb98cc-be98-4b10-a405-bde41e88c2c7",
   "events":
   [
     {
@@ -66,7 +66,7 @@ IG have the responsibility of:
   "title": "Schema for events notification messages, to be processed and imported by SAPIG",
   "type": "object",
   "properties": {
-    "apiClientId": {
+    "client_id": {
       "type": "string",
       "description": "A value that represents the identification value assigned a tpp application after registration (api client Id)"
     },
@@ -172,7 +172,7 @@ IG have the responsibility of:
     }
   },
   "required": [
-    "apiClientId",
+    "client_id",
     "events"
   ]
 }
@@ -181,14 +181,5 @@ IG have the responsibility of:
 
 ### Response examples
 **Import and update**
-```json
-{
-  "apiClientId": "3ffb98cc-be98-4b10-a405-bde41e88c2c7",
-  "events": [
-    {
-      "jti": "b460a07c-4962-43d1-85ee-9dc10fbb8f6c",
-      "set": "eyJ0eXAiOiJKV1QiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lhdCI6MTY5MjM3MzAxNy4zNzksImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvdGFuIjoib3BlbmJhbmtpbmcub3JnLnVrIiwiY3JpdCI6WyJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lhdCIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaXNzIiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay90YW4iXSwia2lkIjoieGNKZVZ5dFRrRkwyMWxISVVWa0FkNlFWaTRNIiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pc3MiOiIwMDE1ODAwMDAxMDQxUkVBQVkiLCJhbGciOiJQUzI1NiJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGViYW5rLmNvbS8iLCJpYXQiOjE1MTYyMzkwMjIsImp0aSI6ImI0NjBhMDdjLTQ5NjItNDNkMS04NWVlLTlkYzEwZmJiOGY2YyIsInN1YiI6Imh0dHBzOi8vZXhhbXBsZWJhbmsuY29tL2FwaS9vcGVuLWJhbmtpbmcvdjMuMC9waXNwL2RvbWVzdGljLXBheW1lbnRzL3BtdC03MjkwLTAwMyIsImF1ZCI6Ijd1bXg1blRSMzM4MTFReVFmaSIsInR4biI6ImRmYzUxNjI4LTM0NzktNGI4MS1hZDYwLTIxMGI0M2QwMjMwNiIsInRvZSI6MTUxNjIzOTAyMiwiZXZlbnRzIjp7InVybjp1azpvcmc6b3BlbmJhbmtpbmc6ZXZlbnRzOnJlc291cmNlLXVwZGF0ZSI6eyJzdWJqZWN0Ijp7InN1YmplY3RfdHlwZSI6Imh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvcmlkX2h0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvcnR5IiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9yaWQiOiJwbXQtNzI5MC0wMDMiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3J0eSI6ImRvbWVzdGljLXBheW1lbnQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3JsayI6W3sidmVyc2lvbiI6InYzLjAiLCJsaW5rIjoiaHR0cHM6Ly9leGFtcGxlYmFuay5jb20vYXBpL29wZW4tYmFua2luZy92My4wL3Bpc3AvZG9tZXN0aWMtcGF5bWVudHMvcG10LTcyOTAtMDAzIn0seyJ2ZXJzaW9uIjoidjEuMSIsImxpbmsiOiJodHRwczovL2V4YW1wbGViYW5rLmNvbS9hcGkvb3Blbi1iYW5raW5nL3YxLjEvcGF5bWVudC1zdWJtaXNzaW9ucy9wbXQtNzI5MC0wMDMifV19fX19.MNhxg1ujcn0y-NW7DrSRw-HUaRqO28ifX7lHSxW_xcnupo9tMsP2Z0hkLIRquRa1gRE--WLWc_E7prUmsUYUqr4MTcX1XQgAYs3FHW5mX6x5wLrP7zC4Hs5SKqjPiEPqov27ZlBTpbXRRXe5L8COCRPEr7AGyP0QvOQ1xOUxWd1PVLaJHVi7RNI2V--YJAAopwSu_oIadE1CBPxuqiyVmXqeQUXG-q9O6nkjF_2SusBTz_EBh91wRIanZa47Hcwj1zb4DDWOu0nY5E3zFq98iWkTvChnMn1EHKLn-fBMT9X7thbK5g3q4iduJCprRJCLZnLYqHIy03XcgcwR3vZgpA"
-    }
-  ]
-}
-```
+
+> returns the same payload sent in the request body

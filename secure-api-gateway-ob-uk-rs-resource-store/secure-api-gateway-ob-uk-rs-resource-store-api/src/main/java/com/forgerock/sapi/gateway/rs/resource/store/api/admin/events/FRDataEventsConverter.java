@@ -15,14 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin.events;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRModelMapper;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.events.FREventMessages;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.events.FREventMessage;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
+
+import uk.org.openbanking.datamodel.event.OBEventNotification1;
 
 public class FRDataEventsConverter {
 
@@ -33,15 +32,15 @@ public class FRDataEventsConverter {
         return entity;
     }
 
-    public static final List<FREventMessageEntity> toFREventMessageEntityList(FREventMessages frEventMessages) {
-        List<FREventMessageEntity> frEventMessageEntityList = new ArrayList<>();
-        frEventMessages.getEvents().forEach(
-                frEventMessage -> {
-                    FREventMessageEntity eventMessageEntity = toFREventMessageEntity(frEventMessages.getApiClientId(), frEventMessage);
-                    frEventMessageEntityList.add(eventMessageEntity);
-                }
-        );
-        return frEventMessageEntityList;
+    public static final FREventMessageEntity toFREventMessageEntity(String apiClientId, OBEventNotification1 obEventNotification1) {
+        Objects.requireNonNull(apiClientId, "api client Id must not be null");
+        FREventMessageEntity entity = FRModelMapper.map(obEventNotification1, FREventMessageEntity.class);
+        entity.setApiClientId(apiClientId);
+        return entity;
+    }
+
+    public static final OBEventNotification1 toOBEventNotification1(FREventMessageEntity entity) {
+        return FRModelMapper.map(entity, OBEventNotification1.class);
     }
 
     public static final FREventMessage toFREventMessage(FREventMessageEntity entity) {

@@ -16,6 +16,8 @@
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin.events;
 
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -25,8 +27,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.events.FREventMessages;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 
 import io.swagger.annotations.ApiParam;
 
@@ -58,7 +60,7 @@ public interface DataEventsApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET
     )
-    ResponseEntity<FREventMessages> exportEvents(
+    ResponseEntity<List<FREventMessageEntity>> exportEvents(
             @ApiParam(value = "Default", required = true)
             @Valid
             @RequestParam String apiClientId

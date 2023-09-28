@@ -15,6 +15,18 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.event;
 
+import static com.forgerock.sapi.gateway.rs.resource.store.api.admin.events.FRDataEventsConverter.toOBEventNotification1;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPolling;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
@@ -22,13 +34,9 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 import com.google.common.base.Preconditions;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import uk.org.openbanking.datamodel.event.OBEventNotification1;
 
 /*
  * Intended to hold the business logic of polling and acknowledge the events separately to the persistence layer (Mongo
@@ -39,12 +47,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EventPollingService {
     private final FREventMessageRepository frEventMessageRepository;
+    private final ObjectMapper objectMapper;
 
     // The TPP can never request more events than this.
-    private static final Integer MAX_EVENTS = 50;
+    private final int eventsLimit;
 
-    public EventPollingService(FREventMessageRepository frEventMessageRepository) {
+    public EventPollingService(
+            FREventMessageRepository frEventMessageRepository,
+            ObjectMapper objectMapper,
+            @Value("${rs.data.upload.limit.events:10}") int eventsLimit
+    ) {
         this.frEventMessageRepository = frEventMessageRepository;
+        this.objectMapper = objectMapper;
+        this.eventsLimit = eventsLimit;
     }
 
     public void acknowledgeEvents(FREventPolling frEventPolling, String apiClientId) {
@@ -95,9 +110,31 @@ public class EventPollingService {
 
         // Load all event notifications for TPP
         log.debug("Loading all notifications for TPP: {}", apiClientId);
-        return frEventMessageRepository.findByApiClientId(apiClientId).stream()
-                .filter(event -> !event.hasErrors())
-                .collect(Collectors.toMap(FREventMessageEntity::getJti, FREventMessageEntity::getSet));
+        try {
+            return frEventMessageRepository.findByApiClientId(apiClientId).stream()
+                    .filter(event -> !event.hasErrors())
+                    .collect(
+                            Collectors.toMap(
+                                    FREventMessageEntity::getJti,
+                                    frEventMessageEntity ->
+                                            writeValueAsString(toOBEventNotification1(frEventMessageEntity))
+
+                            )
+                    );
+        } catch (Exception e) {
+            throw new OBErrorResponseException(
+                    HttpStatus.NOT_IMPLEMENTED,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.LONG_POLLING_NOT_SUPPORTED_FOR_EVENTS.toOBError1());
+        }
+    }
+
+    private String writeValueAsString(OBEventNotification1 obEventNotification1) {
+        try {
+            return objectMapper.writeValueAsString(obEventNotification1);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<String, String> truncateEvents(Integer maxEvents, Map<String, String> eventNotifications, String apiClientId) {
@@ -107,9 +144,9 @@ public class EventPollingService {
             return eventNotifications; // Nothing to do
         }
 
-        if (maxEvents == null || maxEvents > MAX_EVENTS) {
-            log.debug("TPP {} requested a number of event notifications ({}) on polling that exceeds that allowed maximum on the sandbox ({}). Only {} will be returned.", apiClientId, maxEvents, MAX_EVENTS, MAX_EVENTS);
-            maxEvents = MAX_EVENTS;
+        if (maxEvents == null || maxEvents > eventsLimit) {
+            log.debug("TPP {} requested a number of event notifications ({}) on polling that exceeds that allowed maximum on the sandbox ({}). Only {} will be returned.", apiClientId, maxEvents, eventsLimit, eventsLimit);
+            maxEvents = eventsLimit;
         }
 
         if (eventNotifications.size() > maxEvents) {

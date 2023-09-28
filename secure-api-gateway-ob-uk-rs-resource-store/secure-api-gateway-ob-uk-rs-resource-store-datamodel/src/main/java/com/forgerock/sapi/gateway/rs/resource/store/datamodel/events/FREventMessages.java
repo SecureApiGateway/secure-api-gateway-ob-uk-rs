@@ -19,29 +19,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.org.openbanking.datamodel.event.OBEventNotification1;
 
+/**
+ * A list of events, used to import and update events through events admin api 'DataEventsApi'
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class FREventMessages {
+    @JsonProperty("client_id")
     private String apiClientId;
-    private List<FREventMessage> events;
+    @JsonProperty("events")
+    private List<OBEventNotification1> obEventNotification1List = new ArrayList();
 
-    public FREventMessages events(List<FREventMessage> events) {
-        this.events = events;
+
+    public FREventMessages obEventNotification1List(List<OBEventNotification1> obEventNotification2List) {
+        this.obEventNotification1List = obEventNotification2List;
         return this;
     }
 
-    public FREventMessages eventItem(FREventMessage event) {
-        if(Objects.isNull(events)) {
-            events = new ArrayList<>();
+    public FREventMessages addOBEventNotification1Item(OBEventNotification1 obEventNotification2) {
+        if(Objects.isNull(obEventNotification1List)) {
+            obEventNotification1List = new ArrayList<>();
         }
-        this.events.add(event);
+        this.obEventNotification1List.add(obEventNotification2);
         return this;
     }
 }

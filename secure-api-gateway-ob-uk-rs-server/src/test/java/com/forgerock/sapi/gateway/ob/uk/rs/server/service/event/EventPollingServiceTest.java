@@ -15,6 +15,30 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.service.event;
 
+import static com.forgerock.sapi.gateway.rs.resource.store.api.admin.events.FRDataEventsConverter.toOBEventNotification1;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPolling;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPollingError;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
@@ -22,20 +46,11 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMes
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import uk.org.openbanking.datamodel.event.OBEvent1;
+import uk.org.openbanking.datamodel.event.OBEventLink1;
+import uk.org.openbanking.datamodel.event.OBEventResourceUpdate1;
+import uk.org.openbanking.datamodel.event.OBEventSubject1;
 
 /**
  * Unit test for {@link EventPollingService}.
@@ -43,25 +58,36 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class EventPollingServiceTest {
     private static final String API_CLIENT_ID = "abc123";
-
+    private static final List<String> JWT_ID_LIST = ImmutableList.of("jti-01", "jti02");
+    // value of ${rs.data.upload.limit.events:10}
+    private static final int EVENTS_LIMIT = 10;
     @Mock
     private FREventMessageRepository mockRepo;
-    @InjectMocks
+
+    @Spy
+    private ObjectMapper objectMapper;
+
     private EventPollingService eventPollingService;
+
+    @BeforeEach
+    public void setUp() {
+        eventPollingService = new EventPollingService(mockRepo, objectMapper, EVENTS_LIMIT);
+    }
 
     @Test
     public void acknowledgeEvents_findAndDeleteTwoEvents_ignoreEventNotfound() {
         // Given
+
         FREventPolling pollingRequest = FREventPolling.builder()
-                .ack(ImmutableList.of("11111", "22222", "NotFound"))
+                .ack(ImmutableList.of(JWT_ID_LIST.get(0), JWT_ID_LIST.get(1), "NotFound"))
                 .build();
 
         // When
         eventPollingService.acknowledgeEvents(pollingRequest, API_CLIENT_ID);
 
         // Then
-        verify(mockRepo).deleteByApiClientIdAndJti(eq(API_CLIENT_ID), eq("11111"));
-        verify(mockRepo).deleteByApiClientIdAndJti(eq(API_CLIENT_ID), eq("11111"));
+        verify(mockRepo).deleteByApiClientIdAndJti(eq(API_CLIENT_ID), eq(JWT_ID_LIST.get(0)));
+        verify(mockRepo).deleteByApiClientIdAndJti(eq(API_CLIENT_ID), eq(JWT_ID_LIST.get(1)));
     }
 
     @Test
@@ -95,13 +121,12 @@ public class EventPollingServiceTest {
     @Test
     public void recordTppEventErrors_notificationExists_addError() {
         // Given
-        FREventMessageEntity existingNotification = FREventMessageEntity.builder()
-                .id("1")
-                .jti("11111")
-                .errors(null)
-                .build();
+        FREventMessageEntity existingNotification = aValidFREventMessageEntity(JWT_ID_LIST.get(0));
         FREventPolling pollingRequest = FREventPolling.builder()
-                .setErrs(Collections.singletonMap("11111", FREventPollingError.builder().error("err1").description("error msg").build()))
+                .setErrs(
+                        Collections.singletonMap(JWT_ID_LIST.get(1),
+                                FREventPollingError.builder().error("err1").description("error msg").build())
+                )
                 .build();
         when(mockRepo.findByApiClientIdAndJti(any(), any())).thenReturn(Optional.of(existingNotification));
 
@@ -118,7 +143,10 @@ public class EventPollingServiceTest {
     public void recordTppEventErrors_notificationDoesNotExist_doNothing() {
         // Given
         FREventPolling pollingRequest = FREventPolling.builder()
-                .setErrs(Collections.singletonMap("11111", FREventPollingError.builder().error("err1").description("error msg").build()))
+                .setErrs(
+                        Collections.singletonMap(JWT_ID_LIST.get(0),
+                                FREventPollingError.builder().error("err1").description("error msg").build())
+                )
                 .build();
         when(mockRepo.findByApiClientIdAndJti(any(), any())).thenReturn(Optional.empty());
 
@@ -144,19 +172,13 @@ public class EventPollingServiceTest {
     }
 
     @Test
-    public void fetchNewEvents_getAll() throws Exception{
+    public void fetchNewEvents_getAll() throws Exception {
         // Given
-        FREventMessageEntity existingNotification1 = FREventMessageEntity.builder()
-                .id("1")
-                .jti("11111")
-                .set("test111")
-                .build();
-        FREventMessageEntity existingNotification2 = FREventMessageEntity.builder()
-                .id("2")
-                .jti("22222")
-                .set("test222")
-                .build();
-        when(mockRepo.findByApiClientId(eq(API_CLIENT_ID))).thenReturn(ImmutableList.of(existingNotification1, existingNotification2));
+        FREventMessageEntity existingNotification1 = aValidFREventMessageEntity(JWT_ID_LIST.get(0));
+        FREventMessageEntity existingNotification2 = aValidFREventMessageEntity(JWT_ID_LIST.get(1));
+        when(mockRepo.findByApiClientId(eq(API_CLIENT_ID))).thenReturn(
+                ImmutableList.of(existingNotification1, existingNotification2)
+        );
 
         // When
         FREventPolling pollingRequest = FREventPolling.builder()
@@ -167,25 +189,26 @@ public class EventPollingServiceTest {
 
         // Then
         assertThat(eventNotifications.size()).isEqualTo(2);
-        assertThat(eventNotifications.get("11111")).isEqualTo("test111");
-        assertThat(eventNotifications.get("22222")).isEqualTo("test222");
+        assertThat(eventNotifications.get(JWT_ID_LIST.get(0))).isEqualTo(
+                objectMapper.writeValueAsString(toOBEventNotification1(existingNotification1))
+        );
+        assertThat(eventNotifications.get(JWT_ID_LIST.get(1))).isEqualTo(
+                objectMapper.writeValueAsString(toOBEventNotification1(existingNotification2))
+        );
     }
 
     @Test
-    public void fetchNewEvents_excludeEventsWithErrorsFromResults() throws Exception{
+    public void fetchNewEvents_excludeEventsWithErrorsFromResults() throws Exception {
         // Given
-        FREventMessageEntity existingNotificationWithoutError = FREventMessageEntity.builder()
-                .id("1")
-                .jti("11111")
-                .set("test111")
-                .build();
-        FREventMessageEntity existingNotificationWithError = FREventMessageEntity.builder()
-                .id("2")
-                .jti("22222")
-                .set("test222")
-                .errors(FREventPollingError.builder().error("err1").description("error").build())
-                .build();
-        when(mockRepo.findByApiClientId(eq(API_CLIENT_ID))).thenReturn(ImmutableList.of(existingNotificationWithoutError, existingNotificationWithError));
+        FREventMessageEntity existingNotificationWithoutError = aValidFREventMessageEntity(JWT_ID_LIST.get(0));
+        FREventMessageEntity existingNotificationWithError = aValidFREventMessageEntity(
+                JWT_ID_LIST.get(1),
+                FREventPollingError.builder().error("err1").description("error").build()
+        );
+
+        when(mockRepo.findByApiClientId(eq(API_CLIENT_ID))).thenReturn(
+                ImmutableList.of(existingNotificationWithoutError, existingNotificationWithError)
+        );
 
         // When
         FREventPolling pollingRequest = FREventPolling.builder()
@@ -196,11 +219,13 @@ public class EventPollingServiceTest {
 
         // Then
         assertThat(eventNotifications.size()).isEqualTo(1);
-        assertThat(eventNotifications.get("11111")).isEqualTo("test111");
+        assertThat(eventNotifications.get(JWT_ID_LIST.get(0))).isEqualTo(
+                objectMapper.writeValueAsString(toOBEventNotification1(existingNotificationWithoutError))
+        );
     }
 
     @Test
-    public void fetchNewEvents_zeroEventsRequested_returnNothing() throws Exception{
+    public void fetchNewEvents_zeroEventsRequested_returnNothing() throws Exception {
         // When
         FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(0)
@@ -215,7 +240,7 @@ public class EventPollingServiceTest {
 
 
     @Test
-    public void fetchNewEvents_longPollingRequest_rejectUnsupported() throws Exception{
+    public void fetchNewEvents_longPollingRequest_rejectUnsupported() throws Exception {
         // Given
         FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(10)
@@ -249,6 +274,53 @@ public class EventPollingServiceTest {
 
         // Then
         assertThat(truncatedEvents.size()).isEqualTo(0);
+    }
+
+    private FREventMessageEntity aValidFREventMessageEntity() {
+        return aValidFREventMessageEntity(UUID.randomUUID().toString(), null);
+    }
+
+    private FREventMessageEntity aValidFREventMessageEntity(String jti) {
+        return aValidFREventMessageEntity(jti, null);
+    }
+
+    private FREventMessageEntity aValidFREventMessageEntity(FREventPollingError error) {
+        return aValidFREventMessageEntity(UUID.randomUUID().toString(), error);
+    }
+
+    private FREventMessageEntity aValidFREventMessageEntity(String jti, FREventPollingError error) {
+        return FREventMessageEntity.builder()
+                .id(UUID.randomUUID().toString())
+                .jti(jti)
+                .apiClientId(UUID.randomUUID().toString())
+                .iss("https://examplebank.com/")
+                .iat(1516239022)
+                .sub("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
+                .aud("7umx5nTR33811QyQfi")
+                .txn("dfc51628-3479-4b81-ad60-210b43d02306")
+                .toe(1516239022)
+                .events(new OBEvent1().urnukorgopenbankingeventsresourceUpdate(
+                                new OBEventResourceUpdate1()
+                                        .subject(
+                                                new OBEventSubject1()
+                                                        .subjectType("http://openbanking.org.uk/rid_http://openbanking.org.uk/rty")
+                                                        .httpopenbankingOrgUkrid("pmt-7290-003")
+                                                        .httpopenbankingOrgUkrlk(
+                                                                List.of(
+                                                                        new OBEventLink1()
+                                                                                .link("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
+                                                                                .version("v3.1.5"),
+                                                                        new OBEventLink1()
+                                                                                .link("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
+                                                                                .version("v3.1.10")
+                                                                )
+                                                        )
+                                                        .httpopenbankingOrgUkrty("domestic-payment")
+                                        )
+                        )
+                )
+                .errors(error != null ? error : null)
+                .build();
     }
 }
 
