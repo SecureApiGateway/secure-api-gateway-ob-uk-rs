@@ -43,7 +43,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.events.FREventMessages;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventMessages;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 
