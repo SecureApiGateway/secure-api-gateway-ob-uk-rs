@@ -353,11 +353,15 @@ public class DomesticVrpConsentsApiControllerTest {
     @Test
     public void shouldRaiseBadRequestConsentIdMismatch() {
         // Given
+        final DomesticVRPConsent consent = buildAwaitingAuthorisationConsent(createValidateConsentRequest());
         final String consentId = UUID.randomUUID().toString();
+
+        given(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).willReturn(consent);
+
         final BigDecimal instructedAmount = new BigDecimal("50.00").setScale(2);
         final OBVRPFundsConfirmationRequest obvrpFundsConfirmationRequest = new OBVRPFundsConfirmationRequest()
                 .data(new OBVRPFundsConfirmationRequestData()
-                        .consentId(consentId)
+                        .consentId("id does not match request")
                         .reference("reference")
                         .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount()
                                 .amount(instructedAmount.toPlainString())
@@ -371,7 +375,7 @@ public class DomesticVrpConsentsApiControllerTest {
 
         // When
         ResponseEntity<OBErrorResponse1> response = restTemplate.postForEntity(
-                getFundsConfirmationUrl(UUID.randomUUID().toString()),
+                getFundsConfirmationUrl(consentId),
                 request,
                 OBErrorResponse1.class
         );

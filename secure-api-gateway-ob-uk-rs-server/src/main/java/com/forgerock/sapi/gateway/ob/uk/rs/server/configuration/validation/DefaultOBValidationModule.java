@@ -52,6 +52,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteIntern
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
@@ -127,6 +129,11 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
         return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator(riskValidator));
+    }
+
+    @Bean
+    public OBValidationService<VRPFundsConfirmationValidationContext> domesticVRPFundsConfirmationValidator() {
+        return new OBValidationService<>(new OBVRPFundsConfirmationRequestValidator());
     }
 
     @Bean

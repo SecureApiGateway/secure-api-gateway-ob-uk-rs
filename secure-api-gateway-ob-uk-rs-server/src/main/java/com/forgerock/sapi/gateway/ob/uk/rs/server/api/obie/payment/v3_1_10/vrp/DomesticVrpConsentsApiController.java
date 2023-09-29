@@ -17,12 +17,11 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBDomesticVRPConsentResponseFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
@@ -34,13 +33,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import uk.org.openbanking.datamodel.vrp.*;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
 import java.util.UUID;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Controller("DomesticVrpConsentApiV3.1.10")
@@ -53,14 +48,18 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
     private final OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator;
 
+    private final OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator;
+
     private final OBDomesticVRPConsentResponseFactory responseFactory;
 
     public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
                                             DomesticVRPConsentStoreClient consentStoreClient,
                                             OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
+                                            OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
                                             OBDomesticVRPConsentResponseFactory responseFactory) {
         this.fundsAvailabilityService = fundsAvailabilityService;
         this.vrpConsentValidator = vrpConsentValidator;
+        this.vrpFundsConfirmationValidator = vrpFundsConfirmationValidator;
         this.consentStoreClient = consentStoreClient;
         this.responseFactory = responseFactory;
     }
@@ -127,14 +126,12 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                                                                HttpServletRequest request
     ) throws OBErrorResponseException {
 
-        validateFundsConfirmationRequest(obVRPFundsConfirmationRequest, consentId);
+        log.info("domesticVrpConsentsFundsConfirmation - attempting to get funds conf for consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}", consentId, apiClientId, xFapiInteractionId);
 
         DomesticVRPConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
 
-        if (StatusEnum.fromValue(consent.getStatus()) != StatusEnum.AUTHORISED) {
-            throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
-        }
+        vrpFundsConfirmationValidator.validate(new VRPFundsConfirmationValidationContext(consentId, consent.getStatus(), obVRPFundsConfirmationRequest));
+
         String accountId = consent.getAuthorisedDebtorAccountId();
         String amount = obVRPFundsConfirmationRequest.getData().getInstructedAmount().getAmount();
 
@@ -164,32 +161,5 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                 )
                                 )
                 );
-    }
-
-    private void validateFundsConfirmationRequest(OBVRPFundsConfirmationRequest obVRPFundsConfirmationRequest,
-                                                  String consentId) throws OBErrorResponseException {
-
-        log.debug("Validating request {}", obVRPFundsConfirmationRequest.toString());
-        OBVRPFundsConfirmationRequestData data = obVRPFundsConfirmationRequest.getData();
-        if (Objects.isNull(data) || Objects.isNull(data.getInstructedAmount()) || Objects.isNull(data.getInstructedAmount().getAmount())) {
-            String reason = "Mandatory data not provided.";
-            log.error(reason);
-            throw new OBErrorResponseException(
-                    BAD_REQUEST,
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.REQUEST_OBJECT_INVALID.toOBError1(reason)
-            );
-        }
-        if (!obVRPFundsConfirmationRequest.getData().getConsentId().equals(consentId)) {
-            String reason = "The consentId provided in the body doesn't match with the consent id provided as parameter";
-            log.error(reason);
-            throw new OBErrorResponseException(
-                    BAD_REQUEST,
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.REQUEST_OBJECT_INVALID.toOBError1(
-                            reason
-                    )
-            );
-        }
     }
 }
