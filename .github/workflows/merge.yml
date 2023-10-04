@@ -41,16 +41,6 @@ jobs:
           server-username: FR_ARTIFACTORY_USER # env variable for username in deploy
           server-password: FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD # env variable for token in deploy
 
-      - name: test
-        run: |
-          make clean install
-
-      - name: Deploy artifact package
-        run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
-        env:
-          FR_ARTIFACTORY_USER: ${{ secrets.FR_ARTIFACTORY_USER }}
-          FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD: ${{ secrets.FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD }}
-
       - uses: google-github-actions/auth@v0
         with:
           credentials_json: ${{ secrets.GCR_CREDENTIALS_JSON }}
@@ -61,11 +51,17 @@ jobs:
       - run: |
           gcloud auth configure-docker
 
-      - name: Build Docker Image
+      - name: Build Code + Test + Create Docker Image
         run: |
           make docker tag=${{ env.GIT_SHA_SHORT }}
           docker tag eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:${{ env.GIT_SHA_SHORT }} eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:latest
           docker push --all-tags eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}
+
+      - name: Deploy artifact package
+        run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
+        env:
+          FR_ARTIFACTORY_USER: ${{ secrets.FR_ARTIFACTORY_USER }}
+          FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD: ${{ secrets.FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD }}
       
       - name: 'run functional tests'
         uses: codefresh-io/codefresh-pipeline-runner@master
