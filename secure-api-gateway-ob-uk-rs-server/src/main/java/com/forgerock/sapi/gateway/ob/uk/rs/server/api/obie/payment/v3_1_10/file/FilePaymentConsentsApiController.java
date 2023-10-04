@@ -136,6 +136,12 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         final FilePaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
 
         final String fileType = consent.getRequestObj().getData().getInitiation().getFileType();
+        final PaymentFileType paymentFileType = paymentFileProcessorService.findPaymentFileType(fileType);
+        final String contentType = request.getContentType();
+        if (!paymentFileType.getContentType().toString().equals(contentType)) {
+            throw new OBErrorException(OBRIErrorType.REQUEST_MEDIA_TYPE_NOT_SUPPORTED, contentType, paymentFileType.getContentType());
+        }
+
         final PaymentFile paymentFile = paymentFileProcessorService.processFile(fileType, fileParam);
 
         fileContentValidator.validate(new FilePaymentFileContentValidationContext(HashUtils.computeSHA256FullHash(fileParam),

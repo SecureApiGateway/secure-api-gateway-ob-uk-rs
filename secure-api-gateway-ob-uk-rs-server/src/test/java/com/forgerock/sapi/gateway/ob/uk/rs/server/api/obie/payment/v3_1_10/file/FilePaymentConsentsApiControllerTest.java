@@ -44,6 +44,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -196,6 +197,34 @@ public class FilePaymentConsentsApiControllerTest {
         assertThat(obError1.getErrorCode()).isEqualTo("OBRI.Request.Object.file.wrong.number.of.transactions");
         assertThat(obError1.getMessage()).isEqualTo("The file received contains 3 transactions but the file consent metadata indicated that we are expecting a file with 1000 transactions'");
 
+    }
+
+    @Test
+    void testFailToUploadFileWithInvalidContentTypeHeader() {
+        final MediaType invalidMediaType = MediaType.IMAGE_PNG;
+        final String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
+
+        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(TestPaymentFileResources.PAIN_001_001_08_FILE_PATH);
+
+        final String idempotencyKey = UUID.randomUUID().toString();
+        final HttpHeaders headersForFileUpload = createHeadersForFileUpload(idempotencyKey, paymentFile.getFileType());
+        headersForFileUpload.setContentType(invalidMediaType);
+
+        final HttpEntity<String> entity = new HttpEntity<>(paymentFile.getFileContent(), headersForFileUpload);
+
+        given(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).willReturn(buildAwaitingUploadConsent(
+                createValidConsentRequest(paymentFile.getFileType(), paymentFile.getFileHash(), paymentFile.getNumTransactions(), paymentFile.getControlSum())));
+
+        final ResponseEntity<OBErrorResponse1> fileUploadResponse = restTemplate.exchange(controllerUploadFileUri(consentId), HttpMethod.POST,
+                entity, OBErrorResponse1.class);
+
+        assertThat(fileUploadResponse.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        final OBErrorResponse1 obErrorResponse = fileUploadResponse.getBody();
+        assertThat(obErrorResponse.getErrors().size()).isEqualTo(1);
+        assertThat(obErrorResponse.getCode()).isEqualTo("UNSUPPORTED_MEDIA_TYPE");
+        final OBError1 obError1 = obErrorResponse.getErrors().get(0);
+        assertThat(obError1.getErrorCode()).isEqualTo("OBRI.Request.MediaType.NotSupported");
+        assertThat(obError1.getMessage()).isEqualTo("Media type '" + invalidMediaType + "' is not supported for this request. Supported media type are text/xml");
     }
 
     @Test
