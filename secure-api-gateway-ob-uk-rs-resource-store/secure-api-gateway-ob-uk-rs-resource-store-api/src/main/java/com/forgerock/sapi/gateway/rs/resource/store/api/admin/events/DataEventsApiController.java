@@ -16,11 +16,11 @@
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin.events;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType.DATA_INVALID_REQUEST;
-import static com.forgerock.sapi.gateway.rs.resource.store.api.admin.events.FRDataEventsConverter.toFREventMessage;
 import static com.forgerock.sapi.gateway.rs.resource.store.api.admin.events.FRDataEventsConverter.toFREventMessageEntity;
+import static com.forgerock.sapi.gateway.rs.resource.store.api.admin.events.FRDataEventsConverter.toOBEventNotification1;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.events.FREventMessages;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventMessages;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 
@@ -64,18 +64,21 @@ public class DataEventsApiController implements DataEventsApi {
     @Override
     public ResponseEntity<FREventMessages> updateEvents(FREventMessages frEventMessages) throws OBErrorException {
         validateApiClientId(frEventMessages.getApiClientId());
-        validatePayloadEventsLimit(frEventMessages.getEvents().size());
+        validatePayloadEventsLimit(frEventMessages.getObEventNotification1List().size());
         log.debug("Update events {}", frEventMessages);
         FREventMessages eventUpdated = FREventMessages.builder().apiClientId(frEventMessages.getApiClientId()).build();
-        frEventMessages.getEvents().forEach(frEventMessage -> {
-            Optional<FREventMessageEntity> optionalFREventNotification =
+        frEventMessages.getObEventNotification1List().forEach(obEventNotification1 -> {
+
+            Optional<FREventMessageEntity> optionalFREventNotificationEntity =
                     frEventMessageRepository.findByApiClientIdAndJti(
-                            frEventMessages.getApiClientId(), frEventMessage.getJti()
+                            frEventMessages.getApiClientId(), obEventNotification1.getJti()
                     );
-            optionalFREventNotification.ifPresent(entity -> {
-                        entity.setSet(frEventMessage.getSet());
-                        FREventMessageEntity entityUpdated = frEventMessageRepository.save(entity);
-                        eventUpdated.eventItem(toFREventMessage(entityUpdated));
+
+            optionalFREventNotificationEntity.ifPresent(entity -> {
+                        FREventMessageEntity newDataEntity = toFREventMessageEntity(frEventMessages.getApiClientId(), obEventNotification1);
+                        newDataEntity.setId(entity.getId());
+                        FREventMessageEntity entityUpdated = frEventMessageRepository.save(newDataEntity);
+                        eventUpdated.addOBEventNotification1Item(toOBEventNotification1(entityUpdated));
                     }
             );
         });
@@ -83,16 +86,11 @@ public class DataEventsApiController implements DataEventsApi {
     }
 
     @Override
-    public ResponseEntity<FREventMessages> exportEvents(String apiClientId) throws OBErrorException {
+    public ResponseEntity<List<FREventMessageEntity>> exportEvents(String apiClientId) throws OBErrorException {
         validateApiClientId(apiClientId);
         log.debug("Export all Events for apiClient:{}", apiClientId);
         Collection<FREventMessageEntity> entities = frEventMessageRepository.findByApiClientId(apiClientId);
-        FREventMessages dataEvent = FREventMessages.builder().apiClientId(apiClientId).events(Collections.EMPTY_LIST).build();
-        if (!entities.isEmpty()) {
-            dataEvent.events(entities.stream().map(FRDataEventsConverter::toFREventMessage).collect(Collectors.toList()));
-        }
-
-        return ResponseEntity.ok(dataEvent);
+        return ResponseEntity.ok(entities.stream().collect(Collectors.toList()));
     }
 
     @Override
@@ -130,7 +128,7 @@ public class DataEventsApiController implements DataEventsApi {
      * @throws OBErrorException
      */
     private void limitValidation(FREventMessages frEventMessages) throws OBErrorException {
-        validatePayloadEventsLimit(frEventMessages.getEvents().size());
+        validatePayloadEventsLimit(frEventMessages.getObEventNotification1List().size());
         validateStoredEvents(frEventMessages);
         validateTotalEventsToImport(frEventMessages);
     }
@@ -173,7 +171,7 @@ public class DataEventsApiController implements DataEventsApi {
      */
     private void validateTotalEventsToImport(FREventMessages frEventMessages) throws OBErrorException {
         Collection<FREventMessageEntity> entities = frEventMessageRepository.findByApiClientId(frEventMessages.getApiClientId());
-        Integer totalEvents = entities.size() + frEventMessages.getEvents().size();
+        Integer totalEvents = entities.size() + frEventMessages.getObEventNotification1List().size();
         if (totalEvents > eventsLimit) {
             throw new OBErrorException(
                     DATA_INVALID_REQUEST,
@@ -189,12 +187,12 @@ public class DataEventsApiController implements DataEventsApi {
      */
     private FREventMessages createEvents(FREventMessages frEventMessages) {
         FREventMessages frEventMessagesCreated = FREventMessages.builder().apiClientId(frEventMessages.getApiClientId()).build();
-        frEventMessages.getEvents().forEach(
-                eventMessage -> {
-                    FREventMessageEntity entity = toFREventMessageEntity(frEventMessages.getApiClientId(), eventMessage);
+        frEventMessages.getObEventNotification1List().forEach(
+                obEventNotification1 -> {
+                    FREventMessageEntity entity = toFREventMessageEntity(frEventMessages.getApiClientId(), obEventNotification1);
                     entity.setApiClientId(frEventMessages.getApiClientId());
                     log.debug("Create event message {}", entity);
-                    frEventMessagesCreated.eventItem(toFREventMessage(frEventMessageRepository.save(entity)));
+                    frEventMessagesCreated.addOBEventNotification1Item(toOBEventNotification1(frEventMessageRepository.save(entity)));
                 }
         );
         return frEventMessagesCreated;
