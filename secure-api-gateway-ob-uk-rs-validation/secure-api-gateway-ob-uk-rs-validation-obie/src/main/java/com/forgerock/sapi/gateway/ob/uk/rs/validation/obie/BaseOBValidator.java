@@ -43,12 +43,13 @@ public abstract class BaseOBValidator<T> implements Validator<T, OBError1> {
         final ValidationResult<OBError1> validationResult = new ValidationResult<>();
         try {
             validate(obj, validationResult);
+            if (!validationResult.isValid()) {
+                logger.debug("Validation failed for object: {}, errors: {}", obj, validationResult.getErrors());
+            }
         } catch (RuntimeException rte) {
-            logger.error("Unexpected exception thrown by validator: {}", getClass(), rte);
-            validationResult.addError(OBRIErrorType.SERVER_ERROR.toOBError1("Unexpected error validating request"));
-        }
-        if (!validationResult.isValid()) {
-            logger.debug("Validation failed for object: {}, errors: {}", obj, validationResult.getErrors());
+            logger.error("Validation failed for object: {} due to unexpected exception thrown by validator: {} " +
+                         "- Validator implementations must not throw exceptions", obj, getClass(), rte);
+            validationResult.addError(OBRIErrorType.SERVER_ERROR.toOBError1());
         }
         return validationResult;
     }
