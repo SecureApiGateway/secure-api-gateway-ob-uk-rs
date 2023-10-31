@@ -16,6 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.web.DisabledEndpointInterceptor;
+import com.forgerock.sapi.gateway.uk.common.shared.spring.web.filter.FapiInteractionIdFilter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.filter.ForwardedHeaderFilter;
@@ -34,6 +36,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Bean
     ForwardedHeaderFilter forwardedHeaderFilter() {
         return new ForwardedHeaderFilter();
+    }
+
+    /**
+     * Installs the {@link FapiInteractionIdFilter}, this filter adds the x-fapi-interaction-id header value to the
+     * logging context.
+     */
+    @Bean
+    FapiInteractionIdFilter fapInteractionIdFilter() {
+        return new FapiInteractionIdFilter();
     }
 
     @Override
