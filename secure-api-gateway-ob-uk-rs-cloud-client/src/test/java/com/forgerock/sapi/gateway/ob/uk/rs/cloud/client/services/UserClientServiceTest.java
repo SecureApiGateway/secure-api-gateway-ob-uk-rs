@@ -20,15 +20,19 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url.UrlContext;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
@@ -84,10 +88,11 @@ public class UserClientServiceTest {
                 .accountStatus(ACCOUNT_ACTIVE_STATUS)
                 .build();
         // When
+        final ArgumentCaptor<HttpEntity> entityArgumentCaptor = ArgumentCaptor.forClass(HttpEntity.class);
         when(restTemplate.exchange(
                 anyString(),
                 eq(GET),
-                isNull(),
+                entityArgumentCaptor.capture(),
                 eq(User.class))
         ).thenReturn(ResponseEntity.ok(user));
 
@@ -97,6 +102,7 @@ public class UserClientServiceTest {
         assertThat(userResponse.getAccountStatus()).isEqualTo(ACCOUNT_ACTIVE_STATUS);
         assertThat(userResponse.getUserName()).isEqualTo(user.getUserName());
         assertThat(userResponse.getId()).isEqualTo(user.getId());
+        assertThat(entityArgumentCaptor.getValue().getHeaders().get(OBHeaders.X_FAPI_INTERACTION_ID)).isNotNull();
     }
 
     @Test
@@ -111,7 +117,7 @@ public class UserClientServiceTest {
         when(restTemplate.exchange(
                 anyString(),
                 eq(GET),
-                isNull(),
+                any(HttpEntity.class),
                 eq(User.class))
         ).thenReturn(ResponseEntity.ok(user));
 
@@ -133,7 +139,7 @@ public class UserClientServiceTest {
         when(restTemplate.exchange(
                 anyString(),
                 eq(GET),
-                isNull(),
+                any(HttpEntity.class),
                 eq(User.class))
         ).thenReturn(ResponseEntity.notFound().build());
 

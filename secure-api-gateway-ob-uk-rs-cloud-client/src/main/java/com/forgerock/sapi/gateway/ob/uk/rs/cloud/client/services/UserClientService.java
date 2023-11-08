@@ -21,7 +21,13 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url.UrlContext;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
+import com.forgerock.sapi.gateway.uk.common.shared.fapi.FapiInteractionIdContext;
+
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +36,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpMethod.GET;
@@ -78,7 +85,7 @@ public class UserClientService {
             ResponseEntity<User> responseEntity = restTemplate.exchange(
                     userFilterURL,
                     GET,
-                    null,
+                    createRequestEntity(),
                     User.class);
 
             return (responseEntity.getStatusCode() != HttpStatus.OK) ?
@@ -108,5 +115,12 @@ public class UserClientService {
                     exception
             );
         }
+    }
+
+    protected HttpEntity<?> createRequestEntity() {
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(OBHeaders.X_FAPI_INTERACTION_ID, FapiInteractionIdContext.getFapiInteractionId()
+                                                                                 .orElseGet(() -> UUID.randomUUID().toString()));
+        return new HttpEntity<>(httpHeaders);
     }
 }
