@@ -248,6 +248,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .domesticVRPId(paymentSubmission.getId())
                                 .status(toOBDomesticVRPResponseDataStatusEnum(paymentSubmission.getStatus()))
                                 .creationDateTime(paymentSubmission.getCreated())
+                                .statusUpdateDateTime(paymentSubmission.getUpdated())
                                 .debtorAccount(obDomesticVRPRequest.getData().getInitiation().getDebtorAccount())
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
                                 .instruction(obDomesticVRPRequest.getData().getInstruction())
