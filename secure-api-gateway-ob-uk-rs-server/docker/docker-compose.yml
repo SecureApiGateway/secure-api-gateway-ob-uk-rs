@@ -4,7 +4,7 @@ services:
   securebanking-config-server:
     container_name: securebanking-config-server
     hostname: securebanking-config-server
-    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-spring-config-server
+    image: europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact/securebanking/securebanking-spring-config-server
     environment:
       - SPRING_PROFILES_ACTIVE=native
       - CONFIG_SERVER_SEARCH_LOCATIONS=file:///home/config
@@ -15,7 +15,7 @@ services:
 
   rs-simulator:
     container_name: rs-simulator
-    image: eu.gcr.io/sbat-gcr-develop/securebanking/securebanking-openbanking-uk-rs
+    image: europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact/securebanking/securebanking-openbanking-uk-rs
     ports:
       - 8080:8080
       - 9096:9096

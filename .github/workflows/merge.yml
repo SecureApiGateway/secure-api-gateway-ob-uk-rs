@@ -41,21 +41,23 @@ jobs:
           server-username: FR_ARTIFACTORY_USER # env variable for username in deploy
           server-password: FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD # env variable for token in deploy
 
-      - uses: google-github-actions/auth@v0
+      - name: Auth to GCP  
+        uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCR_CREDENTIALS_JSON }}
+          credentials_json: ${{ secrets.DEV_GAR_KEY }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v1.1.1
 
-      - run: |
-          gcloud auth configure-docker
+      - name: Auth Docker
+        run: |
+          gcloud auth configure-docker europe-west4-docker.pkg.dev
 
       - name: Build Code + Test + Create Docker Image
         run: |
           make docker tag=${{ env.GIT_SHA_SHORT }}
-          docker tag eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:${{ env.GIT_SHA_SHORT }} eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:latest
-          docker push --all-tags eu.gcr.io/${{ secrets.GCR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}
+          docker tag ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:${{ env.GIT_SHA_SHORT }} ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:latest
+          docker push ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }} --all-tags
 
       - name: Deploy artifact package
         run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
@@ -63,7 +65,15 @@ jobs:
           FR_ARTIFACTORY_USER: ${{ secrets.FR_ARTIFACTORY_USER }}
           FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD: ${{ secrets.FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD }}
       
-      - name: 'run functional tests'
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
+  test:
+    runs-on: ubuntu-latest
+    name: Check master integrity
+    needs: build
+    steps:      
+      - name: 'Update Environment'
         uses: codefresh-io/codefresh-pipeline-runner@master
         with:
           args: '-v ARGO_VALUES_PREFIX=testFacilityBank -v SERVICE_NAME=test-facility-bank'
@@ -72,7 +82,3 @@ jobs:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           TRIGGER_NAME: github-actions-trigger-rs
         id: run-pipeline
-
-      - uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
