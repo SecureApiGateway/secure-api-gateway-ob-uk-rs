@@ -14,10 +14,25 @@ env:
   PR_NUMBER: pr-${{ github.event.number }}
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     name: Check PR integrity
     steps:
+      - uses: actions/checkout@v3
+
+      - name: template helm
+        run: |
+          helm template $HELM_DIRECTORY/$SERVICE_NAME
+
+      - name: Check Copyright
+        run: mvn license:check
+  
+  build:
+    runs-on: ubuntu-latest
+    name: Build Image
+    needs: check
+    steps:
+
       - uses: actions/checkout@v3
 
       - name: Get version
@@ -44,22 +59,17 @@ jobs:
           server-username: FR_ARTIFACTORY_USER # env variable for username in deploy
           server-password: FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD # env variable for token in deploy
 
-      - uses: google-github-actions/auth@v0
+      - name: Auth to GCP  
+        uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCR_CREDENTIALS_JSON }}
+          credentials_json: ${{ secrets.DEV_GAR_KEY }}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-
-      - name: template helm
+        uses: google-github-actions/setup-gcloud@v1.1.1
+      
+      - name: Auth Docker
         run: |
-          helm template $HELM_DIRECTORY/$SERVICE_NAME
-
-      - name: Check Copyright
-        run: mvn license:check
-
-      - run: |
-          gcloud auth configure-docker
+          gcloud auth configure-docker europe-west4-docker.pkg.dev
       
       - name: Build Code + Test + Create Docker Image
         run: |
@@ -69,6 +79,11 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
       
+  test:
+    runs-on: ubuntu-latest
+    name: Test Changes
+    needs: build
+    steps:
       - name: Create lowercase Github Username
         id: toLowerCase
         run: echo "GITHUB_USER=$(echo ${{github.actor}} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_ENV}
@@ -76,7 +91,7 @@ jobs:
       - name: Output GITHUB_USER env
         run: echo "GITHUB_USER set to ${{ env.GITHUB_USER }}"
 
-      - name: 'run functional tests'
+      - name: 'Update Environment'
         uses: codefresh-io/codefresh-pipeline-runner@master
         with:
           args: '-v TAG=${{ env.PR_NUMBER }} -v ARGO_VALUES_PREFIX=testFacilityBank -v SERVICE_NAME=test-facility-bank -v ENVIRONMENT=${{ env.GITHUB_USER }} -v BRANCH=${{ github.head_ref }}'
