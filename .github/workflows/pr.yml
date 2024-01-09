@@ -1,4 +1,4 @@
-name: pull-request
+name: Pull Request - Build and Deploy
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ env:
 jobs:
   check:
     runs-on: ubuntu-latest
-    name: Check PR integrity
+    name: Check PR
     steps:
       - uses: actions/checkout@v3
 
@@ -79,20 +79,18 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
       
-  test:
+  deploy:
     runs-on: ubuntu-latest
-    name: Test Changes
+    name: Deploy
     needs: build
     steps:
       - name: Create lowercase Github Username
         id: toLowerCase
         run: echo "GITHUB_USER=$(echo ${{github.actor}} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_ENV}
       
-      - name: Output GITHUB_USER env
-        run: echo "GITHUB_USER set to ${{ env.GITHUB_USER }}"
-
       - name: 'Update Environment'
         uses: codefresh-io/codefresh-pipeline-runner@master
+        if: github.actor != 'dependabot[bot]'
         with:
           args: '-v TAG=${{ env.PR_NUMBER }} -v ARGO_VALUES_PREFIX=testFacilityBank -v SERVICE_NAME=test-facility-bank -v ENVIRONMENT=${{ env.GITHUB_USER }} -v BRANCH=${{ github.head_ref }}'
         env:
