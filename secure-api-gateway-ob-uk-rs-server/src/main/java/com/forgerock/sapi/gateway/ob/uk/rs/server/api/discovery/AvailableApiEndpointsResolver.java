@@ -16,12 +16,15 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.OBApiReference;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +49,7 @@ public class AvailableApiEndpointsResolver {
 
     private final List<AvailableApiEndpoint> availableApis;
 
-    public AvailableApiEndpointsResolver(RequestMappingHandlerMapping requestHandlerMapping) {
+    public AvailableApiEndpointsResolver(@Qualifier(value = "requestMappingHandlerMapping") RequestMappingHandlerMapping requestHandlerMapping) {
         this.availableApis = findAvailableApiEndpoints(requestHandlerMapping);
     }
 
@@ -73,7 +76,7 @@ public class AvailableApiEndpointsResolver {
 
             if (apiReference != null) {
                 String version = getVersion(requestMapping);
-                String uriPath = requestMapping.getPatternsCondition().getPatterns().iterator().next();
+                String uriPath = requestMapping.getPathPatternsCondition().getPatterns().iterator().next().getPatternString();
 
                 AvailableApiEndpoint availableApi = AvailableApiEndpoint.builder()
                         .groupName(apiReference.getGroupName())
@@ -89,9 +92,9 @@ public class AvailableApiEndpointsResolver {
     }
 
     private OBApiReference getMatchingApiReference(RequestMappingInfo requestMapping) {
-        Set<String> patterns = requestMapping.getPatternsCondition().getPatterns();
+        Set<PathPattern> patterns = requestMapping.getPathPatternsCondition().getPatterns();
         if (!patterns.isEmpty()) {
-            String urlPattern = patterns.iterator().next();
+            String urlPattern = patterns.iterator().next().getPatternString();
             Matcher matcher = matchUrlPattern(urlPattern);
             if (matcher.matches()) {
                 String relativePath = matcher.group(2);
@@ -103,9 +106,9 @@ public class AvailableApiEndpointsResolver {
     }
 
     private String getVersion(RequestMappingInfo requestMapping) {
-        Set<String> patterns = requestMapping.getPatternsCondition().getPatterns();
+        Set<PathPattern> patterns = requestMapping.getPathPatternsCondition().getPatterns();
         if (!patterns.isEmpty()) {
-            String urlPattern = patterns.iterator().next();
+            String urlPattern = patterns.iterator().next().getPatternString();
             Matcher matcher = matchUrlPattern(urlPattern);
             if (matcher.matches()) {
                 return matcher.group(1);

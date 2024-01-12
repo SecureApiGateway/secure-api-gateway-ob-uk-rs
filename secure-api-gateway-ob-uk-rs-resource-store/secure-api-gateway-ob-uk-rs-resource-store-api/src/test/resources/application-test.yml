@@ -47,3 +47,9 @@ testdata:
         accountNumber: "54312390"
       - sortCode: "334412"
         accountNumber: "30187862"
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.4.0
