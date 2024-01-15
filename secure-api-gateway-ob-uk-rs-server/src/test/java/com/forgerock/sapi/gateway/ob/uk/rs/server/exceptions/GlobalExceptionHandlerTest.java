@@ -45,7 +45,6 @@ import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-
 class GlobalExceptionHandlerTest {
 
     public static final HttpHeaders REQUIRED_ACCOUNT_CONSENT_API_HEADERS = requiredAccountConsentApiHeaders("client-123");
