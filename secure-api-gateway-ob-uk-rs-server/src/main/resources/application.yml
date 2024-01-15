@@ -25,6 +25,9 @@
 #        # baseUri to the RCS Consent Store API
 #        baseUri:
 
+server:
+  max-http-header-size: 16KB
+
 spring:
   data:
     mongodb:
