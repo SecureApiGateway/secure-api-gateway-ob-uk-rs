@@ -23,7 +23,6 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Crea
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
@@ -172,7 +171,6 @@ public class FundsConfirmationConsentsApiControllerTest {
         assertThat(consentNotFoundResponse.getBody().getCode()).isEqualTo(OBRI_PERMISSION_INVALID.toString());
     }
 
-    @NotNull
     private FundsConfirmationConsent mockAwaitingAuthorisationConsentStoreResponse(OBFundsConfirmationConsent1 obConsentRequest) {
         final FundsConfirmationConsent consentStoreResponse = buildAwaitingAuthorisationConsent(obConsentRequest);
         when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {

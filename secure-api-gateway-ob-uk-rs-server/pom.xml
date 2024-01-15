@@ -35,7 +35,7 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-        <version>2.2.2-SNAPSHOT</version>
+        <version>2.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -206,19 +206,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo.spring27x</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://github.com/hosuaby/inject-resources -->
-        <dependency>
-            <groupId>io.hosuaby</groupId>
-            <artifactId>inject-resources-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.hosuaby</groupId>
-            <artifactId>inject-resources-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

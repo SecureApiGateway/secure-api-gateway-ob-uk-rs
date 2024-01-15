@@ -6,3 +6,9 @@ cloud:
       put: /repo/users/@UserId@
       patch: /repo/users/@UserId@
       delete: /repo/users/@UserId@
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.4.0

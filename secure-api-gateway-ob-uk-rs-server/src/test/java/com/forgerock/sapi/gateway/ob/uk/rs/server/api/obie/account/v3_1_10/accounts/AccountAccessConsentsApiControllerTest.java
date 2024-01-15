@@ -28,7 +28,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +120,6 @@ class AccountAccessConsentsApiControllerTest {
         assertThat(getConsentResponse.getBody()).isEqualTo(createConsentApiResponse);
     }
 
-    @NotNull
     private AccountAccessConsent mockAwaitingAuthorisationConsentStoreResponse(OBReadConsent1 obConsentRequest) {
         final AccountAccessConsent consentStoreResponse = buildAwaitingAuthorisationConsent(obConsentRequest);
         when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
