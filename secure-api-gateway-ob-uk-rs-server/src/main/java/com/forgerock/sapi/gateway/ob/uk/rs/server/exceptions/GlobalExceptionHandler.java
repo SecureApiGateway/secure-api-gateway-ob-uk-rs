@@ -40,6 +40,7 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -105,28 +106,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                           HttpHeaders headers,
                                                                           HttpStatus status,
                                                                           WebRequest request) {
-        if (ex.getMessage().startsWith("Missing request header")) {
+        if (ex instanceof MissingRequestHeaderException) {
             return handleOBErrorResponse(
                     new OBErrorResponseException(
                             HttpStatus.BAD_REQUEST,
                             OBRIErrorResponseCategory.REQUEST_INVALID,
                             OBRIErrorType.REQUEST_MISSING_HEADER.toOBError1(ex.getMessage())
-                    ),
-                    request);
-        } else if (ex.getMessage().startsWith("Missing cookie")) {
-            return handleOBErrorResponse(
-                    new OBErrorResponseException(
-                            HttpStatus.BAD_REQUEST,
-                            OBRIErrorResponseCategory.REQUEST_INVALID,
-                            OBRIErrorType.REQUEST_MISSING_COOKIE.toOBError1(ex.getMessage())
-                    ),
-                    request);
-        } else if (ex.getMessage().startsWith("Missing argument")) {
-            return handleOBErrorResponse(
-                    new OBErrorResponseException(
-                            HttpStatus.BAD_REQUEST,
-                            OBRIErrorResponseCategory.REQUEST_INVALID,
-                            OBRIErrorType.REQUEST_MISSING_ARGUMENT.toOBError1(ex.getMessage())
                     ),
                     request);
         }
