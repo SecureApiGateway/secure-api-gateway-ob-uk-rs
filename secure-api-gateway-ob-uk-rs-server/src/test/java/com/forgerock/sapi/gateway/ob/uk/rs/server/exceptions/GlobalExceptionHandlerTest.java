@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.exceptions;
 
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountConsentApiHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -24,12 +25,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
@@ -44,6 +48,7 @@ import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 
 class GlobalExceptionHandlerTest {
 
+    public static final HttpHeaders REQUIRED_ACCOUNT_CONSENT_API_HEADERS = requiredAccountConsentApiHeaders("client-123");
     @LocalServerPort
     private int port;
 
@@ -72,5 +77,39 @@ class GlobalExceptionHandlerTest {
         final OBError1 firstError = errorResponseBody.getErrors().get(0);
         assertThat(firstError.getErrorCode()).isEqualTo(OBStandardErrorCodes1.UK_OBIE_HEADER_MISSING.toString());
         assertThat(firstError.getMessage()).isEqualTo("Missing request header 'Authorization' for method parameter of type String");
+    }
+
+    @Test
+    void testErrorDueToMethodNotSupported() {
+        final ResponseEntity<OBErrorResponse1> errorResponse = restTemplate.exchange(getAccountAccessConsentApiUri("12234"),
+                HttpMethod.PUT, new HttpEntity<>(REQUIRED_ACCOUNT_CONSENT_API_HEADERS), OBErrorResponse1.class);
+
+        assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        final OBErrorResponse1 errorResponseBody = errorResponse.getBody();
+        assertThat(errorResponseBody.getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
+        assertThat(errorResponseBody.getErrors()).hasSize(1);
+        final OBError1 firstError = errorResponseBody.getErrors().get(0);
+        assertThat(firstError.getErrorCode()).isEqualTo(OBRIErrorType.REQUEST_METHOD_NOT_SUPPORTED.getCode().toString());
+        assertThat(firstError.getMessage()).isEqualTo("Method 'PUT' is not supported for this request. Supported methods are 'GET' 'DELETE' ");
+    }
+
+    @Test
+    void testMediaTypeNotSupported() {
+        final HttpHeaders headers = new HttpHeaders(REQUIRED_ACCOUNT_CONSENT_API_HEADERS);
+        headers.setContentType(MediaType.APPLICATION_XML);
+        final ResponseEntity<OBErrorResponse1> errorResponse = restTemplate.exchange(accountAccessConsentApiUri(),
+                HttpMethod.POST, new HttpEntity<>(headers), OBErrorResponse1.class);
+
+        assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+
+        final OBErrorResponse1 errorResponseBody = errorResponse.getBody();
+        assertThat(errorResponseBody.getCode()).isEqualTo(OBRIErrorResponseCategory.REQUEST_INVALID.getId());
+        assertThat(errorResponseBody.getErrors()).hasSize(1);
+        final OBError1 firstError = errorResponseBody.getErrors().get(0);
+        assertThat(firstError.getErrorCode()).isEqualTo(OBRIErrorType.REQUEST_MEDIA_TYPE_NOT_SUPPORTED.getCode().toString());
+        assertThat(firstError.getMessage())
+                .isEqualTo("Media type 'application/xml' is not supported for this request. " +
+                        "Supported media type are 'application/json;charset=utf-8' 'application/jose+jwe' ");
     }
 }
