@@ -75,7 +75,7 @@ class GlobalExceptionHandlerTest {
         assertThat(errorResponseBody.getErrors()).hasSize(1);
         final OBError1 firstError = errorResponseBody.getErrors().get(0);
         assertThat(firstError.getErrorCode()).isEqualTo(OBStandardErrorCodes1.UK_OBIE_HEADER_MISSING.toString());
-        assertThat(firstError.getMessage()).isEqualTo("Missing request header 'Authorization' for method parameter of type String");
+        assertThat(firstError.getMessage()).isEqualTo("Required request header 'Authorization' for method parameter type String is not present");
     }
 
     @Test
