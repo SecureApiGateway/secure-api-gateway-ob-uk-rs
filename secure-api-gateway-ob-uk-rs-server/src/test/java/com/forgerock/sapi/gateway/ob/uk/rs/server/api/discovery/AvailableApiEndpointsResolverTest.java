@@ -19,13 +19,14 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domest
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.OBApiReference;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBGroupName;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo.BuilderConfiguration;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -44,9 +45,13 @@ public class AvailableApiEndpointsResolverTest {
     private static final String VERSION = "v3.1.5";
     private static final String CREATE_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments";
     private static final String GET_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments/{DomesticPaymentId}";
+    private final BuilderConfiguration requestMapperInfoBuilderConfig;
 
-    // FIXME - I think our mock needs to be updated to return pathpatterns
-    @Disabled
+    public AvailableApiEndpointsResolverTest() {
+        requestMapperInfoBuilderConfig = new BuilderConfiguration();
+        requestMapperInfoBuilderConfig.setPatternParser(PathPatternParser.defaultInstance);
+    }
+
     @Test
     public void shouldGetAvailableApiEndpoints() {
         // Given
@@ -93,6 +98,7 @@ public class AvailableApiEndpointsResolverTest {
         return RequestMappingInfo
                 .paths(CREATE_PAYMENT_URI)
                 .methods(RequestMethod.POST)
+                .options(requestMapperInfoBuilderConfig)
                 .build();
     }
 
@@ -107,6 +113,7 @@ public class AvailableApiEndpointsResolverTest {
         return RequestMappingInfo
                 .paths(GET_PAYMENT_URI)
                 .methods(RequestMethod.GET)
+                .options(requestMapperInfoBuilderConfig)
                 .build();
     }
 
