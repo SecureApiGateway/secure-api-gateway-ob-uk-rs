@@ -11,7 +11,24 @@ curl -u $BACKSTAGE_USERNAME http://maven.forgerock.org/repo/private-releases/set
 ```
 
 ### Build the project
+#### Linux dependencies
+Certain distributions of Linux no longer come with libssl1.1 installed as standard e.g. Ubuntu 22.04
 
+libssl1.1 is required to run embedded MongoDB when running the unit tests (it is not required by the RS in production)
+
+The following command installs the library manually:
+```bash
+libssl_hash="0b3251aee55db6e20d02f4b9a2b703c9874a85ab6a20b12f4870f52f91633d37"
+wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
+ 
+local_file_hash=$(sha256sum "libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb" | awk '{print $1}')
+if [[ "$local_file_hash" != "$libssl_hash" ]]; then
+        echo "Checksum verification failed"
+else
+    echo "Checksum verification passed"
+    sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
+fi
+```
 #### Maven build
 
 From the command line, simply run:
