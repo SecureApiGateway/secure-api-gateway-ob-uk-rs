@@ -34,7 +34,7 @@ jobs:
         name: set java and maven cache
         with:
           distribution: 'adopt'
-          java-version: '14'
+          java-version: '17'
           architecture: x64
           cache: 'maven'
           server-id: ${{ env.MAVEN_SERVER_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
