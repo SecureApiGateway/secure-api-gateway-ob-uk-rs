@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain
 
 import org.w3c.dom.Element;
 
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;

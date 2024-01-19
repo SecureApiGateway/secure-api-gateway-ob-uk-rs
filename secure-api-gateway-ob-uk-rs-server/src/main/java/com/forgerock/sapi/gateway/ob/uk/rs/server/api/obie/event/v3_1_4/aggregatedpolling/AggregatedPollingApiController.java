@@ -25,8 +25,8 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.event.OBEventPolling1;
 import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.Map;
 

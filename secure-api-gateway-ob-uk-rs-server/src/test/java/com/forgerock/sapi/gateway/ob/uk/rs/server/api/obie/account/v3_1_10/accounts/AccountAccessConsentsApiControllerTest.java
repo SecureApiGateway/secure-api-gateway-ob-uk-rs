@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -34,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -189,7 +190,7 @@ class AccountAccessConsentsApiControllerTest {
         accountAccessConsent.setStatus(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
         accountAccessConsent.setRequestObj(FRReadConsentConverter.toFRReadConsent(obConsentRequest));
         accountAccessConsent.setApiClientId(TEST_API_CLIENT_ID);
-        final DateTime creationDateTime = DateTime.now();
+        final Date creationDateTime = new Date();
         accountAccessConsent.setCreationDateTime(creationDateTime);
         accountAccessConsent.setStatusUpdateDateTime(creationDateTime);
         return accountAccessConsent;

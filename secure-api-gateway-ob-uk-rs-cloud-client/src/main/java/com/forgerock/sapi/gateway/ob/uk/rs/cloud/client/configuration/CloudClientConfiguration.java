@@ -23,7 +23,7 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 @ConfigurationProperties(prefix = "cloud.client")

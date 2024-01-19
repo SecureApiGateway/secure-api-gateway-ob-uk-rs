@@ -27,8 +27,8 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.event.OBEventPolling1;
 import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
 
 @Api(tags = {"v3.1.4", SwaggerApiTags.EVENT_NOTIFICATION_TAG})

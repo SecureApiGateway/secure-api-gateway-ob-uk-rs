@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -314,7 +315,7 @@ public class FilePaymentConsentsApiControllerTest {
         consentStoreResponse.setRequestObj(FRWriteFileConsentConverter.toFRWriteFileConsent(consentRequest));
         consentStoreResponse.setStatus(StatusEnum.AWAITINGUPLOAD.toString());
         consentStoreResponse.setCharges(List.of());
-        final DateTime creationDateTime = DateTime.now();
+        final Date creationDateTime = new Date();
         consentStoreResponse.setCreationDateTime(creationDateTime);
         consentStoreResponse.setStatusUpdateDateTime(creationDateTime);
         return consentStoreResponse;

@@ -41,9 +41,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResp
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
@@ -94,8 +95,8 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .id(obWriteDomesticStandingOrder2.getData().getConsentId())
                 .standingOrder(frStandingOrder)
                 .status(INITIATIONPENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -140,8 +141,8 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .data(new OBWriteDataDomesticStandingOrderResponse2()
                         .domesticStandingOrderId(frPaymentSubmission.getId())
                         .initiation(toOBDomesticStandingOrder2(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId()))
                 .links(LinksHelper.createDomesticStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))

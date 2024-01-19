@@ -15,27 +15,32 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.*;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.DataConfigurationProperties;
-import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.TestUserAccountIds;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.*;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.products.FRProductRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.FRAccountStatusCode;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.FRAccountSubTypeCode;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.FRAccountTypeCode;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.builder;
+import static com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType.DATA_INVALID_REQUEST;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -48,27 +53,53 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountBeneficiary;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIndicator;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditLine;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRDirectDebitData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FROfferData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStatementData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRTransactionData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.DataConfigurationProperties;
+import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.TestUserAccountIds;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBeneficiary;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRDirectDebit;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FROffer;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRProduct;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRScheduledPayment;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStandingOrder;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.products.FRProductRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
+
 import uk.org.openbanking.datamodel.account.OBExternalStatementAmountType1Code;
 import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
 import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification2Code;
 import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.charset.Charset;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.*;
-import static com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType.DATA_INVALID_REQUEST;
 
 @Controller("FakeDataApi")
 public class FakeDataApiController implements FakeDataApi {
@@ -177,7 +208,7 @@ public class FakeDataApiController implements FakeDataApi {
             String accountId = accountIdSupplier.get();
             com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount();
 
-            accountPremierBank.setCreated(new DateTime());
+            accountPremierBank.setCreated(new Date());
             accountPremierBank.setId(accountId);
             accountPremierBank.setUserID(userId);
             accountPremierBank.setAccount(builder()
@@ -211,7 +242,7 @@ public class FakeDataApiController implements FakeDataApi {
             String accountId = accountIdSupplier.get();
             com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount accountPremierBank = new com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount();
             accountPremierBank.setId(accountId);
-            accountPremierBank.setCreated(new DateTime());
+            accountPremierBank.setCreated(new Date());
             accountPremierBank.setUserID(userId);
             accountPremierBank.setAccount(builder()
                     .accountId(accountId)
@@ -244,7 +275,7 @@ public class FakeDataApiController implements FakeDataApi {
             String accountId = accountIdSupplier.get();
             com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount accountPremierCard = new com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount();
 
-            accountPremierCard.setCreated(new DateTime());
+            accountPremierCard.setCreated(new Date());
             accountPremierCard.setId(accountId);
             accountPremierCard.setUserID(userId);
             accountPremierCard.setAccount(builder()

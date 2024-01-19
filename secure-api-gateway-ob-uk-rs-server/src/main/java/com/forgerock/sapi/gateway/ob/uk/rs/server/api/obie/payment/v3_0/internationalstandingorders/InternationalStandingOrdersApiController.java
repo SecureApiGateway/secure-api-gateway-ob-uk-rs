@@ -41,9 +41,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrde
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
@@ -94,8 +95,8 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .id(obWriteInternationalStandingOrder1.getData().getConsentId())
                 .standingOrder(frStandingOrder)
                 .status(PENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -141,8 +142,8 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .data(new OBWriteDataInternationalStandingOrderResponse1()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
                         .initiation(toOBInternationalStandingOrder1(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                 )

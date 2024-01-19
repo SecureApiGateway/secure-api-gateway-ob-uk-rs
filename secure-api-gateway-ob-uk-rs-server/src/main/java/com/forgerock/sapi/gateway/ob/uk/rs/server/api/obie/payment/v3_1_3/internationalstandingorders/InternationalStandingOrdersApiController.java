@@ -45,9 +45,10 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -100,8 +101,8 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .id(obWriteInternationalStandingOrder4.getData().getConsentId())
                 .standingOrder(frStandingOrder)
                 .status(INITIATIONPENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -172,8 +173,8 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .data(new OBWriteInternationalStandingOrderResponse5Data()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternationalStandingOrder4DataInitiation(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteInternationalStandingOrderResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                 )

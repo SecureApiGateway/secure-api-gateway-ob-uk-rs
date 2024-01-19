@@ -99,7 +99,7 @@ public class AvailableApiEndpointsResolver {
             if (matcher.matches()) {
                 String relativePath = matcher.group(2);
                 RequestMethod method = requestMapping.getMethodsCondition().getMethods().iterator().next();
-                return OBApiReference.fromMethodAndPath(HttpMethod.resolve(method.name()), relativePath);
+                return OBApiReference.fromMethodAndPath(HttpMethod.valueOf(method.name()), relativePath);
             }
         }
         return null;

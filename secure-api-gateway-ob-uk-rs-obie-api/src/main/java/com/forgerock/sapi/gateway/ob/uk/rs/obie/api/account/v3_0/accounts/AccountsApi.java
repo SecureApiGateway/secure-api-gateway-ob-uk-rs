@@ -33,7 +33,7 @@ import uk.org.openbanking.datamodel.account.OBReadAccount2;
 
 import java.util.List;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
+@jakarta.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 
 @Api(tags = {"v3.0", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.0/aisp")

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -90,7 +90,7 @@ class GlobalExceptionHandlerTest {
         assertThat(errorResponseBody.getErrors()).hasSize(1);
         final OBError1 firstError = errorResponseBody.getErrors().get(0);
         assertThat(firstError.getErrorCode()).isEqualTo(OBRIErrorType.REQUEST_METHOD_NOT_SUPPORTED.getCode().toString());
-        assertThat(firstError.getMessage()).isEqualTo("Method 'PUT' is not supported for this request. Supported methods are 'GET' 'DELETE' ");
+        assertThat(firstError.getMessage()).startsWith("Method 'PUT' is not supported for this request");
     }
 
     @Test

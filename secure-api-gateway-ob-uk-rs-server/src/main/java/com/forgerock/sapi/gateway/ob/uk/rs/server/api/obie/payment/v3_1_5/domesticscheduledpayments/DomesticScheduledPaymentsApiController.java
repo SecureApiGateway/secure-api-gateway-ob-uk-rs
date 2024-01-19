@@ -55,9 +55,10 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -143,8 +144,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .id(obWriteDomesticScheduled2.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
                 .status(INITIATIONPENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -236,8 +237,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                         .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
                         .domesticScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteDomesticScheduled2DataInitiation(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteDomesticScheduledResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))

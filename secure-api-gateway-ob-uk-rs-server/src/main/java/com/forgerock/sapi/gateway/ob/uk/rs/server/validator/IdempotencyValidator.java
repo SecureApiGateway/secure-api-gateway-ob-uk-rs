@@ -30,6 +30,8 @@ import org.springframework.util.StringUtils;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType.IDEMPOTENCY_KEY_INVALID;
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders.X_IDEMPOTENCY_KEY;
 
+import java.util.Date;
+
 /**
  * Performs validation of idempotent requests.
  */
@@ -85,9 +87,10 @@ public class IdempotencyValidator {
     }
 
     // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-Idempotency.1
-    private static void checkIdempotencyKeyExpiry(String xIdempotencyKey, String paymentId, DateTime paymentCreated
+    private static void checkIdempotencyKeyExpiry(String xIdempotencyKey, String paymentId, Date paymentCreated
     ) throws OBErrorResponseException {
-        if ((DateTime.now().minusHours(X_IDEMPOTENCY_KEY_EXPIRY_HOURS).isAfter(paymentCreated))) {
+        final DateTime paymentCreatedDateTime = new DateTime(paymentCreated.getTime());
+        if ((DateTime.now().minusHours(X_IDEMPOTENCY_KEY_EXPIRY_HOURS).isAfter(paymentCreatedDateTime))) {
             log.debug("Matching idempotency key '{}' provided but previous use was more than '{}' hours ago so it has " +
                             "expired so rejecting request. Previous use was on id: '{}'",
                     xIdempotencyKey, X_IDEMPOTENCY_KEY_EXPIRY_HOURS, paymentId);
@@ -97,7 +100,7 @@ public class IdempotencyValidator {
                     OBRIErrorType.IDEMPOTENCY_KEY_EXPIRED.toOBError1(
                             xIdempotencyKey,
                             paymentId,
-                            paymentCreated.toString(ApiConstants.BOOKED_TIME_DATE_FORMAT),
+                            paymentCreatedDateTime.toString(ApiConstants.BOOKED_TIME_DATE_FORMAT),
                             X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
             );
         }

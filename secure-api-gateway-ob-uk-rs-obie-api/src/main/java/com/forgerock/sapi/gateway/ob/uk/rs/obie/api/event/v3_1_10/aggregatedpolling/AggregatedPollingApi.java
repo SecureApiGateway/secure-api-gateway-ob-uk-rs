@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_10.aggregatedpolling;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;

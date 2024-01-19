@@ -20,6 +20,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmati
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
+
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentDataResponse1;
@@ -34,8 +36,8 @@ public class OBFundsConfirmationConsentResponseFactory {
                 .data(
                         new OBFundsConfirmationConsentDataResponse1()
                                 .consentId(consent.getId())
-                                .creationDateTime(consent.getCreationDateTime())
-                                .statusUpdateDateTime(consent.getStatusUpdateDateTime())
+                                .creationDateTime(new DateTime(consent.getCreationDateTime()))
+                                .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
                                 .status(OBExternalRequestStatus1Code.fromValue(consent.getStatus()))
                                 .expirationDateTime(frFundsConfirmationConsentData.getExpirationDateTime())
                                 .debtorAccount(FRAccountIdentifierConverter.toOBCashAccount3(frFundsConfirmationConsentData.getDebtorAccount()))

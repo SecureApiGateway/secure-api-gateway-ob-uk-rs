@@ -24,8 +24,8 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants.HTTP_DAT
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;

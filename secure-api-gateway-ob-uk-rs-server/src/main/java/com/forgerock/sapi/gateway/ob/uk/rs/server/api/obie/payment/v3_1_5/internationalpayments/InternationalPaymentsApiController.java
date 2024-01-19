@@ -31,11 +31,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
@@ -146,8 +147,8 @@ public class InternationalPaymentsApiController implements InternationalPayments
                 .id(obWriteInternational3.getData().getConsentId())
                 .payment(frInternationalPayment)
                 .status(PENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -235,8 +236,8 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
                         .internationalPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternational3DataInitiation(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteInternationalResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))

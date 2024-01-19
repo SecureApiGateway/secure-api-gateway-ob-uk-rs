@@ -39,9 +39,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataFileResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFile1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBExternalStatus1Code;
@@ -84,8 +85,8 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(obWriteFile1.getData().getConsentId())
                 .filePayment(frWriteFile)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -158,8 +159,8 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .data(new OBWriteDataFileResponse1()
                         .filePaymentId(frPaymentSubmission.getId())
                         .initiation(toOBFile1(frPaymentSubmission.getFilePayment().getData().getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
                         .consentId(frPaymentSubmission.getFilePayment().getData().getConsentId()))
                 .links(LinksHelper.createFilePaymentsLink(this.getClass(), frPaymentSubmission.getId()))

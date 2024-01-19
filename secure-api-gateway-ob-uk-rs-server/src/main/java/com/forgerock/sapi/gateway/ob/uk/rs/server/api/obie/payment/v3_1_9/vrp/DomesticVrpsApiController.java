@@ -45,8 +45,9 @@ import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.vrp.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -217,8 +218,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .consentId(frDomesticVRPRequest.data.consentId)
                 .payment(frDomesticVRPRequest)
                 .status(toFRSubmissionStatus(OBDomesticVRPResponseData.StatusEnum.PENDING))
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
 
@@ -247,8 +248,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .consentId(paymentSubmission.getConsentId())
                                 .domesticVRPId(paymentSubmission.getId())
                                 .status(toOBDomesticVRPResponseDataStatusEnum(paymentSubmission.getStatus()))
-                                .creationDateTime(paymentSubmission.getCreated())
-                                .statusUpdateDateTime(paymentSubmission.getUpdated())
+                                .creationDateTime(new DateTime(paymentSubmission.getCreated().getTime()))
+                                .statusUpdateDateTime(new DateTime(paymentSubmission.getUpdated().getTime()))
                                 .debtorAccount(obDomesticVRPRequest.getData().getInitiation().getDebtorAccount())
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
                                 .instruction(obDomesticVRPRequest.getData().getInstruction())

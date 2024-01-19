@@ -20,8 +20,8 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants.HTTP_DAT
 import java.io.File;
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -46,7 +46,7 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
+@jakarta.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
 @Api(value = "file-payment-consents", description = "the file-payment-consents API")
 @RequestMapping(value = "/open-banking/v3.1.10/pisp")

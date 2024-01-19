@@ -27,8 +27,8 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
 
 @Api(tags = {"v3.1.3", SwaggerApiTags.CONFIRMATION_OF_FUNDS_TAG})

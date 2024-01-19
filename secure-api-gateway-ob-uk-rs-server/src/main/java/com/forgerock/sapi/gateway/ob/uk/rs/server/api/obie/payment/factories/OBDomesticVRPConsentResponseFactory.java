@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters.toOBDomesticVRPConsentRequest;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
@@ -41,9 +42,9 @@ public class OBDomesticVRPConsentResponseFactory {
                                                             .readRefundAccount(consentRequestData.getReadRefundAccount())
                                                             .controlParameters(consentRequestData.getControlParameters())
                                                             .initiation(consentRequestData.getInitiation())
-                                                            .creationDateTime(consent.getCreationDateTime())
+                                                            .creationDateTime(new DateTime(consent.getCreationDateTime()))
                                                             .status(StatusEnum.fromValue(consent.getStatus()))
-                                                            .statusUpdateDateTime(consent.getStatusUpdateDateTime()))
+                                                            .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime())))
                 .risk(obDomesticVRPConsentRequest.getRisk())
                 .links(LinksHelper.createDomesticVrpConsentLink(controllerClass, consent.getId()))
                 .meta(new Meta());

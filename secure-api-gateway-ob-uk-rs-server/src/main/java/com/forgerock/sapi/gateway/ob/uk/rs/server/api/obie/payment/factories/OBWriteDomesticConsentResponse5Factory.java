@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper.createDomesticPaymentConsentsLink;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
@@ -50,8 +51,8 @@ public class OBWriteDomesticConsentResponse5Factory {
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(domesticPaymentConsent.getCharges()));
         data.consentId(domesticPaymentConsent.getId());
         data.status(StatusEnum.fromValue(domesticPaymentConsent.getStatus()));
-        data.creationDateTime(domesticPaymentConsent.getCreationDateTime());
-        data.statusUpdateDateTime(domesticPaymentConsent.getStatusUpdateDateTime());
+        data.creationDateTime(new DateTime(domesticPaymentConsent.getCreationDateTime()));
+        data.statusUpdateDateTime(new DateTime(domesticPaymentConsent.getStatusUpdateDateTime()));
 
         return new OBWriteDomesticConsentResponse5().data(data)
                                                     .risk(obWriteDomesticConsent4.getRisk())

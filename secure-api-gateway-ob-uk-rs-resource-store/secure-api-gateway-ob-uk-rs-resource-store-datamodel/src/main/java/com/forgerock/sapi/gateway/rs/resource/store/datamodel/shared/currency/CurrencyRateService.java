@@ -21,6 +21,7 @@ import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Slf4j
 public final class CurrencyRateService {
@@ -46,7 +47,7 @@ public final class CurrencyRateService {
      * @return Exchange rate with populated fields
      */
     public static FRExchangeRateInformation getCalculatedExchangeRate(FRExchangeRateInformation submittedExchangeRate,
-                                                                      DateTime createdDateTime) {
+                                                                      Date createdDateTime) {
         if (submittedExchangeRate == null) {
             return null; // Exchange rate is optional in international payment requests
         }
@@ -62,13 +63,13 @@ public final class CurrencyRateService {
                 .build();
     }
 
-    private static DateTime getExpirationDate(FRExchangeRateInformation submittedRate, DateTime createdDateTime) {
+    private static DateTime getExpirationDate(FRExchangeRateInformation submittedRate, Date createdDateTime) {
         if (submittedRate == null) {
             return null;
         }
         switch (submittedRate.getRateType()) {
             case ACTUAL:
-                return ((createdDateTime == null) ? DateTime.now() : createdDateTime).plusMinutes(ACTUAL_RATE_EXPIRATION_MINUTES);
+                return ((createdDateTime == null) ? DateTime.now() : new DateTime(createdDateTime.getTime())).plusMinutes(ACTUAL_RATE_EXPIRATION_MINUTES);
             case INDICATIVE:
             case AGREED:
                 return null;

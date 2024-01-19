@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.BeanValidationTestUtils.verifyBeanValidationIsSuccessful;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalstandingorders.InternationalStandingOrderConsentsApiController;
@@ -45,8 +46,8 @@ class OBWriteInternationalStandingOrderConsentResponse7FactoryTest {
         final OBWriteInternationalStandingOrderConsentResponse7Data responseData = response.getData();
         assertThat(responseData.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
         assertThat(responseData.getConsentId()).isEqualTo(consent.getId());
-        assertThat(responseData.getCreationDateTime()).isEqualTo(consent.getCreationDateTime());
-        assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdateDateTime());
+        assertThat(responseData.getCreationDateTime()).isEqualTo(new DateTime(consent.getCreationDateTime()));
+        assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(new DateTime(consent.getStatusUpdateDateTime()));
         assertThat(responseData.getCharges()).isEqualTo(consent.getCharges());
 
         // Verify data against original Consent Request

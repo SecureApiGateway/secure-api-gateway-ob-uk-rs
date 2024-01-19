@@ -19,10 +19,11 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -99,7 +100,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
                 .orElseGet(() ->
                         FRFundsConfirmation.builder()
                                 .id(consentId)
-                                .created(DateTime.now())
+                                .created(new Date())
                                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                                 .build()
                 );
@@ -142,7 +143,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
         return new OBFundsConfirmationResponse1()
                 .data(new OBFundsConfirmationDataResponse1()
                         .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obFundsConfirmationData.getInstructedAmount()))
-                        .creationDateTime(fundsConfirmation.getCreated())
+                        .creationDateTime(new DateTime(fundsConfirmation.getCreated()))
                         .fundsConfirmationId(fundsConfirmation.getId())
                         .fundsAvailable(fundsConfirmation.isFundsAvailable())
                         .reference(obFundsConfirmationData.getReference())

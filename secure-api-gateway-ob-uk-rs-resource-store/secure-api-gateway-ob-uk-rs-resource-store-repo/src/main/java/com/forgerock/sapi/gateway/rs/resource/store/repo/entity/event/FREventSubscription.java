@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventSubscriptionData;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import lombok.AllArgsConstructor;
@@ -46,9 +48,9 @@ public class FREventSubscription implements Persistable<String> {
     private String tppId;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 
     private OBVersion version;
 

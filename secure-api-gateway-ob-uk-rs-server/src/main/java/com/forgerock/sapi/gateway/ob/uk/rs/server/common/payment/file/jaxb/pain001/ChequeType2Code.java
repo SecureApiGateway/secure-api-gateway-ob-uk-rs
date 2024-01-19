@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001;
 
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 

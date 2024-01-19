@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,7 +48,7 @@ public class FRParty {
     private FRPartyData party;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 }

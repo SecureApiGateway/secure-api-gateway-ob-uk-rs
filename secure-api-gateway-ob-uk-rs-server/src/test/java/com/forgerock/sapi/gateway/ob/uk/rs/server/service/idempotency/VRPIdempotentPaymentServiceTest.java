@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,11 +67,11 @@ class VRPIdempotentPaymentServiceTest {
                 .obVersion(OBVersion.v3_1_10)
                 .apiClientId(apiClientId)
                 .idempotencyKey(idempotencyKey)
-                .idempotencyKeyExpiration(DateTime.now().withZone(DateTimeZone.UTC).plusMinutes(1))
+                .idempotencyKeyExpiration(DateTime.now(DateTimeZone.UTC).plusMinutes(1))
                 .status(FRSubmissionStatus.PENDING)
                 .payment(obPayment)
-                .created(DateTime.now().withZone(DateTimeZone.UTC))
-                .updated(DateTime.now().withZone(DateTimeZone.UTC))
+                .created(new Date())
+                .updated(new Date())
                 .build();
     }
 

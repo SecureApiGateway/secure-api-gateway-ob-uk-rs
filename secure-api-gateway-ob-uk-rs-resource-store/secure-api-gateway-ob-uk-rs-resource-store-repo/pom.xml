@@ -89,7 +89,7 @@
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo.spring27x</artifactId>
+            <artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

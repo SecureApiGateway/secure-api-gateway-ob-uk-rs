@@ -30,6 +30,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientExc
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -63,7 +64,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
-                                                                  HttpStatus status,
+                                                                  HttpStatusCode status,
                                                                   WebRequest request) {
         List<OBError1> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -90,7 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
                                                                           HttpHeaders headers,
-                                                                          HttpStatus status,
+                                                                          HttpStatusCode status,
                                                                           WebRequest request) {
         return handleOBErrorResponse(
                 new OBErrorResponseException(
@@ -104,7 +105,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException ex,
                                                                           HttpHeaders headers,
-                                                                          HttpStatus status,
+                                                                          HttpStatusCode status,
                                                                           WebRequest request) {
         if (ex instanceof MissingRequestHeaderException) {
             return handleOBErrorResponse(
@@ -140,7 +141,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
                                                                          HttpHeaders headers,
-                                                                         HttpStatus status,
+                                                                         HttpStatusCode status,
                                                                          WebRequest request) {
         StringBuilder builder = new StringBuilder();
         ex.getSupportedHttpMethods().forEach(t -> builder.append("'").append(t).append("' "));
@@ -157,7 +158,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
                                                                      HttpHeaders headers,
-                                                                     HttpStatus status,
+                                                                     HttpStatusCode status,
                                                                      WebRequest request) {
         StringBuilder builder = new StringBuilder();
         ex.getSupportedMediaTypes().forEach(t -> builder.append("'").append(t).append("' "));
@@ -175,12 +176,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                   HttpHeaders headers,
-                                                                  HttpStatus status,
+                                                                  HttpStatusCode status,
                                                                   WebRequest request) {
         log.debug("HttpMessageNotReadableException from request: {}", request, ex);
         return handleOBErrorResponse(
                 new OBErrorResponseException(
-                        status,
+                        HttpStatus.valueOf(status.value()),
                         OBRIErrorResponseCategory.REQUEST_INVALID,
                         OBRIErrorType.REQUEST_MESSAGE_NOT_READABLE
                                 .toOBError1((ex.getCause() != null) ? ex.getCause().getMessage() : ex.getMessage())
@@ -191,7 +192,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex,
                                                                       HttpHeaders headers,
-                                                                      HttpStatus status,
+                                                                      HttpStatusCode status,
                                                                       WebRequest request) {
         StringBuilder builder = new StringBuilder();
         ex.getSupportedMediaTypes().forEach(t -> builder.append("'").append(t).append("' "));
@@ -208,11 +209,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex,
                                                                HttpHeaders headers,
-                                                               HttpStatus status,
+                                                               HttpStatusCode status,
                                                                WebRequest request) {
         return handleOBErrorResponse(
                 new OBErrorResponseException(
-                        status,
+                        HttpStatus.valueOf(status.value()),
                         OBRIErrorResponseCategory.REQUEST_INVALID,
                         OBRIErrorType.REQUEST_PATH_VARIABLE_MISSING.toOBError1(ex.getVariableName(), ex.getParameter())
                 ),
@@ -223,7 +224,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex,
                                                              Object body,
                                                              HttpHeaders headers,
-                                                             HttpStatus status,
+                                                             HttpStatusCode status,
                                                              WebRequest request) {
         if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
             handleOBErrorResponse(
@@ -235,7 +236,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
         handleOBErrorResponse(
                 new OBErrorResponseException(
-                        status,
+                        HttpStatus.valueOf(status.value()),
                         OBRIErrorResponseCategory.REQUEST_INVALID,
                         OBRIErrorType.REQUEST_UNDEFINED_ERROR_YET.toOBError1(ex.getMessage())
                 ),

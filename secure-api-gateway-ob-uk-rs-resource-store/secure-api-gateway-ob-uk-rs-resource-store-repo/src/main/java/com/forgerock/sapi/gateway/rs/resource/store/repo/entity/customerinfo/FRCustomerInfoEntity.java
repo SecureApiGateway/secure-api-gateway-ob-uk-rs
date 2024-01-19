@@ -15,12 +15,13 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.customerinfo;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfoAddress;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -54,7 +55,7 @@ public class FRCustomerInfoEntity {
     private FRCustomerInfoAddress address;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 }

@@ -19,6 +19,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.paymen
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.BeanValidationTestUtils.verifyBeanValidationIsSuccessful;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApiController;
@@ -46,8 +47,8 @@ class OBWriteInternationalConsentResponse6FactoryTest {
         final OBWriteInternationalConsentResponse6Data responseData = response.getData();
         assertThat(responseData.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
         assertThat(responseData.getConsentId()).isEqualTo(internationalPaymentConsent.getId());
-        assertThat(responseData.getCreationDateTime()).isEqualTo(internationalPaymentConsent.getCreationDateTime());
-        assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(internationalPaymentConsent.getStatusUpdateDateTime());
+        assertThat(responseData.getCreationDateTime()).isEqualTo(new DateTime(internationalPaymentConsent.getCreationDateTime()));
+        assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(new DateTime(internationalPaymentConsent.getStatusUpdateDateTime()));
         assertThat(responseData.getCharges()).isEqualTo(internationalPaymentConsent.getCharges());
         assertThat(responseData.getExchangeRateInformation())
                 .isEqualTo(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(

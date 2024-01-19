@@ -45,9 +45,10 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -101,8 +102,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .id(obWriteInternationalScheduled3.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
                 .status(INITIATIONPENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -173,8 +174,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .data(new OBWriteInternationalScheduledResponse4Data()
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId())
                         .status(toOBWriteInternationalScheduledResponse4DataStatus(frPaymentSubmission.getStatus()))
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(
