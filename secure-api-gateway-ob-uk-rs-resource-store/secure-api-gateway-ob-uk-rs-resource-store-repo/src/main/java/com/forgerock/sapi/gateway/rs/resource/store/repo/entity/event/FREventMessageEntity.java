@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPollingError;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,9 +54,9 @@ public class FREventMessageEntity implements Persistable<String> {
     private String apiClientId;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 
     private FREventPollingError errors;
 

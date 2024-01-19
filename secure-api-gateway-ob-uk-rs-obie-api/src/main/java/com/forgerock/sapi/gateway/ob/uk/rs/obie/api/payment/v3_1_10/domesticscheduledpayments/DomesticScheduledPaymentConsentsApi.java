@@ -19,8 +19,8 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants.HTTP_DAT
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -44,7 +44,7 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
+@jakarta.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
 @Api(value = "domestic-scheduled-payment-consents", description = "the domestic-scheduled-payment-consents API")
 @RequestMapping(value = "/open-banking/v3.1.10/pisp")

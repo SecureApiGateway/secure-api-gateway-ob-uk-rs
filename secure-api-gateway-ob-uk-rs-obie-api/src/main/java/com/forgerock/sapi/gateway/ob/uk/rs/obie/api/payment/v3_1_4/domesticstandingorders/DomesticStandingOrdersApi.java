@@ -53,11 +53,11 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse5;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen")
+@jakarta.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen")
 @Api(tags = {"v3.1.4", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/pisp")
 public interface DomesticStandingOrdersApi {

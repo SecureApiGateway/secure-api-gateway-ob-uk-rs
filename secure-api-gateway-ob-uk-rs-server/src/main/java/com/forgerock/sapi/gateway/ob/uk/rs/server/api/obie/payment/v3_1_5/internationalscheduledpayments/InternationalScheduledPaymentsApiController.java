@@ -31,11 +31,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
@@ -153,8 +154,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .id(obWriteInternationalScheduled3.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
                 .status(INITIATIONPENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -253,8 +254,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteInternationalScheduledResponse6DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))

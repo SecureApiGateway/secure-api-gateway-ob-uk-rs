@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;

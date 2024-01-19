@@ -31,9 +31,11 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCu
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +64,7 @@ import static org.springframework.http.HttpMethod.PUT;
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(properties = {"rs.data.upload.limit.accounts=10", "rs.data.upload.limit.documents=1", "rs.data.customerInfo.enabled=true"})
+@AutoConfigureWebClient(registerRestTemplate = true)
 public class DataApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

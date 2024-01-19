@@ -41,9 +41,10 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -90,8 +91,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .id(obWriteDomestic2.getData().getConsentId())
                 .payment(frDomesticPayment)
                 .status(PENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -159,8 +160,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .data(new OBWriteDomesticResponse3Data()
                         .domesticPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteDomesticResponse3DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId()))
                 .links(LinksHelper.createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))

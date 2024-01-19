@@ -41,9 +41,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledResponse
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse2;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
@@ -94,8 +95,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .id(obWriteDomesticScheduled2.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
                 .status(INITIATIONPENDING)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -142,8 +143,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .data(new OBWriteDataDomesticScheduledResponse2()
                         .domesticScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBDomesticScheduled2(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId()))
                 .links(LinksHelper.createDomesticScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))

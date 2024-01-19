@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper.createInternationalScheduledPaymentConsentsLink;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
@@ -53,8 +54,8 @@ public class OBWriteInternationalScheduledConsentResponse6Factory {
         data.consentId(consent.getId());
         data.exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()));
         data.status(StatusEnum.fromValue(consent.getStatus()));
-        data.creationDateTime(consent.getCreationDateTime());
-        data.statusUpdateDateTime(consent.getStatusUpdateDateTime());
+        data.creationDateTime(new DateTime(consent.getCreationDateTime()));
+        data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
 
         return new OBWriteInternationalScheduledConsentResponse6()
                 .data(data)

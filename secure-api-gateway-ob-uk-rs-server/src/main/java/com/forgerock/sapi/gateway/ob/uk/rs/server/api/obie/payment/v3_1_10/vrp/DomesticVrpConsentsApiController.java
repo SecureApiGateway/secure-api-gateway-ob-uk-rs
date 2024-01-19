@@ -34,10 +34,10 @@ import org.springframework.stereotype.Controller;
 
 import uk.org.openbanking.datamodel.vrp.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Controller("DomesticVrpConsentApiV3.1.10")
 @Slf4j
 public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {

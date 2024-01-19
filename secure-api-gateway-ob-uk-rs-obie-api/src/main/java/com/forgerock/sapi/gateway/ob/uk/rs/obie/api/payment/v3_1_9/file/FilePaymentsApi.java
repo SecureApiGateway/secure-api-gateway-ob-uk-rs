@@ -24,7 +24,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.swagger.SwaggerApiTags;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
+@jakarta.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen")
 
 @Api(tags = {"v3.1.9", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.9/pisp")

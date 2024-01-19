@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,7 +49,7 @@ public class FRProduct {
     private OBReadProduct2DataProduct product;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 }

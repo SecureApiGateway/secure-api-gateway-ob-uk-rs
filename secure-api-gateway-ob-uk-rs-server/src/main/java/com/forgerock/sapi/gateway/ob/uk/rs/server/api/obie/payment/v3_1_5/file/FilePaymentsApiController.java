@@ -52,8 +52,9 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.payment.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
@@ -123,8 +124,8 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(consentId)
                 .filePayment(frWriteFile)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .status(INITIATIONPENDING)
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
@@ -222,8 +223,8 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                         .charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(filePaymentConsent.getCharges()))
                         .filePaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteFile2DataInitiation(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteFileResponse3DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount())))

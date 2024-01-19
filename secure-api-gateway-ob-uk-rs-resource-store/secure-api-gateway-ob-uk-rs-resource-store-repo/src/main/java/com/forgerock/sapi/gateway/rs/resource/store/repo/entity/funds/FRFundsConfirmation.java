@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.funds;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationData;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import lombok.AllArgsConstructor;
@@ -44,9 +46,9 @@ public class FRFundsConfirmation {
     public boolean fundsAvailable;
 
     @CreatedDate
-    public DateTime created;
+    public Date created;
     @LastModifiedDate
-    public DateTime updated;
+    public Date updated;
 
     public OBVersion obVersion;
 }

@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduled;
@@ -42,9 +44,9 @@ public class FRInternationalScheduledPaymentSubmission implements PaymentSubmiss
     private FRSubmissionStatus status;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 
     private String idempotencyKey;
 

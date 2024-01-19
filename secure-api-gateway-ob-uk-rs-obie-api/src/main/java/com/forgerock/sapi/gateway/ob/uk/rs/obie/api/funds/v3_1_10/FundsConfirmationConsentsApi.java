@@ -25,8 +25,8 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants.HTTP_DATE_FORMAT;

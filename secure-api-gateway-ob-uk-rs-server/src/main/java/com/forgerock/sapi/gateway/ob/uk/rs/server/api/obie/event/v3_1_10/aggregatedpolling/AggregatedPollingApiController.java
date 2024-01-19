@@ -19,7 +19,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

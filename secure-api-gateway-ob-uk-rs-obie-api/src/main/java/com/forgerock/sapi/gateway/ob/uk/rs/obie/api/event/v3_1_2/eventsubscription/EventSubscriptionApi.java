@@ -25,8 +25,8 @@ import uk.org.openbanking.datamodel.event.OBEventSubscription1;
 import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
 import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
 
 @Api(tags = {"v3.1.2", SwaggerApiTags.EVENT_NOTIFICATION_TAG})

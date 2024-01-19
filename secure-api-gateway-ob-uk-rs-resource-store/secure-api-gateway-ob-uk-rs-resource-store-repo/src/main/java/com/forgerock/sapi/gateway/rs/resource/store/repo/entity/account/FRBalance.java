@@ -32,6 +32,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -53,9 +54,9 @@ public class FRBalance {
     private FRCashBalance balance;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 
     public FRAmount getCurrencyAndAmount() {
         return getBalance().getAmount();

@@ -25,7 +25,7 @@ import io.swagger.annotations.Api;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
 @Api(tags = {"v3.1.10", SwaggerApiTags.VRP_PAYMENT_TAG})
 @RequestMapping(value = "/open-banking/v3.1.10/pisp")

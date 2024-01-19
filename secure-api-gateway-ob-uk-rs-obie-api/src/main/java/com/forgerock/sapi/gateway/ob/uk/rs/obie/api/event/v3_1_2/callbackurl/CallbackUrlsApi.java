@@ -30,8 +30,8 @@ import uk.org.openbanking.datamodel.event.OBCallbackUrl1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
 
 @Api(tags = {"v3.1.2", SwaggerApiTags.EVENT_NOTIFICATION_TAG})

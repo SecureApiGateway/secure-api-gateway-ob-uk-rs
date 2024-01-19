@@ -115,7 +115,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateBalances(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -131,7 +131,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateBeneficiaries(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateDirectDebits(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateStandingOrders(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateTransactions(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -195,7 +195,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateStatements(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -211,7 +211,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateScheduledPayments(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -227,7 +227,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateOffers(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -430,7 +430,7 @@ public class DataUpdaterTest {
         })
 
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
     @Test

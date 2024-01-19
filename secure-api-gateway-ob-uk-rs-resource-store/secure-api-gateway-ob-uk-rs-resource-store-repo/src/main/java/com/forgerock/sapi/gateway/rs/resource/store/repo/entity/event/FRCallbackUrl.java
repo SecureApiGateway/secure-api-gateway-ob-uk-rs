@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FRCallbackUrlData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,10 +47,10 @@ public class FRCallbackUrl implements Persistable<String> {
     private String tppId;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
 
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 
     @Override
     public boolean isNew() {

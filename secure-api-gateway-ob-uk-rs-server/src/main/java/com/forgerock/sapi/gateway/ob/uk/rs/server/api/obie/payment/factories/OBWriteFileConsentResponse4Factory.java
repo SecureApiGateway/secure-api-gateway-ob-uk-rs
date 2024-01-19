@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper.createFilePaymentConsentsLink;
 
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
@@ -44,8 +45,8 @@ public class OBWriteFileConsentResponse4Factory {
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
         data.status(StatusEnum.fromValue(consent.getStatus()));
-        data.creationDateTime(consent.getCreationDateTime());
-        data.statusUpdateDateTime(consent.getStatusUpdateDateTime());
+        data.creationDateTime(new DateTime(consent.getCreationDateTime()));
+        data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
 
         return new OBWriteFileConsentResponse4().data(data)
                 .links(createFilePaymentConsentsLink(controllerClass, consent.getId()))

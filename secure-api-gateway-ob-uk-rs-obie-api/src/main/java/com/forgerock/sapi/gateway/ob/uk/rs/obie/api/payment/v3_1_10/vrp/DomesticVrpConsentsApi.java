@@ -20,8 +20,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -50,7 +50,7 @@ import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
  * NOTE: API operations other than funds-confirmation have been removed from this generated code.
  * The other Consent API operations are implemented in the gateway component at the time of writing.
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
 @Api(value = "domestic-vrp-consents", description = "the domestic-vrp-consents API")
 @RequestMapping(value = "/open-banking/v3.1.10/pisp")

@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment;
 
+import java.util.Date;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
@@ -40,9 +42,9 @@ public class FRDomesticStandingOrderPaymentSubmission implements PaymentSubmissi
     private FRSubmissionStatus status;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 
     private String idempotencyKey;
 

@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.rs.resource.store.api.admin.events;
 
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,7 +64,7 @@ public interface DataEventsApi {
     ResponseEntity<List<FREventMessageEntity>> exportEvents(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestParam String apiClientId
+            @RequestParam(name = "apiClientId") String apiClientId
     ) throws OBErrorException;
 
     @RequestMapping(value = "/events",
@@ -73,9 +73,9 @@ public interface DataEventsApi {
     ResponseEntity removeEvents(
             @ApiParam(value = "The client ID", required = true)
             @Valid
-            @RequestParam(value = "apiClientId") String apiClientId,
+            @RequestParam(name = "apiClientId") String apiClientId,
             @ApiParam(value = "Unique identification of event message")
-            @RequestParam(value = "jti", required = false) String jti
+            @RequestParam(name = "jti", required = false) String jti
     ) throws OBErrorException;
 
 }

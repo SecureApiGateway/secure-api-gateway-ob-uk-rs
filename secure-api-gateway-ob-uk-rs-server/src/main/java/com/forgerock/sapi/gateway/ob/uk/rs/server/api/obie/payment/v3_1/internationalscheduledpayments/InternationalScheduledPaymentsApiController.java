@@ -41,9 +41,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledRes
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse2;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBExternalStatus1Code;
@@ -93,8 +94,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
                 .id(obWriteInternationalScheduled2.getData().getConsentId())
                 .scheduledPayment(frScheduledPayment)
-                .created(new DateTime())
-                .updated(new DateTime())
+                .created(new Date())
+                .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
@@ -140,8 +141,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .data(new OBWriteDataInternationalScheduledResponse2()
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBInternationalScheduled2(data.getInitiation()))
-                        .creationDateTime(frPaymentSubmission.getCreated())
-                        .statusUpdateDateTime(frPaymentSubmission.getUpdated())
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId())
                         .status(toOBExternalStatus1Code(frPaymentSubmission.getStatus()))
                         .exchangeRateInformation(toOBExchangeRate2(frPaymentSubmission.getCalculatedExchangeRate()))

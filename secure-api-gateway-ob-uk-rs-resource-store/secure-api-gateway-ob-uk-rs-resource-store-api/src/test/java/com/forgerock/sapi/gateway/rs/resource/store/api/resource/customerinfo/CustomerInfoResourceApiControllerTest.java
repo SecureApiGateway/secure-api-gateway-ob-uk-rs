@@ -23,9 +23,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCu
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
+@AutoConfigureWebClient(registerRestTemplate = true)
 public class CustomerInfoResourceApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";

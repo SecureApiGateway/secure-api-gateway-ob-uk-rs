@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -32,6 +33,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @TestPropertySource(properties = {"rs.data.upload.limit.accounts=10", "rs.data.upload.limit.documents=1"})
+@AutoConfigureWebClient(registerRestTemplate = true)
 class FakeDataApiControllerTest {
 
     private static final String TEST_USERNAME = "psu4test";

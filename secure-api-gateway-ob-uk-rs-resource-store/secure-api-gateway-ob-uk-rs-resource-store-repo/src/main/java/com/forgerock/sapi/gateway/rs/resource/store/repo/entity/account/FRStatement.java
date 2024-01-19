@@ -15,6 +15,8 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStatementData;
@@ -53,7 +55,7 @@ public class FRStatement {
     private DateTime endDateTime = null;
 
     @CreatedDate
-    private DateTime created;
+    private Date created;
     @LastModifiedDate
-    private DateTime updated;
+    private Date updated;
 }

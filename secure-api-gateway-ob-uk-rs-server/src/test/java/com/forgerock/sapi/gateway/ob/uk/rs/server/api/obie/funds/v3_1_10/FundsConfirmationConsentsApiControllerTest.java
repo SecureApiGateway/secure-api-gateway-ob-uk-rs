@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
@@ -43,6 +43,7 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -189,7 +190,7 @@ public class FundsConfirmationConsentsApiControllerTest {
         fundsConfirmationConsent.setStatus(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION.toString());
         fundsConfirmationConsent.setRequestObj(FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsent(obConsentRequest));
         fundsConfirmationConsent.setApiClientId(TEST_API_CLIENT_ID);
-        final DateTime creationDateTime = DateTime.now();
+        final Date creationDateTime = new Date();
         fundsConfirmationConsent.setCreationDateTime(creationDateTime);
         fundsConfirmationConsent.setStatusUpdateDateTime(creationDateTime);
         return fundsConfirmationConsent;

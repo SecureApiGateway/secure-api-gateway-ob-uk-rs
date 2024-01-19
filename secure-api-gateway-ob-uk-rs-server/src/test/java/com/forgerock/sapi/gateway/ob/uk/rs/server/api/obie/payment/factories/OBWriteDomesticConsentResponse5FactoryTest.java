@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.BeanValidationTestUtils.verifyBeanValidationIsSuccessful;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApiController;
@@ -45,8 +46,8 @@ class OBWriteDomesticConsentResponse5FactoryTest {
         final OBWriteDomesticConsentResponse5Data responseData = response.getData();
         assertThat(responseData.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
         assertThat(responseData.getConsentId()).isEqualTo(domesticPaymentConsent.getId());
-        assertThat(responseData.getCreationDateTime()).isEqualTo(domesticPaymentConsent.getCreationDateTime());
-        assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(domesticPaymentConsent.getStatusUpdateDateTime());
+        assertThat(responseData.getCreationDateTime()).isEqualTo(new DateTime(domesticPaymentConsent.getCreationDateTime()));
+        assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(new DateTime(domesticPaymentConsent.getStatusUpdateDateTime()));
         assertThat(responseData.getCharges()).isEqualTo(domesticPaymentConsent.getCharges());
 
         // Verify data against original Consent Request

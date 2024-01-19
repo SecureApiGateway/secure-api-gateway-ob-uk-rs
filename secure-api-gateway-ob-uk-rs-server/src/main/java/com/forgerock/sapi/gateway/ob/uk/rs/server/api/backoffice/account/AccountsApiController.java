@@ -23,6 +23,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.backoffice.api.account.AccountsApi;
 import lombok.extern.slf4j.Slf4j;
+
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -132,8 +134,8 @@ public class AccountsApiController implements AccountsApi {
                 .userId(account.getUserID())
                 .account(account.getAccount())
                 .latestStatementId(account.getLatestStatementId())
-                .created(account.getCreated())
-                .updated(account.getUpdated())
+                .created(new DateTime(account.getCreated()))
+                .updated(new DateTime(account.getUpdated()))
                 .build();
     }
 }

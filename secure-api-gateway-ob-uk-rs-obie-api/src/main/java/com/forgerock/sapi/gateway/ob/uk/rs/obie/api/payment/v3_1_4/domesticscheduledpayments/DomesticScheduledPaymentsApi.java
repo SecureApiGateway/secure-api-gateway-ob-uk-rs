@@ -30,10 +30,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse4;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen")
+@jakarta.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen")
 @Api(tags = {"v3.1.4", SwaggerApiTags.PAYMENT_INITIATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.4/pisp")
 public interface DomesticScheduledPaymentsApi {

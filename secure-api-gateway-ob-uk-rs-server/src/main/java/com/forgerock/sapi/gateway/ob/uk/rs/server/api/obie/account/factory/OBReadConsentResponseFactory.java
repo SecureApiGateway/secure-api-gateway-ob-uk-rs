@@ -17,6 +17,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toOBExternalPermissions1CodeList;
 
+import java.util.Date;
+
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
@@ -38,8 +41,8 @@ public class OBReadConsentResponseFactory {
         final FRReadConsentData readConsentData = consent.getRequestObj().getData();
         return new OBReadConsentResponse1()
                 .data(new OBReadConsentResponse1Data().consentId(consent.getId())
-                                                      .creationDateTime(consent.getCreationDateTime())
-                                                      .statusUpdateDateTime(consent.getStatusUpdateDateTime())
+                                                      .creationDateTime(new DateTime(consent.getCreationDateTime()))
+                                                      .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
                                                       .status(OBExternalRequestStatus1Code.fromValue(consent.getStatus()))
                                                       .permissions(toOBExternalPermissions1CodeList(readConsentData.getPermissions()))
                                                       .expirationDateTime(readConsentData.getExpirationDateTime())

@@ -20,12 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +71,8 @@ class SinglePaymentForConsentIdempotentPaymentServiceTest {
                 .idempotencyKey(idempotencyKey)
                 .status(FRSubmissionStatus.PENDING)
                 .payment(obPayment)
-                .created(DateTime.now().withZone(DateTimeZone.UTC))
-                .updated(DateTime.now().withZone(DateTimeZone.UTC))
+                .created(new Date())
+                .updated(new Date())
                 .build();
     }
 

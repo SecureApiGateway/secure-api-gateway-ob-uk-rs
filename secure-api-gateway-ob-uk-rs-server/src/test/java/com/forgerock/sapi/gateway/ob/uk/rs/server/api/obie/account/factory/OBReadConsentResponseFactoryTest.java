@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -43,7 +44,7 @@ class OBReadConsentResponseFactoryTest {
         final AccountAccessConsent consent = new AccountAccessConsent();
         final String consentId = "CONSENT-1223434";
         final String apiClientId = "test-client-1";
-        final DateTime creationDateTime = DateTime.now();
+        final Date creationDateTime = new Date();
         consent.setId(consentId);
         consent.setStatus("AwaitingAuthorisation");
         consent.setApiClientId(apiClientId);
@@ -61,8 +62,8 @@ class OBReadConsentResponseFactoryTest {
         assertThat(response1Data.getConsentId()).isEqualTo(consentId);
         assertThat(response1Data.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION);
         assertThat(response1Data.getPermissions()).isEqualTo(consentRequest.getData().getPermissions());
-        assertThat(response1Data.getCreationDateTime()).isEqualTo(creationDateTime);
-        assertThat(response1Data.getStatusUpdateDateTime()).isEqualTo(creationDateTime);
+        assertThat(response1Data.getCreationDateTime()).isEqualTo(new DateTime(creationDateTime));
+        assertThat(response1Data.getStatusUpdateDateTime()).isEqualTo(new DateTime(creationDateTime));
         assertThat(response1Data.getExpirationDateTime()).isEqualTo(consentRequest.getData().getExpirationDateTime());
         assertThat(response1Data.getTransactionFromDateTime()).isEqualTo(consentRequest.getData().getTransactionFromDateTime());
         assertThat(response1Data.getTransactionFromDateTime()).isEqualTo(consentRequest.getData().getTransactionFromDateTime());
