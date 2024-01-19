@@ -22,9 +22,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStat
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.shared.currency.CurrencyRateService;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.joda.time.DateTime;
+import lombok.NoArgsConstructor;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -33,6 +36,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Document
 public class FRInternationalScheduledPaymentSubmission implements PaymentSubmission<FRWriteInternationalScheduled> {
     @Id

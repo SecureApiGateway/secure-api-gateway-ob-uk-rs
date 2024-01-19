@@ -20,8 +20,12 @@ import java.util.Date;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -31,6 +35,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Document
 public class FRDomesticVrpPaymentSubmission implements PaymentSubmission<FRDomesticVrpRequest> {
 
