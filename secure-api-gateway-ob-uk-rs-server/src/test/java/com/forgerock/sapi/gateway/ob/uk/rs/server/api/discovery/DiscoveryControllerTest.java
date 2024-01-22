@@ -52,10 +52,9 @@ import static org.springframework.http.HttpMethod.GET;
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
-        "rs.discovery.versions.v3.1.5=true",
-        "rs.discovery.versions.v3.1.6=false",
+        "rs.discovery.versions.v3.1.10=true",
         "rs.discovery.apis.GetDomesticPayment=false",
-        "rs.discovery.versionApiOverrides.v3_1_5.GetAccount=false"})
+        "rs.discovery.versionApiOverrides.v3_1_10.GetAccount=false"})
 public class DiscoveryControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
@@ -67,25 +66,6 @@ public class DiscoveryControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    @Test
-    public void shouldGetDiscoveryUrlsFilteredByVersion() {
-        // Given
-        String[] enabledVersions = {"v3.1.5"};
-        String[] disabledVersions = {"v3.1.6"};
-
-        // When
-        ResponseEntity<OBDiscoveryResponse> response = restTemplate.getForEntity(discoveryUrl(), OBDiscoveryResponse.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBDiscovery data = response.getBody().getData();
-        assertThat(data.getFinancialId()).isEqualTo(FINANCIAL_ID);
-        List<OBDiscoveryAPI<OBDiscoveryAPILinks>> paymentApis = data.getPaymentInitiationAPIs();
-        assertThat(containsVersions(paymentApis, enabledVersions)).isTrue();
-        // assert others are filtered
-        assertThat(containsVersions(paymentApis, disabledVersions)).isFalse();
-    }
 
     @Test
     public void shouldGetDiscoveryUrlsFilteredByApiEndpoint() {
@@ -106,28 +86,9 @@ public class DiscoveryControllerTest {
     }
 
     @Test
-    public void shouldGetDiscoveryUrlsFilteredByVersionAndApiEndpoint() {
-        // Given
-        String version = "v3.1.5";
-        OBApiReference disabledEndpoint = OBApiReference.GET_ACCOUNT;
-
-        // When
-        ResponseEntity<OBDiscoveryResponse> response = restTemplate.getForEntity(discoveryUrl(), OBDiscoveryResponse.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBDiscovery data = response.getBody().getData();
-        List<OBDiscoveryAPI<OBDiscoveryAPILinks>> accountApis = data.getAccountAndTransactionAPIs();
-        assertThat(isEndpointDisabledByVersion(accountApis, version, disabledEndpoint)).isTrue();
-        // assert others are not filtered
-        assertThat(isEndpointDisabledByVersion(accountApis, "v3.1.4", disabledEndpoint)).isFalse();
-        assertThat(isEndpointDisabledByVersion(accountApis, version, OBApiReference.GET_ACCOUNTS)).isFalse();
-    }
-
-    @Test
     public void shouldGetDiscoveryUrlsForGivenDomain() {
         // Given
-        String version = "v3.1.5";
+        String version = "v3.1.10";
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Forwarded-Host", "forgerock.com");
         headers.add("X-Forwarded-Proto", "https");
@@ -153,7 +114,7 @@ public class DiscoveryControllerTest {
     @Test
     public void shouldGetDiscoveryUrlsForDefaultDomain() {
         // Given
-        String version = "v3.1.5";
+        String version = "v3.1.10";
 
         // When
         ResponseEntity<OBDiscoveryResponse> response = restTemplate.getForEntity(discoveryUrl(), OBDiscoveryResponse.class);
