@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.FundsConfirmationTestHelpers.validateConsentNotAuthorisedErrorResponse;
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentsHttpHeadersWithApiClientId;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -144,7 +144,7 @@ public class DomesticVrpConsentsApiControllerTest {
         final OBDomesticVRPConsentRequest consentRequest = createValidateConsentRequest();
         final DomesticVRPConsent consentStoreResponse = buildAwaitingAuthorisationConsent(consentRequest);
 
-        final HttpHeaders httpHeaders = requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
+        final HttpHeaders httpHeaders = requiredPaymentHttpHeaders(TEST_API_CLIENT_ID);
         when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
             final CreateDomesticVRPConsentRequest createConsentArg = invocation.getArgument(0, CreateDomesticVRPConsentRequest.class);
             assertThat(createConsentArg.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
@@ -188,7 +188,7 @@ public class DomesticVrpConsentsApiControllerTest {
     public void failsToCreateConsentWhichDoesNotPassSchemaValidation() {
         final OBDomesticVRPConsentRequest consentRequest = new OBDomesticVRPConsentRequest();
 
-        final HttpEntity<OBDomesticVRPConsentRequest> entity = new HttpEntity<>(consentRequest, requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID));
+        final HttpEntity<OBDomesticVRPConsentRequest> entity = new HttpEntity<>(consentRequest, requiredPaymentHttpHeaders(TEST_API_CLIENT_ID));
 
         final ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(createConsentUri(), HttpMethod.POST,
                 entity, OBErrorResponse1.class);
@@ -208,7 +208,7 @@ public class DomesticVrpConsentsApiControllerTest {
     public void failsToGetConsentThatDoesNotExist() {
         when(consentStoreClient.getConsent(anyString(), anyString())).thenThrow(new ConsentStoreClientException(ErrorType.NOT_FOUND, "Consent Not Found"));
         final ResponseEntity<OBErrorResponse1> consentNotFoundResponse = restTemplate.exchange(getConsentUri("unknown"),
-                HttpMethod.GET, new HttpEntity<>(requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID)), OBErrorResponse1.class);
+                HttpMethod.GET, new HttpEntity<>(requiredPaymentHttpHeaders(TEST_API_CLIENT_ID)), OBErrorResponse1.class);
 
         assertThat(consentNotFoundResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(consentNotFoundResponse.getBody().getCode()).isEqualTo(OBRI_CONSENT_NOT_FOUND.toString());
@@ -218,7 +218,7 @@ public class DomesticVrpConsentsApiControllerTest {
     public void failsToGetConsentInvalidPermissions() {
         when(consentStoreClient.getConsent(anyString(), anyString())).thenThrow(new ConsentStoreClientException(ErrorType.INVALID_PERMISSIONS, "ApiClient does not have permission to access Consent"));
         final ResponseEntity<OBErrorResponse1> consentNotFoundResponse = restTemplate.exchange(getConsentUri("unknown"),
-                HttpMethod.GET, new HttpEntity<>(requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID)), OBErrorResponse1.class);
+                HttpMethod.GET, new HttpEntity<>(requiredPaymentHttpHeaders(TEST_API_CLIENT_ID)), OBErrorResponse1.class);
 
         assertThat(consentNotFoundResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(consentNotFoundResponse.getBody().getCode()).isEqualTo(OBRI_PERMISSION_INVALID.toString());
@@ -228,7 +228,7 @@ public class DomesticVrpConsentsApiControllerTest {
     public void deleteConsent() {
         final String consentId = "consentid-35254";
         final ResponseEntity<OBDomesticVRPConsentResponse> deleteResponse = restTemplate.exchange(getConsentUri(consentId), HttpMethod.DELETE,
-                new HttpEntity<>(requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID)), OBDomesticVRPConsentResponse.class);
+                new HttpEntity<>(requiredPaymentHttpHeaders(TEST_API_CLIENT_ID)), OBDomesticVRPConsentResponse.class);
 
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(consentStoreClient).deleteConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
@@ -257,7 +257,7 @@ public class DomesticVrpConsentsApiControllerTest {
                 );
 
         HttpEntity<OBVRPFundsConfirmationRequest> request = new HttpEntity<>(
-                obvrpFundsConfirmationRequest, requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID)
+                obvrpFundsConfirmationRequest, requiredPaymentHttpHeaders(TEST_API_CLIENT_ID)
         );
 
         // When
@@ -299,7 +299,7 @@ public class DomesticVrpConsentsApiControllerTest {
                 );
 
         HttpEntity<OBVRPFundsConfirmationRequest> request = new HttpEntity<>(
-                obvrpFundsConfirmationRequest, requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID)
+                obvrpFundsConfirmationRequest, requiredPaymentHttpHeaders(TEST_API_CLIENT_ID)
         );
 
         // When
@@ -337,7 +337,7 @@ public class DomesticVrpConsentsApiControllerTest {
                 );
 
         HttpEntity<OBVRPFundsConfirmationRequest> request = new HttpEntity<>(
-                obvrpFundsConfirmationRequest, requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID)
+                obvrpFundsConfirmationRequest, requiredPaymentHttpHeaders(TEST_API_CLIENT_ID)
         );
 
         // When
@@ -371,7 +371,7 @@ public class DomesticVrpConsentsApiControllerTest {
 
 
         HttpEntity<OBVRPFundsConfirmationRequest> request = new HttpEntity<>(
-                obvrpFundsConfirmationRequest, requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID)
+                obvrpFundsConfirmationRequest, requiredPaymentHttpHeaders(TEST_API_CLIENT_ID)
         );
 
         // When

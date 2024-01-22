@@ -83,7 +83,7 @@ import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPa
 public class InternationalPaymentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "test_client_1234567890";
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders(TEST_API_CLIENT_ID);
     private static final String BASE_URL = "http://localhost:";
     private static final String INTERNATIONAL_PAYMENTS_URI = "/open-banking/v3.1.10/pisp/international-payments";
 

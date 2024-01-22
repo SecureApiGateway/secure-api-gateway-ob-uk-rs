@@ -70,7 +70,7 @@ public class InternationalStandingOrderConsentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "client_234093-49";
 
-    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT_ID);
+    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders(TEST_API_CLIENT_ID);
 
     @LocalServerPort
     private int port;

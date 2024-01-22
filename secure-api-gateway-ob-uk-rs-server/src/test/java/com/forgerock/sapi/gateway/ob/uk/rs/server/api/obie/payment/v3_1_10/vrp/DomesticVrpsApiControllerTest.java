@@ -50,7 +50,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentsHttpHeadersWithApiClientId;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredPaymentHttpHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,7 +67,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class DomesticVrpsApiControllerTest {
 
     private static final String TEST_API_CLIENT = "client-54354";
-    private static final HttpHeaders HTTP_HEADERS = requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT);
+    private static final HttpHeaders HTTP_HEADERS = requiredPaymentHttpHeaders(TEST_API_CLIENT);
     private static final String BASE_URL = "http://localhost:";
     private static final String PAYMENTS_URI = "/open-banking/v3.1.10/pisp";
     private static final String VRP_PAYMENTS_URI = "/domestic-vrps";
@@ -303,7 +303,7 @@ public class DomesticVrpsApiControllerTest {
         // Given
         OBDomesticVRPRequest obDomesticVRPRequest = OBDomesticVrpRequestTestDataFactory.aValidOBDomesticVRPRequest();
         OBDomesticVRPConsentRequest consentRequest = OBDomesticVrpConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest();
-        HttpHeaders headers = requiredPaymentsHttpHeadersWithApiClientId(TEST_API_CLIENT);
+        HttpHeaders headers = requiredPaymentHttpHeaders(TEST_API_CLIENT);
         String periodType = consentRequest.getData().getControlParameters().getPeriodicLimits().get(0).getPeriodType().getValue();
         String periodAlignment = consentRequest.getData().getControlParameters().getPeriodicLimits().get(0).getPeriodAlignment().getValue();
         headers.add("x-vrp-limit-breach-response-simulation", periodType + "-" + periodAlignment);
