@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.offers;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.directdebits;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRDirectDebitDataTestDataFactory.aValidFRDirectDebitData;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FROfferDataTestDataFactory.aValidFROfferData;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.createAuthorisedConsentAllPermissions;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.mockAccountResourceAccessServiceResponse;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
@@ -37,27 +37,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRDirectDebitData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FROfferData;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRDirectDebit;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FROffer;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadOffer1;
+import uk.org.openbanking.datamodel.account.OBReadDirectDebit2;
 
 /**
- * Spring Boot Test for {@link OffersApiController}.
+ * Spring Boot Test for {@link DirectDebitsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-public class OffersApiControllerTest {
+public class DirectDebitsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNT_OFFERS_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/offers";
-    private static final String OFFERS_URI = "/open-banking/v3.1.10/aisp/offers";
+    private static final String ACCOUNT_DIRECT_DEBIT_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/direct-debits";
+    private static final String DIRECT_DEBIT_URI = "/open-banking/v3.1.10/aisp/direct-debits";
 
     @LocalServerPort
     private int port;
@@ -66,7 +66,7 @@ public class OffersApiControllerTest {
     private FRAccountRepository frAccountRepository;
 
     @Autowired
-    private FROfferRepository frOfferRepository;
+    private FRDirectDebitRepository frDirectDebitRepository;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -87,72 +87,72 @@ public class OffersApiControllerTest {
         frAccountRepository.save(account);
         accountId = account.getId();
 
-        FROfferData offerData = aValidFROfferData(accountId);
-        FROffer offer = FROffer.builder()
+        FRDirectDebitData directDebitData = aValidFRDirectDebitData(accountId);
+        FRDirectDebit directDebit = FRDirectDebit.builder()
                 .accountId(accountId)
-                .offer(offerData)
+                .directDebit(directDebitData)
                 .build();
-        frOfferRepository.save(offer);
+        frDirectDebitRepository.save(directDebit);
     }
 
     @AfterEach
     public void removeData() {
         frAccountRepository.deleteAll();
-        frOfferRepository.deleteAll();
+        frDirectDebitRepository.deleteAll();
     }
 
     @Test
-    public void shouldGetAccountOffers() {
+    public void shouldGetAccountDirectDebits() {
         // Given
-        String url = accountOffersUrl(accountId);
+        String url = accountDirectDebitsUrl(accountId);
 
         final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
         mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
 
         // When
-        ResponseEntity<OBReadOffer1> response = restTemplate.exchange(
+        ResponseEntity<OBReadDirectDebit2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
-                OBReadOffer1.class);
+                OBReadDirectDebit2.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBReadOffer1 returnedOffer = response.getBody();
-        assertThat(returnedOffer).isNotNull();
-        assertThat(returnedOffer.getData().getOffer().get(0).getAccountId()).isEqualTo(accountId);
+        OBReadDirectDebit2 returnedDirectDebit = response.getBody();
+        assertThat(returnedDirectDebit).isNotNull();
+        assertThat(returnedDirectDebit.getData().getDirectDebit().get(0).getAccountId()).isEqualTo(accountId);
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
-    public void shouldGetOffers() {
+    public void shouldGetDirectDebits() {
         // Given
-        String url = offersUrl();
+        String url = directDebitsUrl();
 
         final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
         mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent);
 
         // When
-        ResponseEntity<OBReadOffer1> response = restTemplate.exchange(
+        ResponseEntity<OBReadDirectDebit2> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
-                OBReadOffer1.class);
+                OBReadDirectDebit2.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBReadOffer1 returnedOffer = response.getBody();
-        assertThat(returnedOffer).isNotNull();
-        assertThat(returnedOffer.getData().getOffer().get(0).getAccountId()).isEqualTo(accountId);
+        OBReadDirectDebit2 returnedDirectDebit = response.getBody();
+        assertThat(returnedDirectDebit).isNotNull();
+        assertThat(returnedDirectDebit.getData().getDirectDebit().get(0).getAccountId()).isEqualTo(accountId);
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
-    private String accountOffersUrl(String accountId) {
-        String url = BASE_URL + port + ACCOUNT_OFFERS_URI;
+    private String accountDirectDebitsUrl(String accountId) {
+        String url = BASE_URL + port + ACCOUNT_DIRECT_DEBIT_URI;
         return url.replace("{AccountId}", accountId);
     }
 
-    private String offersUrl() {
-        return BASE_URL + port + OFFERS_URI;
+    private String directDebitsUrl() {
+        return BASE_URL + port + DIRECT_DEBIT_URI;
     }
 }

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.offers;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.beneficiaries;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRAccountBeneficiaryTestDataFactory.aValidFRAccountBeneficiary;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FROfferDataTestDataFactory.aValidFROfferData;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.createAuthorisedConsentAllPermissions;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.AccountResourceAccessServiceTestHelpers.mockAccountResourceAccessServiceResponse;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
@@ -37,27 +37,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountBeneficiary;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FROfferData;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBeneficiary;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FROffer;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadOffer1;
+import uk.org.openbanking.datamodel.account.OBReadBeneficiary5;
 
 /**
- * Spring Boot Test for {@link OffersApiController}.
+ * Spring Boot Test for {@link BeneficiariesApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-public class OffersApiControllerTest {
+public class BeneficiariesApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String ACCOUNT_OFFERS_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/offers";
-    private static final String OFFERS_URI = "/open-banking/v3.1.10/aisp/offers";
+    private static final String ACCOUNT_BENEFICIARIES_URI = "/open-banking/v3.1.10/aisp/accounts/{AccountId}/beneficiaries";
+    private static final String BENEFICIARIES_URI = "/open-banking/v3.1.10/aisp/beneficiaries";
 
     @LocalServerPort
     private int port;
@@ -66,7 +66,7 @@ public class OffersApiControllerTest {
     private FRAccountRepository frAccountRepository;
 
     @Autowired
-    private FROfferRepository frOfferRepository;
+    private FRBeneficiaryRepository frBeneficiaryRepository;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -87,72 +87,72 @@ public class OffersApiControllerTest {
         frAccountRepository.save(account);
         accountId = account.getId();
 
-        FROfferData offerData = aValidFROfferData(accountId);
-        FROffer offer = FROffer.builder()
+        FRAccountBeneficiary accountBeneficiary = aValidFRAccountBeneficiary(accountId);
+        FRBeneficiary beneficiary = FRBeneficiary.builder()
                 .accountId(accountId)
-                .offer(offerData)
+                .beneficiary(accountBeneficiary)
                 .build();
-        frOfferRepository.save(offer);
+        frBeneficiaryRepository.save(beneficiary);
     }
 
     @AfterEach
     public void removeData() {
         frAccountRepository.deleteAll();
-        frOfferRepository.deleteAll();
+        frBeneficiaryRepository.deleteAll();
     }
 
     @Test
-    public void shouldGetAccountOffers() {
+    public void shouldGetAccountBeneficiaries() {
         // Given
-        String url = accountOffersUrl(accountId);
+        String url = accountBeneficiariesUrl(accountId);
 
         final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
         mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
 
         // When
-        ResponseEntity<OBReadOffer1> response = restTemplate.exchange(
+        ResponseEntity<OBReadBeneficiary5> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
-                OBReadOffer1.class);
+                OBReadBeneficiary5.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBReadOffer1 returnedOffer = response.getBody();
-        assertThat(returnedOffer).isNotNull();
-        assertThat(returnedOffer.getData().getOffer().get(0).getAccountId()).isEqualTo(accountId);
+        OBReadBeneficiary5 returnedBeneficiary = response.getBody();
+        assertThat(returnedBeneficiary).isNotNull();
+        assertThat(returnedBeneficiary.getData().getBeneficiary().get(0).getAccountId()).isEqualTo(accountId);
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
     @Test
-    public void shouldGetOffers() {
+    public void shouldGetBeneficiaries() {
         // Given
-        String url = offersUrl();
+        String url = beneficiariesUrl();
 
         final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
         mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent);
 
         // When
-        ResponseEntity<OBReadOffer1> response = restTemplate.exchange(
+        ResponseEntity<OBReadBeneficiary5> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
-                OBReadOffer1.class);
+                OBReadBeneficiary5.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        OBReadOffer1 returnedOffer = response.getBody();
-        assertThat(returnedOffer).isNotNull();
-        assertThat(returnedOffer.getData().getOffer().get(0).getAccountId()).isEqualTo(accountId);
+        OBReadBeneficiary5 returnedBeneficiary = response.getBody();
+        assertThat(returnedBeneficiary).isNotNull();
+        assertThat(returnedBeneficiary.getData().getBeneficiary().get(0).getAccountId()).isEqualTo(accountId);
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
-    private String accountOffersUrl(String accountId) {
-        String url = BASE_URL + port + ACCOUNT_OFFERS_URI;
+    private String accountBeneficiariesUrl(String accountId) {
+        String url = BASE_URL + port + ACCOUNT_BENEFICIARIES_URI;
         return url.replace("{AccountId}", accountId);
     }
 
-    private String offersUrl() {
-        return BASE_URL + port + OFFERS_URI;
+    private String beneficiariesUrl() {
+        return BASE_URL + port + BENEFICIARIES_URI;
     }
 }
