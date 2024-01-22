@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_2.eventsubscription;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.eventsubscription;
 
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventSubscription;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.EventSubscriptionsRepository;
@@ -32,6 +32,7 @@ import uk.org.openbanking.datamodel.event.*;
 
 import java.util.List;
 
+import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_10;
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_2;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -41,13 +42,13 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 /**
- * A SpringBoot test for the {@link EventSubscriptionApiController}.
+ * A SpringBoot test for the {@link EventSubscriptionsApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-public class EventSubscriptionApiControllerTest {
+public class EventSubscriptionsApiControllerTest {
     private static final String BASE_URL = "http://localhost:";
-    private static final String EVENT_SUBSCRIPTIONS_URI = "/open-banking/v3.1.2/event-subscriptions";
+    private static final String EVENT_SUBSCRIPTIONS_URI = "/open-banking/v3.1.10/event-subscriptions";
 
     @LocalServerPort
     private int port;
@@ -157,7 +158,7 @@ public class EventSubscriptionApiControllerTest {
         return new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
                         .callbackUrl("http://callbackurl.com")
-                        .version(v3_1_2.getCanonicalName())
+                        .version(v3_1_10.getCanonicalName())
                         .eventTypes(List.of("urn:uk:org:openbanking:events:resource-update"))
                 );
     }

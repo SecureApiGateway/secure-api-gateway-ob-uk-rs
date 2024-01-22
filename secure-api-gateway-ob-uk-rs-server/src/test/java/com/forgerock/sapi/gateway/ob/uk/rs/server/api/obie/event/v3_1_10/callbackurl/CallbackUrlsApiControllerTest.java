@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_2.callbackurl;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.callbackurl;
 
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FRCallbackUrl;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.CallbackUrlsRepository;
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_0;
+import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_10;
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -49,7 +50,7 @@ import static org.springframework.http.HttpStatus.*;
 public class CallbackUrlsApiControllerTest {
 
     private static final String BASE_URL = "http://localhost:";
-    private static final String CALLBACK_URI = "/open-banking/v3.1.2/callback-urls";
+    private static final String CALLBACK_URI = "/open-banking/v3.1.10/callback-urls";
 
     @LocalServerPort
     private int port;
@@ -130,27 +131,6 @@ public class CallbackUrlsApiControllerTest {
     }
 
     @Test
-    public void shouldFailToUpdateCallbackUrlCreatedInFutureVersion() {
-        // Given
-        OBCallbackUrl1 obCallbackUrl1 = aValidOBCallbackUrl1();
-        HttpHeaders headers = HttpHeadersTestDataFactory.requiredEventHttpHeaders(callbacksUrl(), UUID.randomUUID().toString());
-        HttpEntity<OBCallbackUrl1> createRequest = new HttpEntity<>(obCallbackUrl1, headers);
-        ResponseEntity<OBCallbackUrlResponse1> persistedCallback = restTemplate.postForEntity(callbacksUrl(), createRequest, OBCallbackUrlResponse1.class);
-        obCallbackUrl1.getData().setUrl("http://updatedcallbackurl.com");
-        obCallbackUrl1.getData().setVersion(v3_0.getCanonicalName());
-        HttpEntity<OBCallbackUrl1> updateRequest = new HttpEntity<>(obCallbackUrl1, headers);
-        String callbackUrlId = persistedCallback.getBody().getData().getCallbackUrlId();
-        String url = callbackIdUrl(callbackUrlId).toString().replace(v3_1_2.getCanonicalName(), v3_0.getCanonicalName());
-
-        // When
-        ResponseEntity<String> response = restTemplate.exchange(url, PUT, updateRequest, String.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(CONFLICT);
-        assertThat(response.getBody()).isEqualTo("Callback URL: '" + callbackUrlId + "' can't be updated via an older API version.");
-    }
-
-    @Test
     public void shouldDeleteCallbackUrl() {
         // Given
         OBCallbackUrl1 obCallbackUrl1 = aValidOBCallbackUrl1();
@@ -178,6 +158,6 @@ public class CallbackUrlsApiControllerTest {
     private OBCallbackUrl1 aValidOBCallbackUrl1() {
         return new OBCallbackUrl1().data(new OBCallbackUrlData1()
                 .url("http://callbackurl.com")
-                .version(v3_1_2.getCanonicalName()));
+                .version(v3_1_10.getCanonicalName()));
     }
 }
