@@ -15,113 +15,56 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.discovery;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_5.domesticpayments.DomesticPaymentsApiController;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.OBApiReference;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBGroupName;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo.BuilderConfiguration;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.util.pattern.PathPatternParser;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Unit test for {@link AvailableApiEndpointsResolver}.
  */
+@SpringBootTest
+@ActiveProfiles("test")
 public class AvailableApiEndpointsResolverTest {
 
-    private static final String VERSION = "v3.1.5";
+    private static final String VERSION = "v3.1.10";
     private static final String CREATE_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments";
     private static final String GET_PAYMENT_URI = "/open-banking/" + VERSION + "/pisp/domestic-payments/{DomesticPaymentId}";
-    private final BuilderConfiguration requestMapperInfoBuilderConfig;
 
-    public AvailableApiEndpointsResolverTest() {
-        requestMapperInfoBuilderConfig = new BuilderConfiguration();
-        requestMapperInfoBuilderConfig.setPatternParser(PathPatternParser.defaultInstance);
-    }
+    @Autowired
+    private AvailableApiEndpointsResolver availableApiEndpointsResolver;
 
     @Test
-    @Disabled // FIXME - issues with the mocking
     public void shouldGetAvailableApiEndpoints() {
-        // Given
-        RequestMappingHandlerMapping requestHandlerMapping = requestHandlerMapping();
-        AvailableApiEndpointsResolver endpointsResolver = new AvailableApiEndpointsResolver(requestHandlerMapping);
+        // Get all available endpoints
+        List<AvailableApiEndpoint> availableApiEndpoints = availableApiEndpointsResolver.getAvailableApiEndpoints();
 
-        // When
-        List<AvailableApiEndpoint> availableApiEndpoints = endpointsResolver.getAvailableApiEndpoints();
+        assertThat(availableApiEndpoints.size()).isGreaterThan(0);
 
-        // Then
-        assertThat(availableApiEndpoints.size()).isEqualTo(2);
-        AvailableApiEndpoint getPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.GET_DOMESTIC_PAYMENT);
+        // Validate some example endpoints
+        AvailableApiEndpoint getPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.GET_DOMESTIC_PAYMENT, VERSION);
         assertThat(getPaymentEndpoint.getVersion()).isEqualTo(VERSION);
         assertThat(getPaymentEndpoint.getGroupName()).isEqualTo(OBGroupName.PISP);
         assertThat(getPaymentEndpoint.getUriPath()).isEqualTo( GET_PAYMENT_URI);
         assertThat(getPaymentEndpoint.getControllerMethod()).isNotNull();
 
-        AvailableApiEndpoint createPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.CREATE_DOMESTIC_PAYMENT);
+        AvailableApiEndpoint createPaymentEndpoint = getEndpoint(availableApiEndpoints, OBApiReference.CREATE_DOMESTIC_PAYMENT, VERSION);
         assertThat(createPaymentEndpoint.getVersion()).isEqualTo(VERSION);
         assertThat(createPaymentEndpoint.getGroupName()).isEqualTo(OBGroupName.PISP);
         assertThat(createPaymentEndpoint.getUriPath()).isEqualTo(CREATE_PAYMENT_URI);
         assertThat(createPaymentEndpoint.getControllerMethod()).isNotNull();
     }
 
-    private RequestMappingHandlerMapping requestHandlerMapping() {
-        RequestMappingHandlerMapping requestHandlerMapping = mock(RequestMappingHandlerMapping.class);
-        HandlerMethod handlerMethod = mock(HandlerMethod.class);
-        Map<RequestMappingInfo, HandlerMethod> handlerMethods = Map.of(
-                createPaymentMappingInfo(handlerMethod), handlerMethod,
-                getPaymentMappingInfo(handlerMethod), handlerMethod
-        );
-        given(requestHandlerMapping.getHandlerMethods()).willReturn(handlerMethods);
-        return requestHandlerMapping;
-    }
-
-    private RequestMappingInfo createPaymentMappingInfo(HandlerMethod handlerMethod) {
-        Class<?> controllerClass = DomesticPaymentsApiController.class;
-        BDDMockito.<Class<?>>given(handlerMethod.getBeanType()).willReturn(controllerClass);
-        Method controllerMethod = Arrays.stream(controllerClass.getDeclaredMethods())
-                .filter(m -> m.getName().equals("createDomesticPayments"))
-                .findFirst()
-                .get();
-        given(handlerMethod.getMethod()).willReturn(controllerMethod);
-        return RequestMappingInfo
-                .paths(CREATE_PAYMENT_URI)
-                .methods(RequestMethod.POST)
-                .options(requestMapperInfoBuilderConfig)
-                .build();
-    }
-
-    private RequestMappingInfo getPaymentMappingInfo(HandlerMethod handlerMethod) {
-        Class<?> controllerClass = DomesticPaymentsApiController.class;
-        BDDMockito.<Class<?>>given(handlerMethod.getBeanType()).willReturn(controllerClass);
-        Method controllerMethod = Arrays.stream(controllerClass.getDeclaredMethods())
-                .filter(m -> m.getName().equals("getDomesticPaymentsDomesticPaymentId"))
-                .findFirst()
-                .get();
-        given(handlerMethod.getMethod()).willReturn(controllerMethod);
-        return RequestMappingInfo
-                .paths(GET_PAYMENT_URI)
-                .methods(RequestMethod.GET)
-                .options(requestMapperInfoBuilderConfig)
-                .build();
-    }
-
-    private AvailableApiEndpoint getEndpoint(List<AvailableApiEndpoint> apiEndpoints, OBApiReference apiReference) {
+    private AvailableApiEndpoint getEndpoint(List<AvailableApiEndpoint> apiEndpoints, OBApiReference apiReference, String version) {
         return apiEndpoints.stream()
-                .filter(a -> a.getApiReference().equals(apiReference))
+                .filter(a -> a.getApiReference().equals(apiReference) && a.getVersion().equals(version))
                 .findFirst()
                 .get();
     }
