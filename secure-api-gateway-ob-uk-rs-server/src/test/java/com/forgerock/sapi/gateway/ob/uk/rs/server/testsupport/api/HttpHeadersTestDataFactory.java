@@ -95,22 +95,17 @@ public class HttpHeadersTestDataFactory {
     /**
      * @return an instance of {@link HttpHeaders} with the minimal set of required headers for the Payments API.
      */
-    public static HttpHeaders requiredPaymentHttpHeaders() {
-        HttpHeaders headers = new HttpHeaders();
+    public static HttpHeaders requiredPaymentHttpHeaders(String apiClientId) {
+        final HttpHeaders headers = new HttpHeaders();
         headers.setAccept(singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth("dummyAuthToken");
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-idempotency-key", UUID.randomUUID().toString());
         headers.add("x-jws-signature", "dummyJwsSignature");
-        headers.add("x-ob-account-id", UUID.randomUUID().toString());
-        return headers;
-    }
+        headers.add("x-api-client-id", apiClientId);
 
-    public static HttpHeaders requiredPaymentsHttpHeadersWithApiClientId(String apiClientId) {
-        final HttpHeaders httpHeaders = requiredPaymentHttpHeaders();
-        httpHeaders.add("x-api-client-id", apiClientId);
-        return httpHeaders;
+        return headers;
     }
 
     /**

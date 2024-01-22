@@ -69,7 +69,7 @@ public class ControllerEndpointBlacklistHandlerTest {
     public void shouldFailToCreateDomesticPaymentGivenApiVersionIsDisabled() {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders());
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders("testClient"));
 
 
         ResponseEntity<OBWriteDomesticResponse5> paymentSubmitted = restTemplate.postForEntity(paymentsUrl(OBVersion.v3_1_6), request, OBWriteDomesticResponse5.class);
@@ -82,7 +82,7 @@ public class ControllerEndpointBlacklistHandlerTest {
     public void shouldFailToGetDomesticPaymentGivenApiEndpointIsDisabled() throws ExceptionClient {
         // Given
         OBWriteDomestic2 payment = aValidOBWriteDomestic2();
-        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders());
+        HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HttpHeadersTestDataFactory.requiredPaymentHttpHeaders("testClient"));
 
         ResponseEntity<OBWriteDomesticResponse5> paymentSubmitted = restTemplate.postForEntity(paymentsUrl(OBVersion.v3_1_6), request, OBWriteDomesticResponse5.class);
 

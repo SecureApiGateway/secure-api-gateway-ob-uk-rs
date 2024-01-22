@@ -20,23 +20,223 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteFileResponse3DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
+
+import java.security.Principal;
+import java.util.Date;
+import java.util.Optional;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataFile;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteFile;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.file.FilePaymentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRFilePaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3;
+import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3Data;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+
 @Controller("FilePaymentsApiV3.1.10")
-public class FilePaymentsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_9.file.FilePaymentsApiController implements FilePaymentsApi {
+public class FilePaymentsApiController implements FilePaymentsApi {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final FilePaymentSubmissionRepository filePaymentSubmissionRepository;
+    private final PaymentSubmissionValidator paymentSubmissionValidator;
+    private final FilePaymentConsentStoreClient consentStoreClient;
+    private final OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator;
+    private final IdempotentPaymentService<FRFilePaymentSubmission, FRWriteFile> idempotentPaymentService;
 
     public FilePaymentsApiController(
             FilePaymentSubmissionRepository filePaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             FilePaymentConsentStoreClient consentStoreClient,
-            OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator
-    ) {
-        super(filePaymentSubmissionRepository, paymentSubmissionValidator, consentStoreClient, filePaymentRequestValidator);
+            OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
+        this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
+        this.paymentSubmissionValidator = paymentSubmissionValidator;
+        this.consentStoreClient = consentStoreClient;
+        this.filePaymentRequestValidator = filePaymentRequestValidator;
+        this.idempotentPaymentService = new SinglePaymentForConsentIdempotentPaymentService<>(filePaymentSubmissionRepository);
     }
+
+    public ResponseEntity<OBWriteFileResponse3> createFilePayments(
+            OBWriteFile2 obWriteFile2,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException, OBErrorException {
+        logger.debug("Received file payment submission: '{}', apiClientId: {}", obWriteFile2, apiClientId);
+
+        paymentSubmissionValidator.validateIdempotencyKey(xIdempotencyKey);
+
+        final String consentId = obWriteFile2.getData().getConsentId();
+        final FilePaymentConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
+
+        FRWriteFile frWriteFile = toFRWriteFile(obWriteFile2);
+        logger.trace("Converted to: '{}'", frWriteFile);
+
+        final Optional<FRFilePaymentSubmission> existingPayment =
+                idempotentPaymentService.findExistingPayment(frWriteFile, consentId, apiClientId, xIdempotencyKey);
+        if (existingPayment.isPresent()) {
+            logger.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, consentId: {}",
+                    xIdempotencyKey, consentId);
+            return ResponseEntity.status(CREATED).body(responseEntity(consent, existingPayment.get()));
+        }
+
+        final OBWriteFileConsent3 obConsent = FRWriteFileConsentConverter.toOBWriteFileConsent3(consent.getRequestObj());
+        filePaymentRequestValidator.validate(new OBWriteFile2ValidationContext(obWriteFile2, obConsent, consent.getStatus()));
+
+        FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
+                .id(consentId)
+                .filePayment(frWriteFile)
+                .created(new Date())
+                .updated(new Date())
+                .status(INITIATIONPENDING)
+                .idempotencyKey(xIdempotencyKey)
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .build();
+
+        // Save the file payment(s)
+        frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
+
+        final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
+        consumePaymentRequest.setConsentId(consentId);
+        consumePaymentRequest.setApiClientId(apiClientId);
+        consentStoreClient.consumeConsent(consumePaymentRequest);
+
+        return ResponseEntity.status(CREATED).body(responseEntity(consent, frPaymentSubmission));
+    }
+
+    public ResponseEntity getFilePaymentsFilePaymentId(
+            String filePaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        Optional<FRFilePaymentSubmission> isPaymentSubmission = filePaymentSubmissionRepository.findById(filePaymentId);
+        if (!isPaymentSubmission.isPresent()) {
+            throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.PAYMENT_SUBMISSION_NOT_FOUND
+                            .toOBError1(filePaymentId));
+        }
+
+        FRFilePaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+        OBVersion apiVersion = VersionPathExtractor.getVersionFromPath(request);
+        if (!ResourceVersionValidator.isAccessToResourceAllowed(apiVersion, frPaymentSubmission.getObVersion())) {
+            return PaymentApiResponseUtil.resourceConflictResponse(frPaymentSubmission, apiVersion);
+        }
+        final FilePaymentConsent consent = consentStoreClient.getConsent(frPaymentSubmission.getConsentId(), apiClientId);
+        return ResponseEntity.ok(responseEntity(consent, frPaymentSubmission));
+    }
+
+    public ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
+            String filePaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal
+    ) {
+        // Optional endpoint - not implemented
+        return new ResponseEntity<>(NOT_IMPLEMENTED);
+    }
+
+    public ResponseEntity getFilePaymentsFilePaymentIdReportFile(
+            String filePaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        return new ResponseEntity<>(NOT_IMPLEMENTED);
+//        FRFilePaymentSubmission filePayment = filePaymentSubmissionRepository.findById(filePaymentId)
+//                .orElseThrow(() ->
+//                        new OBErrorResponseException(
+//                                HttpStatus.BAD_REQUEST,
+//                                OBRIErrorResponseCategory.REQUEST_INVALID,
+//                                OBRIErrorType.PAYMENT_ID_NOT_FOUND
+//                                        .toOBError1(filePaymentId))
+//                );
+//        logger.debug("Payment File '{}' exists with status: {} so generating a report file for type: '{}'",
+//                filePayment.getId(),
+//                filePayment.getStatus(),
+//                filePayment.getFilePayment().getData().getInitiation().getFileType());
+//        String reportFile = paymentReportFileService.createPaymentReport(filePayment);
+//        logger.debug("Generated report file for Payment File: '{}'", filePayment.getId());
+//        return ResponseEntity.ok(reportFile);
+    }
+
+    private OBWriteFileResponse3 responseEntity(FilePaymentConsent filePaymentConsent,
+            FRFilePaymentSubmission frPaymentSubmission) {
+        FRWriteDataFile data = frPaymentSubmission.getFilePayment().getData();
+        return new OBWriteFileResponse3()
+                .data(new OBWriteFileResponse3Data()
+                        .charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(filePaymentConsent.getCharges()))
+                        .filePaymentId(frPaymentSubmission.getId())
+                        .initiation(toOBWriteFile2DataInitiation(data.getInitiation()))
+                        .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                        .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
+                        .status(toOBWriteFileResponse3DataStatus(frPaymentSubmission.getStatus()))
+                        .consentId(data.getConsentId())
+                        .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount())))
+                .links(LinksHelper.createFilePaymentsLink(this.getClass(), frPaymentSubmission.getId()))
+                .meta(new Meta());
+    }
+
 }
