@@ -15,18 +15,54 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
+
+import java.security.Principal;
+import java.util.Date;
+import java.util.Optional;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationData;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_10.FundsConfirmationsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.funds.FRFundsConfirmation;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
+
 @Controller("FundsConfirmationsApiV3.1.10")
-public class FundsConfirmationsApiController extends com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_9.FundsConfirmationsApiController implements FundsConfirmationsApi {
+public class FundsConfirmationsApiController implements FundsConfirmationsApi {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    
+    private final FundsConfirmationRepository fundsConfirmationRepository;
+    private final FundsAvailabilityService fundsAvailabilityService;
+    private final FRAccountRepository accountRepository;
+    private final OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator;
+    private final FundsConfirmationConsentStoreClient consentStoreClient;
 
     public FundsConfirmationsApiController(
             FundsConfirmationRepository fundsConfirmationRepository,
@@ -35,6 +71,87 @@ public class FundsConfirmationsApiController extends com.forgerock.sapi.gateway.
             OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
             FundsConfirmationConsentStoreClient consentStoreClient
     ) {
-        super(fundsConfirmationRepository, fundsAvailabilityService, accountRepository, fundsConfirmationValidator, consentStoreClient);
+        this.fundsConfirmationRepository = fundsConfirmationRepository;
+        this.fundsAvailabilityService = fundsAvailabilityService;
+        this.accountRepository = accountRepository;
+        this.fundsConfirmationValidator = fundsConfirmationValidator;
+        this.consentStoreClient = consentStoreClient;
     }
+
+    @Override
+    public ResponseEntity<OBFundsConfirmationResponse1> createFundsConfirmations(
+            @Valid OBFundsConfirmation1 obFundsConfirmation1,
+            String authorization,
+            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        logger.debug("Create funds confirmation: {}", obFundsConfirmation1);
+
+        String consentId = obFundsConfirmation1.getData().getConsentId();
+        logger.debug("Attempting to get consent: {}, clientId: {}", consentId, apiClientId);
+        final FundsConfirmationConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
+        logger.debug("Got consent from store: {}", consent);
+
+        Optional<FRFundsConfirmation> isSubmission = fundsConfirmationRepository.findById(consentId);
+        FRFundsConfirmation frFundsConfirmation = isSubmission
+                .orElseGet(() ->
+                        FRFundsConfirmation.builder()
+                                .id(consentId)
+                                .created(new Date())
+                                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                                .build()
+                );
+
+        // validate funds confirmation
+        logger.debug("Validating funds confirmation");
+        FRAccount account = accountRepository.byAccountId(consent.getAuthorisedDebtorAccountId());
+        if (account == null) {
+            logger.warn("Funds confirmation verification failed, Account with ID {} not found", consent.getAuthorisedDebtorAccountId());
+            throw new OBErrorResponseException(
+                    OBRIErrorType.FUNDS_CONFIRMATION_DEBTOR_ACCOUNT_NOT_FOUND.getHttpStatus(),
+                    OBRIErrorResponseCategory.SERVER_INTERNAL_ERROR,
+                    OBRIErrorType.FUNDS_CONFIRMATION_DEBTOR_ACCOUNT_NOT_FOUND.toOBError1(consent.getAuthorisedDebtorAccountId())
+            );
+        }
+        final FundsConfirmationValidator.FundsConfirmationValidationContext validationContext = new FundsConfirmationValidator.FundsConfirmationValidationContext(
+                obFundsConfirmation1,
+                consent.getRequestObj().getData().getExpirationDateTime(),
+                consent.getStatus(),
+                account.getAccount().getCurrency()
+        );
+
+        fundsConfirmationValidator.validate(validationContext);
+        logger.debug("Funds Confirmation validation successful");
+
+        // Check if funds are available on the account selected in consent
+        boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
+                consent.getAuthorisedDebtorAccountId(),
+                obFundsConfirmation1.getData().getInstructedAmount().getAmount());
+        frFundsConfirmation.setFundsAvailable(areFundsAvailable);
+        frFundsConfirmation.setFundsConfirmation(toFRFundsConfirmationData(obFundsConfirmation1));
+        frFundsConfirmation = fundsConfirmationRepository.save(frFundsConfirmation);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(packageResponse(frFundsConfirmation, request));
+    }
+
+    private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, HttpServletRequest request) {
+        final FRFundsConfirmationData obFundsConfirmationData = fundsConfirmation.getFundsConfirmation();
+        return new OBFundsConfirmationResponse1()
+                .data(new OBFundsConfirmationDataResponse1()
+                        .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obFundsConfirmationData.getInstructedAmount()))
+                        .creationDateTime(new DateTime(fundsConfirmation.getCreated()))
+                        .fundsConfirmationId(fundsConfirmation.getId())
+                        .fundsAvailable(fundsConfirmation.isFundsAvailable())
+                        .reference(obFundsConfirmationData.getReference())
+                        .consentId(fundsConfirmation.getFundsConfirmation().getConsentId()))
+                .meta(new Meta())
+                .links(LinksHelper.createFundsConfirmationSelfLink(this.getClass(), fundsConfirmation.getId()));
+    }
+
 }
