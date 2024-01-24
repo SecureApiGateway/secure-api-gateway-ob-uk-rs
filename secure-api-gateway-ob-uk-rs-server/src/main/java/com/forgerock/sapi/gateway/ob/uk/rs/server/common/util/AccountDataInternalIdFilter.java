@@ -32,104 +32,32 @@ public class AccountDataInternalIdFilter {
         this.showAccountDataInternalIds = showAccountDataInternalIds;
     }
 
-    public OBTransaction1 apply(final OBTransaction1 data) {
-        return apply(data, data::setTransactionId);
-    }
-
-    public OBTransaction2 apply(final OBTransaction2 data) {
-        return apply(data, data::setTransactionId);
-    }
-
-    public OBTransaction3 apply(final OBTransaction3 data) {
-        return apply(data, data::setTransactionId);
-    }
-
-    public OBTransaction4 apply(final OBTransaction4 data) {
-        return apply(data, data::setTransactionId);
-    }
-
-    public OBTransaction5 apply(final OBTransaction5 data) {
-        return apply(data, data::setTransactionId);
-    }
-
     public OBTransaction6 apply(final OBTransaction6 data) {
         return apply(data, data::setTransactionId);
-    }
-
-    public OBBeneficiary2 apply(final OBBeneficiary2 data) {
-        return apply(data, data::setBeneficiaryId);
-    }
-
-    public OBBeneficiary3 apply(final OBBeneficiary3 data) {
-        return apply(data, data::setBeneficiaryId);
-    }
-
-    public OBBeneficiary4 apply(final OBBeneficiary4 data) {
-        return apply(data, data::setBeneficiaryId);
     }
 
     public OBBeneficiary5 apply(final OBBeneficiary5 data) {
         return apply(data, data::setBeneficiaryId);
     }
 
-    public OBDirectDebit1 apply(OBDirectDebit1 data) {
+    public OBReadDirectDebit2DataDirectDebitInner apply(OBReadDirectDebit2DataDirectDebitInner data) {
         return apply(data, data::setDirectDebitId);
     }
 
-    public OBReadDirectDebit2DataDirectDebit apply(OBReadDirectDebit2DataDirectDebit data) {
-        return apply(data, data::setDirectDebitId);
-    }
-
-    public OBOffer1 apply(OBOffer1 data) {
+    public OBReadOffer1DataOfferInner apply(OBReadOffer1DataOfferInner data) {
         return apply(data, data::setOfferId);
     }
 
-    public OBReadOffer1DataOffer apply(OBReadOffer1DataOffer data) {
-        return apply(data, data::setOfferId);
-    }
-
-    public OBReadProduct2DataProduct apply(OBReadProduct2DataProduct data) {
+    public OBReadProduct2DataProductInner apply(OBReadProduct2DataProductInner data) {
         return apply(data, data::setProductId);
-    }
-
-    public OBScheduledPayment1 apply(OBScheduledPayment1 data) {
-        return apply(data, data::setScheduledPaymentId);
-    }
-
-    public OBScheduledPayment2 apply(OBScheduledPayment2 data) {
-        return apply(data, data::setScheduledPaymentId);
     }
 
     public OBScheduledPayment3 apply(OBScheduledPayment3 data) {
         return apply(data, data::setScheduledPaymentId);
     }
 
-    public OBStandingOrder1 apply(OBStandingOrder1 data) {
-        return apply(data, data::setStandingOrderId);
-    }
-
-    public OBStandingOrder2 apply(OBStandingOrder2 data) {
-        return apply(data, data::setStandingOrderId);
-    }
-
-    public OBStandingOrder3 apply(OBStandingOrder3 data) {
-        return apply(data, data::setStandingOrderId);
-    }
-
-    public OBStandingOrder4 apply(OBStandingOrder4 data) {
-        return apply(data, data::setStandingOrderId);
-    }
-
-    public OBStandingOrder5 apply(OBStandingOrder5 data) {
-        return apply(data, data::setStandingOrderId);
-    }
-
     public OBStandingOrder6 apply(OBStandingOrder6 data) {
         return apply(data, data::setStandingOrderId);
-    }
-
-    public OBStatement1 apply(OBStatement1 data) {
-        return apply(data, data::setStatementId);
     }
 
     public OBStatement2 apply(OBStatement2 data) {

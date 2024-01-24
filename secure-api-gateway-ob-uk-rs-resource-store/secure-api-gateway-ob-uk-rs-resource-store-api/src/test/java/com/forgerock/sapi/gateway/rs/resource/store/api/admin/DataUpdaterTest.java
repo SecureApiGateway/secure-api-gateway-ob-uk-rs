@@ -106,7 +106,7 @@ public class DataUpdaterTest {
     public void updateBalancesShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addBalance(new OBCashBalance1().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE));
+        FRAccountData accountData = new FRAccountData().addBalance(new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE));
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
@@ -138,7 +138,7 @@ public class DataUpdaterTest {
     public void updateDirectDebitsShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addDirectDebit(new OBReadDirectDebit2DataDirectDebit().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addDirectDebit(new OBReadDirectDebit2DataDirectDebitInner().accountId(accountId));
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(directDebitRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
@@ -218,7 +218,7 @@ public class DataUpdaterTest {
     public void updateOffersShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addOffer(new OBOffer1().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addOffer(new OBReadOffer1DataOfferInner().accountId(accountId));
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(offerRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
@@ -234,7 +234,7 @@ public class DataUpdaterTest {
     public void updateBalancesShouldAllowUpdatesWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBCashBalance1 cashBalance = new OBCashBalance1().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE);
+        OBReadBalance1DataBalanceInner cashBalance = new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE);
         FRAccountData accountData = new FRAccountData().addBalance(cashBalance);
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
@@ -273,7 +273,7 @@ public class DataUpdaterTest {
     public void updateDirectDebitsShouldAllowUpdatesWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBReadDirectDebit2DataDirectDebit directDebit = new OBReadDirectDebit2DataDirectDebit().accountId(accountId).directDebitId("2");
+        OBReadDirectDebit2DataDirectDebitInner directDebit = new OBReadDirectDebit2DataDirectDebitInner().accountId(accountId).directDebitId("2");
         FRAccountData accountData = new FRAccountData().addDirectDebit(directDebit);
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(directDebitRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
@@ -378,7 +378,7 @@ public class DataUpdaterTest {
     public void updateOffersShouldAllowUpdatesWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBOffer1 offer = new OBOffer1().accountId(accountId).offerId("2");
+        OBReadOffer1DataOfferInner offer = new OBReadOffer1DataOfferInner().accountId(accountId).offerId("2");
         FRAccountData accountData = new FRAccountData().addOffer(offer);
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(offerRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
@@ -399,7 +399,7 @@ public class DataUpdaterTest {
     public void updateBalance_noExistingBalances_acceptAndCreate() {
         // Given
         given(balanceRepository.findByAccountIdAndBalanceType(any(), any())).willReturn(Optional.empty());
-        OBCashBalance1 interimAvailBalance = new OBCashBalance1()
+        OBReadBalance1DataBalanceInner interimAvailBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
                 .type(OBBalanceType1Code.INTERIMAVAILABLE);
 
@@ -413,7 +413,7 @@ public class DataUpdaterTest {
     @Test
     public void updateBalance_balanceOfSameType_reject() {
         // Given
-        OBCashBalance1 interimAvailBalance = new OBCashBalance1()
+        OBReadBalance1DataBalanceInner interimAvailBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
                 .type(OBBalanceType1Code.INTERIMAVAILABLE);
         FRBalance frBalance = FRBalance.builder()
@@ -437,7 +437,7 @@ public class DataUpdaterTest {
     public void updateBalance_existingBalanceOfDiffType_acceptAndCreate() {
         // Given
         given(balanceRepository.findByAccountIdAndBalanceType(eq("1"), eq(FRBalanceType.OPENINGBOOKED))).willReturn(Optional.empty());
-        OBCashBalance1 openingBookedBalance = new OBCashBalance1()
+        OBReadBalance1DataBalanceInner openingBookedBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
                 .type(OBBalanceType1Code.OPENINGBOOKED);
         // When
@@ -464,7 +464,7 @@ public class DataUpdaterTest {
         verify(customerInfoRepository).findByUserID(userData.getUserId());
     }
 
-    private FRAccountData accountDataWithBalance(OBCashBalance1 balance) {
+    private FRAccountData accountDataWithBalance(OBReadBalance1DataBalanceInner balance) {
         FRAccountData accountData = new FRAccountData();
         accountData.setAccount(new OBAccount6().accountId(balance.getAccountId()));
         accountData.setBalances(Collections.singletonList(balance));

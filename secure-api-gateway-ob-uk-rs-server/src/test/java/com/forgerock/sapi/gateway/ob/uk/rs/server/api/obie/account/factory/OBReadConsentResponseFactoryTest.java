@@ -29,9 +29,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Ac
 
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
-import uk.org.openbanking.datamodel.account.OBReadData1;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
@@ -51,7 +51,7 @@ class OBReadConsentResponseFactoryTest {
         consent.setCreationDateTime(creationDateTime);
         consent.setStatusUpdateDateTime(creationDateTime);
         final OBReadConsent1 consentRequest = new OBReadConsent1().data(
-                        new OBReadData1().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READBALANCES))
+                        new OBReadConsent1Data().permissions(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READBALANCES))
                                 .transactionToDateTime(DateTime.now())
                                 .transactionFromDateTime(DateTime.now().minusDays(30))
                                 .expirationDateTime(DateTime.now().plusDays(90)))
@@ -61,7 +61,7 @@ class OBReadConsentResponseFactoryTest {
         final OBReadConsentResponse1Data response1Data = obReadConsentResponse1.getData();
         assertThat(response1Data.getConsentId()).isEqualTo(consentId);
         assertThat(response1Data.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION);
-        assertThat(response1Data.getPermissions()).isEqualTo(consentRequest.getData().getPermissions());
+        assertThat(response1Data.getPermissions()).isEqualTo(List.of(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READBALANCES));
         assertThat(response1Data.getCreationDateTime()).isEqualTo(new DateTime(creationDateTime));
         assertThat(response1Data.getStatusUpdateDateTime()).isEqualTo(new DateTime(creationDateTime));
         assertThat(response1Data.getExpirationDateTime()).isEqualTo(consentRequest.getData().getExpirationDateTime());

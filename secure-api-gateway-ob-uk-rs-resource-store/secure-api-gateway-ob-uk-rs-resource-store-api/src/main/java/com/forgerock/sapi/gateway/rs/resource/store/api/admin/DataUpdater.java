@@ -158,7 +158,7 @@ public class DataUpdater {
         List<FRBalance> balancesToSave = new ArrayList<>();
         List<FRBalance> newBalancesToSave = new ArrayList<>();
         Set<FRBalanceType> balanceTypes = new HashSet<>();
-        for (OBCashBalance1 obBalanceDiff : accountDataDiff.getBalances()) {
+        for (OBReadBalance1DataBalanceInner obBalanceDiff : accountDataDiff.getBalances()) {
             String accountId = accountDataDiff.getAccount().getAccountId();
             if (obBalanceDiff.getAccountId() != null && !obBalanceDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
@@ -232,7 +232,7 @@ public class DataUpdater {
         FRProduct product = isProduct.get();
 
         String accountId = accountDataDiff.getAccount().getAccountId();
-        OBReadProduct2DataProduct productDiff = accountDataDiff.getProduct();
+        OBReadProduct2DataProductInner productDiff = accountDataDiff.getProduct();
         if (productDiff.getAccountId() != null && !productDiff.getAccountId().equals(accountId)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     String.format("The account id '%s' refers in product doesn't match the main account id '%s'",
@@ -340,7 +340,7 @@ public class DataUpdater {
         //Direct Debits
         List<FRDirectDebit> directDebitsToSave = new ArrayList<>();
         List<FRDirectDebit> newDirectDebitsToSave = new ArrayList<>();
-        for (OBReadDirectDebit2DataDirectDebit obDirectDebitDiff : accountDataDiff.getDirectDebits()) {
+        for (OBReadDirectDebit2DataDirectDebitInner obDirectDebitDiff : accountDataDiff.getDirectDebits()) {
 
             if (obDirectDebitDiff.getAccountId() != null && !obDirectDebitDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
@@ -688,7 +688,7 @@ public class DataUpdater {
         //Offers
         List<FROffer> offersToSave = new ArrayList<>();
         List<FROffer> newOffersToSave = new ArrayList<>();
-        for (OBOffer1 obOfferDiff : accountDataDiff.getOffers()) {
+        for (OBReadOffer1DataOfferInner obOfferDiff : accountDataDiff.getOffers()) {
 
             if (obOfferDiff.getAccountId() != null && !obOfferDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"

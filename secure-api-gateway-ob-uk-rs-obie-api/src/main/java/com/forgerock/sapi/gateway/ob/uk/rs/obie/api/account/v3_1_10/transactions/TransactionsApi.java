@@ -30,7 +30,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
-import uk.org.openbanking.datamodel.account.OBReadTransaction5;
 import uk.org.openbanking.datamodel.account.OBReadTransaction6;
 
 import org.joda.time.DateTime;
@@ -47,13 +46,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface TransactionsApi {
 
     @ApiOperation(value = "Get Account Transactions", nickname = "getAccountTransactions", notes = "Get transactions related to an account",
-            response = OBReadTransaction5.class, authorizations = {
+            response = OBReadTransaction6.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Account Transactions successfully retrieved", response = OBReadTransaction5.class),
+            @ApiResponse(code = 200, message = "Account Transactions successfully retrieved", response = OBReadTransaction6.class),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 401, message = "Unauthorized"),
             @ApiResponse(code = 403, message = "Forbidden"),

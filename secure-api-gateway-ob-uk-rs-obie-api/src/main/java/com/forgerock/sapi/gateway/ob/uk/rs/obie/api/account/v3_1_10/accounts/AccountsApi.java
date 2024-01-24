@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
-import uk.org.openbanking.datamodel.account.OBReadAccount5;
+import uk.org.openbanking.datamodel.account.OBReadAccount6;
 
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,13 +45,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(value = "/open-banking/v3.1.10/aisp")
 public interface AccountsApi  {
 
-    @ApiOperation(value = "Get Accounts", nickname = "getAccount", notes = "Get an account", response = OBReadAccount5.class, authorizations = {
+    @ApiOperation(value = "Get Accounts", nickname = "getAccount", notes = "Get an account", response = OBReadAccount6.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Account resource successfully retrieved", response = OBReadAccount5.class),
+            @ApiResponse(code = 200, message = "Account resource successfully retrieved", response = OBReadAccount6.class),
             @ApiResponse(code = 400, message = "Bad request", response = Void.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = Void.class),
             @ApiResponse(code = 403, message = "Forbidden", response = Void.class),
@@ -64,7 +64,7 @@ public interface AccountsApi  {
     @RequestMapping(value = "/accounts/{AccountId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
-    ResponseEntity<OBReadAccount5> getAccount(
+    ResponseEntity<OBReadAccount6> getAccount(
             @ApiParam(value = "AccountId", required = true)
             @PathVariable("AccountId") String accountId,
 
@@ -92,13 +92,13 @@ public interface AccountsApi  {
     ) throws OBErrorException;
 
 
-    @ApiOperation(value = "Get Accounts", nickname = "getAccounts", notes = "Get a list of accounts", response = OBReadAccount5.class, authorizations = {
+    @ApiOperation(value = "Get Accounts", nickname = "getAccounts", notes = "Get a list of accounts", response = OBReadAccount6.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
             })
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Accounts successfully retrieved", response = OBReadAccount5.class),
+            @ApiResponse(code = 200, message = "Accounts successfully retrieved", response = OBReadAccount6.class),
             @ApiResponse(code = 400, message = "Bad request", response = Void.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = Void.class),
             @ApiResponse(code = 403, message = "Forbidden", response = Void.class),
@@ -111,7 +111,7 @@ public interface AccountsApi  {
     @RequestMapping(value = "/accounts",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
-    ResponseEntity<OBReadAccount5> getAccounts(
+    ResponseEntity<OBReadAccount6> getAccounts(
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") String page,
 

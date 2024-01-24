@@ -31,18 +31,18 @@ import java.util.List;
 public class FRAccountData {
 
     private OBAccount6 account;
-    private List<OBCashBalance1> balances = new ArrayList<>();
-    private OBReadProduct2DataProduct product;
+    private List<OBReadBalance1DataBalanceInner> balances = new ArrayList<>();
+    private OBReadProduct2DataProductInner product;
     private OBParty2 party;
     private List<OBBeneficiary5> beneficiaries = new ArrayList<>();
-    private List<OBReadDirectDebit2DataDirectDebit> directDebits = new ArrayList<>();
+    private List<OBReadDirectDebit2DataDirectDebitInner> directDebits = new ArrayList<>();
     private List<OBStandingOrder6> standingOrders = new ArrayList<>();
     private List<OBTransaction6> transactions = new ArrayList<>();
     private List<OBStatement2> statements = new ArrayList<>();
     private List<OBScheduledPayment3> scheduledPayments = new ArrayList<>();
-    private List<OBOffer1> offers = new ArrayList<>();
+    private List<OBReadOffer1DataOfferInner> offers = new ArrayList<>();
 
-    public FRAccountData addBalance(OBCashBalance1 balance) {
+    public FRAccountData addBalance(OBReadBalance1DataBalanceInner balance) {
         balances.add(balance);
         return this;
     }
@@ -52,7 +52,7 @@ public class FRAccountData {
         return this;
     }
 
-    public FRAccountData addDirectDebit(OBReadDirectDebit2DataDirectDebit directDebit1) {
+    public FRAccountData addDirectDebit(OBReadDirectDebit2DataDirectDebitInner directDebit1) {
         directDebits.add(directDebit1);
         return this;
     }
@@ -77,7 +77,7 @@ public class FRAccountData {
         return this;
     }
 
-    public FRAccountData addOffer(OBOffer1 offer1) {
+    public FRAccountData addOffer(OBReadOffer1DataOfferInner offer1) {
         offers.add(offer1);
         return this;
     }

@@ -19,19 +19,15 @@ import java.util.Objects;
 
 import org.joda.time.DateTime;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator.FundsConfirmationValidationContext;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.account.OBReadData1;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
 
 @Slf4j
 public class FundsConfirmationValidator extends BaseOBValidator<FundsConfirmationValidationContext> {

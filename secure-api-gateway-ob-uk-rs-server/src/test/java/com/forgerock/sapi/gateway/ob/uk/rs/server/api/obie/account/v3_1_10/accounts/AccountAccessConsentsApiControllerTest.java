@@ -54,8 +54,8 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
@@ -197,7 +197,7 @@ class AccountAccessConsentsApiControllerTest {
     }
 
     private OBReadConsent1 createValidateConsentRequest() {
-        return new OBReadConsent1().data(new OBReadData1().permissions(List.of(
+        return new OBReadConsent1().data(new OBReadConsent1Data().permissions(List.of(
                 OBExternalPermissions1Code.READBENEFICIARIESBASIC,
                 OBExternalPermissions1Code.READBALANCES))).risk(new OBRisk2());
     }
