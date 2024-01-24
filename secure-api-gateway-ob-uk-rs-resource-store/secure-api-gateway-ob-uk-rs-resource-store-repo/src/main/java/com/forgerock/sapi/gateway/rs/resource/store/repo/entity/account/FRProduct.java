@@ -21,13 +21,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
+import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
 
 /**
  * Representation of an account. This model is only useful for the demo
@@ -46,7 +45,7 @@ public class FRProduct {
     // TODO - ideally we'd have our own domain model equivalent here to help shield the application from OB API changes. Unfortunately, there's an
     //  extensive hierarchy of classes under OBReadProduct2DataProduct, which will take time to model and convert, and isn't essential for an
     //  object that hasn't changed since v2.0 of the API. This is something we can come back to if time allows in the future.
-    private OBReadProduct2DataProduct product;
+    private OBReadProduct2DataProductInner product;
 
     @CreatedDate
     private Date created;

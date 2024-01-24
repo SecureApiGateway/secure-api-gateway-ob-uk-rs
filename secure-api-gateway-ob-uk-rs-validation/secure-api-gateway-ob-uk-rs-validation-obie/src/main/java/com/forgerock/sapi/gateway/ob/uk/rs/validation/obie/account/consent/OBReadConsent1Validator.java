@@ -22,7 +22,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.error.OBError1;
 
 /**
@@ -32,13 +32,13 @@ public class OBReadConsent1Validator extends BaseOBValidator<OBReadConsent1> {
 
     @Override
     protected void validate(OBReadConsent1 accountConsent, ValidationResult<OBError1> validationResult) {
-        final OBReadData1 accountConsentData = accountConsent.getData();
+        final OBReadConsent1Data accountConsentData = accountConsent.getData();
         validateExpirationDateTime(accountConsentData, validationResult);
 
         // TODO add any other validation as required
     }
 
-    private void validateExpirationDateTime(OBReadData1 accountConsentData, ValidationResult<OBError1> validationResult) {
+    private void validateExpirationDateTime(OBReadConsent1Data accountConsentData, ValidationResult<OBError1> validationResult) {
         final DateTime expirationDateTime = accountConsentData.getExpirationDateTime();
         if (expirationDateTime != null) {
             if (expirationDateTime.isBeforeNow()) {

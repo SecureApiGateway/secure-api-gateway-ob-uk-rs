@@ -37,7 +37,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBReadProduct2;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
+import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner.ProductTypeEnum;
 
 import java.util.UUID;
 
@@ -89,10 +90,10 @@ public class ProductsApiControllerTest {
 
         FRProduct product = FRProduct.builder()
                 .accountId(accountId)
-                .product(new OBReadProduct2DataProduct()
+                .product(new OBReadProduct2DataProductInner()
                         .productId(UUID.randomUUID().toString())
                         .accountId(accountId)
-                        .productType(OBReadProduct2DataProduct.ProductTypeEnum.PERSONALCURRENTACCOUNT)
+                        .productType(ProductTypeEnum.PERSONALCURRENTACCOUNT)
                 )
                 .build();
         frProductRepository.save(product);

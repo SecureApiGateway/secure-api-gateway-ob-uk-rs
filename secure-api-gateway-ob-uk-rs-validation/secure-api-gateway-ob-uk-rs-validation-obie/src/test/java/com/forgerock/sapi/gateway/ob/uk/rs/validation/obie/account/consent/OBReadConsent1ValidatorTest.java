@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.error.OBError1;
 
 public class OBReadConsent1ValidatorTest {
@@ -35,8 +35,8 @@ public class OBReadConsent1ValidatorTest {
 
     @Test
     void consentMeetsValidationRequirements() {
-        final List<OBReadConsent1> validConsents = List.of(new OBReadConsent1().data(new OBReadData1()),
-                new OBReadConsent1().data(new OBReadData1().expirationDateTime(DateTime.now().plusDays(2))));
+        final List<OBReadConsent1> validConsents = List.of(new OBReadConsent1().data(new OBReadConsent1Data()),
+                new OBReadConsent1().data(new OBReadConsent1Data().expirationDateTime(DateTime.now().plusDays(2))));
 
         assertTrue(validConsents.stream().map(obReadConsent1Validator::validate).allMatch(ValidationResult::isValid));
     }
@@ -53,6 +53,6 @@ public class OBReadConsent1ValidatorTest {
     }
 
     public static OBReadConsent1 invalidConsentExpirationInPast() {
-        return new OBReadConsent1().data(new OBReadData1().expirationDateTime(DateTime.now().minusMinutes(2)));
+        return new OBReadConsent1().data(new OBReadConsent1Data().expirationDateTime(DateTime.now().minusMinutes(2)));
     }
 }

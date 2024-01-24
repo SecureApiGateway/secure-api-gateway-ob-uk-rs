@@ -36,7 +36,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount5;
+import uk.org.openbanking.datamodel.account.OBReadAccount6;
 
 import java.util.List;
 
@@ -94,11 +94,11 @@ public class AccountsApiControllerTest {
 
         mockAuthorisedConsentResponse(accountId, apiClientId, consentId);
 
-        ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
+        ResponseEntity<OBReadAccount6> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountApiHeaders(consentId, apiClientId)),
-                OBReadAccount5.class);
+                OBReadAccount6.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -135,11 +135,11 @@ public class AccountsApiControllerTest {
         mockAuthorisedConsentResponse(accountId, apiClientId, consentId);
 
         // When
-        ResponseEntity<OBReadAccount5> response = restTemplate.exchange(
+        ResponseEntity<OBReadAccount6> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(requiredAccountApiHeaders(consentId, apiClientId)),
-                OBReadAccount5.class);
+                OBReadAccount6.class);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

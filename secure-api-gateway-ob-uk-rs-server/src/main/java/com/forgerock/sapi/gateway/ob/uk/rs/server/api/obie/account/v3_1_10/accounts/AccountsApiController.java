@@ -39,8 +39,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount5;
-import uk.org.openbanking.datamodel.account.OBReadAccount5Data;
+import uk.org.openbanking.datamodel.account.OBReadAccount6;
+import uk.org.openbanking.datamodel.account.OBReadAccount6Data;
 
 @Controller("AccountsApiV3.1.10")
 public class AccountsApiController implements AccountsApi {
@@ -57,7 +57,7 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadAccount5> getAccount(String accountId,
+    public ResponseEntity<OBReadAccount6> getAccount(String accountId,
             String authorization,
             DateTime xFapiAuthDate,
             String xFapiCustomerIpAddress,
@@ -72,14 +72,14 @@ public class AccountsApiController implements AccountsApi {
         FRAccount account = frAccountRepository.byAccountId(accountId, consent.getRequestObj().getData().getPermissions());
 
         List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(account.getAccount()));
-        return ResponseEntity.ok(new OBReadAccount5()
-                .data(new OBReadAccount5Data().account(obAccounts))
+        return ResponseEntity.ok(new OBReadAccount6()
+                .data(new OBReadAccount6Data().account(obAccounts))
                 .links(LinksHelper.createGetAccountsSelfLink(getClass(), accountId))
                 .meta(PaginationUtil.generateMetaData(1)));
     }
 
     @Override
-    public ResponseEntity<OBReadAccount5> getAccounts(String page,
+    public ResponseEntity<OBReadAccount6> getAccounts(String page,
             String authorization,
             DateTime xFapiAuthDate,
             String xFapiCustomerIpAddress,
@@ -97,8 +97,8 @@ public class AccountsApiController implements AccountsApi {
                 .map(frAccount -> toOBAccount6(frAccount.getAccount()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new OBReadAccount5()
-                .data(new OBReadAccount5Data().account(obAccounts))
+        return ResponseEntity.ok(new OBReadAccount6()
+                .data(new OBReadAccount6Data().account(obAccounts))
                 .links(LinksHelper.createGetAccountsSelfLink(getClass()))
                 .meta(PaginationUtil.generateMetaData(1)));
     }

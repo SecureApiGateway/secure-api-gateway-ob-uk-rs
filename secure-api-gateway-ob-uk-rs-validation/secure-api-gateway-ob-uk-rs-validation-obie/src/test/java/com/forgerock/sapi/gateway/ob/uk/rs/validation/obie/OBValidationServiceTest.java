@@ -32,7 +32,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.account.consent.OBReadConsent1Validator;
 
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.error.OBError1;
 
 class OBValidationServiceTest {
@@ -83,7 +83,7 @@ class OBValidationServiceTest {
         final OBValidationService<OBReadConsent1> validationService = new OBValidationService<>(List.of(new SuccessValidator<>(),
                 new OBReadConsent1Validator(), new SuccessValidator<>(), new OBReadConsent1Validator())); // Account validator included twice, errors will be duplicated
 
-        validationService.validate(new OBReadConsent1().data(new OBReadData1())); // valid consent
+        validationService.validate(new OBReadConsent1().data(new OBReadConsent1Data())); // valid consent
 
         // Invalid consent, verify we get 2 error objects
         final OBErrorResponseException responseException = assertThrows(OBErrorResponseException.class,

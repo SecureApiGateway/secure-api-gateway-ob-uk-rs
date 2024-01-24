@@ -54,10 +54,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBCashBalance1;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBOffer1;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toFRPartyData;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toOBParty2;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRStatementConverter.toOBStatement2;
@@ -287,7 +287,7 @@ public class DataApiController implements DataApi {
                 //Party
                 dataCreator.createParty(accountData).ifPresent(p -> accountDataResponse.setParty(toOBParty2(p)));
                 //Balance
-                dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(toOBCashBalance1(b.getBalance())));
+                dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(toOBReadBalance1DataBalance(b.getBalance())));
                 //Beneficiaries
                 dataCreator.createBeneficiaries(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBeneficiary(toOBBeneficiary5(b.getBeneficiary())));
                 //Direct debits
@@ -301,7 +301,7 @@ public class DataApiController implements DataApi {
                 //Scheduled payments
                 dataCreator.createScheduledPayments(accountData, existingAccountIds).forEach(d -> accountDataResponse.addScheduledPayment(toOBScheduledPayment3(d.getScheduledPayment())));
                 //offers
-                dataCreator.createOffers(accountData, existingAccountIds).forEach(d -> accountDataResponse.addOffer(toOBOffer1(d.getOffer())));
+                dataCreator.createOffers(accountData, existingAccountIds).forEach(d -> accountDataResponse.addOffer(toOBReadOffer1DataOffer(d.getOffer())));
 
                 userDataResponse.addAccountData(accountDataResponse);
             }
@@ -378,13 +378,13 @@ public class DataApiController implements DataApi {
             Page<FRBalance> page = balanceRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRBalance balance : page.getContent()) {
-                    accountData.addBalance(toOBCashBalance1(balance.getBalance()));
+                    accountData.addBalance(toOBReadBalance1DataBalance(balance.getBalance()));
                 }
                 page = balanceRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRBalance balance : page.getContent()) {
-                accountData.addBalance(toOBCashBalance1(balance.getBalance()));
+                accountData.addBalance(toOBReadBalance1DataBalance(balance.getBalance()));
             }
         }
         {
@@ -489,13 +489,13 @@ public class DataApiController implements DataApi {
             Page<FROffer> page = offerRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FROffer offer1 : page.getContent()) {
-                    accountData.addOffer(toOBOffer1(offer1.getOffer()));
+                    accountData.addOffer(toOBReadOffer1DataOffer(offer1.getOffer()));
                 }
                 page = offerRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FROffer offer1 : page.getContent()) {
-                accountData.addOffer(toOBOffer1(offer1.getOffer()));
+                accountData.addOffer(toOBReadOffer1DataOffer(offer1.getOffer()));
             }
         }
         return accountData;

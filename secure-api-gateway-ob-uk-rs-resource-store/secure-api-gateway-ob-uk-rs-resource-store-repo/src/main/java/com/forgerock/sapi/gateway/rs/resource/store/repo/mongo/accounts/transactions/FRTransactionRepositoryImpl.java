@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode0;
 import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification3Code;
 
 import java.util.Collections;
@@ -50,12 +50,12 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSCREDITS)) {
             return filterTransition(transactionRepository
                             .findByAccountIdAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(accountId,
-                                    OBCreditDebitCode.CREDIT, fromBookingDateTime, toBookingDateTime, pageable),
+                                    OBCreditDebitCode0.CREDIT, fromBookingDateTime, toBookingDateTime, pageable),
                     permissions);
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSDEBITS)) {
             return filterTransition(transactionRepository
                             .findByAccountIdAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(accountId,
-                                    OBCreditDebitCode.DEBIT, fromBookingDateTime, toBookingDateTime, pageable),
+                                    OBCreditDebitCode0.DEBIT, fromBookingDateTime, toBookingDateTime, pageable),
                     permissions);
         } else {
             LOGGER.warn("Need at least one of the following permissions: " +
@@ -81,12 +81,12 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSCREDITS)) {
             return filterTransition(transactionRepository
                             .findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(accountId, statementId,
-                                    OBCreditDebitCode.CREDIT, fromBookingDateTime, toBookingDateTime, pageable),
+                                    OBCreditDebitCode0.CREDIT, fromBookingDateTime, toBookingDateTime, pageable),
                     permissions);
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSDEBITS)) {
             return filterTransition(transactionRepository
                             .findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(accountId, statementId,
-                                    OBCreditDebitCode.DEBIT, fromBookingDateTime, toBookingDateTime, pageable),
+                                    OBCreditDebitCode0.DEBIT, fromBookingDateTime, toBookingDateTime, pageable),
                     permissions);
         } else {
             LOGGER.warn("Need at least one of the following permissions: " +
@@ -106,12 +106,12 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
                     .findByAccountIdIn(accountIds, pageable), permissions);
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSCREDITS)) {
             return filterTransition(transactionRepository
-                            .findByAccountIdInAndTransactionCreditDebitIndicator(accountIds, OBCreditDebitCode.CREDIT,
+                            .findByAccountIdInAndTransactionCreditDebitIndicator(accountIds, OBCreditDebitCode0.CREDIT,
                                     pageable),
                     permissions);
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSDEBITS)) {
             return filterTransition(transactionRepository
-                            .findByAccountIdInAndTransactionCreditDebitIndicator(accountIds, OBCreditDebitCode.DEBIT,
+                            .findByAccountIdInAndTransactionCreditDebitIndicator(accountIds, OBCreditDebitCode0.DEBIT,
                                     pageable),
                     permissions);
         } else {
@@ -136,12 +136,12 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSCREDITS)) {
             return filterTransition(transactionRepository
                             .findByAccountIdInAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(accountIds,
-                                    OBCreditDebitCode.CREDIT, fromBookingDateTime, toBookingDateTime, pageable),
+                                    OBCreditDebitCode0.CREDIT, fromBookingDateTime, toBookingDateTime, pageable),
                     permissions);
         } else if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSDEBITS)) {
             return filterTransition(transactionRepository
                             .findByAccountIdInAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(accountIds,
-                                    OBCreditDebitCode.DEBIT, fromBookingDateTime, toBookingDateTime, pageable),
+                                    OBCreditDebitCode0.DEBIT, fromBookingDateTime, toBookingDateTime, pageable),
                     permissions);
         } else {
             LOGGER.warn("Need at least one of the following permissions: " +

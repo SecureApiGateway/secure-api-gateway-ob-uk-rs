@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -45,7 +44,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
+import uk.org.openbanking.datamodel.account.OBReadBalance1DataBalanceInner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -102,7 +101,7 @@ public class DataApiControllerTest {
     public void shouldCreateNewData() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBCashBalance1()));
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(USER_NAME);
@@ -133,7 +132,7 @@ public class DataApiControllerTest {
     public void shouldRaiseUserNotFoundRejectCreationData() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBCashBalance1()));
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(USER_NAME);
@@ -168,7 +167,7 @@ public class DataApiControllerTest {
                 .userID(UUID.randomUUID().toString())
                 .build());
 
-        List<FRAccountData> accountDataList = List.of(accountDataWithBalances(account, new OBCashBalance1()));
+        List<FRAccountData> accountDataList = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDataList);
         userData.setUserName(savedAccount.getUserID());
@@ -197,7 +196,7 @@ public class DataApiControllerTest {
     public void shouldRaiseUserNotFoundUsingUpdate() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBCashBalance1()));
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(USER_NAME);
@@ -234,8 +233,8 @@ public class DataApiControllerTest {
 
         List<FRAccountData> accountDatas = List.of(accountDataWithBalances(
                 account,
-                new OBCashBalance1().type(OBBalanceType1Code.INTERIMAVAILABLE),
-                new OBCashBalance1().type(OBBalanceType1Code.INTERIMBOOKED)));
+                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMAVAILABLE),
+                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMBOOKED)));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(savedAccount.getUserID());
@@ -260,7 +259,7 @@ public class DataApiControllerTest {
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
-    private FRAccountData accountDataWithBalances(OBAccount6 account, OBCashBalance1... obCashBalance1s) {
+    private FRAccountData accountDataWithBalances(OBAccount6 account, OBReadBalance1DataBalanceInner... obCashBalance1s) {
         FRAccountData accountData = new FRAccountData();
         accountData.setAccount(account);
         accountData.setBalances(Arrays.asList(obCashBalance1s));

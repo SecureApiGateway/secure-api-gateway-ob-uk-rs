@@ -72,10 +72,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCu
 
 import lombok.NoArgsConstructor;
 import uk.org.openbanking.datamodel.account.OBBeneficiary5;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
-import uk.org.openbanking.datamodel.account.OBOffer1;
-import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebit;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
+import uk.org.openbanking.datamodel.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebitInner;
+import uk.org.openbanking.datamodel.account.OBReadOffer1DataOfferInner;
+import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.account.OBStatement2;
@@ -129,7 +129,7 @@ public class DataCreator {
 
     List<FROffer> createOffers(FRAccountData accountData, Set<String> accountIds) {
         List<FROffer> offers = new ArrayList<>();
-        for (OBOffer1 obOffer : accountData.getOffers()) {
+        for (OBReadOffer1DataOfferInner obOffer : accountData.getOffers()) {
             String accountId = obOffer.getAccountId() != null ? obOffer.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -244,7 +244,7 @@ public class DataCreator {
 
     List<FRDirectDebit> createDirectDebits(FRAccountData accountData, Set<String> accountIds) {
         List<FRDirectDebit> directDebits = new ArrayList<>();
-        for (OBReadDirectDebit2DataDirectDebit obDirectDebit : accountData.getDirectDebits()) {
+        for (OBReadDirectDebit2DataDirectDebitInner obDirectDebit : accountData.getDirectDebits()) {
             String accountId = obDirectDebit.getAccountId() != null ? obDirectDebit.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
@@ -298,8 +298,8 @@ public class DataCreator {
         return Optional.of(partyRepository.save(party).getParty());
     }
 
-    Optional<OBReadProduct2DataProduct> createProducts(FRAccountData accountData, Set<String> accountIds) {
-        OBReadProduct2DataProduct obProduct = accountData.getProduct();
+    Optional<OBReadProduct2DataProductInner> createProducts(FRAccountData accountData, Set<String> accountIds) {
+        OBReadProduct2DataProductInner obProduct = accountData.getProduct();
         if (obProduct == null) {
             return Optional.empty();
         }
@@ -318,7 +318,7 @@ public class DataCreator {
 
     List<FRBalance> createBalances(FRAccountData accountData, Set<String> accountIds) {
         List<FRBalance> balances = new ArrayList<>();
-        for (OBCashBalance1 obCashBalance : accountData.getBalances()) {
+        for (OBReadBalance1DataBalanceInner obCashBalance : accountData.getBalances()) {
             String accountId = obCashBalance.getAccountId() != null ? obCashBalance.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");

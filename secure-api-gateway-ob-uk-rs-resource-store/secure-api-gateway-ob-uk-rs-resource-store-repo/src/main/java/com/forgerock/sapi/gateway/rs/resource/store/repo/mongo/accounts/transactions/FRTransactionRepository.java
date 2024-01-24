@@ -23,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode0;
 
 import java.util.List;
 import java.util.Set;
@@ -32,13 +32,13 @@ public interface FRTransactionRepository extends MongoRepository<FRTransaction, 
 
     Page<FRTransaction> findByAccountIdAndTransactionCreditDebitIndicator(
             @Param("accountId") String accountId,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            @Param("creditDebitIndicator") OBCreditDebitCode0 creditDebitIndicator,
             Pageable pageable
     );
 
     Page<FRTransaction> findByAccountIdAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
             @Param("accountId") String accountId,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            @Param("creditDebitIndicator") OBCreditDebitCode0 creditDebitIndicator,
             @Param(ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime toBookingDateTime,
             Pageable pageable);
@@ -58,14 +58,14 @@ public interface FRTransactionRepository extends MongoRepository<FRTransaction, 
     Page<FRTransaction> findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicator(
             @Param("accountId") String accountId,
             @Param("statementId") String statementId,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            @Param("creditDebitIndicator") OBCreditDebitCode0 creditDebitIndicator,
             Pageable pageable
     );
 
     Page<FRTransaction> findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
             @Param("accountId") String accountId,
             @Param("statementId") String statementId,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            @Param("creditDebitIndicator") OBCreditDebitCode0 creditDebitIndicator,
             @Param(ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime toBookingDateTime,
             Pageable pageable);
@@ -86,13 +86,13 @@ public interface FRTransactionRepository extends MongoRepository<FRTransaction, 
 
     Page<FRTransaction> findByAccountIdInAndTransactionCreditDebitIndicator(
             @Param("accountIds") List<String> accountIds,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            @Param("creditDebitIndicator") OBCreditDebitCode0 creditDebitIndicator,
             Pageable pageable
     );
 
     Page<FRTransaction> findByAccountIdInAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
             @Param("accountIds") List<String> accountIds,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            @Param("creditDebitIndicator") OBCreditDebitCode0 creditDebitIndicator,
             @Param(ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime
                     toBookingDateTime,

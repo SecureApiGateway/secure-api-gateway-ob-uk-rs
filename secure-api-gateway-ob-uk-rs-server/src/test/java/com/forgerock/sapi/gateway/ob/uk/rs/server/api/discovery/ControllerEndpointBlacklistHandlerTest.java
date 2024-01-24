@@ -31,7 +31,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import uk.org.openbanking.datamodel.account.OBReadAccount5;
 import uk.org.openbanking.datamodel.payment.*;
 
 
@@ -95,10 +94,10 @@ public class ControllerEndpointBlacklistHandlerTest {
         // Given
         String accountId = "1234";
         String url = accountIdUrl(DISABLED_ENDPOINT_OVERRIDE_VERSION, accountId);
-        HttpHeaders httpHeaders = HttpHeadersTestDataFactory.requiredAccountHttpHeaders(url, accountId);
+        HttpHeaders httpHeaders = HttpHeadersTestDataFactory.requiredAccountApiHeaders("asdasd", "testClient");
 
         // When
-        ResponseEntity<?> response = restTemplate.getForEntity(url, OBReadAccount5.class, httpHeaders);
+        ResponseEntity<?> response = restTemplate.getForEntity(url, Void.class, httpHeaders);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
