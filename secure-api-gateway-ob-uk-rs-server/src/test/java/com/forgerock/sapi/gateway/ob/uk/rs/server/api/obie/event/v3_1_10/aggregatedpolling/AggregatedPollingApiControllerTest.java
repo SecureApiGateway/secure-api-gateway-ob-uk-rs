@@ -44,7 +44,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMes
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 
 import uk.org.openbanking.datamodel.event.OBEventPolling1;
-import uk.org.openbanking.datamodel.event.OBEventPolling1SetErrs;
+import uk.org.openbanking.datamodel.event.OBEventPolling1SetErrsValue;
 import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
 
 /**
@@ -95,7 +95,7 @@ public class AggregatedPollingApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody().isMoreAvailable()).isFalse();
+        assertThat(response.getBody().getMoreAvailable()).isFalse();
         validateStringSet(response.getBody().getSets().get(frEventMessageEntity.getJti()), frEventMessageEntity);
     }
 
@@ -116,7 +116,7 @@ public class AggregatedPollingApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody().isMoreAvailable()).isNull();
+        assertThat(response.getBody().getMoreAvailable()).isNull();
         assertThat(response.getBody().getSets()).isEmpty();
     }
 
@@ -131,7 +131,7 @@ public class AggregatedPollingApiControllerTest {
         obEventPolling.setAck(List.of(frEventMessageEntity.getJti()));
         obEventPolling.putSetErrsItem(
                 frEventMessageEntityErr.getJti(),
-                new OBEventPolling1SetErrs().err("jwtIss").description("Issuer is invalid or could not be verified")
+                new OBEventPolling1SetErrsValue().err("jwtIss").description("Issuer is invalid or could not be verified")
         );
         HttpHeaders headers = HttpHeadersTestDataFactory.requiredEventNotificationsHttpHeaders(API_CLIENT_ID);
         HttpEntity<OBEventPolling1> request = new HttpEntity<>(obEventPolling, headers);
@@ -141,7 +141,7 @@ public class AggregatedPollingApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody().isMoreAvailable()).isNull();
+        assertThat(response.getBody().getMoreAvailable()).isNull();
         assertThat(response.getBody().getSets()).isEmpty();
     }
 

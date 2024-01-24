@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.event.*;
 
+import java.net.URI;
 import java.util.List;
 
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_10;
@@ -97,7 +98,7 @@ public class EventSubscriptionsApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        List<OBEventSubscriptionsResponse1DataEventSubscription> eventSubscriptions = response.getBody().getData().getEventSubscription();
+        List<OBEventSubscriptionsResponse1DataEventSubscriptionInner> eventSubscriptions = response.getBody().getData().getEventSubscription();
         assertThat(eventSubscriptions).isNotEmpty();
         assertThat(eventSubscriptions.get(0).getCallbackUrl()).isEqualTo(eventSubscription.getData().getCallbackUrl());
         assertThat(eventSubscriptions.get(0).getVersion()).isEqualTo(eventSubscription.getData().getVersion());
@@ -115,7 +116,7 @@ public class EventSubscriptionsApiControllerTest {
         ResponseEntity<OBEventSubscriptionResponse1> createResponse = restTemplate.postForEntity(eventSubscriptionsUrl(), createRequest, OBEventSubscriptionResponse1.class);
         String updateUrl = eventSubscriptionsIdUrl(createResponse.getBody().getData().getEventSubscriptionId());
         OBEventSubscriptionResponse1 updatedSubscription = new OBEventSubscriptionResponse1().data(createResponse.getBody().getData());
-        updatedSubscription.getData().setCallbackUrl("http://updatedcallbackurl.com");
+        updatedSubscription.getData().setCallbackUrl(URI.create("http://updatedcallbackurl.com"));
         HttpEntity<OBEventSubscriptionResponse1> updateRequest = new HttpEntity<>(updatedSubscription, headers);
 
         // When
@@ -124,7 +125,7 @@ public class EventSubscriptionsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(OK);
         OBEventSubscriptionResponse1Data responseData = response.getBody().getData();
-        assertThat(responseData.getCallbackUrl()).isEqualTo("http://updatedcallbackurl.com");
+        assertThat(responseData.getCallbackUrl().toString()).isEqualTo("http://updatedcallbackurl.com");
         assertThat(response.getBody().getMeta()).isNotNull();
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(updateUrl);
     }
@@ -157,7 +158,7 @@ public class EventSubscriptionsApiControllerTest {
     private OBEventSubscription1 aValidOBEventSubscription1() {
         return new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
-                        .callbackUrl("http://callbackurl.com")
+                        .callbackUrl(URI.create("http://callbackurl.com"))
                         .version(v3_1_10.getCanonicalName())
                         .eventTypes(List.of("urn:uk:org:openbanking:events:resource-update"))
                 );
