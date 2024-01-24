@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +50,7 @@ public class EventTestHelper {
                 .iss("https://examplebank.com/")
                 .iat(1516239022)
                 .jti(UUID.randomUUID().toString())
-                .sub("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
+                .sub(URI.create("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003"))
                 .aud("7umx5nTR33811QyQfi")
                 .txn(UUID.randomUUID().toString())
                 .toe(1516239022)
@@ -57,13 +58,13 @@ public class EventTestHelper {
     }
 
     public static OBEvent1 getOBEvent() {
-        return new OBEvent1().urnukorgopenbankingeventsresourceUpdate(
+        return new OBEvent1().urnColonUkColonOrgColonOpenbankingColonEventsColonResourceUpdate(
                 new OBEventResourceUpdate1()
                         .subject(
                                 new OBEventSubject1()
                                         .subjectType("http://openbanking.org.uk/rid_http://openbanking.org.uk/rty")
-                                        .httpopenbankingOrgUkrid("pmt-7290-003")
-                                        .httpopenbankingOrgUkrlk(
+                                        .httpColonOpenbankingOrgUkRid("pmt-7290-003")
+                                        .httpColonOpenbankingOrgUkRlk(
                                                 List.of(
                                                         new OBEventLink1()
                                                                 .link("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
@@ -73,7 +74,7 @@ public class EventTestHelper {
                                                                 .version("v3.1.10")
                                                 )
                                         )
-                                        .httpopenbankingOrgUkrty("domestic-payment")
+                                        .httpColonOpenbankingOrgUkRty("domestic-payment")
                         )
         );
     }

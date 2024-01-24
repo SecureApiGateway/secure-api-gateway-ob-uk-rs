@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.events
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
 
+import java.net.URI;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +54,7 @@ import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
 import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1Data;
 import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
 import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1DataEventSubscription;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1DataEventSubscriptionInner;
 
 @Controller("EventSubscriptionApiV3.1.10")
 public class EventSubscriptionsApiController implements EventSubscriptionsApi {
@@ -199,9 +200,9 @@ public class EventSubscriptionsApiController implements EventSubscriptionsApi {
     }
 
     private OBEventSubscriptionsResponse1 packageResponse(Collection<FREventSubscription> eventSubs) {
-        List<OBEventSubscriptionsResponse1DataEventSubscription> eventSubsByClient = eventSubs.stream()
-                .map(e -> new OBEventSubscriptionsResponse1DataEventSubscription()
-                        .callbackUrl(e.getEventSubscription().getCallbackUrl())
+        List<OBEventSubscriptionsResponse1DataEventSubscriptionInner> eventSubsByClient = eventSubs.stream()
+                .map(e -> new OBEventSubscriptionsResponse1DataEventSubscriptionInner()
+                        .callbackUrl(e.getEventSubscription().getCallbackUrl() != null ? URI.create(e.getEventSubscription().getCallbackUrl()) : null)
                         .eventSubscriptionId(e.getId())
                         .eventTypes(e.getEventSubscription().getEventTypes())
                         .version(e.getEventSubscription().getVersion())
@@ -225,7 +226,7 @@ public class EventSubscriptionsApiController implements EventSubscriptionsApi {
         FREventSubscriptionData obEventSubs = frEventSubscription.getEventSubscription();
         return new OBEventSubscriptionResponse1()
                 .data(new OBEventSubscriptionResponse1Data()
-                        .callbackUrl(obEventSubs.getCallbackUrl())
+                        .callbackUrl(obEventSubs.getCallbackUrl() != null ? URI.create(obEventSubs.getCallbackUrl()) : null)
                         .eventSubscriptionId(frEventSubscription.getId())
                         .eventTypes(obEventSubs.getEventTypes())
                         .version(obEventSubs.getVersion())

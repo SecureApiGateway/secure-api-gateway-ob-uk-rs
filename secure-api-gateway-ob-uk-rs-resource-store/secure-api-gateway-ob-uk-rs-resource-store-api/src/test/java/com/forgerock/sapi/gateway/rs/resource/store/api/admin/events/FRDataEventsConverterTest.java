@@ -17,6 +17,7 @@ package com.forgerock.sapi.gateway.rs.resource.store.api.admin.events;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,16 +79,16 @@ public class FRDataEventsConverterTest {
                 .iat(1516239022)
                 .iss("https://examplebank.com/")
                 .jti("b460a07c-4962-43d1-85ee-9dc10fbb8f6c")
-                .sub("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
+                .sub(URI.create("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003"))
                 .toe(1516239022)
                 .txn("dfc51628-3479-4b81-ad60-210b43d02306")
-                .events(new OBEvent1().urnukorgopenbankingeventsresourceUpdate(
+                .events(new OBEvent1().urnColonUkColonOrgColonOpenbankingColonEventsColonResourceUpdate(
                                 new OBEventResourceUpdate1()
                                         .subject(
                                                 new OBEventSubject1()
                                                         .subjectType("http://openbanking.org.uk/rid_http://openbanking.org.uk/rty")
-                                                        .httpopenbankingOrgUkrid("pmt-7290-003")
-                                                        .httpopenbankingOrgUkrlk(
+                                                        .httpColonOpenbankingOrgUkRid("pmt-7290-003")
+                                                        .httpColonOpenbankingOrgUkRlk(
                                                                 List.of(
                                                                         new OBEventLink1()
                                                                                 .link("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
@@ -97,7 +98,7 @@ public class FRDataEventsConverterTest {
                                                                                 .version("v3.1.10")
                                                                 )
                                                         )
-                                                        .httpopenbankingOrgUkrty("domestic-payment")
+                                                        .httpColonOpenbankingOrgUkRty("domestic-payment")
                                         )
                         )
                 );
@@ -110,17 +111,17 @@ public class FRDataEventsConverterTest {
                 .apiClientId(UUID.randomUUID().toString())
                 .iss("https://examplebank.com/")
                 .iat(1516239022)
-                .sub("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
+                .sub(URI.create("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003"))
                 .aud("7umx5nTR33811QyQfi")
                 .txn("dfc51628-3479-4b81-ad60-210b43d02306")
                 .toe(1516239022)
-                .events(new OBEvent1().urnukorgopenbankingeventsresourceUpdate(
+                .events(new OBEvent1().urnColonUkColonOrgColonOpenbankingColonEventsColonResourceUpdate(
                                 new OBEventResourceUpdate1()
                                         .subject(
                                                 new OBEventSubject1()
                                                         .subjectType("http://openbanking.org.uk/rid_http://openbanking.org.uk/rty")
-                                                        .httpopenbankingOrgUkrid("pmt-7290-003")
-                                                        .httpopenbankingOrgUkrlk(
+                                                        .httpColonOpenbankingOrgUkRid("pmt-7290-003")
+                                                        .httpColonOpenbankingOrgUkRlk(
                                                                 List.of(
                                                                         new OBEventLink1()
                                                                                 .link("https://examplebank.com/api/open-banking/v3.0/pisp/domestic-payments/pmt-7290-003")
@@ -130,7 +131,7 @@ public class FRDataEventsConverterTest {
                                                                                 .version("v3.1.10")
                                                                 )
                                                         )
-                                                        .httpopenbankingOrgUkrty("domestic-payment")
+                                                        .httpColonOpenbankingOrgUkRty("domestic-payment")
                                         )
                         )
                 )
