@@ -15,14 +15,21 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
+import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
@@ -31,29 +38,31 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
-import uk.org.openbanking.datamodel.common.OBCashAccount3;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
+
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
-
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
-import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
 
 /**
  * Test for {@link FundsConfirmationConsentsApiController}
@@ -98,7 +107,7 @@ public class FundsConfirmationConsentsApiControllerTest {
 
         final OBFundsConfirmationConsentResponse1 createConsentApiResponse = createResponse.getBody();
         assertThat(createConsentApiResponse.getData().getConsentId()).isEqualTo(mockConsentStoreResponse.getId());
-        assertThat(createConsentApiResponse.getData().getStatus()).isEqualTo(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION);
+        assertThat(createConsentApiResponse.getData().getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
         assertThat(createConsentApiResponse.getData().getCreationDateTime()).isNotNull();
         assertThat(createConsentApiResponse.getData().getStatusUpdateDateTime()).isNotNull();
         assertThat(createConsentApiResponse.getData().getExpirationDateTime()).isEqualTo(obConsentRequest.getData().getExpirationDateTime());
@@ -199,10 +208,10 @@ public class FundsConfirmationConsentsApiControllerTest {
     private OBFundsConfirmationConsent1 createValidOBConsentRequest() {
         return new OBFundsConfirmationConsent1()
                 .data(
-                        new OBFundsConfirmationConsentData1()
+                        new OBFundsConfirmationConsent1Data()
                                 .expirationDateTime(DateTime.now().plusDays(30).withZone(DateTimeZone.UTC))
                                 .debtorAccount(
-                                        new OBCashAccount3()
+                                        new OBFundsConfirmationConsent1DataDebtorAccount()
                                                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                                                 .identification("40400422390112")
                                                 .name("Mrs B Smith")

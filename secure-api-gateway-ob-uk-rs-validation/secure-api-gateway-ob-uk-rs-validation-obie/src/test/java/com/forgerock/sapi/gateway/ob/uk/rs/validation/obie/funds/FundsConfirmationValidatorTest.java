@@ -32,13 +32,13 @@ import org.junit.jupiter.api.Test;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.common.OBCashAccount3;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 public class FundsConfirmationValidatorTest {
 
@@ -126,10 +126,10 @@ public class FundsConfirmationValidatorTest {
 
     private OBFundsConfirmation1 aValidOBFundsConfirmation1() {
         return new OBFundsConfirmation1()
-                .data(new OBFundsConfirmationData1()
+                .data(new OBFundsConfirmation1Data()
                         .consentId(UUID.randomUUID().toString())
                         .reference("Funds confirmation ref")
-                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount()
+                        .instructedAmount(new OBFundsConfirmation1DataInstructedAmount()
                                 .currency(ACCOUNT_CURRENCY)
                                 .amount("20.00")
                         ));
@@ -142,10 +142,10 @@ public class FundsConfirmationValidatorTest {
     private OBFundsConfirmationConsent1 createValidOBFundsConfirmationConsent1(DateTime dateTime) {
         return new OBFundsConfirmationConsent1()
                 .data(
-                        new OBFundsConfirmationConsentData1()
+                        new OBFundsConfirmationConsent1Data()
                                 .expirationDateTime(dateTime)
                                 .debtorAccount(
-                                        new OBCashAccount3()
+                                        new OBFundsConfirmationConsent1DataDebtorAccount()
                                                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                                                 .identification("40400422390112")
                                                 .name("Mrs B Smith")

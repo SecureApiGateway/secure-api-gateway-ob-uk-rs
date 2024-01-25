@@ -15,7 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.factory;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBFundsConfirmationConsent1DataDebtorAccount;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
@@ -23,9 +24,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Fund
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentDataResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
 
 @Component
 public class OBFundsConfirmationConsentResponseFactory {
@@ -34,13 +35,13 @@ public class OBFundsConfirmationConsentResponseFactory {
         final FRFundsConfirmationConsentData frFundsConfirmationConsentData = consent.getRequestObj().getData();
         return new OBFundsConfirmationConsentResponse1()
                 .data(
-                        new OBFundsConfirmationConsentDataResponse1()
+                        new OBFundsConfirmationConsentResponse1Data()
                                 .consentId(consent.getId())
                                 .creationDateTime(new DateTime(consent.getCreationDateTime()))
                                 .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
-                                .status(OBExternalRequestStatus1Code.fromValue(consent.getStatus()))
+                                .status(StatusEnum.fromValue(consent.getStatus()))
                                 .expirationDateTime(frFundsConfirmationConsentData.getExpirationDateTime())
-                                .debtorAccount(FRAccountIdentifierConverter.toOBCashAccount3(frFundsConfirmationConsentData.getDebtorAccount()))
+                                .debtorAccount(toOBFundsConfirmationConsent1DataDebtorAccount(frFundsConfirmationConsentData.getDebtorAccount()))
                 )
                 .meta(PaginationUtil.generateMetaData(1))
                 .links(LinksHelper.createFundsConfirmationConsentSelfLink(controllerClass, consent.getId()));
