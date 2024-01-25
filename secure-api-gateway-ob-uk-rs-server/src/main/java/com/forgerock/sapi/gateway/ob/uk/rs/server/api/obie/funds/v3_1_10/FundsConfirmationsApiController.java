@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 
 import java.security.Principal;
@@ -50,8 +50,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.common.Meta;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1Data;
 
 @Controller("FundsConfirmationsApiV3.1.10")
 public class FundsConfirmationsApiController implements FundsConfirmationsApi {
@@ -143,8 +143,8 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, HttpServletRequest request) {
         final FRFundsConfirmationData obFundsConfirmationData = fundsConfirmation.getFundsConfirmation();
         return new OBFundsConfirmationResponse1()
-                .data(new OBFundsConfirmationDataResponse1()
-                        .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obFundsConfirmationData.getInstructedAmount()))
+                .data(new OBFundsConfirmationResponse1Data()
+                        .instructedAmount(toOBFundsConfirmation1DataInstructedAmount(obFundsConfirmationData.getInstructedAmount()))
                         .creationDateTime(new DateTime(fundsConfirmation.getCreated()))
                         .fundsConfirmationId(fundsConfirmation.getId())
                         .fundsAvailable(fundsConfirmation.isFundsAvailable())

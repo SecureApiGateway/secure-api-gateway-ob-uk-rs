@@ -66,17 +66,17 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.common.OBCashAccount3;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1Data;
 
 /**
  * Test for {@link FundsConfirmationsApiController}
@@ -213,7 +213,7 @@ public class FundsConfirmationsApiControllerTest {
 
         // Then
         assertThat(fundsConfirmationResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        OBFundsConfirmationDataResponse1 responseData = fundsConfirmationResponse.getBody().getData();
+        OBFundsConfirmationResponse1Data responseData = fundsConfirmationResponse.getBody().getData();
         assertThat(responseData.getFundsConfirmationId()).isNotNull().isNotBlank();
         assertThat(responseData.getConsentId()).isEqualTo(fundsConfirmationRequest.getData().getConsentId());
         assertThat(responseData.getFundsAvailable()).isTrue();
@@ -237,7 +237,7 @@ public class FundsConfirmationsApiControllerTest {
 
         // Then
         assertThat(fundsConfirmationResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        OBFundsConfirmationDataResponse1 responseData = fundsConfirmationResponse.getBody().getData();
+        OBFundsConfirmationResponse1Data responseData = fundsConfirmationResponse.getBody().getData();
         assertThat(responseData.getFundsConfirmationId()).isNotNull().isNotBlank();
         assertThat(responseData.getConsentId()).isEqualTo(fundsConfirmationRequest.getData().getConsentId());
         assertThat(responseData.getFundsAvailable()).isFalse();
@@ -374,11 +374,11 @@ public class FundsConfirmationsApiControllerTest {
 
     private OBFundsConfirmation1 aValidOBFundsConfirmation(String consentId, String currency) {
         return (new OBFundsConfirmation1().data(
-                new OBFundsConfirmationData1()
+                new OBFundsConfirmation1Data()
                         .reference("test-reference")
                         .consentId(consentId)
                         .instructedAmount(
-                                new OBActiveOrHistoricCurrencyAndAmount()
+                                new OBFundsConfirmation1DataInstructedAmount()
                                         .amount("20.00")
                                         .currency(currency)
                         )
@@ -388,10 +388,10 @@ public class FundsConfirmationsApiControllerTest {
     private OBFundsConfirmationConsent1 aValidOBFundsConfirmationConsent() {
         return (new OBFundsConfirmationConsent1())
                 .data(
-                        new OBFundsConfirmationConsentData1()
+                        new OBFundsConfirmationConsent1Data()
                                 .expirationDateTime(DateTime.now().plusMonths(5))
                                 .debtorAccount(
-                                        new OBCashAccount3()
+                                        new OBFundsConfirmationConsent1DataDebtorAccount()
                                                 .identification("08080021325698")
                                                 .name("ACME Inc")
                                                 .schemeName("UK.OBIE.SortCodeAccountNumber")
