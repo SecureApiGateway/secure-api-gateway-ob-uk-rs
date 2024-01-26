@@ -151,8 +151,8 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                         new OBPAFundsAvailableResult1()
                                                                 .fundsAvailable(
                                                                         areFundsAvailable ?
-                                                                                OBPAFundsAvailableResult1.FundsAvailableEnum.AVAILABLE :
-                                                                                OBPAFundsAvailableResult1.FundsAvailableEnum.NOTAVAILABLE
+                                                                                OBPAFundsAvailableResult1FundsAvailable.AVAILABLE :
+                                                                                OBPAFundsAvailableResult1FundsAvailable.NOTAVAILABLE
                                                                 )
                                                                 .fundsAvailableDateTime(DateTime.now())
                                                 )

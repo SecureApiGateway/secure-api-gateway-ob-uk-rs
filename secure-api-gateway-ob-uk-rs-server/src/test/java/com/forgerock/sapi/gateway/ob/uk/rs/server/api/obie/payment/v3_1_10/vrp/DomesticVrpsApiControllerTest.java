@@ -295,7 +295,7 @@ public class DomesticVrpsApiControllerTest {
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBDomesticVRPDetailsData responseData = response.getBody().getData();
-        assertThat(responseData.getPaymentStatus().get(0).getStatus()).isEqualTo(OBDomesticVRPDetailsDataPaymentStatus.StatusEnum.PENDING);
+        assertThat(responseData.getPaymentStatus().get(0).getStatus()).isEqualTo(OBDomesticVRPDetailsDataPaymentStatusInnerStatus.PENDING);
     }
 
     @Test

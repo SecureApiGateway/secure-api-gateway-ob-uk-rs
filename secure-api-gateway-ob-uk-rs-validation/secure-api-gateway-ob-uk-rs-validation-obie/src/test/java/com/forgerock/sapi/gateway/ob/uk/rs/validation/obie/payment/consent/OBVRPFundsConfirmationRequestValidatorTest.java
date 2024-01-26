@@ -29,7 +29,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRP
 
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequestData;
 
@@ -67,7 +67,7 @@ class OBVRPFundsConfirmationRequestValidatorTest {
         final String consentId = "1234";
         final OBVRPFundsConfirmationRequest fundsConfRequest = createValidFundsConfirmationRequest(consentId, new BigDecimal("99.21"));
         final String[] invalidStatuses = new String[] {
-                StatusEnum.AWAITINGAUTHORISATION.toString(), StatusEnum.REJECTED.toString()
+                OBDomesticVRPConsentResponseDataStatus.AWAITINGAUTHORISATION.toString(), OBDomesticVRPConsentResponseDataStatus.REJECTED.toString()
         };
 
         for (final String invalidStatus : invalidStatuses) {

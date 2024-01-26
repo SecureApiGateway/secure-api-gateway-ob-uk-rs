@@ -21,7 +21,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
 
 import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequestData;
 
@@ -70,7 +70,7 @@ public class OBVRPFundsConfirmationRequestValidator extends BaseOBValidator<VRPF
         }
 
         final String consentStatus = fundsConfValidationCtxt.getConsentStatus();
-        if (!StatusEnum.AUTHORISED.toString().equals(consentStatus)) {
+        if (!OBDomesticVRPConsentResponseDataStatus.AUTHORISED.toString().equals(consentStatus)) {
             validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consentStatus));
         }
     }

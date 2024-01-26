@@ -28,6 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1FundsAvailable.AVAILABLE;
+import static uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1FundsAvailable.NOTAVAILABLE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -72,8 +74,7 @@ import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
-import uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequestData;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
@@ -164,7 +165,7 @@ public class DomesticVrpConsentsApiControllerTest {
         final OBDomesticVRPConsentResponse consentResponse = createResponse.getBody();
         final String consentId = consentResponse.getData().getConsentId();
         assertThat(consentId).isEqualTo(consentStoreResponse.getId());
-        assertThat(consentResponse.getData().getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
+        assertThat(consentResponse.getData().getStatus()).isEqualTo(OBDomesticVRPConsentResponseDataStatus.AWAITINGAUTHORISATION);
         assertThat(consentResponse.getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
         assertThat(consentResponse.getData().getReadRefundAccount()).isEqualTo(consentRequest.getData().getReadRefundAccount());
         assertThat(consentResponse.getData().getCreationDateTime()).isNotNull();
@@ -274,7 +275,7 @@ public class DomesticVrpConsentsApiControllerTest {
         assertThat(body.getData().getConsentId()).isEqualTo(obvrpFundsConfirmationRequest.getData().getConsentId());
         assertThat(body.getData().getReference()).isEqualTo(obvrpFundsConfirmationRequest.getData().getReference());
         assertThat(body.getData().getInstructedAmount()).isEqualTo(obvrpFundsConfirmationRequest.getData().getInstructedAmount());
-        assertThat(body.getData().getFundsAvailableResult().getFundsAvailable()).isEqualTo(OBPAFundsAvailableResult1.FundsAvailableEnum.AVAILABLE);
+        assertThat(body.getData().getFundsAvailableResult().getFundsAvailable()).isEqualTo(AVAILABLE);
     }
 
     @Test
@@ -316,7 +317,7 @@ public class DomesticVrpConsentsApiControllerTest {
         assertThat(body.getData().getConsentId()).isEqualTo(obvrpFundsConfirmationRequest.getData().getConsentId());
         assertThat(body.getData().getReference()).isEqualTo(obvrpFundsConfirmationRequest.getData().getReference());
         assertThat(body.getData().getInstructedAmount()).isEqualTo(obvrpFundsConfirmationRequest.getData().getInstructedAmount());
-        assertThat(body.getData().getFundsAvailableResult().getFundsAvailable()).isEqualTo(OBPAFundsAvailableResult1.FundsAvailableEnum.NOTAVAILABLE);
+        assertThat(body.getData().getFundsAvailableResult().getFundsAvailable()).isEqualTo(NOTAVAILABLE);
     }
 
     @Test

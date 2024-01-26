@@ -28,7 +28,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_1
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 class OBDomesticVRPConsentResponseFactoryTest {
@@ -42,7 +42,7 @@ class OBDomesticVRPConsentResponseFactoryTest {
         final OBDomesticVRPConsentResponse response = responseFactory.buildConsentResponse(consent, DomesticVrpConsentsApiController.class);
 
         final OBDomesticVRPConsentResponseData responseData = response.getData();
-        assertThat(responseData.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
+        assertThat(responseData.getStatus()).isEqualTo(OBDomesticVRPConsentResponseDataStatus.AWAITINGAUTHORISATION);
         assertThat(responseData.getConsentId()).isEqualTo(consent.getId());
         assertThat(responseData.getCreationDateTime()).isEqualTo(new DateTime(consent.getCreationDateTime()));
         assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(new DateTime(consent.getStatusUpdateDateTime()));
