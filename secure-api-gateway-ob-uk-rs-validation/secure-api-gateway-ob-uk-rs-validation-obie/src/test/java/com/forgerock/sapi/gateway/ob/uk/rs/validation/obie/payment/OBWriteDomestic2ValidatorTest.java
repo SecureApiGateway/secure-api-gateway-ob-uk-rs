@@ -27,13 +27,13 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomest
 import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 class OBWriteDomestic2ValidatorTest {
 
@@ -86,11 +86,11 @@ class OBWriteDomestic2ValidatorTest {
 
     @Test
     public void validationFailsWhenConsentIsNotAuthorised() {
-        final StatusEnum[] invalidStatuses = new StatusEnum[] {
-                StatusEnum.CONSUMED, StatusEnum.REJECTED, StatusEnum.AWAITINGAUTHORISATION
+        final OBPaymentConsentStatus[] invalidStatuses = new OBPaymentConsentStatus[] {
+                OBPaymentConsentStatus.CONSUMED, OBPaymentConsentStatus.REJECTED, OBPaymentConsentStatus.AWAITINGAUTHORISATION
         };
 
-        for (StatusEnum invalidStatus : invalidStatuses) {
+        for (OBPaymentConsentStatus invalidStatus : invalidStatuses) {
             final OBWriteDomesticConsent4Data consentData = new OBWriteDomesticConsent4Data().initiation(createInitiation());
             final OBWriteDomesticConsent4 consent = new OBWriteDomesticConsent4().data(consentData).risk(createRisk());
 

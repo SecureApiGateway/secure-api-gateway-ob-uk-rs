@@ -63,18 +63,18 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.Internat
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.payment.OBReadRefundAccount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5DataRefundAccount;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse7;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse7Data;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
 
 /**
  * A SpringBoot test for the {@link InternationalStandingOrdersApiController}.<br/>
@@ -133,11 +133,11 @@ public class InternationalStandingOrdersApiControllerTest {
         standingOrderRepository.deleteAll();
     }
 
-    private void mockConsentStoreGetResponse(OBWriteInternationalStandingOrder4 paymentRequest, OBReadRefundAccountEnum readRefundAccount) {
-        mockConsentStoreGetResponse(paymentRequest, readRefundAccount, StatusEnum.AUTHORISED.toString());
+    private void mockConsentStoreGetResponse(OBWriteInternationalStandingOrder4 paymentRequest, OBReadRefundAccount readRefundAccount) {
+        mockConsentStoreGetResponse(paymentRequest, readRefundAccount, OBPaymentConsentStatus.AUTHORISED.toString());
     }
 
-    private void mockConsentStoreGetResponse(OBWriteInternationalStandingOrder4 paymentRequest, OBReadRefundAccountEnum readRefundAccount, String status) {
+    private void mockConsentStoreGetResponse(OBWriteInternationalStandingOrder4 paymentRequest, OBReadRefundAccount readRefundAccount, String status) {
         // reverse engineer the consent from the paymentRequest
         final OBWriteInternationalStandingOrderConsent6 consentRequest = new OBWriteInternationalStandingOrderConsent6();
         consentRequest.setRisk(paymentRequest.getRisk());
@@ -171,7 +171,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteInternationalStandingOrder4 payment = aValidOBWriteInternationalStandingOrder4();
         HttpEntity<OBWriteInternationalStandingOrder4> request = new HttpEntity<>(payment, HTTP_HEADERS);
 
-        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+        mockConsentStoreGetResponse(payment, OBReadRefundAccount.YES);
 
         // When
         ResponseEntity<OBWriteInternationalStandingOrderResponse7> response = restTemplate.postForEntity(
@@ -205,7 +205,7 @@ public class InternationalStandingOrdersApiControllerTest {
         final String consentId = payment.getData().getConsentId();
         HttpEntity<OBWriteInternationalStandingOrder4> request = new HttpEntity<>(payment, HTTP_HEADERS);
 
-        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+        mockConsentStoreGetResponse(payment, OBReadRefundAccount.YES);
 
         ResponseEntity<OBWriteInternationalStandingOrderResponse7> firstSubmissionResponse = restTemplate.postForEntity(paymentsUrl(), request, OBWriteInternationalStandingOrderResponse7.class);
         assertThat(firstSubmissionResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -225,7 +225,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteInternationalStandingOrder4 payment = aValidOBWriteInternationalStandingOrder4();
         HttpEntity<OBWriteInternationalStandingOrder4> request = new HttpEntity<>(payment, HTTP_HEADERS);
 
-        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.NO);
+        mockConsentStoreGetResponse(payment, OBReadRefundAccount.NO);
 
         // When
         ResponseEntity<OBWriteInternationalStandingOrderResponse7> response = restTemplate.postForEntity(
@@ -254,7 +254,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteInternationalStandingOrder4 payment = aValidOBWriteInternationalStandingOrder4();
         HttpEntity<OBWriteInternationalStandingOrder4> request = new HttpEntity<>(payment, HTTP_HEADERS);
 
-        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+        mockConsentStoreGetResponse(payment, OBReadRefundAccount.YES);
 
         // When
         ResponseEntity<OBWriteInternationalStandingOrderResponse7> paymentSubmitted = restTemplate.postForEntity(
@@ -288,7 +288,7 @@ public class InternationalStandingOrdersApiControllerTest {
         OBWriteInternationalStandingOrder4 payment = aValidOBWriteInternationalStandingOrder4();
         HttpEntity<OBWriteInternationalStandingOrder4> request = new HttpEntity<>(payment, HTTP_HEADERS);
 
-        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+        mockConsentStoreGetResponse(payment, OBReadRefundAccount.YES);
 
         // When
         ResponseEntity<OBWriteInternationalStandingOrderResponse7> paymentSubmitted = restTemplate.postForEntity(
@@ -306,8 +306,8 @@ public class InternationalStandingOrdersApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        List<OBWritePaymentDetailsResponse1DataPaymentStatus> responseData = response.getBody().getData().getPaymentStatus();
-        for (OBWritePaymentDetailsResponse1DataPaymentStatus data : responseData) {
+        List<OBWritePaymentDetailsResponse1DataPaymentStatusInner> responseData = response.getBody().getData().getPaymentStatus();
+        for (OBWritePaymentDetailsResponse1DataPaymentStatusInner data : responseData) {
             assertThat(data).isNotNull();
             String submittedPaymentStatus = PaymentsUtils.statusLinkingMap.get(responsePayment.getData().getStatus().getValue());
             assertThat(data.getStatus().getValue()).isEqualTo(submittedPaymentStatus);
@@ -321,7 +321,7 @@ public class InternationalStandingOrdersApiControllerTest {
     public void shouldThrowInvalidInternationalStandingOrder() {
         // Given
         OBWriteInternationalStandingOrder4 payment = aValidOBWriteInternationalStandingOrder4();
-        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.YES);
+        mockConsentStoreGetResponse(payment, OBReadRefundAccount.YES);
 
         payment.getData().getInitiation().instructedAmount(
                 new OBWriteDomestic2DataInitiationInstructedAmount()
@@ -355,13 +355,13 @@ public class InternationalStandingOrdersApiControllerTest {
         HttpEntity<OBWriteInternationalStandingOrder4> request = new HttpEntity<>(payment, HTTP_HEADERS);
 
         // Consent in Store has Consumed Status (Payment already created)
-        mockConsentStoreGetResponse(payment, OBReadRefundAccountEnum.NO, StatusEnum.CONSUMED.toString());
+        mockConsentStoreGetResponse(payment, OBReadRefundAccount.NO, OBPaymentConsentStatus.CONSUMED.toString());
 
         ResponseEntity<OBErrorResponse1> errorResponse = restTemplate.postForEntity(paymentsUrl(), request, OBErrorResponse1.class);
         assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorResponse.getBody().getMessage()).isEqualTo("An error happened when parsing the request arguments");
         assertThat(errorResponse.getBody().getErrors()).hasSize(1);
-        assertThat(errorResponse.getBody().getErrors().get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(StatusEnum.CONSUMED.toString()));
+        assertThat(errorResponse.getBody().getErrors().get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(OBPaymentConsentStatus.CONSUMED.toString()));
 
         verify(consentStoreClient).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
         verifyNoMoreInteractions(consentStoreClient);

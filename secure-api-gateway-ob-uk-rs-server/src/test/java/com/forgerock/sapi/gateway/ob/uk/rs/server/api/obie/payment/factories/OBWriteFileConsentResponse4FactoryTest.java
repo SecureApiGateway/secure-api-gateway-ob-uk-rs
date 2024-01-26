@@ -31,7 +31,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 class OBWriteFileConsentResponse4FactoryTest {
@@ -47,7 +47,7 @@ class OBWriteFileConsentResponse4FactoryTest {
         final OBWriteFileConsentResponse4 response = factory.buildConsentResponse(consent, DomesticStandingOrderConsentsApi.class);
 
         final OBWriteFileConsentResponse4Data responseData = response.getData();
-        assertThat(responseData.getStatus()).isEqualTo(StatusEnum.AWAITINGUPLOAD);
+        assertThat(responseData.getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD);
         assertThat(responseData.getConsentId()).isEqualTo(consent.getId());
         assertThat(responseData.getCreationDateTime()).isEqualTo(new DateTime(consent.getCreationDateTime()));
         assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(new DateTime(consent.getStatusUpdateDateTime()));

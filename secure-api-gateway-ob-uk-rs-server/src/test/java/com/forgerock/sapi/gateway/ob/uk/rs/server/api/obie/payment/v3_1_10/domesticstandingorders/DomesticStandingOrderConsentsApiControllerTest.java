@@ -28,8 +28,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
@@ -55,13 +53,14 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticst
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6Data.StatusEnum;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -112,7 +111,7 @@ public class DomesticStandingOrderConsentsApiControllerTest {
         final OBWriteDomesticStandingOrderConsentResponse6 consentResponse = createResponse.getBody();
         final String consentId = consentResponse.getData().getConsentId();
         assertThat(consentId).isEqualTo(consentStoreResponse.getId());
-        assertThat(consentResponse.getData().getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
+        assertThat(consentResponse.getData().getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION);
         assertThat(consentResponse.getData().getInitiation()).usingRecursiveComparison().isEqualTo(consentRequest.getData().getInitiation());
         assertThat(consentResponse.getData().getAuthorisation()).isEqualTo(consentRequest.getData().getAuthorisation());
         assertThat(consentResponse.getData().getScASupportData()).isEqualTo(consentRequest.getData().getScASupportData());
@@ -207,7 +206,7 @@ public class DomesticStandingOrderConsentsApiControllerTest {
         final DomesticStandingOrderConsent consentStoreResponse = new DomesticStandingOrderConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consentStoreResponse.setRequestObj(FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent(consentRequest));
-        consentStoreResponse.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        consentStoreResponse.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         consentStoreResponse.setCharges(List.of());
         final Date creationDateTime = new Date();
         consentStoreResponse.setCreationDateTime(creationDateTime);

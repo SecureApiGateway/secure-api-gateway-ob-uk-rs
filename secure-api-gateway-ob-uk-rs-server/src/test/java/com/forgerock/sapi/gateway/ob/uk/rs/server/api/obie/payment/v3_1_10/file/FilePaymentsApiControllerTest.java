@@ -52,11 +52,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaym
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3Data;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
@@ -103,7 +102,7 @@ public class FilePaymentsApiControllerTest {
     }
 
     private void mockConsentStoreGetResponse(String consentId, OBWriteFileConsent3 consentRequest) {
-        mockConsentStoreGetResponse(consentId, consentRequest, StatusEnum.AUTHORISED.toString());
+        mockConsentStoreGetResponse(consentId, consentRequest, OBWriteFileConsentResponse4DataStatus.AUTHORISED.toString());
     }
 
     private void mockConsentStoreGetResponse(String consentId, OBWriteFileConsent3 consentRequest, String status) {
@@ -205,7 +204,7 @@ public class FilePaymentsApiControllerTest {
         final OBWriteFileConsent3 filePaymentConsent = createValidConsent();
 
         // Consent has Consumed state, validation must reject the payment
-        mockConsentStoreGetResponse(consentId, filePaymentConsent, OBWriteFileConsentResponse4Data.StatusEnum.CONSUMED.toString());
+        mockConsentStoreGetResponse(consentId, filePaymentConsent, OBWriteFileConsentResponse4DataStatus.CONSUMED.toString());
 
         final OBWriteFile2 filePayment = createPayment(consentId, filePaymentConsent);
         final HttpEntity<OBWriteFile2> filePaymentEntity = new HttpEntity<>(filePayment, HTTP_HEADERS);
@@ -214,7 +213,7 @@ public class FilePaymentsApiControllerTest {
         assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorResponse.getBody().getMessage()).isEqualTo("An error happened when parsing the request arguments");
         assertThat(errorResponse.getBody().getErrors()).hasSize(1);
-        assertThat(errorResponse.getBody().getErrors().get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(StatusEnum.CONSUMED.toString()));
+        assertThat(errorResponse.getBody().getErrors().get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(OBWriteFileConsentResponse4DataStatus.CONSUMED.toString()));
 
         verify(filePaymentConsentStoreClient).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
         verifyNoMoreInteractions(filePaymentConsentStoreClient);

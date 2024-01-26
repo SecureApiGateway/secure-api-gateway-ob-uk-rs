@@ -59,26 +59,26 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAcco
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticPaymentSubmissionRepository;
 
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBReadRefundAccountEnum;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.payment.OBReadRefundAccount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5DataRefundAccount;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
 
 /**
  * A SpringBoot test for the DomesticPaymentsApiController.<br/>
@@ -141,13 +141,13 @@ public class DomesticPaymentsApiControllerTest {
     }
 
     private void mockConsentStoreGetResponse(String consentId, OBWriteDomesticConsent4 consentRequest) {
-        mockConsentStoreGetResponse(consentId, consentRequest, StatusEnum.AUTHORISED.toString());
+        mockConsentStoreGetResponse(consentId, consentRequest, OBPaymentConsentStatus.AUTHORISED.toString());
     }
 
     private void mockConsentStoreGetResponseWithRefundAccount(String consentId) {
         final OBWriteDomesticConsent4 consent = aValidOBWriteDomesticConsent4();
-        consent.getData().readRefundAccount(OBReadRefundAccountEnum.YES);
-        mockConsentStoreGetResponse(consentId, consent, StatusEnum.AUTHORISED.toString());
+        consent.getData().readRefundAccount(OBReadRefundAccount.YES);
+        mockConsentStoreGetResponse(consentId, consent, OBPaymentConsentStatus.AUTHORISED.toString());
     }
 
     private void mockConsentStoreGetResponse(String consentId, OBWriteDomesticConsent4 consentRequest, String status) {
@@ -294,13 +294,13 @@ public class DomesticPaymentsApiControllerTest {
         HttpEntity<OBWriteDomestic2> request = new HttpEntity<>(payment, HTTP_HEADERS);
 
         // Consent in Store has Consumed Status (Payment already created)
-        mockConsentStoreGetResponse(consentId, aValidOBWriteDomesticConsent4(), StatusEnum.CONSUMED.toString());
+        mockConsentStoreGetResponse(consentId, aValidOBWriteDomesticConsent4(), OBPaymentConsentStatus.CONSUMED.toString());
 
         ResponseEntity<OBErrorResponse1> errorResponse = restTemplate.postForEntity(paymentsUrl(), request, OBErrorResponse1.class);
         assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorResponse.getBody().getMessage()).isEqualTo("An error happened when parsing the request arguments");
         assertThat(errorResponse.getBody().getErrors()).hasSize(1);
-        assertThat(errorResponse.getBody().getErrors().get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(StatusEnum.CONSUMED.toString()));
+        assertThat(errorResponse.getBody().getErrors().get(0)).isEqualTo(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(OBPaymentConsentStatus.CONSUMED.toString()));
 
         verify(domesticPaymentConsentStoreClient).getConsent(eq(consentId), eq(TEST_API_CLIENT_ID));
         verifyNoMoreInteractions(domesticPaymentConsentStoreClient);
@@ -351,8 +351,8 @@ public class DomesticPaymentsApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        List<OBWritePaymentDetailsResponse1DataPaymentStatus> responseData = response.getBody().getData().getPaymentStatus();
-        for (OBWritePaymentDetailsResponse1DataPaymentStatus data : responseData) {
+        List<OBWritePaymentDetailsResponse1DataPaymentStatusInner> responseData = response.getBody().getData().getPaymentStatus();
+        for (OBWritePaymentDetailsResponse1DataPaymentStatusInner data : responseData) {
             assertThat(data).isNotNull();
             assertThat(data.getStatus().getValue()).isEqualTo(responsePayment.getData().getStatus().getValue());
             assertThat(data.getStatusDetail().getLocalInstrument()).isEqualTo(responsePayment.getData().getInitiation().getLocalInstrument());

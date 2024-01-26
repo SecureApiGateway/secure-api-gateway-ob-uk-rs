@@ -35,84 +35,12 @@ public class PaymentsUtils {
             "Cancelled", "Cancelled"
     );
 
-    public static OBWriteDomesticConsentResponse4 createTestDataConsentResponse4(OBWriteDomestic2 payment) {
-        List<OBWriteDomesticConsentResponse4DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse4DataCharges());
-        return new OBWriteDomesticConsentResponse4()
-                .data(new OBWriteDomesticConsentResponse4Data()
-                        .readRefundAccount(OBReadRefundAccountEnum.YES)
-                        .initiation(payment.getData().getInitiation())
-                        .charges(charges)
-                )
-                .risk(payment.getRisk());
-    }
-
-    public static OBWriteDomesticConsentResponse5 createTestDataConsentResponse5(OBWriteDomestic2 payment) {
-        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
-        return new OBWriteDomesticConsentResponse5()
-                .data(new OBWriteDomesticConsentResponse5Data()
-                        .readRefundAccount(OBReadRefundAccountEnum.YES)
-                        .initiation(payment.getData().getInitiation())
-                        .charges(charges)
-                )
-                .risk(payment.getRisk());
-    }
-
-    public static OBWriteDomesticConsent4 createTestDataConsent4(OBWriteDomestic2 payment) {
-        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
-        return new OBWriteDomesticConsent4()
-                .data(new OBWriteDomesticConsent4Data()
-                        .readRefundAccount(OBReadRefundAccountEnum.YES)
-                        .initiation(payment.getData().getInitiation())
-                )
-                .risk(payment.getRisk());
-    }
-
-    public static OBWriteDomesticScheduledConsentResponse5 createTestDataScheduledConsentResponse5(OBWriteDomesticScheduled2 payment) {
-        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
-        return new OBWriteDomesticScheduledConsentResponse5()
-                .data(new OBWriteDomesticScheduledConsentResponse5Data()
-                        .readRefundAccount(OBReadRefundAccountEnum.YES)
-                        .initiation(formatDates(payment.getData().getInitiation()))
-                        .charges(charges)
-                )
-                .risk(payment.getRisk());
-
-    }
-
-    private static OBWriteDomesticScheduled2DataInitiation formatDates(
-            OBWriteDomesticScheduled2DataInitiation initiation
-    ) {
-        initiation.requestedExecutionDateTime(
-                Objects.nonNull(initiation.getRequestedExecutionDateTime()) ?
-                        initiation.getRequestedExecutionDateTime().withZone(DateTimeZone.UTC) :
-                        null
-        );
-        return initiation;
-    }
-
-    public static OBWriteDomesticStandingOrderConsentResponse5 createTestDataStandingOrderConsentResponse5(OBWriteDomesticStandingOrder3 payment) {
-        List<OBWriteDomesticConsentResponse4DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse4DataCharges());
-        return new OBWriteDomesticStandingOrderConsentResponse5()
-                .data(new OBWriteDomesticStandingOrderConsentResponse5Data()
-                        .readRefundAccount(OBReadRefundAccountEnum.YES)
-                        .initiation(formatDates(payment.getData().getInitiation()))
-                        .charges(charges)
-                )
-                .risk(payment.getRisk());
-
-    }
-
     public static OBWriteDomesticStandingOrderConsentResponse6 createTestDataStandingOrderConsentResponse6(OBWriteDomesticStandingOrder3 payment) {
-        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
+        List<OBWriteDomesticConsentResponse5DataChargesInner> charges = new ArrayList<>();
+        charges.add(new OBWriteDomesticConsentResponse5DataChargesInner());
         return new OBWriteDomesticStandingOrderConsentResponse6()
                 .data(new OBWriteDomesticStandingOrderConsentResponse6Data()
-                        .readRefundAccount(OBReadRefundAccountEnum.YES)
+                        .readRefundAccount(OBReadRefundAccount.YES)
                         .initiation(
                                 toOBWriteDomesticStandingOrderConsentResponse6DataInitiation(
                                         payment.getData().getInitiation())
@@ -173,39 +101,13 @@ public class PaymentsUtils {
     }
 
     public static OBWriteInternationalConsentResponse6 createTestDataInternationalConsentResponse6(OBWriteInternational3 payment) {
-        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
+        List<OBWriteDomesticConsentResponse5DataChargesInner> charges = new ArrayList<>();
+        charges.add(new OBWriteDomesticConsentResponse5DataChargesInner());
         return new OBWriteInternationalConsentResponse6()
                 .data(
                         new OBWriteInternationalConsentResponse6Data()
-                                .readRefundAccount(OBReadRefundAccountEnum.YES)
+                                .readRefundAccount(OBReadRefundAccount.NO)
                                 .initiation(payment.getData().getInitiation())
-                                .charges(charges)
-                )
-                .risk(payment.getRisk());
-    }
-
-    public static OBWriteInternationalScheduledConsentResponse5 createTestDataInternationalScheduledConsentResponse5(OBWriteInternationalScheduled3 payment) {
-        List<OBWriteDomesticConsentResponse4DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse4DataCharges());
-        return new OBWriteInternationalScheduledConsentResponse5()
-                .data(
-                        new OBWriteInternationalScheduledConsentResponse5Data()
-                                .readRefundAccount(OBReadRefundAccountEnum.YES)
-                                .initiation(formatDates(payment.getData().getInitiation()))
-                                .charges(charges)
-                )
-                .risk(payment.getRisk());
-    }
-
-    public static OBWriteInternationalScheduledConsentResponse6 createTestDataInternationalScheduledConsentResponse6(OBWriteInternationalScheduled3 payment) {
-        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
-        return new OBWriteInternationalScheduledConsentResponse6()
-                .data(
-                        new OBWriteInternationalScheduledConsentResponse6Data()
-                                .readRefundAccount(OBReadRefundAccountEnum.YES)
-                                .initiation(toOBWriteInternationalScheduledConsentResponse6DataInitiation(payment.getData().getInitiation()))
                                 .charges(charges)
                 )
                 .risk(payment.getRisk());
@@ -259,36 +161,6 @@ public class PaymentsUtils {
             );
         }
         return dataInitiation6;
-    }
-
-    public static OBWriteInternationalStandingOrderConsentResponse6 createTestDataInternationalStandingOrderConsentResponse6(
-            OBWriteInternationalStandingOrder4 payment
-    ) {
-        List<OBWriteDomesticConsentResponse4DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse4DataCharges());
-        return new OBWriteInternationalStandingOrderConsentResponse6()
-                .data(
-                        new OBWriteInternationalStandingOrderConsentResponse6Data()
-                                .readRefundAccount(OBReadRefundAccountEnum.YES)
-                                .initiation(formatDates(payment.getData().getInitiation()))
-                                .charges(charges)
-                )
-                .risk(payment.getRisk());
-    }
-
-    public static OBWriteInternationalStandingOrderConsentResponse7 createTestDataInternationalStandingOrderConsentResponse7(
-            OBWriteInternationalStandingOrder4 payment
-    ) {
-        List<OBWriteDomesticConsentResponse5DataCharges> charges = new ArrayList<>();
-        charges.add(new OBWriteDomesticConsentResponse5DataCharges());
-        return new OBWriteInternationalStandingOrderConsentResponse7()
-                .data(
-                        new OBWriteInternationalStandingOrderConsentResponse7Data()
-                                .readRefundAccount(OBReadRefundAccountEnum.YES)
-                                .initiation(toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(payment.getData().getInitiation()))
-                                .charges(charges)
-                )
-                .risk(payment.getRisk());
     }
 
     public static OBWriteInternationalStandingOrderConsentResponse7DataInitiation toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(

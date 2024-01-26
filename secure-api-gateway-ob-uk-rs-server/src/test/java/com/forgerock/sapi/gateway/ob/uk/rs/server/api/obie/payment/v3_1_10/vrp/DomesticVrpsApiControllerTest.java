@@ -41,8 +41,8 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.vrp.*;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpRequestTestDataFactory;
 
@@ -263,7 +263,7 @@ public class DomesticVrpsApiControllerTest {
         consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.NO);
         consent.setRequestObj(consentRequest);
         consent.setId(consentId);
-        consent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        consent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         return consent;
     }
 
@@ -273,7 +273,7 @@ public class DomesticVrpsApiControllerTest {
         consentRequest.getData().setReadRefundAccount(FRReadRefundAccount.NO);
         consent.setRequestObj(consentRequest);
         consent.setId(consentId);
-        consent.setStatus(StatusEnum.AUTHORISED.toString());
+        consent.setStatus(OBPaymentConsentStatus.AUTHORISED.toString());
         consent.setAuthorisedDebtorAccountId("acc-1321243");
         return consent;
     }

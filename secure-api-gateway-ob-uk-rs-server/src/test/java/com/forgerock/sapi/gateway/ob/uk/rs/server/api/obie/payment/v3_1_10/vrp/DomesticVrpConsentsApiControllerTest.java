@@ -56,19 +56,20 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIn
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
@@ -124,7 +125,7 @@ public class DomesticVrpConsentsApiControllerTest {
         final DomesticVRPConsent consent = new DomesticVRPConsent();
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.setRequestObj(FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(consentRequest));
-        consent.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        consent.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         consent.setCharges(List.of());
         final Date creationDateTime = new Date();
         consent.setCreationDateTime(creationDateTime);
@@ -134,7 +135,7 @@ public class DomesticVrpConsentsApiControllerTest {
 
     private static DomesticVRPConsent buildAuthorisedConsent(OBDomesticVRPConsentRequest consentRequest, String debtorAccountId) {
         final DomesticVRPConsent domesticPaymentConsent = buildAwaitingAuthorisationConsent(consentRequest);
-        domesticPaymentConsent.setStatus(StatusEnum.AUTHORISED.toString());
+        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AUTHORISED.toString());
         domesticPaymentConsent.setAuthorisedDebtorAccountId(debtorAccountId);
         return domesticPaymentConsent;
     }

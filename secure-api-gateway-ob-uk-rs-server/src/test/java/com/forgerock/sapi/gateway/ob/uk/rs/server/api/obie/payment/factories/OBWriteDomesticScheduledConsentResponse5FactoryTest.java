@@ -25,11 +25,11 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticsche
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticscheduledpayments.DomesticScheduledPaymentConsentsApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
 
 class OBWriteDomesticScheduledConsentResponse5FactoryTest {
@@ -44,7 +44,7 @@ class OBWriteDomesticScheduledConsentResponse5FactoryTest {
         final OBWriteDomesticScheduledConsentResponse5 response = factory.buildConsentResponse(consent, DomesticScheduledPaymentConsentsApi.class);
 
         final OBWriteDomesticScheduledConsentResponse5Data responseData = response.getData();
-        assertThat(responseData.getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
+        assertThat(responseData.getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION);
         assertThat(responseData.getConsentId()).isEqualTo(consent.getId());
         assertThat(responseData.getCreationDateTime()).isEqualTo(new DateTime(consent.getCreationDateTime()));
         assertThat(responseData.getStatusUpdateDateTime()).isEqualTo(new DateTime(consent.getStatusUpdateDateTime()));

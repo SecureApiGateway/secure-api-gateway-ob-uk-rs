@@ -23,7 +23,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.inte
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteInternationalResponse5DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse5DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
@@ -74,8 +74,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse5Data;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason;
 
 @Controller("InternationalPaymentsApiV3.1.10")
 public class InternationalPaymentsApiController implements InternationalPaymentsApi {
@@ -238,7 +240,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .initiation(toOBWriteInternational3DataInitiation(data.getInitiation()))
                         .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
                         .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
-                        .status(toOBWriteInternationalResponse5DataStatus(frPaymentSubmission.getStatus()))
+                        .status(toOBWriteDomesticResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse5DataRefund).orElse(null))
@@ -248,22 +250,22 @@ public class InternationalPaymentsApiController implements InternationalPayments
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalPaymentSubmission frInternationalPaymentSubmission) {
-        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus status = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus.fromValue(
                 frInternationalPaymentSubmission.getStatus().getValue()
         );
 
         // Build the response object with data to meet the expected data defined by the spec
-        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason statusReasonEnum = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason.PENDINGSETTLEMENT;
         return new OBWritePaymentDetailsResponse1()
                 .data(
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
-                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInner()
                                                 .status(status)
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frInternationalPaymentSubmission.getUpdated()))
                                                 .statusDetail(
-                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail()
                                                                 .status(status.getValue())
                                                                 .statusReason(statusReasonEnum)
                                                                 .statusReasonDescription(statusReasonEnum.getValue())

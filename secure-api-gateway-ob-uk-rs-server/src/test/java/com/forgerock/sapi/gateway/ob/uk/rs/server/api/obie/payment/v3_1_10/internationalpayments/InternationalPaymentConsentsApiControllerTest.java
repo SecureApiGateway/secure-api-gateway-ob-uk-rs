@@ -33,8 +33,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
@@ -60,15 +58,16 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internatio
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data.StatusEnum;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -108,20 +107,20 @@ public class InternationalPaymentConsentsApiControllerTest {
     @Test
     public void testCreateConsentActualExchangeRate() {
         final OBWriteInternationalConsent5 consentRequest = createValidateConsentRequestWithAgreedRate();
-        consentRequest.getData().getInitiation().setExchangeRateInformation(new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType2Code.ACTUAL).unitCurrency("GBP"));
+        consentRequest.getData().getInitiation().setExchangeRateInformation(new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType.ACTUAL).unitCurrency("GBP"));
 
         final OBWriteInternational3DataInitiationExchangeRateInformation expectedResponseExchangeRateInformation = new OBWriteInternational3DataInitiationExchangeRateInformation();
-        expectedResponseExchangeRateInformation.exchangeRate(new BigDecimal("1.3211")).rateType(OBExchangeRateType2Code.ACTUAL).unitCurrency("GBP");
+        expectedResponseExchangeRateInformation.exchangeRate(new BigDecimal("1.3211")).rateType(OBExchangeRateType.ACTUAL).unitCurrency("GBP");
         testCreateConsent(consentRequest, expectedResponseExchangeRateInformation);
     }
 
     @Test
     public void testCreateConsentIndicativeExchangeRate() {
         final OBWriteInternationalConsent5 consentRequest = createValidateConsentRequestWithAgreedRate();
-        consentRequest.getData().getInitiation().setExchangeRateInformation(new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType2Code.INDICATIVE).unitCurrency("GBP"));
+        consentRequest.getData().getInitiation().setExchangeRateInformation(new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType.INDICATIVE).unitCurrency("GBP"));
 
         final OBWriteInternational3DataInitiationExchangeRateInformation expectedResponseExchangeRateInformation = new OBWriteInternational3DataInitiationExchangeRateInformation();
-        expectedResponseExchangeRateInformation.exchangeRate(new BigDecimal("1.3211")).rateType(OBExchangeRateType2Code.INDICATIVE).unitCurrency("GBP");
+        expectedResponseExchangeRateInformation.exchangeRate(new BigDecimal("1.3211")).rateType(OBExchangeRateType.INDICATIVE).unitCurrency("GBP");
         testCreateConsent(consentRequest, expectedResponseExchangeRateInformation);
     }
 
@@ -131,7 +130,7 @@ public class InternationalPaymentConsentsApiControllerTest {
         consentRequest.getData().getInitiation().setExchangeRateInformation(null);
 
         final OBWriteInternational3DataInitiationExchangeRateInformation expectedResponseExchangeRateInformation = new OBWriteInternational3DataInitiationExchangeRateInformation();
-        expectedResponseExchangeRateInformation.exchangeRate(new BigDecimal("1.3211")).rateType(OBExchangeRateType2Code.INDICATIVE).unitCurrency("GBP");
+        expectedResponseExchangeRateInformation.exchangeRate(new BigDecimal("1.3211")).rateType(OBExchangeRateType.INDICATIVE).unitCurrency("GBP");
         testCreateConsent(consentRequest, expectedResponseExchangeRateInformation);
     }
 
@@ -157,7 +156,7 @@ public class InternationalPaymentConsentsApiControllerTest {
         final OBWriteInternationalConsentResponse6 consentResponse = createResponse.getBody();
         final String consentId = consentResponse.getData().getConsentId();
         assertThat(consentId).isEqualTo(consentStoreResponse.getId());
-        assertThat(consentResponse.getData().getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
+        assertThat(consentResponse.getData().getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION);
         assertThat(consentResponse.getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
         assertThat(consentResponse.getData().getAuthorisation()).isEqualTo(consentRequest.getData().getAuthorisation());
         assertThat(consentResponse.getData().getScASupportData()).isEqualTo(consentRequest.getData().getScASupportData());
@@ -187,7 +186,7 @@ public class InternationalPaymentConsentsApiControllerTest {
     private static void assertConsentHasAgreedRateType(OBWriteInternationalConsent5 consentRequest) {
         assertThat(consentRequest.getData().getInitiation().getExchangeRateInformation().getRateType())
                 .withFailMessage("Test has been written to validate an AGREED Rate response")
-                .isEqualTo(OBExchangeRateType2Code.AGREED);
+                .isEqualTo(OBExchangeRateType.AGREED);
     }
 
     @Test
@@ -303,7 +302,7 @@ public class InternationalPaymentConsentsApiControllerTest {
         final InternationalPaymentConsent consentStoreResponse = new InternationalPaymentConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId());
         consentStoreResponse.setRequestObj(toFRWriteInternationalConsent(consentRequest));
-        consentStoreResponse.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        consentStoreResponse.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         consentStoreResponse.setCharges(List.of());
         consentStoreResponse.setExchangeRateInformation(toFRExchangeRateInformation(exchangeRateInformation));
         final Date creationDateTime = new Date();
@@ -314,7 +313,7 @@ public class InternationalPaymentConsentsApiControllerTest {
 
     private static InternationalPaymentConsent buildAuthorisedConsent(OBWriteInternationalConsent5 consentRequest, String debtorAccountId) {
         final InternationalPaymentConsent internationalPaymentConsent = buildAwaitingAuthorisationConsentForAgreedRate(consentRequest);
-        internationalPaymentConsent.setStatus(StatusEnum.AUTHORISED.toString());
+        internationalPaymentConsent.setStatus(OBPaymentConsentStatus.AUTHORISED.toString());
         internationalPaymentConsent.setAuthorisedDebtorAccountId(debtorAccountId);
         return internationalPaymentConsent;
     }

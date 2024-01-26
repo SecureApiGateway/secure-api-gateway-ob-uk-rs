@@ -27,8 +27,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteIntern
 import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.common.OBRisk1;
 import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3Data;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
@@ -86,11 +86,11 @@ class OBWriteInternationalScheduled3ValidatorTest {
 
     @Test
     public void validationFailsWhenConsentIsNotAuthorised() {
-        final StatusEnum[] invalidStatuses = new StatusEnum[] {
-                StatusEnum.CONSUMED, StatusEnum.REJECTED, StatusEnum.AWAITINGAUTHORISATION
+        final OBPaymentConsentStatus[] invalidStatuses = new OBPaymentConsentStatus[] {
+                OBPaymentConsentStatus.CONSUMED, OBPaymentConsentStatus.REJECTED, OBPaymentConsentStatus.AWAITINGAUTHORISATION
         };
 
-        for (StatusEnum invalidStatus : invalidStatuses) {
+        for (OBPaymentConsentStatus invalidStatus : invalidStatuses) {
             final OBWriteInternationalScheduledConsent5Data consentData = new OBWriteInternationalScheduledConsent5Data().initiation(createInitiation());
             final OBWriteInternationalScheduledConsent5 consent = new OBWriteInternationalScheduledConsent5().data(consentData).risk(createRisk());
 

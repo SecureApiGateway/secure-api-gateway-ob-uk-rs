@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file;
-
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.xml.OBIEPain001FileProcessor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
-
-class OBIEPain001FileProcessorTest extends BasePaymentFileProcessorTest {
-
-    @Override
-    protected PaymentFileProcessor createFileProcessor() {
-        return new OBIEPain001FileProcessor();
-    }
-}
+/**
+ * This package contains the schema for the json payment file type: UK.OBIE.PaymentInitiation.3.1
+ * <p>
+ * These classes are from a legacy version of the OBIE datamodel, they have been moved out of
+ * secure-api-gateway-ob-uk-common-obie-datamodel module into this package as they should only be used for
+ * deserializing the payment file data.
+ */
+package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.json.schema;

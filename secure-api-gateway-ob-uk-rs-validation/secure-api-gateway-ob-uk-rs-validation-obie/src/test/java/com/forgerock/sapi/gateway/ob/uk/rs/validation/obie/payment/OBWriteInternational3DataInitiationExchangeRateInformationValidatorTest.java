@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 
@@ -59,7 +59,7 @@ public class OBWriteInternational3DataInitiationExchangeRateInformationValidator
     void failsWhenAgreedRateTypeFieldsAreMissing() {
         final OBWriteInternational3DataInitiationExchangeRateInformation invalidExchangeRateInfo = new OBWriteInternational3DataInitiationExchangeRateInformation()
                 .unitCurrency("GBP")
-                .rateType(OBExchangeRateType2Code.AGREED);
+                .rateType(OBExchangeRateType.AGREED);
 
         validateErrorResult(validator.validate(invalidExchangeRateInfo), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                 "ExchangeRate and ContractIdentification must be specify when requesting an Agreed RateType.")));
@@ -75,11 +75,11 @@ public class OBWriteInternational3DataInitiationExchangeRateInformationValidator
 
     @Test
     void failsWhenAgreedRateTypeFieldsArePresentForNonAgreedRate() {
-        final OBExchangeRateType2Code[] nonAgreedRateTypes = new OBExchangeRateType2Code[]{
-                OBExchangeRateType2Code.ACTUAL, OBExchangeRateType2Code.INDICATIVE
+        final OBExchangeRateType[] nonAgreedRateTypes = new OBExchangeRateType[]{
+                OBExchangeRateType.ACTUAL, OBExchangeRateType.INDICATIVE
         };
 
-        for (OBExchangeRateType2Code nonAgreedRateType : nonAgreedRateTypes) {
+        for (OBExchangeRateType nonAgreedRateType : nonAgreedRateTypes) {
             final OBWriteInternational3DataInitiationExchangeRateInformation invalidExchangeRateInfo = new OBWriteInternational3DataInitiationExchangeRateInformation()
                     .unitCurrency("GBP")
                     .contractIdentification("contract id")

@@ -25,11 +25,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
 import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 
 /**
  * Factory to create {@link OBWriteDomesticConsentResponse5}
@@ -50,7 +50,7 @@ public class OBWriteDomesticConsentResponse5Factory {
         data.initiation(obConsentData.getInitiation());
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(domesticPaymentConsent.getCharges()));
         data.consentId(domesticPaymentConsent.getId());
-        data.status(StatusEnum.fromValue(domesticPaymentConsent.getStatus()));
+        data.status(OBPaymentConsentStatus.fromValue(domesticPaymentConsent.getStatus()));
         data.creationDateTime(new DateTime(domesticPaymentConsent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(domesticPaymentConsent.getStatusUpdateDateTime()));
 

@@ -34,6 +34,12 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
@@ -63,12 +69,6 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomest
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.common.Meta;
@@ -77,8 +77,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse5Data;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.10")
 public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
@@ -258,23 +260,23 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
-        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus status = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus.fromValue(
                 PaymentsUtils.statusLinkingMap.get(frPaymentSubmission.getStatus().getValue())
         );
         String localInstrument = frPaymentSubmission.getScheduledPayment().getData().getInitiation().getLocalInstrument();
 
         // Build the response object with data to meet the expected data defined by the spec
-        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason statusReasonEnum = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason.PENDINGSETTLEMENT;
         return new OBWritePaymentDetailsResponse1()
                 .data(
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
-                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInner()
                                                 .status(status)
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated()))
                                                 .statusDetail(
-                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail()
                                                                 .localInstrument(localInstrument)
                                                                 .status(status.getValue())
                                                                 .statusReason(statusReasonEnum)

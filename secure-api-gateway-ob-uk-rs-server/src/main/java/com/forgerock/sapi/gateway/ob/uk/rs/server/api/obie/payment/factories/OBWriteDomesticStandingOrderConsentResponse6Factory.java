@@ -27,11 +27,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
 import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 
 @Component
@@ -50,7 +50,7 @@ public class OBWriteDomesticStandingOrderConsentResponse6Factory {
         data.initiation(FRModelMapper.map(obConsentData.getInitiation(), OBWriteDomesticStandingOrderConsentResponse6DataInitiation.class));
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
-        data.status(StatusEnum.fromValue(consent.getStatus()));
+        data.status(OBPaymentConsentStatus.fromValue(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
 

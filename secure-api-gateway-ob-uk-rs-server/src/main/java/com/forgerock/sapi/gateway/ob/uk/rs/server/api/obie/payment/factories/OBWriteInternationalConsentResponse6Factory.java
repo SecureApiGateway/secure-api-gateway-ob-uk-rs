@@ -27,11 +27,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternat
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 
 import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data.StatusEnum;
 
 @Component
 public class OBWriteInternationalConsentResponse6Factory {
@@ -49,7 +49,7 @@ public class OBWriteInternationalConsentResponse6Factory {
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
         data.exchangeRateInformation(FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()));
-        data.status(StatusEnum.fromValue(consent.getStatus()));
+        data.status(OBPaymentConsentStatus.fromValue(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
 

@@ -19,8 +19,6 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +41,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v3_1
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
+import jakarta.servlet.http.HttpServletRequest;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
 @Controller("DomesticPaymentConsentsApiV3.1.10")
@@ -122,7 +121,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 consentId, apiClientId, xFapiInteractionId);
 
         final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
-        if (StatusEnum.fromValue(consent.getStatus()) != StatusEnum.AUTHORISED) {
+        if (OBPaymentConsentStatus.fromValue(consent.getStatus()) != OBPaymentConsentStatus.AUTHORISED) {
             throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
                                                OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
         }

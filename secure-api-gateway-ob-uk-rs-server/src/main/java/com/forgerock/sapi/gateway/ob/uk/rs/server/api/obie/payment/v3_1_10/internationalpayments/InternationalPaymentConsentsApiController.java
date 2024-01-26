@@ -19,8 +19,6 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,12 +43,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 
+import jakarta.servlet.http.HttpServletRequest;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data.StatusEnum;
 
 @Controller("InternationalPaymentConsentsApiV3.1.10")
 public class InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
@@ -134,7 +133,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 consentId, apiClientId, xFapiInteractionId);
 
         final InternationalPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
-        if (StatusEnum.fromValue(consent.getStatus()) != StatusEnum.AUTHORISED) {
+        if (OBPaymentConsentStatus.fromValue(consent.getStatus()) != OBPaymentConsentStatus.AUTHORISED) {
             throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
                                                OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
         }
