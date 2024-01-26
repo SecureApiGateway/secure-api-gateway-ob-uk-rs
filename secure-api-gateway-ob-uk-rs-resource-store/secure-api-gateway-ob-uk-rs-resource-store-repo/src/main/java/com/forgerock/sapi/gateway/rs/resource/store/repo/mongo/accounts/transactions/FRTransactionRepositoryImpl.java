@@ -26,7 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode0;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification3Code;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
 
 import java.util.Collections;
 import java.util.List;
@@ -165,12 +165,12 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
                 }
                 if (!permissions.contains(FRExternalPermissionsCode.READPAN)
                         && transaction.getTransaction().getDebtorAccount() != null
-                        && OBExternalAccountIdentification3Code.PAN.toString().equals(transaction.getTransaction().getDebtorAccount().getSchemeName())) {
+                        && OBExternalAccountIdentification4Code.PAN.toString().equals(transaction.getTransaction().getDebtorAccount().getSchemeName())) {
                     transaction.getTransaction().getDebtorAccount().setIdentification("xxx");
                 }
                 if (!permissions.contains(FRExternalPermissionsCode.READPAN)
                         && transaction.getTransaction().getCreditorAccount() != null
-                        && OBExternalAccountIdentification3Code.PAN.toString().equals(transaction.getTransaction().getCreditorAccount().getSchemeName())) {
+                        && OBExternalAccountIdentification4Code.PAN.toString().equals(transaction.getTransaction().getCreditorAccount().getSchemeName())) {
                     transaction.getTransaction().getCreditorAccount().setIdentification("xxx");
                 }
             }

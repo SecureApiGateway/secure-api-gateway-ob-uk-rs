@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.xml;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toFRAmount;
 
@@ -38,6 +38,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain0
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001.Document;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001.PaymentInstruction22;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001.StructuredRemittanceInformation13;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.BasePaymentFileProcessor;
 
 import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 

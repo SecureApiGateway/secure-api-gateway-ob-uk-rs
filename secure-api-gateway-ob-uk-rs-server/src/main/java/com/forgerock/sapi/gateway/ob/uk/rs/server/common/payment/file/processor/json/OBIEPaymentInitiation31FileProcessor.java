@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.json;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,10 +33,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.BasePaymentFileProcessor;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.json.schema.OBDomestic2;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.json.schema.OBRemittanceInformation1;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.JsonUtils;
-
-import uk.org.openbanking.datamodel.payment.OBDomestic2;
-import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
 
 @Component
 public class OBIEPaymentInitiation31FileProcessor extends BasePaymentFileProcessor {

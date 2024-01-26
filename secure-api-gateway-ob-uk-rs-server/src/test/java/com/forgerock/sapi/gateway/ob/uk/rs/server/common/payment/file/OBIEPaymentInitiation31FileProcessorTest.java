@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.OBIEPaymentInitiation31FileProcessor;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.json.OBIEPaymentInitiation31FileProcessor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.PaymentFileProcessor;
 
 class OBIEPaymentInitiation31FileProcessorTest extends BasePaymentFileProcessorTest {

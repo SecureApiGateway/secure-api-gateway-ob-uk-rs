@@ -99,7 +99,6 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transact
 import uk.org.openbanking.datamodel.account.OBExternalStatementAmountType1Code;
 import uk.org.openbanking.datamodel.account.OBExternalStatementType1Code;
 import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification2Code;
 import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
 
 @Controller("FakeDataApi")
@@ -428,7 +427,7 @@ public class FakeDataApiController implements FakeDataApi {
                 .beneficiaryId(UUID.randomUUID().toString())
                 .reference(company)
                 .creditorAccount(FRAccountIdentifier.builder()
-                        .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.getReference())
+                        .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
                         .build())
@@ -508,7 +507,7 @@ public class FakeDataApiController implements FakeDataApi {
                         .currency(account.getAccount().getCurrency()).build())
                 .standingOrderStatusCode(FRStandingOrderData.FRStandingOrderStatus.ACTIVE)
                 .creditorAccount(FRAccountIdentifier.builder()
-                        .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.getReference())
+                        .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
                         .build())
@@ -667,7 +666,7 @@ public class FakeDataApiController implements FakeDataApi {
                         .currency(account.getAccount().getCurrency())
                         .build())
                 .creditorAccount(FRAccountIdentifier.builder()
-                        .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.getReference())
+                        .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
                         .build()

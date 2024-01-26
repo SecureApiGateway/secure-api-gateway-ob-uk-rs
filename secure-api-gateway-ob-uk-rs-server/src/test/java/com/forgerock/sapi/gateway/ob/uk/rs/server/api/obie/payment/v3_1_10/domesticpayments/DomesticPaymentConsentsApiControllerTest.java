@@ -30,8 +30,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.PostConstruct;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
@@ -58,12 +56,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
+import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data.StatusEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
@@ -117,7 +116,7 @@ public class DomesticPaymentConsentsApiControllerTest {
         final OBWriteDomesticConsentResponse5 consentResponse = createResponse.getBody();
         final String consentId = consentResponse.getData().getConsentId();
         assertThat(consentId).isEqualTo(consentStoreResponse.getId());
-        assertThat(consentResponse.getData().getStatus()).isEqualTo(StatusEnum.AWAITINGAUTHORISATION);
+        assertThat(consentResponse.getData().getStatus()).isEqualTo(OBPaymentConsentStatus.AWAITINGAUTHORISATION);
         assertThat(consentResponse.getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
         assertThat(consentResponse.getData().getAuthorisation()).isEqualTo(consentRequest.getData().getAuthorisation());
         assertThat(consentResponse.getData().getScASupportData()).isEqualTo(consentRequest.getData().getScASupportData());
@@ -246,7 +245,7 @@ public class DomesticPaymentConsentsApiControllerTest {
         final DomesticPaymentConsent consentStoreResponse = new DomesticPaymentConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consentStoreResponse.setRequestObj(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(consentRequest));
-        consentStoreResponse.setStatus(StatusEnum.AWAITINGAUTHORISATION.toString());
+        consentStoreResponse.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         consentStoreResponse.setCharges(List.of());
         final Date creationDateTime = new Date();
         consentStoreResponse.setCreationDateTime(creationDateTime);
@@ -256,7 +255,7 @@ public class DomesticPaymentConsentsApiControllerTest {
 
     private static DomesticPaymentConsent buildAuthorisedConsent(OBWriteDomesticConsent4 consentRequest, String debtorAccountId) {
         final DomesticPaymentConsent domesticPaymentConsent = buildAwaitingAuthorisationConsent(consentRequest);
-        domesticPaymentConsent.setStatus(StatusEnum.AUTHORISED.toString());
+        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AUTHORISED.toString());
         domesticPaymentConsent.setAuthorisedDebtorAccountId(debtorAccountId);
         return domesticPaymentConsent;
     }

@@ -21,6 +21,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccoun
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -31,7 +33,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification3Code;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -118,7 +119,7 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
                     if (!CollectionUtils.isEmpty(account.getAccount().getAccounts())) {
                         for (FRAccountIdentifier subAccount : account.getAccount().getAccounts()) {
                             if (!permissions.contains(FRExternalPermissionsCode.READPAN)
-                                    && OBExternalAccountIdentification3Code.PAN.toString().equals(subAccount.getSchemeName())) {
+                                    && OBExternalAccountIdentification4Code.PAN.toString().equals(subAccount.getSchemeName())) {
                                 subAccount.setIdentification("xxx");
                             }
                         }

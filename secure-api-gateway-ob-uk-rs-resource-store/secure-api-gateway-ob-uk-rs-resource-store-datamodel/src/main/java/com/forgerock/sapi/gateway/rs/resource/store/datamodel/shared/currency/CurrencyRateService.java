@@ -17,8 +17,9 @@ package com.forgerock.sapi.gateway.rs.resource.store.datamodel.shared.currency;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 import lombok.extern.slf4j.Slf4j;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
+
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -85,7 +86,7 @@ public final class CurrencyRateService {
                 return new BigDecimal(FIXED_RATE);
             case AGREED:
                 if (submittedRate.getExchangeRate() == null) {
-                    throw new IllegalArgumentException("Missing the exchange rate value which is mandatory for exchange rate type: '" + OBExchangeRateType2Code.AGREED + "'");
+                    throw new IllegalArgumentException("Missing the exchange rate value which is mandatory for exchange rate type: '" + OBExchangeRateType.AGREED + "'");
                 }
                 return submittedRate.getExchangeRate();
             default:

@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -69,7 +68,7 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -130,7 +129,7 @@ public class FilePaymentConsentsApiControllerTest {
         final OBWriteFileConsentResponse4 consentResponse = createResponse.getBody();
         final String consentId = consentResponse.getData().getConsentId();
         assertThat(consentId).isEqualTo(consentStoreResponse.getId());
-        assertThat(consentResponse.getData().getStatus()).isEqualTo(StatusEnum.AWAITINGUPLOAD);
+        assertThat(consentResponse.getData().getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD);
         assertThat(consentResponse.getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
         assertThat(consentResponse.getData().getAuthorisation()).isEqualTo(consentRequest.getData().getAuthorisation());
         assertThat(consentResponse.getData().getScASupportData()).isEqualTo(consentRequest.getData().getScASupportData());
@@ -313,7 +312,7 @@ public class FilePaymentConsentsApiControllerTest {
         final FilePaymentConsent consentStoreResponse = new FilePaymentConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId());
         consentStoreResponse.setRequestObj(FRWriteFileConsentConverter.toFRWriteFileConsent(consentRequest));
-        consentStoreResponse.setStatus(StatusEnum.AWAITINGUPLOAD.toString());
+        consentStoreResponse.setStatus(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD.toString());
         consentStoreResponse.setCharges(List.of());
         final Date creationDateTime = new Date();
         consentStoreResponse.setCreationDateTime(creationDateTime);

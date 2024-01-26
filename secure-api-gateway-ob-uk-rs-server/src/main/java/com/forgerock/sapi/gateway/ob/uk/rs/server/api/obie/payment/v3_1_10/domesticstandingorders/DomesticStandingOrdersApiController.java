@@ -22,7 +22,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.dome
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticScheduledResponse5DataStatus;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -32,6 +32,12 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
@@ -63,12 +69,6 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomest
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.common.Meta;
@@ -77,8 +77,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse6Data;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason;
 
 
 @Controller("DomesticStandingOrdersApiV3.1.10")
@@ -243,7 +245,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                         .initiation(toOBWriteDomesticStandingOrderConsentResponse6DataInitiation(data.getInitiation()))
                         .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
                         .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
-                        .status(toOBWriteDomesticStandingOrderResponse6DataStatus(frPaymentSubmission.getStatus()))
+                        .status(toOBWriteDomesticScheduledResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
@@ -253,22 +255,22 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticStandingOrderPaymentSubmission frStandingOrderSubmission) {
-        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus status = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus.fromValue(
                 PaymentsUtils.statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
         );
 
         // Build the response object with data to meet the expected data defined by the spec
-        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason statusReasonEnum = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason.PENDINGSETTLEMENT;
         return new OBWritePaymentDetailsResponse1()
                 .data(
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
-                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInner()
                                                 .status(status)
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frStandingOrderSubmission.getUpdated()))
                                                 .statusDetail(
-                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail()
                                                                 .status(status.getValue())
                                                                 .statusReason(statusReasonEnum)
                                                                 .statusReasonDescription(statusReasonEnum.getValue())

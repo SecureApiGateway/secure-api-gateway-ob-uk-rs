@@ -32,7 +32,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 class OBWriteFile2ValidatorTest {
@@ -40,11 +40,11 @@ class OBWriteFile2ValidatorTest {
     private final OBWriteFile2Validator validator = new OBWriteFile2Validator();
 
     private OBWriteFile2ValidationContext createValidationContext() {
-        final StatusEnum status = StatusEnum.AUTHORISED;
+        final OBWriteFileConsentResponse4DataStatus status = OBWriteFileConsentResponse4DataStatus.AUTHORISED;
         return createValidationContext(status);
     }
 
-    private static OBWriteFile2ValidationContext createValidationContext(StatusEnum status) {
+    private static OBWriteFile2ValidationContext createValidationContext(OBWriteFileConsentResponse4DataStatus status) {
         final OBWriteFileConsent3 consentRequest = createConsentRequest();
         final OBWriteFile2 paymentRequest = new OBWriteFile2().data(new OBWriteFile2Data().consentId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
                 .initiation(consentRequest.getData().getInitiation()));
@@ -65,7 +65,7 @@ class OBWriteFile2ValidatorTest {
         final OBWriteFileConsent3 consentRequest = createConsentRequest();
         final OBWriteFile2 paymentRequest = new OBWriteFile2().data(new OBWriteFile2Data().consentId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId()).initiation(new OBWriteFile2DataInitiation()));
 
-        final OBWriteFile2ValidationContext obWriteFile2ValidationContext = new OBWriteFile2ValidationContext(paymentRequest, consentRequest, StatusEnum.AUTHORISED.toString());
+        final OBWriteFile2ValidationContext obWriteFile2ValidationContext = new OBWriteFile2ValidationContext(paymentRequest, consentRequest, OBWriteFileConsentResponse4DataStatus.AUTHORISED.toString());
         final ValidationResult<OBError1> validationResult = validator.validate(obWriteFile2ValidationContext);
 
         validateErrorResult(validationResult, List.of(new OBError1().errorCode("OBRI.Payment.Invalid")
@@ -75,7 +75,7 @@ class OBWriteFile2ValidatorTest {
 
     @Test
     void failsWhenConsentNotAuthorised() {
-        final ValidationResult<OBError1> validationResult = validator.validate(createValidationContext(StatusEnum.AWAITINGUPLOAD));
+        final ValidationResult<OBError1> validationResult = validator.validate(createValidationContext(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD));
 
         validateErrorResult(validationResult, List.of(new OBError1().errorCode("UK.OBIE.Resource.InvalidConsentStatus")
                 .message("Action can only be performed on consents with status: Authorised. Currently, the consent is: AwaitingUpload")));

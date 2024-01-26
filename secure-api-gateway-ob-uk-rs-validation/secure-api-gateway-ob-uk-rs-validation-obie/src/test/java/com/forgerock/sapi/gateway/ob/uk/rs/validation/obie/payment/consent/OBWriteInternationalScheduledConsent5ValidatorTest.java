@@ -33,7 +33,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
 import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
 
@@ -75,7 +75,7 @@ class OBWriteInternationalScheduledConsent5ValidatorTest {
     @Test
     void failsWhenExchangeRateInformationInvalid() {
         final OBWriteInternationalScheduledConsent5 consent = createValidConsent();
-        consent.getData().getInitiation().getExchangeRateInformation().rateType(OBExchangeRateType2Code.INDICATIVE).exchangeRate(new BigDecimal("1.2"));
+        consent.getData().getInitiation().getExchangeRateInformation().rateType(OBExchangeRateType.INDICATIVE).exchangeRate(new BigDecimal("1.2"));
 
         validateErrorResult(validator.validate(consent), List.of(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                 "A PISP must not specify ExchangeRate and/or ContractIdentification when requesting an Indicative RateType.")));

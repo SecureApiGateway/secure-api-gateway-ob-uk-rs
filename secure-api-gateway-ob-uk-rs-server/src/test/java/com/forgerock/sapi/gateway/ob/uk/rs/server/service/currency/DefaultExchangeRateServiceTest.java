@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation.FRRateType;
 
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 class DefaultExchangeRateServiceTest {
@@ -50,7 +50,7 @@ class DefaultExchangeRateServiceTest {
     void shouldGetIndicativeQuoteWhenRequested() {
         final FRExchangeRateInformation exchangeRateInformation = exchangeRateService.calculateExchangeRateInfo("NZD",
                 new FRAmount("100.00", "GBP"),
-                new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType2Code.INDICATIVE).unitCurrency("GBP"));
+                new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType.INDICATIVE).unitCurrency("GBP"));
 
         final BigDecimal expectedRate = new BigDecimal("1.99");
         validateIndicativeQuote(exchangeRateInformation, expectedRate, "GBP");
@@ -59,7 +59,7 @@ class DefaultExchangeRateServiceTest {
     @Test
     void shouldGetActualQuote() {
         final FRExchangeRateInformation exchangeRateInformation = exchangeRateService.calculateExchangeRateInfo("GBP",
-                new FRAmount("100.00", "EUR"), new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType2Code.ACTUAL).unitCurrency("EUR"));
+                new FRAmount("100.00", "EUR"), new OBWriteInternational3DataInitiationExchangeRateInformation().rateType(OBExchangeRateType.ACTUAL).unitCurrency("EUR"));
 
         final BigDecimal expectedRate = new BigDecimal("0.8621");
         validateActualQuote(exchangeRateInformation, expectedRate, "EUR");
@@ -69,7 +69,7 @@ class DefaultExchangeRateServiceTest {
     void shouldGetAgreedQuote() {
         final FRExchangeRateInformation exchangeRateInformation = exchangeRateService.calculateExchangeRateInfo("USD", new FRAmount("100.00", "GBP"),
                 new OBWriteInternational3DataInitiationExchangeRateInformation()
-                        .rateType(OBExchangeRateType2Code.AGREED)
+                        .rateType(OBExchangeRateType.AGREED)
                         .exchangeRate(new BigDecimal("1.35"))
                         .unitCurrency("GBP")
                         .contractIdentification("contract12"));

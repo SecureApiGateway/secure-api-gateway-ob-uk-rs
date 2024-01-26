@@ -22,7 +22,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 public class OBWriteInternational3DataInitiationExchangeRateInformationValidator extends BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> {
@@ -39,8 +39,8 @@ public class OBWriteInternational3DataInitiationExchangeRateInformationValidator
 
         validationResult.mergeResults(currencyCodeValidator.validate(exchangeRateInfo.getUnitCurrency()));
 
-        final OBExchangeRateType2Code rateType = exchangeRateInfo.getRateType();
-        if (rateType == OBExchangeRateType2Code.AGREED) {
+        final OBExchangeRateType rateType = exchangeRateInfo.getRateType();
+        if (rateType == OBExchangeRateType.AGREED) {
             if (exchangeRateInfo.getContractIdentification() == null || exchangeRateInfo.getExchangeRate() == null) {
                 validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1(
                         "ExchangeRate and ContractIdentification must be specify when requesting an Agreed RateType."));

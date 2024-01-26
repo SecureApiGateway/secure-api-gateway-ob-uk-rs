@@ -77,8 +77,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderRes
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse7Data;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatus;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason;
 
 @Controller("InternationalStandingOrdersApiV3.1.10")
 public class InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
@@ -261,22 +263,22 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalStandingOrderPaymentSubmission frStandingOrderSubmission) {
-        OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum status = OBWritePaymentDetailsResponse1DataPaymentStatus.StatusEnum.fromValue(
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus status = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus.fromValue(
                 PaymentsUtils.statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
         );
 
         // Build the response object with data to meet the expected data defined by the spec
-        OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum statusReasonEnum = OBWritePaymentDetailsResponse1DataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason statusReasonEnum = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason.PENDINGSETTLEMENT;
         return new OBWritePaymentDetailsResponse1()
                 .data(
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
-                                        new OBWritePaymentDetailsResponse1DataPaymentStatus()
+                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInner()
                                                 .status(status)
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frStandingOrderSubmission.getUpdated()))
                                                 .statusDetail(
-                                                        new OBWritePaymentDetailsResponse1DataStatusDetail()
+                                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail()
                                                                 .status(status.getValue())
                                                                 .statusReason(statusReasonEnum)
                                                                 .statusReasonDescription(statusReasonEnum.getValue())

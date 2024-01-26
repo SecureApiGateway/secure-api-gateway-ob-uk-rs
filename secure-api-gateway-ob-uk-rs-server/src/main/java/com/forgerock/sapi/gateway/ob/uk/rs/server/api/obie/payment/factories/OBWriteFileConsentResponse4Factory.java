@@ -29,7 +29,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data.StatusEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
 
 @Component
 public class OBWriteFileConsentResponse4Factory {
@@ -44,7 +44,7 @@ public class OBWriteFileConsentResponse4Factory {
         data.initiation(obConsentData.getInitiation());
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
-        data.status(StatusEnum.fromValue(consent.getStatus()));
+        data.status(OBWriteFileConsentResponse4DataStatus.fromValue(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
 
