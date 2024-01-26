@@ -27,6 +27,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
@@ -55,18 +60,16 @@ import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatus;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataStatusDetail;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataCharges;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataChargesInner;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataStatus;
 import uk.org.openbanking.datamodel.vrp.OBExternalPaymentChargeType1Code;
-
-import org.joda.time.DateTime;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 
 @Controller("DomesticVrpsApiV3.1.10")
 @Slf4j
@@ -148,22 +151,22 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         log.debug("Found VRP payment '{}' to get details.", domesticVRPId);
         // Build the response object with data just to meet the expected data defined by the spec
         FRDomesticVrpPaymentSubmission paymentSubmission = optionalVrpPayment.get();
-        OBDomesticVRPDetailsDataPaymentStatus.StatusEnum status = OBDomesticVRPDetailsDataPaymentStatus.StatusEnum.fromValue(
+        OBDomesticVRPDetailsDataPaymentStatusInnerStatus status = OBDomesticVRPDetailsDataPaymentStatusInnerStatus.fromValue(
                 paymentSubmission.getStatus().getValue()
         );
 
-        OBDomesticVRPDetailsDataStatusDetail.StatusReasonEnum statusReasonEnum = OBDomesticVRPDetailsDataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
+        OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason statusReasonEnum = OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason.PENDINGSETTLEMENT;
         String localInstrument = paymentSubmission.getPayment().getData().getInstruction().getLocalInstrument();
         OBDomesticVRPDetails vrpDetails = new OBDomesticVRPDetails()
                 .data(
                         new OBDomesticVRPDetailsData()
                                 .addPaymentStatusItem(
-                                        new OBDomesticVRPDetailsDataPaymentStatus()
+                                        new OBDomesticVRPDetailsDataPaymentStatusInner()
                                                 .status(status)
                                                 .paymentTransactionId(paymentSubmission.getTransactionId())
                                                 .statusUpdateDateTime(new DateTime(paymentSubmission.getUpdated()))
                                                 .statusDetail(
-                                                        new OBDomesticVRPDetailsDataStatusDetail()
+                                                        new OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail()
                                                                 .localInstrument(localInstrument)
                                                                 .status(status.getValue())
                                                                 .statusReason(statusReasonEnum)
@@ -227,7 +230,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .apiClientId(apiClientId)
                 .consentId(frDomesticVRPRequest.data.consentId)
                 .payment(frDomesticVRPRequest)
-                .status(toFRSubmissionStatus(OBDomesticVRPResponseData.StatusEnum.PENDING))
+                .status(toFRSubmissionStatus(OBDomesticVRPResponseDataStatus.PENDING))
                 .created(new Date())
                 .updated(new Date())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
@@ -271,7 +274,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         // just to meet the expected data defined by the spec
         response.getData()
                 .charges(List.of(
-                        new OBDomesticVRPResponseDataCharges()
+                        new OBDomesticVRPResponseDataChargesInner()
                                 .type(OBExternalPaymentChargeType1Code.BALANCETRANSFEROUT)
                                 .chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR)
                                 .amount(

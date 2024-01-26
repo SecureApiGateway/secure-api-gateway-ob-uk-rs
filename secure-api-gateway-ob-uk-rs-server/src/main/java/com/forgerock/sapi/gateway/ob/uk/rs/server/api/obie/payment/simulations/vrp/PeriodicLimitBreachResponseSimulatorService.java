@@ -17,11 +17,11 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVRPConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRPeriodicLimits;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRPeriodicLimits.PeriodAlignmentEnum;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRPeriodicLimits.PeriodTypeEnum;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits.PeriodAlignmentEnum;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLimits.PeriodTypeEnum;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -59,7 +59,7 @@ public class PeriodicLimitBreachResponseSimulatorService {
     }
 
     private FRPeriodicLimits findPeriodicLimitsForHeader(String xVrpLimitBreachResponseSimulation,
-                                                                                     FRDomesticVRPConsent consent) throws OBErrorException {
+                                                         FRDomesticVRPConsent consent) throws OBErrorException {
         final List<FRPeriodicLimits> periodicLimits = consent.getData().getControlParameters().getPeriodicLimits();
         if (periodicLimits != null) {
             final int separatorIndex = xVrpLimitBreachResponseSimulation.indexOf('-');

@@ -28,7 +28,7 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequestData;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData.StatusEnum;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
 
 @Component
 public class OBDomesticVRPConsentResponseFactory {
@@ -43,7 +43,7 @@ public class OBDomesticVRPConsentResponseFactory {
                                                             .controlParameters(consentRequestData.getControlParameters())
                                                             .initiation(consentRequestData.getInitiation())
                                                             .creationDateTime(new DateTime(consent.getCreationDateTime()))
-                                                            .status(StatusEnum.fromValue(consent.getStatus()))
+                                                            .status(OBDomesticVRPConsentResponseDataStatus.fromValue(consent.getStatus()))
                                                             .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime())))
                 .risk(obDomesticVRPConsentRequest.getRisk())
                 .links(LinksHelper.createDomesticVrpConsentLink(controllerClass, consent.getId()))

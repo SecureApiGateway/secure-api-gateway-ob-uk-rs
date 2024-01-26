@@ -16,6 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 
 import org.joda.time.DateTimeZone;
+
+import uk.org.openbanking.datamodel.common.OBReadRefundAccount;
 import uk.org.openbanking.datamodel.payment.*;
 
 import java.util.ArrayList;
