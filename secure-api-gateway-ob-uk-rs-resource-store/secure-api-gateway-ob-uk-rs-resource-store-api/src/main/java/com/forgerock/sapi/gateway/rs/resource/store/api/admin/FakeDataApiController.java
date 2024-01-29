@@ -99,6 +99,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transact
 import uk.org.openbanking.datamodel.account.OBExternalStatementAmountType1Code;
 import uk.org.openbanking.datamodel.account.OBExternalStatementType1Code;
 import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInnerProductType;
 import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
 
 @Controller("FakeDataApi")
@@ -469,7 +470,7 @@ public class FakeDataApiController implements FakeDataApi {
         product.setProduct(new OBReadProduct2DataProductInner()
                 .accountId(account.getId())
                 .productId(UUID.randomUUID().toString())
-                .productType(OBReadProduct2DataProductInner.ProductTypeEnum.PERSONALCURRENTACCOUNT)
+                .productType(OBReadProduct2DataProductInnerProductType.PERSONALCURRENTACCOUNT)
                 .productName("321 Product")
         );
         product.setId(product.getProduct().getProductId());
