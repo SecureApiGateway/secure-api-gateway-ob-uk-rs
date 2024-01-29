@@ -27,12 +27,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRRea
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.accounts.AccountAccessConsentsApi;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
 import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
 import uk.org.openbanking.datamodel.account.OBRisk2;
+import uk.org.openbanking.datamodel.common.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
 
 class OBReadConsentResponseFactoryTest {
