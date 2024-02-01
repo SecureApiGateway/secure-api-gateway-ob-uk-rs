@@ -51,9 +51,10 @@ jobs:
       release_version_number: ${{ inputs.release_version_number }}
       release_tag_ref: ${{ needs.release_prepare.outputs.release_tag_ref }}
       SERVICE_NAME: securebanking-openbanking-uk-rs
+      GAR_RELEASE_REPO: ${{ vars.GAR_RELEASE_REPO }}
+
     secrets:
       GCR_CREDENTIALS_JSON: ${{ secrets.DEV_GAR_KEY }}
-      GCR_RELEASE_REPO: ${{ vars.GAR_RELEASE_REPO }}
 
   release_helm:
     name: Call publish helm
