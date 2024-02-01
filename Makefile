@@ -1,5 +1,5 @@
 name := securebanking-openbanking-uk-rs
-repo := sbat-gcr-develop
+repo := europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact
 tag  := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 helm_repo := forgerock-helm/secure-api-gateway/securebanking-openbanking-uk-rs/
 
