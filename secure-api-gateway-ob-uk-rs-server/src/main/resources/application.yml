@@ -44,16 +44,6 @@ logging:
     com.forgerock: DEBUG
     uk.org.openbanking: DEBUG
 
-# Configuration for calling the Cloud Data API
-# com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.CloudClientConfiguration
-cloud:
-  client:
-    contexts_user:
-      get: /repo/users/@UserId@
-      put: /repo/users/@UserId@
-      patch: /repo/users/@UserId@
-      delete: /repo/users/@UserId@
-
 # RS config
 rs:
   # Data creation limits
