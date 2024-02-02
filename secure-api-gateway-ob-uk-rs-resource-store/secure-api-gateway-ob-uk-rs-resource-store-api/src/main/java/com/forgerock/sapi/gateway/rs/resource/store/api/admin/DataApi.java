@@ -43,7 +43,9 @@ public interface DataApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error")})
-    @RequestMapping(value = "/account", method = RequestMethod.GET)
+    @RequestMapping(value = "/account",
+            produces = {"application/json; charset=utf-8"},
+            method = RequestMethod.GET)
     ResponseEntity<Page<FRAccountData>> exportAccountData(
             @ApiParam(value = "Pageable", required = true)
             @PageableDefault Pageable pageable
@@ -77,7 +79,9 @@ public interface DataApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error")})
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/user",
+            produces = {"application/json; charset=utf-8"},
+            method = RequestMethod.GET)
     ResponseEntity<FRUserData> exportUserData(
             @ApiParam(value = "UserId", required = true)
             @RequestParam("userId") String userId
@@ -94,7 +98,10 @@ public interface DataApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error")})
-    @RequestMapping(value = "/user", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user",
+            produces = {"application/json; charset=utf-8"},
+            consumes = {"application/json; charset=utf-8"},
+            method = RequestMethod.PUT)
     ResponseEntity updateUserData(
             @ApiParam(value = "UserData", required = true)
             @RequestBody FRUserData userData
@@ -111,7 +118,10 @@ public interface DataApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error")})
-    @RequestMapping(value = "/user", method = RequestMethod.POST)
+    @RequestMapping(value = "/user",
+            produces = {"application/json; charset=utf-8"},
+            consumes = {"application/json; charset=utf-8"},
+            method = RequestMethod.POST)
     ResponseEntity importUserData(
             @ApiParam(value = "UserData", required = true)
             @RequestBody FRUserData userData
