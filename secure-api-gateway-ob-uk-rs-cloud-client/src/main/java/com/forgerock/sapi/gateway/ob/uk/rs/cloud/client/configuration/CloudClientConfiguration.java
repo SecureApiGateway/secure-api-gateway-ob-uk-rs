@@ -15,15 +15,12 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration;
 
-import lombok.Data;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.LinkedCaseInsensitiveMap;
-
-import java.util.Map;
+import org.springframework.util.StringUtils;
 
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
 
 @Configuration
 @ConfigurationProperties(prefix = "cloud.client")
@@ -32,22 +29,10 @@ public class CloudClientConfiguration {
 
     private String baseUri;
 
-    /*
-     * Spring maps the properties, the keys from file will be the map keys
-     * @see: application-test.yml
-     * case-insensitive map's keys
-     * @Use pattern: contextMap.get(http-verb-any-case)
-     * @Use: contextsRepoConsent.get("GeT")
-     */
-    private Map<String, String> contextsUser = new LinkedCaseInsensitiveMap<>();
-
     @PostConstruct
     private void validateConfig() {
-        if (baseUri == null || baseUri.isBlank()) {
+        if (!StringUtils.hasText(baseUri)) {
             throw new IllegalStateException("Required configuration: cloud.client.baseUri is missing");
-        }
-        if (contextsUser.isEmpty()) {
-            throw new IllegalStateException("Required configuration: cloud.client.contextsUser map is missing");
         }
     }
 

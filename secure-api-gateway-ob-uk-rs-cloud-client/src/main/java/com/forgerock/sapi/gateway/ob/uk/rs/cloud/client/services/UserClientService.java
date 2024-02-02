@@ -20,7 +20,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url.UrlContext;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
 import com.forgerock.sapi.gateway.uk.common.shared.fapi.FapiInteractionIdContext;
 
@@ -34,7 +33,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,16 +51,25 @@ import static org.springframework.http.HttpMethod.GET;
 @Slf4j
 public class UserClientService {
     private final RestTemplate restTemplate;
-    private final CloudClientConfiguration cloudClientConfiguration;
+
+    /**
+     * Template of the URI used to query for a user by username.
+     * <p>
+     * The username URI variable needs to be replaced with the actual user to query for.
+     */
+    private final UriComponents queryByUsernameUriTemplate;
 
     public UserClientService(RestTemplate restTemplate, CloudClientConfiguration cloudClientConfiguration) {
         this.restTemplate = restTemplate;
-        this.cloudClientConfiguration = cloudClientConfiguration;
+        this.queryByUsernameUriTemplate = UriComponentsBuilder.fromHttpUrl(cloudClientConfiguration.getBaseUri())
+                                                              .path("/repo/users")
+                                                              .queryParam("_queryFilter","username+eq+\"{username}\"}")
+                                                              .build();
     }
 
     public User getUserByName(String userName) throws ExceptionClient {
         paramValidation(userName, "(UserClientService#getUserByName) the parameter 'userName' cannot be null");
-        User user = request(userName, GET);
+        User user = request(userName);
         if (Objects.isNull(user) || !user.getAccountStatus().equals("active")) {
             String message = String.format("User with userName '%s' not found.", userName);
             log.error(message);
@@ -73,24 +85,17 @@ public class UserClientService {
         return user;
     }
 
-    private User request(String userName, HttpMethod httpMethod) throws ExceptionClient {
-        String userFilter = "?_queryFilter=userName+eq+\"" + userName + "\"";
-        String userFilterURL = cloudClientConfiguration.getBaseUri() +
-                UrlContext.UrlUserQueryFilter(
-                        cloudClientConfiguration.getContextsUser().get(httpMethod.name()),
-                        userFilter);
-
-        log.debug("(UserServiceClient#request) request the user details from platform: {}", userFilterURL);
+    private User request(String userName) throws ExceptionClient {
+        final URI queryByUsernameUri = queryByUsernameUriTemplate.expand(Map.of("username", userName)).toUri();
+        log.debug("(UserServiceClient#request) request the user details from platform: {}", queryByUsernameUri);
         try {
             ResponseEntity<User> responseEntity = restTemplate.exchange(
-                    userFilterURL,
+                    queryByUsernameUri,
                     GET,
                     createRequestEntity(),
                     User.class);
 
-            return (responseEntity.getStatusCode() != HttpStatus.OK) ?
-                    null :
-                    responseEntity != null ? responseEntity.getBody() : null;
+            return responseEntity.getBody();
         } catch (HttpClientErrorException exception) {
             throw new ExceptionClient(
                     ErrorClient.builder()

@@ -9,11 +9,6 @@
 cloud:
   client:
     baseUri: http://ig:80
-    contexts_user:
-      get: /repo/users/@UserId@
-      put: /repo/users/@UserId@
-      patch: /repo/users/@UserId@
-      delete: /repo/users/@UserId@
 
 rs:
   # Data creation limits (see com.forgerock.securebanking.openbanking.uk.rs.api.admin.data.DataCreator)

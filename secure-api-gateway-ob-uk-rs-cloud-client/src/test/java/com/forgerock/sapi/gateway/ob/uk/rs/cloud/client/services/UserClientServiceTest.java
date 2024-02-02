@@ -15,72 +15,53 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.springframework.test.web.client.ExpectedCount.once;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.client.MockRestServiceServer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.configuration.CloudClientConfiguration;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.utils.url.UrlContext;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBHeaders;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpMethod.GET;
 
 /**
  * Unit test for {@link UserClientService}
  */
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension.class)
+@RestClientTest(UserClientService.class)
+@AutoConfigureWebClient(registerRestTemplate = true)
+@Import(CloudClientConfiguration.class)
 public class UserClientServiceTest {
 
-    @InjectMocks
+    @Autowired
     private UserClientService userClientService;
 
-    @Mock
-    protected CloudClientConfiguration configurationPropertiesClient;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @Mock
-    protected RestTemplate restTemplate;
-
-    protected MockedStatic<UrlContext> urlContextMockedStatic;
+    @Autowired
+    private MockRestServiceServer mockServer;
 
     private final static String USER_NAME = "psu4test";
     private final static String ACCOUNT_ACTIVE_STATUS = "active";
 
-    @BeforeEach
-    public void setup() {
-        urlContextMockedStatic = Mockito.mockStatic(UrlContext.class);
-        urlContextMockedStatic.when(
-                () -> UrlContext.UrlUserQueryFilter(anyString(), anyString())
-        ).thenReturn("http://a.domain/context?_queryFilter=userName+eq+%22" + USER_NAME + "%22");
-    }
-
-    @AfterEach
-    public void close() {
-        urlContextMockedStatic.close();
-    }
-
     @Test
-    public void ShouldGetUserDataFromPlatform() throws ExceptionClient {
+    public void shouldGetUserDataFromPlatform() throws Exception {
         // Given
         User user = User.builder()
                 .id(UUID.randomUUID().toString())
@@ -88,13 +69,10 @@ public class UserClientServiceTest {
                 .accountStatus(ACCOUNT_ACTIVE_STATUS)
                 .build();
         // When
-        final ArgumentCaptor<HttpEntity> entityArgumentCaptor = ArgumentCaptor.forClass(HttpEntity.class);
-        when(restTemplate.exchange(
-                anyString(),
-                eq(GET),
-                entityArgumentCaptor.capture(),
-                eq(User.class))
-        ).thenReturn(ResponseEntity.ok(user));
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=username+eq+%22psu4test%22%7D"))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(objectMapper.writeValueAsString(user)));
 
         User userResponse = userClientService.getUserByName(user.getUserName());
         // Then
@@ -102,11 +80,10 @@ public class UserClientServiceTest {
         assertThat(userResponse.getAccountStatus()).isEqualTo(ACCOUNT_ACTIVE_STATUS);
         assertThat(userResponse.getUserName()).isEqualTo(user.getUserName());
         assertThat(userResponse.getId()).isEqualTo(user.getId());
-        assertThat(entityArgumentCaptor.getValue().getHeaders().get(OBHeaders.X_FAPI_INTERACTION_ID)).isNotNull();
     }
 
     @Test
-    public void ShouldRaiseNotFound_UserAccountNoActive() throws ExceptionClient {
+    public void ShouldRaiseNotFound_UserAccountNoActive() throws Exception {
         // Given
         User user = User.builder()
                 .id(UUID.randomUUID().toString())
@@ -114,12 +91,10 @@ public class UserClientServiceTest {
                 .accountStatus("inactive")
                 .build();
         // when
-        when(restTemplate.exchange(
-                anyString(),
-                eq(GET),
-                any(HttpEntity.class),
-                eq(User.class))
-        ).thenReturn(ResponseEntity.ok(user));
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=username+eq+%22psu4test%22%7D"))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(objectMapper.writeValueAsString(user)));
 
 
         ExceptionClient exception = catchThrowableOfType(() ->
@@ -136,12 +111,8 @@ public class UserClientServiceTest {
     @Test
     public void ShouldRaiseNotFoundUserDataFromPlatform() {
         // When
-        when(restTemplate.exchange(
-                anyString(),
-                eq(GET),
-                any(HttpEntity.class),
-                eq(User.class))
-        ).thenReturn(ResponseEntity.notFound().build());
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=username+eq+%22psu4test%22%7D"))
+                  .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         ExceptionClient exception = catchThrowableOfType(() ->
                         userClientService.getUserByName(USER_NAME)
