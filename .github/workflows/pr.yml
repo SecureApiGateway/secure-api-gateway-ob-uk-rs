@@ -47,11 +47,11 @@ jobs:
           echo "MAVEN_SERVER_ID=maven.forgerock.org-community-snapshots" >> $GITHUB_ENV
 
       # set java and cache
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         id: set_java_maven
         name: set java and maven cache
         with:
-          distribution: 'adopt'
+          distribution: 'zulu'
           java-version: '17'
           architecture: x64
           cache: 'maven'
