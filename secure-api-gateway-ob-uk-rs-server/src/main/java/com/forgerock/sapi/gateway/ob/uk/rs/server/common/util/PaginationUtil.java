@@ -21,6 +21,7 @@ import uk.org.openbanking.datamodel.common.Links;
 import uk.org.openbanking.datamodel.common.Meta;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 
 public class PaginationUtil {
 
@@ -69,7 +70,7 @@ public class PaginationUtil {
     }
 
     public static Meta generateMetaData(int totalPages) {
-        return generateMetaData(totalPages, null, null);
+        return new Meta().totalPages(totalPages);
     }
 
     public static Meta generateMetaData(int totalPages, DateTime firstAvailableDate, DateTime lastAvailableDate) {
@@ -80,6 +81,18 @@ public class PaginationUtil {
         }
         if (lastAvailableDate != null) {
             metaData.setLastAvailableDateTime(lastAvailableDate);
+        }
+        return metaData;
+    }
+
+    public static Meta generateMetaData(int totalPages, OffsetDateTime firstAvailableDate, OffsetDateTime lastAvailableDate) {
+        Meta metaData = new Meta();
+        metaData.setTotalPages(totalPages);
+        if (firstAvailableDate != null) {
+            metaData.setFirstAvailableDateTime(new DateTime(firstAvailableDate.toInstant().toEpochMilli()));
+        }
+        if (lastAvailableDate != null) {
+            metaData.setLastAvailableDateTime(new DateTime(lastAvailableDate.toInstant().toEpochMilli()));
         }
         return metaData;
     }
