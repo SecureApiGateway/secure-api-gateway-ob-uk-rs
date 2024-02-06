@@ -543,6 +543,8 @@ public class FakeDataApiController implements FakeDataApi {
                         .build()))
                 .build()
         );
+        statement.setStartDateTime(statement.getStatement().getStartDateTime());
+        statement.setEndDateTime(statement.getStatement().getEndDateTime());
 
         return statement;
     }

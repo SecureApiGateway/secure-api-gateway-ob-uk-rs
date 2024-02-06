@@ -74,8 +74,7 @@ public class PaginationUtil {
     }
 
     public static Meta generateMetaData(int totalPages, DateTime firstAvailableDate, DateTime lastAvailableDate) {
-        Meta metaData = new Meta();
-        metaData.setTotalPages(totalPages);
+        Meta metaData = generateMetaData(totalPages);
         if (firstAvailableDate != null) {
             metaData.setFirstAvailableDateTime(firstAvailableDate);
         }
@@ -86,8 +85,7 @@ public class PaginationUtil {
     }
 
     public static Meta generateMetaData(int totalPages, OffsetDateTime firstAvailableDate, OffsetDateTime lastAvailableDate) {
-        Meta metaData = new Meta();
-        metaData.setTotalPages(totalPages);
+        Meta metaData = generateMetaData(totalPages);
         if (firstAvailableDate != null) {
             metaData.setFirstAvailableDateTime(new DateTime(firstAvailableDate.toInstant().toEpochMilli()));
         }

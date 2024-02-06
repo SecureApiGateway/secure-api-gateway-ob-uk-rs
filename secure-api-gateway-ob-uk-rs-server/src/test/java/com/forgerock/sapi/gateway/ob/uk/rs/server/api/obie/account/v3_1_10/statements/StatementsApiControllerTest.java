@@ -25,6 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import java.io.IOException;
 
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStatementData;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants.ParametersFieldName;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
@@ -104,6 +106,8 @@ public class StatementsApiControllerTest {
         FRStatement statement = FRStatement.builder()
                 .accountId(accountId)
                 .statement(statementData)
+                .startDateTime(statementData.getStartDateTime())
+                .endDateTime(statementData.getEndDateTime())
                 .build();
         frStatementRepository.save(statement);
     }
@@ -135,6 +139,28 @@ public class StatementsApiControllerTest {
         assertThat(returnedStatement).isNotNull();
         assertThat(returnedStatement.getData().getStatement().get(0).getAccountId()).isEqualTo(accountId);
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
+    }
+
+    @Test
+    public void shouldGetAccountStatementsForDateRange() {
+        // Given
+        String url = accountStatementsUrl(accountId) + "?" + ParametersFieldName.FROM_STATEMENT_DATE_TIME + "=" + DateTime.now().minusDays(60) + "&" + ParametersFieldName.TO_STATEMENT_DATE_TIME + "=" + DateTime.now();
+
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
+        // When
+        ResponseEntity<OBReadStatement2> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
+                OBReadStatement2.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        OBReadStatement2 returnedStatement = response.getBody();
+        assertThat(returnedStatement).isNotNull();
+        assertThat(returnedStatement.getData().getStatement().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test
