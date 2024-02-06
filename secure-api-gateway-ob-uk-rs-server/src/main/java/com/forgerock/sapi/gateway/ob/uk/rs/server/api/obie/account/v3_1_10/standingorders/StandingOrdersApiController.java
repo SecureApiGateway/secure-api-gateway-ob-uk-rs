@@ -71,7 +71,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     public ResponseEntity<OBReadStandingOrder6> getAccountStandingOrders(String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -102,7 +102,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     @Override
     public ResponseEntity<OBReadStandingOrder6> getStandingOrders(int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

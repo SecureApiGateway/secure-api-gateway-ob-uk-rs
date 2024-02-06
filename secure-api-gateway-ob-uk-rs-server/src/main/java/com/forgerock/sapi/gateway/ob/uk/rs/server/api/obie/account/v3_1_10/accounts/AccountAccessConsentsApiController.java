@@ -53,7 +53,7 @@ public class AccountAccessConsentsApiController implements AccountAccessConsents
 
     @Override
     public ResponseEntity<OBReadConsentResponse1> createAccountAccessConsents(OBReadConsent1 body, String authorization,
-            DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
+            String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         final CreateAccountAccessConsentRequest createConsentRequest = new CreateAccountAccessConsentRequest();
@@ -65,7 +65,7 @@ public class AccountAccessConsentsApiController implements AccountAccessConsents
     }
 
     @Override
-    public ResponseEntity<Void> deleteAccountAccessConsent(String consentId, String authorization, DateTime xFapiAuthDate,
+    public ResponseEntity<Void> deleteAccountAccessConsent(String consentId, String authorization, String xFapiAuthDate,
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId,
             HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
@@ -76,7 +76,7 @@ public class AccountAccessConsentsApiController implements AccountAccessConsents
 
     @Override
     public ResponseEntity<OBReadConsentResponse1> getAccountAccessConsent(String consentId, String authorization,
-            DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
+            String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         logger.info("Attempting to getAccountAccessConsent - consentId: {}, apiClientId: {}", consentId, apiClientId);

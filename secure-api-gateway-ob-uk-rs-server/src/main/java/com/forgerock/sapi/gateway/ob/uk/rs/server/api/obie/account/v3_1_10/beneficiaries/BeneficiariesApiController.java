@@ -72,7 +72,7 @@ public class BeneficiariesApiController  implements BeneficiariesApi {
     public ResponseEntity<OBReadBeneficiary5> getAccountBeneficiaries(String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -99,7 +99,7 @@ public class BeneficiariesApiController  implements BeneficiariesApi {
     @Override
     public ResponseEntity<OBReadBeneficiary5> getBeneficiaries(int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

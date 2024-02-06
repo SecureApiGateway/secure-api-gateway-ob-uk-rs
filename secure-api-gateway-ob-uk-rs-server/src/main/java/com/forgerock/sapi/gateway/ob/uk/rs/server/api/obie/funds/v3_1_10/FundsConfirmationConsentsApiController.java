@@ -52,7 +52,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
     @Override
     public ResponseEntity<OBFundsConfirmationConsentResponse1> createFundsConfirmationConsent(
             OBFundsConfirmationConsent1 body,
-            String authorization, DateTime xFapiAuthDate,
+            String authorization, String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -75,7 +75,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
     public ResponseEntity<OBFundsConfirmationConsentResponse1> getFundsConfirmationConsentsConsentId(
             String consentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -92,7 +92,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
     public ResponseEntity deleteFundsConfirmationConsentsConsentId(
             String consentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

@@ -110,7 +110,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -170,7 +170,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
     public ResponseEntity getInternationalPaymentsInternationalPaymentId(
             String internationalPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -199,7 +199,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
     public ResponseEntity getInternationalPaymentsInternationalPaymentIdPaymentDetails(
             String internationalPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

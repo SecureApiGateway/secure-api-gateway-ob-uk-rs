@@ -117,7 +117,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -184,7 +184,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     public ResponseEntity getInternationalScheduledPaymentsInternationalScheduledPaymentId(
             String internationalScheduledPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -216,7 +216,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     public ResponseEntity getInternationalScheduledPaymentsInternationalScheduledPaymentIdPaymentDetails(
             String internationalScheduledPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

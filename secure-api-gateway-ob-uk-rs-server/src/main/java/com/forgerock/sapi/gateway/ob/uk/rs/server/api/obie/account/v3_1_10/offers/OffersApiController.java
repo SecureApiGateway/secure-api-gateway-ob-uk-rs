@@ -67,7 +67,7 @@ public class OffersApiController implements OffersApi {
     public ResponseEntity<OBReadOffer1> getAccountOffers(String accountId,
             int page,
             String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -94,7 +94,7 @@ public class OffersApiController implements OffersApi {
     @Override
     public ResponseEntity<OBReadOffer1> getOffers(int page,
             String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
