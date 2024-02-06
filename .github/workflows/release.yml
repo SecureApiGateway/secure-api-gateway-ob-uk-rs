@@ -76,3 +76,5 @@ jobs:
       release_version_number: ${{ inputs.release_version_number }}
       release_tag_ref: ${{ needs.release_prepare.outputs.release_tag_ref }}
       release_notes: ${{ inputs.notes }}
+    secrets:
+      release_github_token: ${{ secrets.RELEASE_PAT }}
