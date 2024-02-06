@@ -17,7 +17,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.tran
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -80,10 +82,8 @@ public class TransactionsApiController implements TransactionsApi {
             int page,
             String authorization,
             String xFapiAuthDate,
-            OffsetDateTime fromBookingDateTime,
-            OffsetDateTime toBookingDateTime,
-            OffsetDateTime firstAvailableDate,
-            OffsetDateTime lastAvailableDate,
+            LocalDateTime fromBookingDateTime,
+            LocalDateTime toBookingDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -94,7 +94,7 @@ public class TransactionsApiController implements TransactionsApi {
                 fromBookingDateTime, toBookingDateTime);
 
         if (toBookingDateTime == null) {
-            toBookingDateTime = OffsetDateTime.now();
+            toBookingDateTime = LocalDateTime.now();
         }
         if (fromBookingDateTime == null) {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
@@ -104,7 +104,7 @@ public class TransactionsApiController implements TransactionsApi {
         checkPermissions(consent);
 
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
-                new Date(fromBookingDateTime.toInstant().toEpochMilli()), new Date(toBookingDateTime.toInstant().toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
+                new Date(fromBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), new Date(toBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
@@ -120,7 +120,7 @@ public class TransactionsApiController implements TransactionsApi {
         return ResponseEntity.ok(new OBReadTransaction6()
                 .data(new OBReadDataTransaction6().transaction(transactions))
                 .links(PaginationUtil.generateLinks(buildGetAccountTransactionUri(accountId), page, totalPages))
-                .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
+                .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     @Override
@@ -129,10 +129,8 @@ public class TransactionsApiController implements TransactionsApi {
             int page,
             String authorization,
             String xFapiAuthDate,
-            OffsetDateTime fromBookingDateTime,
-            OffsetDateTime toBookingDateTime,
-            OffsetDateTime firstAvailableDate,
-            OffsetDateTime lastAvailableDate,
+            LocalDateTime fromBookingDateTime,
+            LocalDateTime toBookingDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -142,17 +140,17 @@ public class TransactionsApiController implements TransactionsApi {
                 accountId, statementId, consentId, apiClientId, fromBookingDateTime, toBookingDateTime, page);
 
         if (toBookingDateTime == null) {
-            toBookingDateTime = OffsetDateTime.now();
+            toBookingDateTime = LocalDateTime.now();
         }
         if (fromBookingDateTime == null) {
-            fromBookingDateTime = toBookingDateTime.minusYears(100);
+            fromBookingDateTime = toBookingDateTime.minus(Period.ofYears(100));
         }
 
         final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkPermissions(consent);
 
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
-                new Date(fromBookingDateTime.toInstant().toEpochMilli()), new Date(toBookingDateTime.toInstant().toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
+                new Date(fromBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), new Date(toBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
@@ -167,17 +165,15 @@ public class TransactionsApiController implements TransactionsApi {
 
         return ResponseEntity.ok(new OBReadTransaction6().data(new OBReadDataTransaction6().transaction(transactions))
                 .links(PaginationUtil.generateLinks(buildGetAccountStatementTransactionUri(accountId, statementId), page, totalPages))
-                .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
+                .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     @Override
     public ResponseEntity<OBReadTransaction6> getTransactions(int page,
             String authorization,
             String xFapiAuthDate,
-            OffsetDateTime fromBookingDateTime,
-            OffsetDateTime toBookingDateTime,
-            OffsetDateTime firstAvailableDate,
-            OffsetDateTime lastAvailableDate,
+            LocalDateTime fromBookingDateTime,
+            LocalDateTime toBookingDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -187,17 +183,17 @@ public class TransactionsApiController implements TransactionsApi {
                 consentId, apiClientId, fromBookingDateTime, toBookingDateTime, page);
 
         if (toBookingDateTime == null) {
-            toBookingDateTime = OffsetDateTime.now();
+            toBookingDateTime = LocalDateTime.now();
         }
         if (fromBookingDateTime == null) {
-            fromBookingDateTime = toBookingDateTime.minusYears(100);
+            fromBookingDateTime = toBookingDateTime.minus(Period.ofYears(100));
         }
 
         final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
         checkPermissions(consent);
 
         Page<FRTransaction> body = FRTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(consent.getAuthorisedAccountIds(),
-                new Date(fromBookingDateTime.toInstant().toEpochMilli()), new Date(toBookingDateTime.toInstant().toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
+                new Date(fromBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), new Date(toBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = body.getContent()
@@ -212,7 +208,7 @@ public class TransactionsApiController implements TransactionsApi {
 
         return  ResponseEntity.ok(new OBReadTransaction6().data(new OBReadDataTransaction6().transaction(transactions))
                 .links(PaginationUtil.generateLinks(buildGetTransactionsUri(), page, totalPages))
-                .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
+                .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     private String buildGetAccountTransactionUri(String accountId) {

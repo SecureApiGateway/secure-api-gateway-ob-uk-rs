@@ -20,7 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.statements;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -194,11 +194,11 @@ public interface StatementsApi {
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter statements FROM NB Time component is optional - set to 00:00:00 for just Date.   The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.FROM_STATEMENT_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) OffsetDateTime fromStatementDateTime,
+            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) LocalDateTime fromStatementDateTime,
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter statements TO NB Time component is optional - set to 00:00:00 for just Date.   The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.TO_STATEMENT_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) OffsetDateTime toStatementDateTime,
+            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) LocalDateTime toStatementDateTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -249,11 +249,11 @@ public interface StatementsApi {
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter statements FROM NB Time component is optional - set to 00:00:00 for just Date.   The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.FROM_STATEMENT_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) OffsetDateTime fromStatementDateTime,
+            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) LocalDateTime fromStatementDateTime,
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter statements TO NB Time component is optional - set to 00:00:00 for just Date.   The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.TO_STATEMENT_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) OffsetDateTime toStatementDateTime,
+            @DateTimeFormat(pattern = ApiConstants.STATEMENT_TIME_DATE_FORMAT) LocalDateTime toStatementDateTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,

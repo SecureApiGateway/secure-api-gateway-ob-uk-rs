@@ -23,10 +23,10 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHea
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -146,7 +146,7 @@ public class TransactionsApiControllerTest {
     @Test
     public void shouldGetAccountTransactionsForDateRange() {
         // Given
-        String url = accountTransactionsUrl(accountId) + "?" + ParametersFieldName.FROM_BOOKING_DATE_TIME + "=" + DateTime.now().minusDays(60) + "&" + ParametersFieldName.TO_BOOKING_DATE_TIME + "=" + DateTime.now().minusDays(30);
+        String url = accountTransactionsUrl(accountId) + "?" + ParametersFieldName.FROM_BOOKING_DATE_TIME + "=" + LocalDateTime.now().minusDays(60) + "&" + ParametersFieldName.TO_BOOKING_DATE_TIME + "=" + LocalDateTime.now().minusDays(30);
 
         final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
         mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);

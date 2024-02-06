@@ -20,7 +20,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.transactions;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -83,17 +83,11 @@ public interface TransactionsApi {
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter transactions FROM  NB Time component is optional - set to 00:00:00 for just Date. The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) OffsetDateTime fromBookingDateTime,
+            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) LocalDateTime fromBookingDateTime,
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter transactions TO  NB Time component is optional - set to 00:00:00 for just Date. The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) OffsetDateTime toBookingDateTime,
-
-            @RequestHeader(value = "x-ob-first-available-date", required = false)
-            @DateTimeFormat(pattern = ApiConstants.AVAILABLE_DATE_FORMAT) OffsetDateTime firstAvailableDate,
-
-            @RequestHeader(value = "x-ob-last-available-date", required = false)
-            @DateTimeFormat(pattern = ApiConstants.AVAILABLE_DATE_FORMAT) OffsetDateTime lastAvailableDate,
+            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) LocalDateTime toBookingDateTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -151,17 +145,11 @@ public interface TransactionsApi {
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter transactions FROM  NB Time component is optional - set to 00:00:00 for just Date. The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) OffsetDateTime fromBookingDateTime,
+            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) LocalDateTime fromBookingDateTime,
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter transactions TO  NB Time component is optional - set to 00:00:00 for just Date. The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) OffsetDateTime toBookingDateTime,
-
-            @RequestHeader(value = "x-ob-first-available-date", required = false)
-            @DateTimeFormat(pattern = ApiConstants.AVAILABLE_DATE_FORMAT) OffsetDateTime firstAvailableDate,
-
-            @RequestHeader(value = "x-ob-last-available-date", required = false)
-            @DateTimeFormat(pattern = ApiConstants.AVAILABLE_DATE_FORMAT) OffsetDateTime lastAvailableDate,
+            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) LocalDateTime toBookingDateTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -212,17 +200,11 @@ public interface TransactionsApi {
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter transactions FROM  NB Time component is optional - set to 00:00:00 for just Date. The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) OffsetDateTime fromBookingDateTime,
+            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) LocalDateTime fromBookingDateTime,
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter transactions TO  NB Time component is optional - set to 00:00:00 for just Date. The parameter must NOT have a timezone set")
             @RequestParam(value = ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME, required = false)
-            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) OffsetDateTime toBookingDateTime,
-
-            @RequestHeader(value = "x-ob-first-available-date", required = false)
-            @DateTimeFormat(pattern = ApiConstants.AVAILABLE_DATE_FORMAT) OffsetDateTime firstAvailableDate,
-
-            @RequestHeader(value = "x-ob-last-available-date", required = false)
-            @DateTimeFormat(pattern = ApiConstants.AVAILABLE_DATE_FORMAT) OffsetDateTime lastAvailableDate,
+            @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) LocalDateTime toBookingDateTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,

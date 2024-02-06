@@ -19,7 +19,8 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -153,8 +154,8 @@ public class StatementsApiController implements StatementsApi {
             int page,
             String authorization,
             String xFapiAuthDate,
-            OffsetDateTime fromStatementDateTime,
-            OffsetDateTime toStatementDateTime,
+            LocalDateTime fromStatementDateTime,
+            LocalDateTime toStatementDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -166,8 +167,8 @@ public class StatementsApiController implements StatementsApi {
         checkPermissions(consent, nonFilePermissions);
 
         Page<FRStatement> statements = frStatementRepository.byAccountIdWithPermissions(accountId,
-                fromStatementDateTime == null ? null : new Date(fromStatementDateTime.toInstant().toEpochMilli()),
-                toStatementDateTime == null ? null : new Date(toStatementDateTime.toInstant().toEpochMilli()),
+                fromStatementDateTime == null ? null : new Date(fromStatementDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()),
+                toStatementDateTime == null ? null : new Date(toStatementDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()),
                 consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
 
@@ -179,8 +180,8 @@ public class StatementsApiController implements StatementsApi {
     public ResponseEntity<OBReadStatement2> getStatements(int page,
             String authorization,
             String xFapiAuthDate,
-            OffsetDateTime fromStatementDateTime,
-            OffsetDateTime toStatementDateTime,
+            LocalDateTime fromStatementDateTime,
+            LocalDateTime toStatementDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

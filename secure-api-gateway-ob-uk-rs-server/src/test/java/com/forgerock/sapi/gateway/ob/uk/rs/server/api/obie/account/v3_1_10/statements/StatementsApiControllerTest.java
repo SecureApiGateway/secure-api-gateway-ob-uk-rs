@@ -24,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -144,7 +144,8 @@ public class StatementsApiControllerTest {
     @Test
     public void shouldGetAccountStatementsForDateRange() {
         // Given
-        String url = accountStatementsUrl(accountId) + "?" + ParametersFieldName.FROM_STATEMENT_DATE_TIME + "=" + DateTime.now().minusDays(60) + "&" + ParametersFieldName.TO_STATEMENT_DATE_TIME + "=" + DateTime.now();
+        String url = accountStatementsUrl(accountId) + "?" + ParametersFieldName.FROM_STATEMENT_DATE_TIME + "=" + LocalDateTime.now().minusDays(60)
+                + "&" + ParametersFieldName.TO_STATEMENT_DATE_TIME + "=" + LocalDateTime.now().plusMinutes(1);
 
         final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
         mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
