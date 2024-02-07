@@ -44,10 +44,13 @@ public interface FRTransactionRepositoryCustom {
             Pageable pageable);
 
 
-    Page<FRTransaction> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode>
-            permissions, Pageable pageable);
+    Page<FRTransaction> byAccountIdInWithPermissions(List<String> accountIds,
+                                                     List<FRExternalPermissionsCode> permissions,
+                                                     Pageable pageable);
 
     Page<FRTransaction> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
-            Date fromBookingDateTime, Date toBookingDateTime, List<FRExternalPermissionsCode> permissions,
+                                                                              Date fromBookingDateTime,
+                                                                              Date toBookingDateTime,
+                                                                              List<FRExternalPermissionsCode> permissions,
                                                                               Pageable pageable);
 }
