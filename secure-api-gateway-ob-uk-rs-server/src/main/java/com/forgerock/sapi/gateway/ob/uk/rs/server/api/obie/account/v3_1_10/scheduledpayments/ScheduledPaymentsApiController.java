@@ -72,7 +72,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     public ResponseEntity<OBReadScheduledPayment3> getAccountScheduledPayments(String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -89,7 +89,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     @Override
     public ResponseEntity<OBReadScheduledPayment3> getScheduledPayments(int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

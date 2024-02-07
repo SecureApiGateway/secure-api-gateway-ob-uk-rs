@@ -117,7 +117,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -181,7 +181,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     public ResponseEntity getDomesticStandingOrdersDomesticStandingOrderId(
             String domesticStandingOrderId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -209,7 +209,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     public ResponseEntity getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails(
             String domesticStandingOrderId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

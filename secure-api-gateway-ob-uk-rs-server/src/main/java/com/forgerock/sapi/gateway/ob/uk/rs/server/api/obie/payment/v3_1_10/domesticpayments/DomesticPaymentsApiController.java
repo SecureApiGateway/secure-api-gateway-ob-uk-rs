@@ -111,7 +111,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -171,7 +171,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     public ResponseEntity getDomesticPaymentsDomesticPaymentId(
             String domesticPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -201,7 +201,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     public ResponseEntity getDomesticPaymentsDomesticPaymentIdPaymentDetails(
             String domesticPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

@@ -59,7 +59,7 @@ public class AccountsApiController implements AccountsApi {
     @Override
     public ResponseEntity<OBReadAccount6> getAccount(String accountId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -81,7 +81,7 @@ public class AccountsApiController implements AccountsApi {
     @Override
     public ResponseEntity<OBReadAccount6> getAccounts(String page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

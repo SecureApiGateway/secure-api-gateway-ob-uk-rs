@@ -15,24 +15,25 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements;
 
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
-import org.joda.time.DateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.List;
-import java.util.Set;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
 
 
 public interface FRStatementRepository extends MongoRepository<FRStatement, String>, FRStatementRepositoryCustom {
 
     Page<FRStatement> findByAccountIdAndStartDateTimeBetweenAndEndDateTimeBetween(
             String accountId,
-            DateTime fromStartDateTime,
-            DateTime toStartDateTime,
-            DateTime fromEndDateTime,
-            DateTime toEndDateTime,
+            Date fromStartDateTime,
+            Date toStartDateTime,
+            Date fromEndDateTime,
+            Date toEndDateTime,
             Pageable pageable
     );
 

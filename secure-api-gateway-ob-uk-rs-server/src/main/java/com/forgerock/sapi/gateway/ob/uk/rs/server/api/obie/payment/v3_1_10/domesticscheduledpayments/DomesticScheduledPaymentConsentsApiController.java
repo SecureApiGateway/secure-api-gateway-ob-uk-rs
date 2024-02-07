@@ -67,7 +67,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                                                                                                            String authorization,
                                                                                                            String xIdempotencyKey,
                                                                                                            String xJwsSignature,
-                                                                                                           DateTime xFapiAuthDate,
+                                                                                                           String xFapiAuthDate,
                                                                                                            String xFapiCustomerIpAddress,
                                                                                                            String xFapiInteractionId,
                                                                                                            String xCustomerUserAgent,
@@ -98,7 +98,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
     @Override
     public ResponseEntity<OBWriteDomesticScheduledConsentResponse5> getDomesticScheduledPaymentConsentsConsentId(String consentId,
                                                                                                                  String authorization,
-                                                                                                                 DateTime xFapiAuthDate,
+                                                                                                                 String xFapiAuthDate,
                                                                                                                  String xFapiCustomerIpAddress,
                                                                                                                  String xFapiInteractionId,
                                                                                                                  String xCustomerUserAgent,

@@ -62,7 +62,7 @@ public class BalancesApiController implements BalancesApi {
     public ResponseEntity<OBReadBalance1> getAccountBalances(String accountId,
             int page,
             String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -86,7 +86,7 @@ public class BalancesApiController implements BalancesApi {
     @Override
     public ResponseEntity<OBReadBalance1> getBalances(int page,
             String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

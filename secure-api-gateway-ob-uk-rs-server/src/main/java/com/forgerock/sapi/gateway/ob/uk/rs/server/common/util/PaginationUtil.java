@@ -15,7 +15,6 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 
-import org.joda.time.DateTime;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.org.openbanking.datamodel.common.Links;
 import uk.org.openbanking.datamodel.common.Meta;
@@ -69,19 +68,7 @@ public class PaginationUtil {
     }
 
     public static Meta generateMetaData(int totalPages) {
-        return generateMetaData(totalPages, null, null);
-    }
-
-    public static Meta generateMetaData(int totalPages, DateTime firstAvailableDate, DateTime lastAvailableDate) {
-        Meta metaData = new Meta();
-        metaData.setTotalPages(totalPages);
-        if (firstAvailableDate != null) {
-            metaData.setFirstAvailableDateTime(firstAvailableDate);
-        }
-        if (lastAvailableDate != null) {
-            metaData.setLastAvailableDateTime(lastAvailableDate);
-        }
-        return metaData;
+        return new Meta().totalPages(totalPages);
     }
 
     private static URI getUrlWithPage(int page, UriComponentsBuilder builder) {

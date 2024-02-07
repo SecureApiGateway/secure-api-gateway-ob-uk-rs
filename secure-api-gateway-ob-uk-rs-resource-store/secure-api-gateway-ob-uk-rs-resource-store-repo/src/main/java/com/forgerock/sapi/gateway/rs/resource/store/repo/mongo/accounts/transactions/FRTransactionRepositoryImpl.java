@@ -15,9 +15,10 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
-import org.joda.time.DateTime;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
+
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode0;
 import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
-
-import java.util.Collections;
-import java.util.List;
 
 public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCustom {
     private static final Logger LOGGER = LoggerFactory.getLogger(FRTransactionRepositoryImpl.class);
@@ -39,8 +41,8 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
     private FRTransactionRepository transactionRepository;
 
     @Override
-    public Page<FRTransaction> byAccountIdAndBookingDateTimeBetweenWithPermissions(String accountId, DateTime
-            fromBookingDateTime, DateTime toBookingDateTime, List<FRExternalPermissionsCode> permissions,
+    public Page<FRTransaction> byAccountIdAndBookingDateTimeBetweenWithPermissions(String accountId, Date
+            fromBookingDateTime, Date toBookingDateTime, List<FRExternalPermissionsCode> permissions,
                                                                                    Pageable pageable) {
 
         if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSCREDITS)
@@ -69,8 +71,8 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
     public Page<FRTransaction> byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(
             String accountId,
             String statementId,
-            DateTime fromBookingDateTime,
-            DateTime toBookingDateTime,
+            Date fromBookingDateTime,
+            Date toBookingDateTime,
             List<FRExternalPermissionsCode> permissions,
             Pageable pageable) {
 
@@ -125,7 +127,7 @@ public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCusto
 
     @Override
     public Page<FRTransaction> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
-                                                                                     DateTime fromBookingDateTime, DateTime toBookingDateTime, List<FRExternalPermissionsCode> permissions,
+            Date fromBookingDateTime, Date toBookingDateTime, List<FRExternalPermissionsCode> permissions,
                                                                                      Pageable pageable) {
 
         if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSCREDITS)

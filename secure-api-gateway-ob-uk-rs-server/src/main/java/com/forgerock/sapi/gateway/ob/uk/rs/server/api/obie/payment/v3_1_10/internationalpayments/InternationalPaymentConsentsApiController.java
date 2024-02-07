@@ -85,7 +85,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
     @Override
     public ResponseEntity<OBWriteInternationalConsentResponse6> createInternationalPaymentConsents(OBWriteInternationalConsent5 obWriteInternationalConsent5,
-                String authorization, String xIdempotencyKey, String xJwsSignature, DateTime xFapiAuthDate, String xFapiCustomerIpAddress,
+                String authorization, String xIdempotencyKey, String xJwsSignature, String xFapiAuthDate, String xFapiCustomerIpAddress,
                 String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         logger.info("Processing createInternationalPaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
@@ -115,7 +115,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
     @Override
     public ResponseEntity<OBWriteInternationalConsentResponse6> getInternationalPaymentConsentsConsentId(String consentId, String authorization,
-            DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
+            String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String apiClientId, HttpServletRequest request, Principal principal) {
 
         logger.info("Processing getInternationalPaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
@@ -126,7 +126,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
     @Override
     public ResponseEntity<OBWriteFundsConfirmationResponse1> getInternationalPaymentConsentsConsentIdFundsConfirmation(String consentId,
-            String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId,
+            String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId,
             String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         logger.info("Processing getInternationalPaymentConsentsConsentIdFundsConfirmation request - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",

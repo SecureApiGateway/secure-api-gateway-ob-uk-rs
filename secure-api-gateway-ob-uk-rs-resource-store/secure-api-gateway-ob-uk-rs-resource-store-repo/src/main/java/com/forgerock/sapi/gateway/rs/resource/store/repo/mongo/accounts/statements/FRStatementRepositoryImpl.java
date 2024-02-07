@@ -15,15 +15,16 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
-import org.joda.time.DateTime;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
 
 public class FRStatementRepositoryImpl implements FRStatementRepositoryCustom {
 
@@ -34,8 +35,8 @@ public class FRStatementRepositoryImpl implements FRStatementRepositoryCustom {
     @Override
     public Page<FRStatement> byAccountIdWithPermissions(
             String accountId,
-            DateTime fromStatementDateTime,
-            DateTime toStatementDateTime,
+            Date fromStatementDateTime,
+            Date toStatementDateTime,
             List<FRExternalPermissionsCode> permissions, Pageable pageable) {
 
         if (fromStatementDateTime == null && toStatementDateTime == null) {

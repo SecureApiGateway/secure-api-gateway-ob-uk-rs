@@ -82,7 +82,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     public ResponseEntity<OBFundsConfirmationResponse1> createFundsConfirmations(
             @Valid OBFundsConfirmation1 obFundsConfirmation1,
             String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

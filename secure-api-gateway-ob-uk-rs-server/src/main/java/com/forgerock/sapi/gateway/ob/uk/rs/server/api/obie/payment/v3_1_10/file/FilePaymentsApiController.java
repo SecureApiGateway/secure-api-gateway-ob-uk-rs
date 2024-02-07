@@ -99,7 +99,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -152,7 +152,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     public ResponseEntity getFilePaymentsFilePaymentId(
             String filePaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -181,7 +181,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     public ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
             String filePaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -196,7 +196,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     public ResponseEntity getFilePaymentsFilePaymentIdReportFile(
             String filePaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

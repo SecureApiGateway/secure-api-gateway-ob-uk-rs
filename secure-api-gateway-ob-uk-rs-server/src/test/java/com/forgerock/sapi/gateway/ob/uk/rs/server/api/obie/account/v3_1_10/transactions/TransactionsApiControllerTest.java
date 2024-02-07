@@ -23,10 +23,15 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHea
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -39,6 +44,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRTransactionData;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants.ParametersFieldName;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
@@ -71,6 +77,9 @@ public class TransactionsApiControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Value("${rs.page.default.transaction.size:120}")
+    private int pageLimitTransactions;
+
     @MockBean
     private AccountResourceAccessService accountResourceAccessService;
 
@@ -87,13 +96,20 @@ public class TransactionsApiControllerTest {
         frAccountRepository.save(account);
         accountId = account.getId();
 
-        FRTransactionData transactionData = aValidFRTransactionData(accountId);
-        FRTransaction transaction = FRTransaction.builder()
-                .accountId(accountId)
-                .transaction(transactionData)
-                .bookingDateTime(transactionData.getBookingDateTime())
-                .build();
-        frTransactionRepository.save(transaction);
+
+        // Create 1 transaction per day for the last 365 days (including today)
+        final int numTransactions = 365;
+        final List<FRTransaction> transactions = new ArrayList<>(numTransactions);
+        for (int i = 0; i < numTransactions; i++) {
+            FRTransactionData transactionData = aValidFRTransactionData(accountId);
+            FRTransaction transaction = FRTransaction.builder()
+                    .accountId(accountId)
+                    .transaction(transactionData)
+                    .bookingDateTime(transactionData.getBookingDateTime().minusDays(i))
+                    .build();
+            transactions.add(transaction);
+        }
+        frTransactionRepository.saveAll(transactions);
     }
 
     @AfterEach
@@ -121,8 +137,33 @@ public class TransactionsApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         OBReadTransaction6 returnedTransaction = response.getBody();
         assertThat(returnedTransaction).isNotNull();
+        assertThat(returnedTransaction.getData().getTransaction()).hasSize(pageLimitTransactions);
         assertThat(returnedTransaction.getData().getTransaction().get(0).getAccountId()).isEqualTo(accountId);
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
+        assertThat(response.getBody().getLinks().getNext()).isNotNull();
+    }
+
+    @Test
+    public void shouldGetAccountTransactionsForDateRange() {
+        // Given
+        String url = accountTransactionsUrl(accountId) + "?" + ParametersFieldName.FROM_BOOKING_DATE_TIME + "=" + LocalDateTime.now().minusDays(60) + "&" + ParametersFieldName.TO_BOOKING_DATE_TIME + "=" + LocalDateTime.now().minusDays(30);
+
+        final AccountAccessConsent consent = createAuthorisedConsentAllPermissions(accountId);
+        mockAccountResourceAccessServiceResponse(accountResourceAccessService, consent, accountId);
+
+        // When
+        ResponseEntity<OBReadTransaction6> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                new HttpEntity<>(requiredAccountApiHeaders(consent.getId(), consent.getApiClientId())),
+                OBReadTransaction6.class);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        OBReadTransaction6 returnedTransaction = response.getBody();
+        assertThat(returnedTransaction).isNotNull();
+        assertThat(returnedTransaction.getData().getTransaction()).hasSize(30);
+        assertThat(returnedTransaction.getData().getTransaction().get(0).getAccountId()).isEqualTo(accountId);
     }
 
     @Test

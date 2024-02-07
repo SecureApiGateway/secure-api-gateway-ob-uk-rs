@@ -15,17 +15,23 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api;
 
+import static java.util.Collections.singletonList;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import java.util.UUID;
-
-import static java.util.Collections.singletonList;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 
 /**
  * A test data factory for {@link HttpHeaders} that are sent in each HTTP request.
  */
 public class HttpHeadersTestDataFactory {
+
+    private static final DateTimeFormatter FAPI_AUTH_DATE_FORMATTER = DateTimeFormatter.ofPattern(ApiConstants.HTTP_DATE_FORMAT);
 
     public static HttpHeaders requiredAccountConsentApiHeaders(String apiClientId) {
         HttpHeaders headers = new HttpHeaders();
@@ -34,6 +40,7 @@ public class HttpHeadersTestDataFactory {
         headers.setBearerAuth("dummyAuthToken");
         headers.add("x-fapi-interaction-id", UUID.randomUUID().toString());
         headers.add("x-api-client-id", apiClientId);
+        headers.add("x-fapi-auth-date", FAPI_AUTH_DATE_FORMATTER.format(ZonedDateTime.now()));
         return headers;
     }
 

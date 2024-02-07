@@ -70,7 +70,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
     public ResponseEntity<OBReadDirectDebit2> getAccountDirectDebits(String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -88,7 +88,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
     @Override
     public ResponseEntity<OBReadDirectDebit2> getDirectDebits(int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

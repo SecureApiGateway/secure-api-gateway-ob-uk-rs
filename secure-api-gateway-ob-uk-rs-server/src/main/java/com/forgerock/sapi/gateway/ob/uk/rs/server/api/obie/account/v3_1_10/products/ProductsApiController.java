@@ -67,7 +67,7 @@ public class ProductsApiController implements ProductsApi {
     public ResponseEntity<OBReadProduct2> getAccountProduct(String accountId,
             int page,
             String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -92,7 +92,7 @@ public class ProductsApiController implements ProductsApi {
     @Override
     public ResponseEntity<OBReadProduct2> getProducts(int page,
             String authorization,
-            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerLastLoggedTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

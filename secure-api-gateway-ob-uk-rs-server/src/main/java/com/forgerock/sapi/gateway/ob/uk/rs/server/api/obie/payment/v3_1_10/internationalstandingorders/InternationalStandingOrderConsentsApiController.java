@@ -62,7 +62,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
 
     @Override
     public ResponseEntity<OBWriteInternationalStandingOrderConsentResponse7> createInternationalStandingOrderConsents(OBWriteInternationalStandingOrderConsent6 obWriteInternationalStandingOrderConsent6,
-            String authorization, String xIdempotencyKey, String xJwsSignature, DateTime xFapiAuthDate, String xFapiCustomerIpAddress,
+            String authorization, String xIdempotencyKey, String xJwsSignature, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         logger.info("Processing createInternationalStandingOrderConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
@@ -88,7 +88,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
 
     @Override
     public ResponseEntity<OBWriteInternationalStandingOrderConsentResponse7> getInternationalStandingOrderConsentsConsentId(String consentId,
-            String authorization, DateTime xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId,
+            String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId,
             String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         logger.info("Processing getInternationalStandingOrderConsentsConsentId request - apiClient: {}, x-fapi-interaction-id: {}",

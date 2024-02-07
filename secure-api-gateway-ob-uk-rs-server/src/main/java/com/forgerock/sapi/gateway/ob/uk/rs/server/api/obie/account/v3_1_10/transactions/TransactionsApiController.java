@@ -17,23 +17,14 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.tran
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.transactions.TransactionsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +33,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.transactions.TransactionsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
 import uk.org.openbanking.datamodel.account.OBReadDataTransaction6;
 import uk.org.openbanking.datamodel.account.OBReadTransaction6;
@@ -78,11 +81,9 @@ public class TransactionsApiController implements TransactionsApi {
     public ResponseEntity<OBReadTransaction6> getAccountTransactions(String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
-            DateTime fromBookingDateTime,
-            DateTime toBookingDateTime,
-            DateTime firstAvailableDate,
-            DateTime lastAvailableDate,
+            String xFapiAuthDate,
+            LocalDateTime fromBookingDateTime,
+            LocalDateTime toBookingDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -93,7 +94,7 @@ public class TransactionsApiController implements TransactionsApi {
                 fromBookingDateTime, toBookingDateTime);
 
         if (toBookingDateTime == null) {
-            toBookingDateTime = DateTime.now();
+            toBookingDateTime = LocalDateTime.now();
         }
         if (fromBookingDateTime == null) {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
@@ -103,7 +104,7 @@ public class TransactionsApiController implements TransactionsApi {
         checkPermissions(consent);
 
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
-                fromBookingDateTime, toBookingDateTime, consent.getRequestObj().getData().getPermissions(),
+                new Date(fromBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), new Date(toBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
@@ -119,7 +120,7 @@ public class TransactionsApiController implements TransactionsApi {
         return ResponseEntity.ok(new OBReadTransaction6()
                 .data(new OBReadDataTransaction6().transaction(transactions))
                 .links(PaginationUtil.generateLinks(buildGetAccountTransactionUri(accountId), page, totalPages))
-                .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
+                .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     @Override
@@ -127,11 +128,9 @@ public class TransactionsApiController implements TransactionsApi {
             String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
-            DateTime fromBookingDateTime,
-            DateTime toBookingDateTime,
-            DateTime firstAvailableDate,
-            DateTime lastAvailableDate,
+            String xFapiAuthDate,
+            LocalDateTime fromBookingDateTime,
+            LocalDateTime toBookingDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -141,17 +140,17 @@ public class TransactionsApiController implements TransactionsApi {
                 accountId, statementId, consentId, apiClientId, fromBookingDateTime, toBookingDateTime, page);
 
         if (toBookingDateTime == null) {
-            toBookingDateTime = DateTime.now();
+            toBookingDateTime = LocalDateTime.now();
         }
         if (fromBookingDateTime == null) {
-            fromBookingDateTime = toBookingDateTime.minusYears(100);
+            fromBookingDateTime = toBookingDateTime.minus(Period.ofYears(100));
         }
 
         final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
         checkPermissions(consent);
 
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
-                fromBookingDateTime, toBookingDateTime, consent.getRequestObj().getData().getPermissions(),
+                new Date(fromBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), new Date(toBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
@@ -166,17 +165,15 @@ public class TransactionsApiController implements TransactionsApi {
 
         return ResponseEntity.ok(new OBReadTransaction6().data(new OBReadDataTransaction6().transaction(transactions))
                 .links(PaginationUtil.generateLinks(buildGetAccountStatementTransactionUri(accountId, statementId), page, totalPages))
-                .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
+                .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     @Override
     public ResponseEntity<OBReadTransaction6> getTransactions(int page,
             String authorization,
-            DateTime xFapiAuthDate,
-            DateTime fromBookingDateTime,
-            DateTime toBookingDateTime,
-            DateTime firstAvailableDate,
-            DateTime lastAvailableDate,
+            String xFapiAuthDate,
+            LocalDateTime fromBookingDateTime,
+            LocalDateTime toBookingDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -186,17 +183,17 @@ public class TransactionsApiController implements TransactionsApi {
                 consentId, apiClientId, fromBookingDateTime, toBookingDateTime, page);
 
         if (toBookingDateTime == null) {
-            toBookingDateTime = DateTime.now();
+            toBookingDateTime = LocalDateTime.now();
         }
         if (fromBookingDateTime == null) {
-            fromBookingDateTime = toBookingDateTime.minusYears(100);
+            fromBookingDateTime = toBookingDateTime.minus(Period.ofYears(100));
         }
 
         final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId);
         checkPermissions(consent);
 
         Page<FRTransaction> body = FRTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(consent.getAuthorisedAccountIds(),
-                fromBookingDateTime, toBookingDateTime, consent.getRequestObj().getData().getPermissions(),
+                new Date(fromBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), new Date(toBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = body.getContent()
@@ -211,7 +208,7 @@ public class TransactionsApiController implements TransactionsApi {
 
         return  ResponseEntity.ok(new OBReadTransaction6().data(new OBReadDataTransaction6().transaction(transactions))
                 .links(PaginationUtil.generateLinks(buildGetTransactionsUri(), page, totalPages))
-                .meta(PaginationUtil.generateMetaData(totalPages, firstAvailableDate, lastAvailableDate)));
+                .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     private String buildGetAccountTransactionUri(String accountId) {

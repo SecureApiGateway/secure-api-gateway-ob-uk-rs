@@ -17,18 +17,18 @@ package com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.stateme
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
-import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 public interface FRStatementRepositoryCustom {
 
     Page<FRStatement> byAccountIdWithPermissions(
             String accountId,
-            DateTime fromStatementDateTime,
-            DateTime toStatementDateTime,
+            Date fromStatementDateTime,
+            Date  toStatementDateTime,
             List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 

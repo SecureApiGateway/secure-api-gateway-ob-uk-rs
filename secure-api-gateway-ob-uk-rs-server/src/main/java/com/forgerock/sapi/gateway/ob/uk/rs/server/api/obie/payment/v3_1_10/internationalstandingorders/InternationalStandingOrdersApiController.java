@@ -116,7 +116,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -180,7 +180,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     public ResponseEntity getInternationalStandingOrdersInternationalStandingOrderPaymentId(
             String internationalStandingOrderPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -212,7 +212,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     public ResponseEntity getInternationalStandingOrdersInternationalStandingOrderPaymentIdPaymentDetails(
             String internationalStandingOrderPaymentId,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

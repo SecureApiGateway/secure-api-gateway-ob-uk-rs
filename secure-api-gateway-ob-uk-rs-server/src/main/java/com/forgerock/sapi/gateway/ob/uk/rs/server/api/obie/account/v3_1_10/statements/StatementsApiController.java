@@ -19,26 +19,14 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.accoun
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.statements.StatementsApi;
-
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +39,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.statements.StatementsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 
 import uk.org.openbanking.datamodel.account.OBReadDataStatement2;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
@@ -90,7 +92,7 @@ public class StatementsApiController implements StatementsApi {
             String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -110,7 +112,7 @@ public class StatementsApiController implements StatementsApi {
             String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
+            String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String accept,
@@ -151,9 +153,9 @@ public class StatementsApiController implements StatementsApi {
     public ResponseEntity<OBReadStatement2> getAccountStatements(String accountId,
             int page,
             String authorization,
-            DateTime xFapiAuthDate,
-            DateTime fromStatementDateTime,
-            DateTime toStatementDateTime,
+            String xFapiAuthDate,
+            LocalDateTime fromStatementDateTime,
+            LocalDateTime toStatementDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,
@@ -165,7 +167,9 @@ public class StatementsApiController implements StatementsApi {
         checkPermissions(consent, nonFilePermissions);
 
         Page<FRStatement> statements = frStatementRepository.byAccountIdWithPermissions(accountId,
-                fromStatementDateTime, toStatementDateTime, consent.getRequestObj().getData().getPermissions(),
+                fromStatementDateTime == null ? null : new Date(fromStatementDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()),
+                toStatementDateTime == null ? null : new Date(toStatementDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()),
+                consent.getRequestObj().getData().getPermissions(),
                 PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
 
         int totalPages = statements.getTotalPages();
@@ -175,9 +179,9 @@ public class StatementsApiController implements StatementsApi {
     @Override
     public ResponseEntity<OBReadStatement2> getStatements(int page,
             String authorization,
-            DateTime xFapiAuthDate,
-            DateTime fromStatementDateTime,
-            DateTime toStatementDateTime,
+            String xFapiAuthDate,
+            LocalDateTime fromStatementDateTime,
+            LocalDateTime toStatementDateTime,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
             String xCustomerUserAgent,

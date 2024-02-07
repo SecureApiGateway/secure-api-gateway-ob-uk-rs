@@ -15,41 +15,42 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
-import org.joda.time.DateTime;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.List;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
 
 public interface FRTransactionRepositoryCustom {
 
     Page<FRTransaction> byAccountIdAndBookingDateTimeBetweenWithPermissions(
             @Param("accountId") String accountId,
-            @Param(ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
-            @Param(ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime
-                    toBookingDateTime,
+            @Param(ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME) Date  fromBookingDateTime,
+            @Param(ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME) Date toBookingDateTime,
             @Param("permissions") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
     Page<FRTransaction> byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(
             @Param("accountId") String accountId,
             @Param("statementId") String statementId,
-            @Param(ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
-            @Param(ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = ApiConstants.BOOKED_TIME_DATE_FORMAT) DateTime
-                    toBookingDateTime,
+            @Param(ApiConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME) Date fromBookingDateTime,
+            @Param(ApiConstants.ParametersFieldName.TO_BOOKING_DATE_TIME) Date toBookingDateTime,
             @Param("permissions") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
 
-    Page<FRTransaction> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode>
-            permissions, Pageable pageable);
+    Page<FRTransaction> byAccountIdInWithPermissions(List<String> accountIds,
+                                                     List<FRExternalPermissionsCode> permissions,
+                                                     Pageable pageable);
 
     Page<FRTransaction> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
-                                                                              DateTime fromBookingDateTime, DateTime toBookingDateTime, List<FRExternalPermissionsCode> permissions,
+                                                                              Date fromBookingDateTime,
+                                                                              Date toBookingDateTime,
+                                                                              List<FRExternalPermissionsCode> permissions,
                                                                               Pageable pageable);
 }
