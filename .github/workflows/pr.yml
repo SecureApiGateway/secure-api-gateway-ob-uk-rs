@@ -7,7 +7,7 @@ on:
     paths-ignore:
       - README.md
       - DataAPI-payload-definition.md
-      - infra/helm/securebanking-openbanking-uk-rs/Chart.yaml
+      - _infra/helm/securebanking-openbanking-uk-rs/Chart.yaml
 
 env:
   HELM_DIRECTORY: _infra/helm/
