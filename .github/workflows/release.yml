@@ -22,7 +22,7 @@ on:
 jobs:
   release_prepare: # prepare for a release in scm, creates the tag and release branch with the proper release versions
     name: Call release prepare
-    uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-prepare.yml@master
+    uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-prepare.yml@1260-workflows-release
     with:
       release_version_number: ${{ inputs.release_version_number }}
       github_release_user: ${{ vars.GIT_RELEASE_USER }}
