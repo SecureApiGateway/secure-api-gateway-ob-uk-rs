@@ -28,6 +28,10 @@ jobs:
       github_release_user: ${{ vars.GIT_RELEASE_USER }}
       github_release_email: ${{ vars.GIT_RELEASE_EMAIL }}
     secrets:
+      GPG_PRIVATE_KEY_BOT: ${{ secrets.GPG_PRIVATE_KEY_BOT }}
+      GPG_KEY_PASSPHRASE_BOT: ${{ secrets.GPG_KEY_PASSPHRASE_BOT }}
+      GIT_COMMIT_USERNAME_BOT: ${{ secrets.GIT_COMMIT_USERNAME_BOT }}
+      GIT_COMMIT_AUTHOR_EMAIL_BOT: ${{ secrets.GIT_COMMIT_AUTHOR_EMAIL_BOT }}
       release_github_token: ${{ secrets.RELEASE_PAT }}
 
   release_java:
