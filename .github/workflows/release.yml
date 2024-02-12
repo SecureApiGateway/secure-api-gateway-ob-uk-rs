@@ -25,6 +25,7 @@ jobs:
     uses: SecureApiGateway/secure-api-gateway-parent/.github/workflows/release-prepare.yml@master
     with:
       release_version_number: ${{ inputs.release_version_number }}
+      require_maven: true
     secrets:
       GPG_PRIVATE_KEY_BOT: ${{ secrets.GPG_PRIVATE_KEY_BOT }}
       GPG_KEY_PASSPHRASE_BOT: ${{ secrets.GPG_KEY_PASSPHRASE_BOT }}
