@@ -69,7 +69,7 @@ public class UserClientServiceTest {
                 .accountStatus(ACCOUNT_ACTIVE_STATUS)
                 .build();
         // When
-        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=username+eq+%22psu4test%22%7D"))
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=userName+eq+%22psu4test%22"))
                 .andRespond(withStatus(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(objectMapper.writeValueAsString(user)));
@@ -91,7 +91,7 @@ public class UserClientServiceTest {
                 .accountStatus("inactive")
                 .build();
         // when
-        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=username+eq+%22psu4test%22%7D"))
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=userName+eq+%22psu4test%22"))
                 .andRespond(withStatus(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(objectMapper.writeValueAsString(user)));
@@ -111,7 +111,7 @@ public class UserClientServiceTest {
     @Test
     public void ShouldRaiseNotFoundUserDataFromPlatform() {
         // When
-        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=username+eq+%22psu4test%22%7D"))
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users?_queryFilter=userName+eq+%22psu4test%22"))
                   .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         ExceptionClient exception = catchThrowableOfType(() ->
