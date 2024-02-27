@@ -63,7 +63,7 @@ public class UserClientService {
         this.restTemplate = restTemplate;
         this.queryByUsernameUriTemplate = UriComponentsBuilder.fromHttpUrl(cloudClientConfiguration.getBaseUri())
                                                               .path("/repo/users")
-                                                              .queryParam("_queryFilter","username+eq+\"{username}\"}")
+                                                              .queryParam("_queryFilter","userName+eq+\"{username}\"")
                                                               .build();
     }
 
