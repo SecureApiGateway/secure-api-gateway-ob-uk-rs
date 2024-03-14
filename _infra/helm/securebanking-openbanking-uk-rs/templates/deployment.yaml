@@ -59,17 +59,17 @@ spec:
           - name: SPRING_DATA_MONGODB_DATABASE
             valueFrom:
               secretKeyRef:
-                name: core-secrets
+                name: ob-secrets
                 key: MONGODB_TEST_FACILITY_USERNAME
           - name: SPRING_DATA_MONGODB_USERNAME
             valueFrom:
               secretKeyRef:
-                name: core-secrets
+                name: ob-secrets
                 key: MONGODB_TEST_FACILITY_USERNAME
           - name: SPRING_DATA_MONGODB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: core-secrets
+                name: ob-secrets
                 key: MONGODB_TEST_FACILITY_PASSWORD
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
