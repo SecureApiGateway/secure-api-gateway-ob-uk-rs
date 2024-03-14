@@ -81,12 +81,12 @@ spec:
           - name: RCS_CONSENT_STORE_API_BASEURI
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: RCS_CONSENT_STORE_URI
           - name: RS_DISCOVERY_FINANCIAL_ID
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: OB_ASPSP_ORG_ID
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
