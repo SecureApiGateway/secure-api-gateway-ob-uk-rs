@@ -59,34 +59,34 @@ spec:
           - name: SPRING_DATA_MONGODB_DATABASE
             valueFrom:
               secretKeyRef:
-                name: openig-secrets-env
+                name: ob-secrets
                 key: MONGODB_TEST_FACILITY_USERNAME
           - name: SPRING_DATA_MONGODB_USERNAME
             valueFrom:
               secretKeyRef:
-                name: openig-secrets-env
+                name: ob-secrets
                 key: MONGODB_TEST_FACILITY_USERNAME
           - name: SPRING_DATA_MONGODB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: openig-secrets-env
+                name: ob-secrets
                 key: MONGODB_TEST_FACILITY_PASSWORD
           - name: SERVER_PORT
             value: {{ .Values.deployment.containerPort | quote }}
           - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
               configMapKeyRef:
-                name: deployment-config
+                name: core-deployment-config
                 key: GATEWAY_DATA_REPO_URI
           - name: RCS_CONSENT_STORE_API_BASEURI
             valueFrom:
               configMapKeyRef:
-                name: deployment-config
+                name: ob-deployment-config
                 key: RCS_CONSENT_STORE_URI
           - name: RS_DISCOVERY_FINANCIAL_ID
             valueFrom:
               configMapKeyRef:
-                name: deployment-config
+                name: ob-deployment-config
                 key: OB_ASPSP_ORG_ID
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
