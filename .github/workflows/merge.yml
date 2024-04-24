@@ -1,84 +1,16 @@
-name: merge-master
-
+name: Merge - Build and Deploy
 on:
   push:
     branches:
       - master
     paths-ignore:
-      - README.md
-      - DataAPI-payload-definition.md
-
-env:
-  SERVICE_NAME: securebanking-openbanking-uk-rs
-  GIT_SHA_SHORT: $(echo ${{ github.sha }} | cut -c1-7)
-
+      - '**/README.md'
+      - '_infra/helm/**'
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: Check master integrity
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Get version
-        id: get_version
-        run: |
-          echo "VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )" >> $GITHUB_ENV
-          echo "MAVEN_SERVER_ID=maven.forgerock.org-community" >> $GITHUB_ENV
-
-      - name: Set up snapshot forgerock maven repository
-        if: contains( env.VERSION, 'SNAPSHOT')
-        run: |
-          echo "MAVEN_SERVER_ID=maven.forgerock.org-community-snapshots" >> $GITHUB_ENV
-
-      - uses: actions/setup-java@v4
-        name: set java and maven cache
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          architecture: x64
-          cache: 'maven'
-          server-id: ${{ env.MAVEN_SERVER_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
-          server-username: FR_ARTIFACTORY_USER # env variable for username in deploy
-          server-password: FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD # env variable for token in deploy
-
-      - name: Auth to GCP  
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.DEV_GAR_KEY }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.0
-
-      - name: Auth Docker
-        run: |
-          gcloud auth configure-docker europe-west4-docker.pkg.dev
-
-      - name: Build Code + Test + Create Docker Image
-        run: |
-          make docker tag=${{ env.GIT_SHA_SHORT }}
-          docker tag ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:${{ env.GIT_SHA_SHORT }} ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }}:latest
-          docker push ${{ vars.GAR_DEV_REPO }}/securebanking/${{ env.SERVICE_NAME }} --all-tags
-
-      - name: Deploy artifact package
-        run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
-        env:
-          FR_ARTIFACTORY_USER: ${{ secrets.FR_ARTIFACTORY_USER }}
-          FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD: ${{ secrets.FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD }}
-      
-      - uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
-  test:
-    runs-on: ubuntu-latest
-    name: Check master integrity
-    needs: build
-    steps:      
-      - name: 'Update Environment'
-        uses: codefresh-io/codefresh-pipeline-runner@master
-        with:
-          args: '-v ARGO_VALUES_PREFIX=testFacilityBank -v SERVICE_NAME=test-facility-bank'
-        env:
-          PIPELINE_NAME: 'SAPIG-devenv/dev-ob-service-build'
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          TRIGGER_NAME: github-actions-trigger-rs
-        id: run-pipeline
+  run_pr-template:
+    name: Merge - Build and Deploy
+    uses: SecureApiGateway/secure-api-gateway-ci/.github/workflows/reusable-merge.yml@main
+    secrets: inherit
+    with:
+      componentName: secure-api-gateway-ob-uk-rs
+      dockerTag: $(echo ${{ github.sha }} | cut -c1-7)

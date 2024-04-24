@@ -1,0 +1,13 @@
+name: PR - Build Helm
+on:
+  push:
+    paths:
+      - '_infra/helm/**'
+jobs:
+  run_pr-helm-template:
+    name: PR - Check Helm
+    uses: SecureApiGateway/secure-api-gateway-ci/.github/workflows/reusable-helm.yml.yml@main
+    secrets: inherit
+    with:
+      componentName: securebanking-openbanking-uk-rs
+      helmLocation: _infra/helm

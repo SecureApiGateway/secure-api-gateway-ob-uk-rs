@@ -1,101 +1,18 @@
-name: Pull Request - Build and Deploy
-
+name: PR - Build and Deploy
 on:
   pull_request:
     branches:
       - master
     paths-ignore:
-      - README.md
+      - '**/README.md'
+      - '_infra/helm/**'
       - DataAPI-payload-definition.md
-      - _infra/helm/securebanking-openbanking-uk-rs/Chart.yaml
-
-env:
-  HELM_DIRECTORY: _infra/helm/
-  SERVICE_NAME: securebanking-openbanking-uk-rs
-  PR_NUMBER: pr-${{ github.event.number }}
 
 jobs:
-  check:
-    runs-on: ubuntu-latest
-    name: Check PR
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: template helm
-        run: |
-          helm template $HELM_DIRECTORY/$SERVICE_NAME
-
-      - name: Check Copyright
-        run: mvn license:check
-  
-  build:
-    runs-on: ubuntu-latest
-    name: Build Image
-    needs: check
-    steps:
-
-      - uses: actions/checkout@v4
-
-      - name: Get version
-        id: get_version
-        run: |
-          echo "VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )" >> $GITHUB_ENV
-          echo "MAVEN_SERVER_ID=maven.forgerock.org-community" >> $GITHUB_ENV
-
-      - name: Set up snapshot forgerock maven repository
-        if: contains( env.VERSION, 'SNAPSHOT')
-        run: |
-          echo "MAVEN_SERVER_ID=maven.forgerock.org-community-snapshots" >> $GITHUB_ENV
-
-      # set java and cache
-      - uses: actions/setup-java@v4
-        id: set_java_maven
-        name: set java and maven cache
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          architecture: x64
-          cache: 'maven'
-          server-id: ${{ env.MAVEN_SERVER_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
-          server-username: FR_ARTIFACTORY_USER # env variable for username in deploy
-          server-password: FR_ARTIFACTORY_USER_ENCRYPTED_PASSWORD # env variable for token in deploy
-
-      - name: Auth to GCP  
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.DEV_GAR_KEY }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.0
-      
-      - name: Auth Docker
-        run: |
-          gcloud auth configure-docker europe-west4-docker.pkg.dev
-      
-      - name: Build Code + Test + Create Docker Image
-        run: |
-          make docker tag=${{ env.PR_NUMBER }}
-
-      - uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
-      
-  deploy:
-    runs-on: ubuntu-latest
-    name: Deploy
-    needs: build
-    steps:
-      - name: Create lowercase Github Username
-        id: toLowerCase
-        run: echo "GITHUB_USER=$(echo ${{github.actor}} | tr '[:upper:]' '[:lower:]')" >> ${GITHUB_ENV}
-      
-      - name: 'Update Environment'
-        uses: codefresh-io/codefresh-pipeline-runner@master
-        if: github.actor != 'dependabot[bot]'
-        with:
-          args: '-v TAG=${{ env.PR_NUMBER }} -v ARGO_VALUES_PREFIX=testFacilityBank -v SERVICE_NAME=test-facility-bank -v ENVIRONMENT=${{ env.GITHUB_USER }}-ob -v NEWBRANCH=${{ github.head_ref }}'
-        env:
-          PIPELINE_NAME: 'SAPIG-devenv/dev-ob-service-build'
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          TRIGGER_NAME: github-actions-trigger-rs
-        id: run-pipeline
+  run_pr-template:
+    name: PR - Build and Deploy
+    uses: SecureApiGateway/secure-api-gateway-ci/.github/workflows/reusable-pr.yml@main
+    secrets: inherit
+    with:
+      componentName: secure-api-gateway-ob-uk-rs
+      dockerTag: pr-${{ github.event.number }}
