@@ -108,24 +108,18 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
     }
 
     private void filterAccount(FRAccount account, List<FRExternalPermissionsCode> permissions) {
-        for (FRExternalPermissionsCode permission : permissions) {
-            switch (permission) {
-
-                case READACCOUNTSBASIC:
-                    account.getAccount().setAccounts(null);
-                    account.getAccount().setServicer(null);
-                    break;
-                case READACCOUNTSDETAIL:
-                    if (!CollectionUtils.isEmpty(account.getAccount().getAccounts())) {
-                        for (FRAccountIdentifier subAccount : account.getAccount().getAccounts()) {
-                            if (!permissions.contains(FRExternalPermissionsCode.READPAN)
-                                    && OBExternalAccountIdentification4Code.PAN.toString().equals(subAccount.getSchemeName())) {
-                                subAccount.setIdentification("xxx");
-                            }
-                        }
+        if(permissions.contains(FRExternalPermissionsCode.READACCOUNTSDETAIL)){
+            if (!CollectionUtils.isEmpty(account.getAccount().getAccounts())) {
+                for (FRAccountIdentifier subAccount : account.getAccount().getAccounts()) {
+                    if (!permissions.contains(FRExternalPermissionsCode.READPAN)
+                            && OBExternalAccountIdentification4Code.PAN.toString().equals(subAccount.getSchemeName())) {
+                        subAccount.setIdentification("xxx");
                     }
-                    break;
+                }
             }
+        } else if (permissions.contains(FRExternalPermissionsCode.READACCOUNTSBASIC)){
+            account.getAccount().setAccounts(null);
+            account.getAccount().setServicer(null);
         }
     }
 

@@ -91,8 +91,10 @@ public class AccountsApiControllerTest {
         // When
         final String apiClientId = "client-123";
         final String consentId = "consent-343553";
-
-        mockAuthorisedConsentResponse(accountId, apiClientId, consentId);
+        // This makes this test ensure that the DETAIL permission overrides the BASIC permissions. See issue
+        // https://github.com/SecureApiGateway/SecureApiGateway/issues/1431
+        List<FRExternalPermissionsCode> permissions = List.of(FRExternalPermissionsCode.READACCOUNTSDETAIL, FRExternalPermissionsCode.READACCOUNTSBASIC);
+        mockAuthorisedConsentResponse(accountId, apiClientId, consentId, permissions);
 
         ResponseEntity<OBReadAccount6> response = restTemplate.exchange(
                 url,
@@ -132,7 +134,8 @@ public class AccountsApiControllerTest {
         final String apiClientId = "client-123";
         final String consentId = "consent-343553";
 
-        mockAuthorisedConsentResponse(accountId, apiClientId, consentId);
+        List<FRExternalPermissionsCode> permissions = List.of(FRExternalPermissionsCode.READACCOUNTSDETAIL);
+        mockAuthorisedConsentResponse(accountId, apiClientId, consentId, permissions);
 
         // When
         ResponseEntity<OBReadAccount6> response = restTemplate.exchange(
@@ -157,13 +160,13 @@ public class AccountsApiControllerTest {
         assertThat(response.getBody().getLinks().getSelf().toString()).isEqualTo(url);
     }
 
-    private void mockAuthorisedConsentResponse(String accountId, String apiClientId, String consentId) {
+    private void mockAuthorisedConsentResponse(String accountId, String apiClientId, String consentId, List<FRExternalPermissionsCode> permissions) {
         final AccountAccessConsent consent = new AccountAccessConsent();
         consent.setId(consentId);
         consent.setApiClientId(apiClientId);
         consent.setStatus("Authorised");
         consent.setAuthorisedAccountIds(List.of(accountId));
-        consent.setRequestObj(FRReadConsent.builder().data(FRReadConsentData.builder().permissions(List.of(FRExternalPermissionsCode.READACCOUNTSDETAIL)).build()).build());
+        consent.setRequestObj(FRReadConsent.builder().data(FRReadConsentData.builder().permissions(permissions).build()).build());
         given(accountAccessConsentStoreClient.getConsent(eq(consentId), eq(apiClientId))).willReturn(consent);
     }
 
