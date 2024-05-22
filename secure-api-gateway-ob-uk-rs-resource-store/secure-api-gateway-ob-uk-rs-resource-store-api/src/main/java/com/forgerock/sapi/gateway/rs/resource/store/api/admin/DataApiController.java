@@ -171,6 +171,10 @@ public class DataApiController implements DataApi {
             User user = userClientService.getUserByName(userData.getUserName());
             // user exist, carry on to update the user data
             String userId = user.getId();
+
+            // This method is currently keyed off the userName field in the user data.
+            // Overwrite any supplied userId with the value retrieved from the platform for the username so that it is consistent
+            userData.setUserId(userId);
             log.debug("user found with id: {}", userId);
             // update customer information
             log.debug("Customer information enabled: {}", isCustomerInfoEnabled);
