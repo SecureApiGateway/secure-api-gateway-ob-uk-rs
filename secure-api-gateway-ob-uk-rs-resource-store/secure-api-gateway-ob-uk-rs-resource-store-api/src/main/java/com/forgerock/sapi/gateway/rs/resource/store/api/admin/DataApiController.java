@@ -37,7 +37,9 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standing
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -66,7 +68,6 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.paymen
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter.toOBStandingOrder6;
 
 @Controller("DataApi")
-@Slf4j
 public class DataApiController implements DataApi {
 
     private final FRAccountRepository accountsRepository;
@@ -86,6 +87,8 @@ public class DataApiController implements DataApi {
     private final DataUpdater dataUpdater;
     private final DataCreator dataCreator;
     private final UserClientService userClientService;
+    
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public DataApiController(FRDirectDebitRepository directDebitRepository, FRAccountRepository accountsRepository,
                              FRBalanceRepository balanceRepository, FRBeneficiaryRepository beneficiaryRepository,
@@ -139,8 +142,10 @@ public class DataApiController implements DataApi {
     public ResponseEntity<FRUserData> exportUserData(
             @RequestParam("userId") String userId
     ) {
+        logger.info("Exporting data for user {}", userId);
         FRUserData userData = new FRUserData(userId);
         for (FRAccount account : accountsRepository.findByUserID(userId)) {
+            logger.info("userId: {}, accountId: {}", userId, account.getId());
             userData.addAccountData(getAccount(account));
         }
 
@@ -175,11 +180,11 @@ public class DataApiController implements DataApi {
             // This method is currently keyed off the userName field in the user data.
             // Overwrite any supplied userId with the value retrieved from the platform for the username so that it is consistent
             userData.setUserId(userId);
-            log.debug("user found with id: {}", userId);
+            logger.debug("user found with id: {}", userId);
             // update customer information
-            log.debug("Customer information enabled: {}", isCustomerInfoEnabled);
+            logger.debug("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
-                log.debug("Creating customer information for user {}:{}", userData.getUserName(), userId);
+                logger.debug("Creating customer information for user {}:{}", userData.getUserName(), userId);
                 dataUpdater.updateCustomerInfo(userData.getCustomerInfo(), userId);
             }
 
@@ -218,7 +223,7 @@ public class DataApiController implements DataApi {
             }
             return exportUserData(userId);
         } catch (ExceptionClient exceptionClient) {
-            log.error(
+            logger.error(
                     "Status: {}, reason: {}",
                     exceptionClient.getErrorClient().getErrorType().getHttpStatus(),
                     exceptionClient.getReason()
@@ -241,14 +246,14 @@ public class DataApiController implements DataApi {
             User user = userClientService.getUserByName(userData.getUserName());
             // user exist, carry on to create the user data
             String userId = user.getId();
-            log.debug("user found with id: {}", userId);
+            logger.debug("user found with id: {}", userId);
             FRUserData userDataResponse = new FRUserData();
             userDataResponse.setUserId(userId);
             userDataResponse.setUserName(user.getUserName());
             // Customer info
-            log.debug("Customer information enabled: {}", isCustomerInfoEnabled);
+            logger.debug("Customer information enabled: {}", isCustomerInfoEnabled);
             if (isCustomerInfoEnabled && userData.getCustomerInfo() != null) {
-                log.debug("Creating customer information for user {}:{}", userData.getUserName(), userId);
+                logger.debug("Creating customer information for user {}:{}", userData.getUserName(), userId);
                 userDataResponse.setCustomerInfo(
                         FRCustomerInfoConverter.entityToDto(
                                 dataCreator.createCustomerInfo(userData.getCustomerInfo(), userId)
@@ -312,7 +317,7 @@ public class DataApiController implements DataApi {
             return ResponseEntity.ok(userDataResponse);
 
         } catch (ExceptionClient exceptionClient) {
-            log.error(
+            logger.error(
                     "Status: {}, reason: {}",
                     exceptionClient.getErrorClient().getErrorType().getHttpStatus(),
                     exceptionClient.getReason()
@@ -325,11 +330,11 @@ public class DataApiController implements DataApi {
     public ResponseEntity<Boolean> deleteUserData(
             @RequestParam("userName") String userName
     ) throws DataApiException {
-        log.debug("deleting user account data by userName '{}'", userName);
+        logger.debug("deleting user account data by userName '{}'", userName);
         try {
             User user = userClientService.getUserByName(userName);
             if (user != null) {
-                log.debug("deleting user account data for user Id '{}'", user.getId());
+                logger.debug("deleting user account data for user Id '{}'", user.getId());
                 customerInfoRepository.deleteFRCustomerInfoByUserID(user.getId());
                 Collection<FRAccount> accounts = accountsRepository.findByUserID(user.getId());
                 for (FRAccount account : accounts) {
@@ -339,9 +344,9 @@ public class DataApiController implements DataApi {
             }
         } catch (ExceptionClient exceptionClient) {
             if (exceptionClient.getErrorClient().getErrorType().getHttpStatus().equals(HttpStatus.NOT_FOUND)) {
-                log.debug("No user details with user name {} found, no data has been deleted", userName);
+                logger.debug("No user details with user name {} found, no data has been deleted", userName);
             } else {
-                log.error(
+                logger.error(
                         "Status: {}, reason: {}",
                         exceptionClient.getErrorClient().getErrorType().getHttpStatus(),
                         exceptionClient.getReason()
