@@ -384,7 +384,7 @@ public class DataApiController implements DataApi {
                 for (FRBalance balance : page.getContent()) {
                     accountData.addBalance(toOBReadBalance1DataBalance(balance.getBalance()));
                 }
-                page = balanceRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
+                page = balanceRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRBalance balance : page.getContent()) {
@@ -444,7 +444,7 @@ public class DataApiController implements DataApi {
                 for (FRTransaction transaction : page.getContent()) {
                     accountData.addTransaction(toOBTransaction6(transaction.getTransaction()));
                 }
-                page = transactionRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
+                page = transactionRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRTransaction transaction : page.getContent()) {
