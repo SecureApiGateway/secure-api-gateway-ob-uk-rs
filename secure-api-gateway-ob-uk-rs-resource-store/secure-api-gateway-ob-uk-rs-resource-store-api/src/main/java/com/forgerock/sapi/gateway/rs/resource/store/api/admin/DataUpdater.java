@@ -104,7 +104,7 @@ public class DataUpdater {
             return;
         }
         FRPartyData frPartyDiff = toFRPartyData(userData.getParty());
-        FRParty frParty = partyRepository.findByUserId(userData.getUserName());
+        FRParty frParty = partyRepository.findByUserId(userData.getUserId());
         if (!frParty.getId().equals(frPartyDiff.getPartyId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     String.format("the party ID '%s' doesn't match '%s' for user '%s'",

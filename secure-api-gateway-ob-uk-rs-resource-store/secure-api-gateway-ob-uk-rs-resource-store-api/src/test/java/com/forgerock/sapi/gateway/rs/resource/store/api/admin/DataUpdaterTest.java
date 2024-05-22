@@ -16,6 +16,8 @@
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
 import com.forgerock.sapi.gateway.rs.resource.store.api.testsupport.FRCustomerInfoTestHelper;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
@@ -37,6 +39,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCu
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.internal.util.collections.Iterables;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -47,6 +50,7 @@ import uk.org.openbanking.datamodel.account.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toFRCashBalance;
@@ -60,6 +64,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -462,6 +467,36 @@ public class DataUpdaterTest {
 
         // Then
         verify(customerInfoRepository).findByUserID(userData.getUserId());
+    }
+
+    @Test
+    public void updatePartyInfo() {
+        final String partyId = UUID.randomUUID().toString();
+        final OBParty2 obParty = new OBParty2().partyId(partyId).partyType(OBExternalPartyType1Code.SOLE).name("John Smith");
+
+        final FRUserData userData = new FRUserData();
+        final String userId = UUID.randomUUID().toString();
+        userData.setUserId(userId);
+        userData.setUserName("test-user");
+
+        final FRParty existingParty = new FRParty();
+        existingParty.setUserId(userId);
+        existingParty.setId(partyId);
+        final FRPartyData existingPartyData = new FRPartyData();
+        existingPartyData.setPartyId(partyId);
+        existingParty.setParty(existingPartyData);
+        doReturn(existingParty).when(partyRepository).findByUserId(eq(userId));
+
+        userData.setParty(obParty);
+        dataUpdater.updateParty(userData);
+
+        final ArgumentCaptor<FRParty> captor = ArgumentCaptor.captor();
+        verify(partyRepository).save(captor.capture());
+        final FRPartyData updatedParty = captor.getValue().getParty();
+        assertThat(updatedParty.getPartyId()).isEqualTo(partyId);
+        assertThat(updatedParty.getName()).isEqualTo(obParty.getName());
+        assertThat(updatedParty.getPartyType()).isEqualTo(FRPartyConverter.toFRPartyType(obParty.getPartyType()));
+
     }
 
     private FRAccountData accountDataWithBalance(OBReadBalance1DataBalanceInner balance) {
