@@ -147,22 +147,34 @@ public class DataApiController implements DataApi {
     public ResponseEntity<FRUserData> exportUserData(
             @RequestParam("userId") String userId
     ) {
-        FRUserData userData = new FRUserData(userId);
-        for (FRAccount account : accountsRepository.findByUserID(userId)) {
-            userData.addAccountData(dataExporter.exportAccountData(account));
-        }
+        try {
+            final User user = userClientService.getUserById(userId);
 
-        userData.setCustomerInfo(
-                FRCustomerInfoConverter.entityToDto(
-                        customerInfoRepository.findByUserID(userId)
-                )
-        );
+            FRUserData userData = new FRUserData(userId);
+            userData.setUserName(user.getUserName());
+            for (FRAccount account : accountsRepository.findByUserID(userId)) {
+                userData.addAccountData(dataExporter.exportAccountData(account));
+            }
 
-        FRParty byUserId = partyRepository.findByUserId(userId);
-        if (byUserId != null) {
-            userData.setParty(toOBParty2(byUserId.getParty()));
+            userData.setCustomerInfo(
+                    FRCustomerInfoConverter.entityToDto(
+                            customerInfoRepository.findByUserID(userId)
+                    )
+            );
+
+            FRParty byUserId = partyRepository.findByUserId(userId);
+            if (byUserId != null) {
+                userData.setParty(toOBParty2(byUserId.getParty()));
+            }
+            return ResponseEntity.ok(userData);
+        } catch (ExceptionClient e) {
+            log.error(
+                    "Status: {}, reason: {}",
+                    e.getErrorClient().getErrorType().getHttpStatus(),
+                    e.getReason()
+            );
+            throw new DataApiException(e);
         }
-        return ResponseEntity.ok(userData);
     }
 
     @Override

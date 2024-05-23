@@ -36,8 +36,8 @@ public class FRUserData {
     private List<FRAccountData> accountDatas = new ArrayList<>();
     private FRCustomerInfo customerInfo;
 
-    public FRUserData(String userName) {
-        this.userName = userName;
+    public FRUserData(String userId) {
+        this.userId = userId;
     }
 
     public void addAccountData(FRAccountData accountData) {
