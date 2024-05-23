@@ -15,19 +15,19 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
-import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientService;
-import com.forgerock.sapi.gateway.rs.resource.store.api.testsupport.FRCustomerInfoTestHelper;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PUT;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,27 +42,42 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRTransactionData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
+import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientService;
+import com.forgerock.sapi.gateway.rs.resource.store.api.testsupport.FRCustomerInfoTestHelper;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.customerinfo.FRCustomerInfoEntity;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
+
 import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode2;
 import uk.org.openbanking.datamodel.account.OBReadBalance1DataBalanceInner;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.http.HttpMethod.PUT;
+import uk.org.openbanking.datamodel.account.OBTransaction6;
+import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
+import uk.org.openbanking.datamodel.account.OBTransactionCashBalanceAmount;
 
 /**
  * A SpringBoot test for the {@link DataApiController}.
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-@TestPropertySource(properties = {"rs.data.upload.limit.accounts=10", "rs.data.upload.limit.documents=1", "rs.data.customerInfo.enabled=true"})
+@TestPropertySource(properties = {"rs.data.upload.limit.accounts=10", "rs.data.upload.limit.documents=1000", "rs.data.customerInfo.enabled=true"})
 @AutoConfigureWebClient(registerRestTemplate = true)
 public class DataApiControllerTest {
 
@@ -82,6 +97,9 @@ public class DataApiControllerTest {
     private FRCustomerInfoRepository frCustomerInfoRepository;
 
     @Autowired
+    private FRTransactionRepository frTransactionRepository;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @MockBean
@@ -95,17 +113,30 @@ public class DataApiControllerTest {
         frAccountRepository.deleteAll();
         frBalanceRepository.deleteAll();
         frCustomerInfoRepository.deleteAll();
+        frTransactionRepository.deleteAll();
+
+        // Insert extra test data into the repo to ensure that the controller only exports data belonging to the user
+        final String accountId = UUID.randomUUID().toString();
+        frTransactionRepository.save(FRTransaction.builder().accountId(accountId).transaction(
+                FRTransactionData.builder().accountId(accountId)
+                                           .amount(new FRAmount("1.23", "GBP"))
+                                           .build())
+                .build());
+
+        frBalanceRepository.save(FRBalance.builder().accountId(accountId).build());
+        frAccountRepository.save(FRAccount.builder().id(accountId).account(FRFinancialAccount.builder().build()).build());
+        frCustomerInfoRepository.save(FRCustomerInfoEntity.builder().id(accountId).build());
     }
 
     @Test
     public void shouldCreateNewData() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
+        final int numTransactions = 650;
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, numTransactions, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(USER_NAME);
-
 
         User user = User.builder()
                 .id(UUID.randomUUID().toString())
@@ -126,13 +157,25 @@ public class DataApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         FRCustomerInfo customerInfoResponse = response.getBody().getCustomerInfo();
         validateCustomerInfoResponse(customerInfoResponse, userData.getCustomerInfo());
+        final List<FRAccountData> responseAccountData = userData.getAccountDatas();
+        assertThat(responseAccountData).hasSize(1);
+        final FRAccountData responseAccount = responseAccountData.get(0);
+        assertThat(responseAccount.getTransactions()).hasSize(numTransactions);
+
+        ResponseEntity<FRUserData> exportedData = restTemplate.exchange(dataUrl() + "?userId=" + user.getId(), GET, HttpEntity.EMPTY, FRUserData.class);
+        assertThat(exportedData.getStatusCode()).isEqualTo(HttpStatus.OK);
+        final List<FRAccountData> exportedAccountData = exportedData.getBody().getAccountDatas();
+        assertThat(exportedAccountData).hasSize(1);
+        final FRAccountData exportedAccount = exportedAccountData.get(0);
+        assertThat(exportedAccount.getTransactions()).hasSize(numTransactions);
+        assertThat(exportedAccount.getBalances()).hasSize(1);
     }
 
     @Test
     public void shouldRaiseUserNotFoundRejectCreationData() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, 5, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(USER_NAME);
@@ -167,7 +210,7 @@ public class DataApiControllerTest {
                 .userID(UUID.randomUUID().toString())
                 .build());
 
-        List<FRAccountData> accountDataList = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
+        List<FRAccountData> accountDataList = List.of(accountDataWithBalances(account,12, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDataList);
         userData.setUserName(savedAccount.getUserID());
@@ -196,7 +239,7 @@ public class DataApiControllerTest {
     public void shouldRaiseUserNotFoundUsingUpdate() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, new OBReadBalance1DataBalanceInner()));
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, 15, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(USER_NAME);
@@ -232,7 +275,7 @@ public class DataApiControllerTest {
                 .build());
 
         List<FRAccountData> accountDatas = List.of(accountDataWithBalances(
-                account,
+                account, 1001,
                 new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMAVAILABLE),
                 new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMBOOKED)));
         FRUserData userData = new FRUserData();
@@ -259,11 +302,24 @@ public class DataApiControllerTest {
         assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
-    private FRAccountData accountDataWithBalances(OBAccount6 account, OBReadBalance1DataBalanceInner... obCashBalance1s) {
+    private FRAccountData accountDataWithBalances(OBAccount6 account, int numTransactions, OBReadBalance1DataBalanceInner... obCashBalance1s) {
         FRAccountData accountData = new FRAccountData();
         accountData.setAccount(account);
+        accountData.setTransactions(generateTransactions(numTransactions));
         accountData.setBalances(Arrays.asList(obCashBalance1s));
+
         return accountData;
+    }
+
+    private List<OBTransaction6> generateTransactions(int numTransactions) {
+        final List<OBTransaction6> transactions = new ArrayList<>(numTransactions);
+        for (int i = 0; i < numTransactions; i++) {
+            OBTransaction6 transaction = new OBTransaction6();
+            transaction.balance(new OBTransactionCashBalance(OBCreditDebitCode2.CREDIT, OBBalanceType1Code.CLOSINGCLEARED, new OBTransactionCashBalanceAmount(i + ".00", "GBP")))
+                       .transactionReference("Test Payment: " + i);
+            transactions.add(transaction);
+        }
+        return transactions;
     }
 
     private String dataUrl() {
