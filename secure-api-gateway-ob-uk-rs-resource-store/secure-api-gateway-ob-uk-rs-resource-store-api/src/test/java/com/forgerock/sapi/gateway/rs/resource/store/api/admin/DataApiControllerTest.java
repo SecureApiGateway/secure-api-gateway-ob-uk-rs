@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
@@ -149,7 +150,7 @@ public class DataApiControllerTest {
         );
 
         // When
-        when(userClientService.getUserByName(anyString())).thenReturn(user);
+        when(userClientService.getUserByName(eq(user.getUserName()))).thenReturn(user);
 
         ResponseEntity<FRUserData> response = restTemplate.postForEntity(dataUrl(), userData, FRUserData.class);
 
@@ -162,9 +163,14 @@ public class DataApiControllerTest {
         final FRAccountData responseAccount = responseAccountData.get(0);
         assertThat(responseAccount.getTransactions()).hasSize(numTransactions);
 
+        when(userClientService.getUserById(eq(user.getId()))).thenReturn(user);
+
         ResponseEntity<FRUserData> exportedData = restTemplate.exchange(dataUrl() + "?userId=" + user.getId(), GET, HttpEntity.EMPTY, FRUserData.class);
         assertThat(exportedData.getStatusCode()).isEqualTo(HttpStatus.OK);
-        final List<FRAccountData> exportedAccountData = exportedData.getBody().getAccountDatas();
+        final FRUserData exportedUserData = exportedData.getBody();
+        assertThat(exportedUserData.getUserId()).isEqualTo(user.getId());
+        assertThat(exportedUserData.getUserName()).isEqualTo(user.getUserName());
+        final List<FRAccountData> exportedAccountData = exportedUserData.getAccountDatas();
         assertThat(exportedAccountData).hasSize(1);
         final FRAccountData exportedAccount = exportedAccountData.get(0);
         assertThat(exportedAccount.getTransactions()).hasSize(numTransactions);
@@ -225,7 +231,8 @@ public class DataApiControllerTest {
         );
 
         // When
-        when(userClientService.getUserByName(anyString())).thenReturn(user);
+        when(userClientService.getUserByName(eq(user.getUserName()))).thenReturn(user);
+        when(userClientService.getUserById(eq(user.getId()))).thenReturn(user);
 
         // When
         ResponseEntity<FRUserData> response = restTemplate.exchange(dataUrl(), PUT, new HttpEntity<>(userData), FRUserData.class);

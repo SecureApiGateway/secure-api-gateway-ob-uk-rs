@@ -61,7 +61,7 @@ public class UserClientServiceTest {
     private final static String ACCOUNT_ACTIVE_STATUS = "active";
 
     @Test
-    public void shouldGetUserDataFromPlatform() throws Exception {
+    public void shouldGetUserByUsername() throws Exception {
         // Given
         User user = User.builder()
                 .id(UUID.randomUUID().toString())
@@ -137,6 +137,29 @@ public class UserClientServiceTest {
         assertThat(exception.getErrorClient().getErrorType()).isEqualTo(ErrorType.PARAMETER_ERROR);
         assertThat(exception.getErrorClient().getErrorType().getErrorCode()).isEqualTo(ErrorType.PARAMETER_ERROR.getErrorCode());
         assertThat(exception.getErrorClient().getErrorType().getInternalCode()).isEqualTo(ErrorType.PARAMETER_ERROR.getInternalCode());
+    }
+
+    @Test
+    public void shouldGetUserById() throws Exception {
+        // Given
+        final String userId = UUID.randomUUID().toString();
+        User user = User.builder()
+                .id(userId)
+                .userName(USER_NAME)
+                .accountStatus(ACCOUNT_ACTIVE_STATUS)
+                .build();
+        // When
+        mockServer.expect(once(), requestTo("http://ig:80/repo/users/" + userId))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(objectMapper.writeValueAsString(user)));
+
+        User userResponse = userClientService.getUserById(userId);
+        // Then
+        assertThat(userResponse).isNotNull();
+        assertThat(userResponse.getAccountStatus()).isEqualTo(ACCOUNT_ACTIVE_STATUS);
+        assertThat(userResponse.getUserName()).isEqualTo(user.getUserName());
+        assertThat(userResponse.getId()).isEqualTo(user.getId());
     }
 
 }
