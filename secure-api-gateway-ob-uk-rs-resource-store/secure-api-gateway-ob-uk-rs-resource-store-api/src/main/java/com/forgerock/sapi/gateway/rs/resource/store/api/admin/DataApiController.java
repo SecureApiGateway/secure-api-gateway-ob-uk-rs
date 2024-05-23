@@ -15,6 +15,36 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter.toOBTransaction6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter.toOBStandingOrder6;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
@@ -23,7 +53,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientServi
 import com.forgerock.sapi.gateway.rs.resource.store.api.admin.exceptions.DataApiException;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.*;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.customerinfo.FRCustomerInfoConverter;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
@@ -37,33 +68,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standing
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toOBParty2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRStatementConverter.toOBStatement2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter.toOBTransaction6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter.toOBStandingOrder6;
 
 @Controller("DataApi")
 @Slf4j
@@ -85,6 +91,7 @@ public class DataApiController implements DataApi {
     private final boolean isCustomerInfoEnabled;
     private final DataUpdater dataUpdater;
     private final DataCreator dataCreator;
+    private final DataExporter dataExporter;
     private final UserClientService userClientService;
 
     public DataApiController(FRDirectDebitRepository directDebitRepository, FRAccountRepository accountsRepository,
@@ -94,7 +101,7 @@ public class DataApiController implements DataApi {
                              DataCreator dataCreator, FRScheduledPaymentRepository scheduledPayment1Repository,
                              FRPartyRepository partyRepository, FRCustomerInfoRepository customerInfoRepository,
                              @Value("${rs.data.customerInfo.enabled:false}") Boolean isCustomerInfoEnabled,
-                             DataUpdater dataUpdater, FROfferRepository offerRepository,
+                             DataUpdater dataUpdater, DataExporter dataExporter, FROfferRepository offerRepository,
                              UserClientService userClientService
     ) {
         this.directDebitRepository = directDebitRepository;
@@ -113,6 +120,7 @@ public class DataApiController implements DataApi {
         this.offerRepository = offerRepository;
         this.userClientService = userClientService;
         this.isCustomerInfoEnabled = isCustomerInfoEnabled;
+        this.dataExporter = dataExporter;
     }
 
     @Override
@@ -123,7 +131,7 @@ public class DataApiController implements DataApi {
         Page<FRAccount> page = accountsRepository.findAll(pageable);
         // process last page
         for (FRAccount account : page.getContent()) {
-            accountDataList.add(getAccount(account));
+            accountDataList.add(dataExporter.exportAccountData(account));
         }
         return ResponseEntity.ok(new PageImpl<>(accountDataList, page.getPageable(), page.getTotalElements()));
     }
@@ -141,7 +149,7 @@ public class DataApiController implements DataApi {
     ) {
         FRUserData userData = new FRUserData(userId);
         for (FRAccount account : accountsRepository.findByUserID(userId)) {
-            userData.addAccountData(getAccount(account));
+            userData.addAccountData(dataExporter.exportAccountData(account));
         }
 
         userData.setCustomerInfo(
@@ -366,142 +374,5 @@ public class DataApiController implements DataApi {
         offerRepository.deleteFROfferByAccountId(account.getId());
         partyRepository.deleteFRPartyByUserId(userId);
 
-    }
-
-    private FRAccountData getAccount(FRAccount account) {
-        FRAccountData accountData = new FRAccountData();
-        accountData.setAccount(toOBAccount6(account.getAccount()));
-
-        Page<FRProduct> products = productRepository.findByAccountId(account.getId(), (PageRequest.of(0, 1)));
-        if (!products.getContent().isEmpty()) {
-            accountData.setProduct(products.getContent().get(0).getProduct());
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FRBalance> page = balanceRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FRBalance balance : page.getContent()) {
-                    accountData.addBalance(toOBReadBalance1DataBalance(balance.getBalance()));
-                }
-                page = balanceRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FRBalance balance : page.getContent()) {
-                accountData.addBalance(toOBReadBalance1DataBalance(balance.getBalance()));
-            }
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FRBeneficiary> page = beneficiaryRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FRBeneficiary beneficiary : page.getContent()) {
-                    accountData.addBeneficiary(toOBBeneficiary5(beneficiary.getBeneficiary()));
-                }
-                page = beneficiaryRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FRBeneficiary beneficiary : page.getContent()) {
-                accountData.addBeneficiary(toOBBeneficiary5(beneficiary.getBeneficiary()));
-            }
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FRDirectDebit> page = directDebitRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FRDirectDebit directDebit : page.getContent()) {
-                    accountData.addDirectDebit(toOBReadDirectDebit2DataDirectDebit(directDebit.getDirectDebit()));
-                }
-                page = directDebitRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FRDirectDebit directDebit : page.getContent()) {
-                accountData.addDirectDebit(toOBReadDirectDebit2DataDirectDebit(directDebit.getDirectDebit()));
-            }
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FRStandingOrder> page = standingOrderRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FRStandingOrder standingOrder : page.getContent()) {
-                    accountData.addStandingOrder(toOBStandingOrder6(standingOrder.getStandingOrder()));
-                }
-                page = standingOrderRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FRStandingOrder standingOrder : page.getContent()) {
-                accountData.addStandingOrder(toOBStandingOrder6(standingOrder.getStandingOrder()));
-            }
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FRTransaction> page = transactionRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FRTransaction transaction : page.getContent()) {
-                    accountData.addTransaction(toOBTransaction6(transaction.getTransaction()));
-                }
-                page = transactionRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FRTransaction transaction : page.getContent()) {
-                accountData.addTransaction(toOBTransaction6(transaction.getTransaction()));
-            }
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FRStatement> page = statementRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FRStatement statement1 : page.getContent()) {
-                    accountData.addStatement(toOBStatement2(statement1.getStatement()));
-                }
-                page = statementRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FRStatement statement1 : page.getContent()) {
-                accountData.addStatement(toOBStatement2(statement1.getStatement()));
-            }
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FRScheduledPayment> page = scheduledPayment1Repository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FRScheduledPayment scheduledPayment1 : page.getContent()) {
-                    accountData.addScheduledPayment(toOBScheduledPayment3(scheduledPayment1.getScheduledPayment()));
-                }
-                page = scheduledPayment1Repository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FRScheduledPayment scheduledPayment1 : page.getContent()) {
-                accountData.addScheduledPayment(toOBScheduledPayment3(scheduledPayment1.getScheduledPayment()));
-            }
-        }
-        {
-            FRParty party = partyRepository.findByAccountId(account.getId());
-            if (party != null) {
-                accountData.setParty(toOBParty2(party.getParty()));
-            }
-        }
-        {
-            final int pageLimit = 300;
-            int pageNumber = 0;
-            Page<FROffer> page = offerRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
-            while (page.hasNext()) {
-                for (FROffer offer1 : page.getContent()) {
-                    accountData.addOffer(toOBReadOffer1DataOffer(offer1.getOffer()));
-                }
-                page = offerRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
-            }
-            // process last page
-            for (FROffer offer1 : page.getContent()) {
-                accountData.addOffer(toOBReadOffer1DataOffer(offer1.getOffer()));
-            }
-        }
-        return accountData;
     }
 }
