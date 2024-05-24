@@ -660,6 +660,7 @@ public class FakeDataApiController implements FakeDataApi {
         scheduledPayment.setAccountId(account.getId());
         scheduledPayment.setStatus(FRScheduledPayment.ScheduledPaymentStatus.PENDING);
         scheduledPayment.setScheduledPayment(FRScheduledPaymentData.builder()
+                .accountId(account.getId())
                 .scheduledPaymentId(scheduledPaymentId)
                 .scheduledPaymentDateTime(DateTime.now().plusDays(ThreadLocalRandom.current().nextInt(15, 200)))
                 .scheduledType(FRScheduledPaymentData.FRScheduleType.EXECUTION)
