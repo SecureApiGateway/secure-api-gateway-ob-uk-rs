@@ -660,6 +660,7 @@ public class FakeDataApiController implements FakeDataApi {
         scheduledPayment.setAccountId(account.getId());
         scheduledPayment.setStatus(FRScheduledPayment.ScheduledPaymentStatus.PENDING);
         scheduledPayment.setScheduledPayment(FRScheduledPaymentData.builder()
+                .accountId(account.getId())
                 .scheduledPaymentId(scheduledPaymentId)
                 .scheduledPaymentDateTime(DateTime.now().plusDays(ThreadLocalRandom.current().nextInt(15, 200)))
                 .scheduledType(FRScheduledPaymentData.FRScheduleType.EXECUTION)
@@ -720,6 +721,7 @@ public class FakeDataApiController implements FakeDataApi {
         offer1.setAccountId(account2.getId());
         offer1.setId(offerId);
         offer1.setOffer(FROfferData.builder()
+                .accountId(account2.getId())
                 .offerId(offerId)
                 .offerType(FROfferData.FROfferType.LIMITINCREASE)
                 .description("Credit limit increase for the account up to £" + FORMAT_AMOUNT.format(amount))
@@ -744,6 +746,7 @@ public class FakeDataApiController implements FakeDataApi {
         offer1.setAccountId(account2.getId());
         offer1.setId(offerId);
         offer1.setOffer(FROfferData.builder()
+                .accountId(account2.getId())
                 .offerId(offerId)
                 .offerType(FROfferData.FROfferType.BALANCETRANSFER)
                 .description("Balance transfer offer up to £" + FORMAT_AMOUNT.format(amount))
