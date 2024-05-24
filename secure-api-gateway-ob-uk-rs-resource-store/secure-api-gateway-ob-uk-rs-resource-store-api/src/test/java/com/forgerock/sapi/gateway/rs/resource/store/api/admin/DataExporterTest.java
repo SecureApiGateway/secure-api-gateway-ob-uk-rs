@@ -248,21 +248,51 @@ class DataExporterTest {
         assertThat(accountData.getScheduledPayments()).isEqualTo(scheduledPayments);
     }
 
+    // Corrupt standingOrders are ones where ths FRStandingOrder.id does not match the OB obj standingOrderId
+    @Test
+    public void testExportingAccountWithScheduledPaymentsDataFiltersOutCorruptData() {
+        // Save some valid scheduled payments
+        final int numPayments = 99;
+        final List<OBScheduledPayment3> scheduledPayments = generateScheduledPayments(numPayments);
+
+        // Add a corrupt scheduled payments
+        scheduledPaymentRepository.save(
+                FRScheduledPayment.builder()
+                        .accountId(accountId)
+                        .id(UUID.randomUUID().toString())
+                        .scheduledPayment(
+                                FRScheduledPaymentConverter.toFRScheduledPaymentData(
+                                        new OBScheduledPayment3().accountId(accountId)
+                                                .reference("Corrupt Scheduled Payment")
+                                                .scheduledPaymentId(UUID.randomUUID().toString())
+                                                .creditorAccount(new OBCashAccount51().schemeName("ABC")
+                                                        .name("Test Acc")
+                                                        .identification("acc-123"))))
+                        .build());
+
+        final FRAccountData accountData = exportAccountData();
+
+        assertThat(accountData.getScheduledPayments()).isEqualTo(scheduledPayments);
+    }
+
     private List<OBScheduledPayment3> generateScheduledPayments(int numPayments) {
         final List<OBScheduledPayment3> payments = new ArrayList<>(numPayments);
         for (int i = 0; i < numPayments; i++) {
             payments.add(new OBScheduledPayment3().accountId(accountId)
                                                   .reference("Scheduled Payment #" + i)
+                                                  .scheduledPaymentId(UUID.randomUUID().toString())
                                                   .creditorAccount(new OBCashAccount51().schemeName("ABC")
                                                                                         .name("Test Acc")
                                                                                         .identification("acc" + i)));
         }
         scheduledPaymentRepository.saveAll(
-                payments.stream().map(obScheduledPayment ->
+                payments.stream()
+                        .map(obScheduledPayment ->
                                 FRScheduledPayment.builder().accountId(accountId)
-                                        .scheduledPayment(
-                                                FRScheduledPaymentConverter.toFRScheduledPaymentData(obScheduledPayment))
-                                        .build())
+                                                            .id(obScheduledPayment.getScheduledPaymentId())
+                                                            .scheduledPayment(
+                                                                    FRScheduledPaymentConverter.toFRScheduledPaymentData(obScheduledPayment))
+                                                            .build())
                         .toList());
         return payments;
     }
@@ -348,16 +378,40 @@ class DataExporterTest {
         assertThat(accountData.getStandingOrders()).isEqualTo(standingOrders);
     }
 
+    // Corrupt standingOrders are ones where ths FRStandingOrder.id does not match the OB obj standingOrderId
+    @Test
+    public void testExportAccountWithStandingOrdersFilterOutCorruptData() {
+        // Generate valid standing orders
+        int numStandingOrders = 5;
+        final List<OBStandingOrder6> standingOrders = generateStandingOrders(numStandingOrders);
+
+        // Add a corrupt standingOrder
+        standingOrderRepository.save(FRStandingOrder.builder().id(UUID.randomUUID().toString())
+                                                              .accountId(accountId)
+                                                              .standingOrder(FRStandingOrderConverter.toFRStandingOrderData(
+                                                                      new OBStandingOrder6().standingOrderId(UUID.randomUUID().toString())
+                                                                              .accountId(accountId)
+                                                                              .reference("Corrupt Standing Order")))
+                                                              .build());
+
+        final FRAccountData accountData = exportAccountData();
+
+        assertThat(accountData.getStandingOrders()).isEqualTo(standingOrders);
+    }
+
     private List<OBStandingOrder6> generateStandingOrders(int numStandingOrders) {
         final List<OBStandingOrder6> standingOrders = new ArrayList<>(numStandingOrders);
         for (int i = 0; i < numStandingOrders; i++) {
-            standingOrders.add(new OBStandingOrder6().accountId(accountId).reference("Standing Order #" + i));
+            standingOrders.add(new OBStandingOrder6().standingOrderId(UUID.randomUUID().toString()).accountId(accountId).reference("Standing Order #" + i));
         }
-        standingOrderRepository.saveAll(standingOrders.stream().map(obStandingOrder ->
-                        FRStandingOrder.builder().accountId(accountId)
-                                .standingOrder(FRStandingOrderConverter.toFRStandingOrderData(obStandingOrder))
-                                .build())
-                .toList());
+        standingOrderRepository.saveAll(
+                standingOrders.stream()
+                              .map(obStandingOrder ->
+                                      FRStandingOrder.builder().id(obStandingOrder.getStandingOrderId())
+                                                                                  .accountId(accountId)
+                                                                                  .standingOrder(FRStandingOrderConverter.toFRStandingOrderData(obStandingOrder))
+                                                                                  .build())
+                              .toList());
         return standingOrders;
     }
 

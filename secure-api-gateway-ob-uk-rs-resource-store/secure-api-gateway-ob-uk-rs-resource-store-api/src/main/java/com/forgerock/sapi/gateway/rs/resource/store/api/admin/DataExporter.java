@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountD
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRProduct;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRScheduledPayment;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStandingOrder;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.beneficiaries.FRBeneficiaryRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.directdebits.FRDirectDebitRepository;
@@ -66,6 +69,30 @@ import uk.org.openbanking.datamodel.account.OBTransaction6;
 
 @Service
 public class DataExporter {
+
+    /**
+     * Default filter used when querying for data to export, accepts all data returned from the repository
+     */
+    private static final Predicate ACCEPT_ALL_FILTER = obj -> true;
+    /**
+     * Filter which removes corrupt FRStandingOrder data, this data cannot be updated by the {@link DataUpdater} due
+     * to the FRStandingOrder.id not matching the FRStandingOrder.standingOrder.standingOrderId.
+     * <p>
+     * This is an issue because the FRStandingOrder.standingOrder.standingOrderId is returned in the OB response,
+     * and the repo queries can only query for the FRStandingOrder.id value (which by convention should match).
+     * <p>
+     * Data created by the StandingOrderService, invoked when a TPP submits a StandingOrder, has a bug which means
+     * that FRStandingOrders created this way have ids that do not match.
+     */
+    private static final Predicate<FRStandingOrder> REMOVE_CORRUPT_STANDING_ORDERS_FILTER =
+            frStandingOrder -> frStandingOrder.getStandingOrder() != null
+                    && frStandingOrder.getId().equals(frStandingOrder.getStandingOrder().getStandingOrderId());
+    /**
+     * See comment for REMOVE_CORRUPT_STANDING_ORDERS_FILTER, the same issue affects FRScheduledPayments.
+     */
+    private static final Predicate<FRScheduledPayment> REMOVE_CORRUPT_SCHEDULED_PAYMENTS_FILTER =
+            frScheduledPayment -> frScheduledPayment.getScheduledPayment() != null
+                    && frScheduledPayment.getId().equals(frScheduledPayment.getScheduledPayment().getScheduledPaymentId());
 
     private final FRBalanceRepository balanceRepository;
     private final FRBeneficiaryRepository beneficiaryRepository;
@@ -140,6 +167,7 @@ public class DataExporter {
 
     private List<OBScheduledPayment3> getScheduledPayments(String accountId) {
         return executePagingFindQuery(accountId, scheduledPaymentRepository::findByAccountId,
+                REMOVE_CORRUPT_SCHEDULED_PAYMENTS_FILTER,
                 frScheduledPayment -> toOBScheduledPayment3(frScheduledPayment.getScheduledPayment()));
     }
 
@@ -150,6 +178,7 @@ public class DataExporter {
 
     private List<OBStandingOrder6> getStandingOrders(String accountId) {
         return executePagingFindQuery(accountId, standingOrderRepository::findByAccountId,
+                REMOVE_CORRUPT_STANDING_ORDERS_FILTER,
                 frStandingOrder -> toOBStandingOrder6(frStandingOrder.getStandingOrder()));
     }
 
@@ -181,12 +210,22 @@ public class DataExporter {
                 frTransaction -> toOBTransaction6(frTransaction.getTransaction()));
     }
 
+    private <F, O> List<O> executePagingFindQuery(String accountId,
+                                                  BiFunction<String, Pageable, Page<F>> findByAccountIdPagerQuery,
+                                                  Function<F, O> obDataModelConverter) {
+
+        return executePagingFindQuery(accountId, findByAccountIdPagerQuery, ACCEPT_ALL_FILTER, obDataModelConverter);
+    }
+
     /**
      * Helper function for executing a query that returns data in pages.
      *
      * @param accountId                 the id of the account that we are ret
      * @param findByAccountIdPagerQuery Function which takes an accountId and a Pageable and returns a Page of data
-     * @param obDataModelConverter      Function which takes an FR data model object and converts it into an OB data model object
+     * @param dataFilter                Predicate which returns true if the data is to be returned in the response,
+     *                                  this is designed to allow corrupt data to be removed
+     * @param obDataModelConverter      Function which takes an FR data model object and converts it into an OB
+     *                                  data model object
      * @param <F>                       FR data model type (database representation)
      * @param <O>                       OB data model type (OB API representation)
      * @return List of OB data model objects retrieved by executing the query for the given accountId, returns an empty list if
@@ -194,6 +233,7 @@ public class DataExporter {
      */
     private <F, O> List<O> executePagingFindQuery(String accountId,
                                                   BiFunction<String, Pageable, Page<F>> findByAccountIdPagerQuery,
+                                                  Predicate<F> dataFilter,
                                                   Function<F, O> obDataModelConverter) {
         int pageNumber = 0;
         Page<F> pageOfFrItems;
@@ -204,7 +244,9 @@ public class DataExporter {
                 obItems = new ArrayList<>((int) pageOfFrItems.getTotalElements());
             }
             for (F frItem : pageOfFrItems.getContent()) {
-                obItems.add(obDataModelConverter.apply(frItem));
+                if (dataFilter.test(frItem)) {
+                    obItems.add(obDataModelConverter.apply(frItem));
+                }
             }
             pageNumber++;
         }
