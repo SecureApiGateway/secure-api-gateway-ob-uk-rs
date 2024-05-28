@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
@@ -49,7 +48,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticscheduledpayments.DomesticScheduledPaymentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRScheduledPaymentDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
@@ -57,7 +55,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtract
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -88,7 +85,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-    private final ScheduledPaymentService scheduledPaymentService;
     private final DomesticScheduledPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator;
     private final RefundAccountService refundAccountService;
@@ -97,14 +93,12 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            ScheduledPaymentService scheduledPaymentService,
             DomesticScheduledPaymentConsentStoreClient consentStoreClient,
             RefundAccountService refundAccountService,
             OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
     ) {
         this.scheduledPaymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
-        this.scheduledPaymentService = scheduledPaymentService;
         this.consentStoreClient = consentStoreClient;
         this.refundAccountService = refundAccountService;
         this.paymentValidator = paymentValidator;
@@ -163,10 +157,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
         // Save the scheduled payment
         frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
-
-        // Save the scheduled payment data for the Accounts API
-        FRScheduledPaymentData scheduledPaymentData = FRScheduledPaymentDataFactory.createFRScheduledPaymentData(frScheduledPayment, consent.getAuthorisedDebtorAccountId());
-        scheduledPaymentService.createScheduledPayment(scheduledPaymentData);
 
         final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);

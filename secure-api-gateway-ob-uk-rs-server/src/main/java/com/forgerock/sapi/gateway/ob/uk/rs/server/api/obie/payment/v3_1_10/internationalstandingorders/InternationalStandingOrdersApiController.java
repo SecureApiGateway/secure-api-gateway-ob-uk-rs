@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrder;
@@ -49,7 +48,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternat
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalstandingorders.InternationalStandingOrdersApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.FRStandingOrderDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
@@ -57,7 +55,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtract
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.standingorder.StandingOrderService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
@@ -88,7 +85,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-    private final StandingOrderService standingOrderService;
     private final InternationalStandingOrderConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator;
     private final RefundAccountService refundAccountService;
@@ -97,13 +93,11 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     public InternationalStandingOrdersApiController(
             InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            StandingOrderService standingOrderService,
             InternationalStandingOrderConsentStoreClient consentStoreClient,
             OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
-        this.standingOrderService = standingOrderService;
         this.consentStoreClient = consentStoreClient;
         this.paymentValidator = paymentValidator;
         this.refundAccountService = refundAccountService;
@@ -162,11 +156,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
         // Save the international standing order
         frPaymentSubmission = idempotentPaymentService.savePayment(frPaymentSubmission);
-
-        // Save the standing order data for the Accounts API
-        FRStandingOrderData standingOrderData = FRStandingOrderDataFactory.createFRStandingOrderData(frStandingOrder,
-                consent.getAuthorisedDebtorAccountId());
-        standingOrderService.createStandingOrder(standingOrderData);
 
         final ConsumePaymentConsentRequest consumePaymentRequest = new ConsumePaymentConsentRequest();
         consumePaymentRequest.setConsentId(consentId);
