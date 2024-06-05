@@ -3,9 +3,6 @@ repo := europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact
 tag  := $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 helm_repo := forgerock-helm/secure-api-gateway/securebanking-openbanking-uk-rs/
 
-.PHONY: all
-all: clean test package
-
 clean:
 	mvn clean
 
@@ -37,4 +34,3 @@ dev: clean
 
 version:
 	@echo $(tag)
-
