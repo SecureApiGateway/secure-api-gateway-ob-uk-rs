@@ -1,5 +1,6 @@
 name: PR - Build Helm
 on:
+  workflow_dispatch:
   push:
     paths:
       - '_infra/helm/**'
