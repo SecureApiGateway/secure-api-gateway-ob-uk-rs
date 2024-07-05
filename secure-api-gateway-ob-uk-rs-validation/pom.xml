@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-        <version>3.0.2-SNAPSHOT</version>
+        <version>3.1.0</version>
     </parent>
 
     <artifactId>secure-api-gateway-ob-uk-rs-validation</artifactId>
