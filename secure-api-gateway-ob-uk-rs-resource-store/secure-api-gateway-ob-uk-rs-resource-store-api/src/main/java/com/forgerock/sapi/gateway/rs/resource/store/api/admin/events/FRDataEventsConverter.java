@@ -21,7 +21,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRMode
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventMessage;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 
-import uk.org.openbanking.datamodel.event.OBEventNotification1;
+import uk.org.openbanking.datamodel.v3.event.OBEventNotification1;
 
 public class FRDataEventsConverter {
 

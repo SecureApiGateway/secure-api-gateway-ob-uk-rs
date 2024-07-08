@@ -35,10 +35,10 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse6;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduled3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
 
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;

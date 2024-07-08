@@ -41,8 +41,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBReadDirectDebit2;
-import uk.org.openbanking.datamodel.account.OBReadDirectDebit2Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadDirectDebit2;
+import uk.org.openbanking.datamodel.v3.account.OBReadDirectDebit2Data;
 
 @Controller("DirectDebitsApiV3.1.10")
 public class DirectDebitsApiController implements DirectDebitsApi {

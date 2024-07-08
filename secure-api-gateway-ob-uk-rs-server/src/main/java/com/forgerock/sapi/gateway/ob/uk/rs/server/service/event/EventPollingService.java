@@ -36,7 +36,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMes
 import com.google.common.base.Preconditions;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.event.OBEventNotification1;
+import uk.org.openbanking.datamodel.v3.event.OBEventNotification1;
 
 /*
  * Intended to hold the business logic of polling and acknowledge the events separately to the persistence layer (Mongo

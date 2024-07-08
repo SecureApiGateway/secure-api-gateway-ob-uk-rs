@@ -23,8 +23,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.BasePaymentRequestValidator.PaymentRequestValidationContext;
 
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
 
 /**
  * Base Validator which provides common validation for Payment Requests.

@@ -61,18 +61,18 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccoun
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.InternationalPaymentSubmissionRepository;
 
-import uk.org.openbanking.datamodel.common.OBReadRefundAccount;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5DataRefundAccount;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.v3.common.OBReadRefundAccount;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticResponse5DataRefundAccount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalResponse5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalResponse5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
 
 /**
  * A SpringBoot test for the {@link InternationalPaymentsApiController}.<br/>

@@ -40,7 +40,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain0
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001.StructuredRemittanceInformation13;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.BasePaymentFileProcessor;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
 
 @Component
 public class OBIEPain001FileProcessor extends BasePaymentFileProcessor {

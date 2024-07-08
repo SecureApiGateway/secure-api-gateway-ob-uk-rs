@@ -40,11 +40,11 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationResponse;
 
 /**
  * NOTE: API operations other than funds-confirmation have been removed from this generated code.

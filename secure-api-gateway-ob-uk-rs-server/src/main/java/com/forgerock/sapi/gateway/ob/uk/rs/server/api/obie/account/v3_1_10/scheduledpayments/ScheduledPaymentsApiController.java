@@ -33,8 +33,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.scheduledpay
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3;
-import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadScheduledPayment3;
+import uk.org.openbanking.datamodel.v3.account.OBReadScheduledPayment3Data;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

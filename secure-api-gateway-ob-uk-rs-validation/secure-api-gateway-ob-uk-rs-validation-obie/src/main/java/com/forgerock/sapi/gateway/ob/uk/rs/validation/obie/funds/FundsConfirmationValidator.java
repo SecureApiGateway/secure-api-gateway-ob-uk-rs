@@ -25,9 +25,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator.FundsConfirmationValidationContext;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1;
 
 @Slf4j
 public class FundsConfirmationValidator extends BaseOBValidator<FundsConfirmationValidationContext> {

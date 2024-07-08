@@ -20,8 +20,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.OBRisk1Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
-import uk.org.openbanking.datamodel.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.common.OBExternalPaymentContext1Code;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 
 import java.util.Objects;
 

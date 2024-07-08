@@ -41,8 +41,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBReadStandingOrder6;
-import uk.org.openbanking.datamodel.account.OBReadStandingOrder6Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadStandingOrder6;
+import uk.org.openbanking.datamodel.v3.account.OBReadStandingOrder6Data;
 
 @Controller("StandingOrdersApiV3.1.10")
 public class StandingOrdersApiController implements StandingOrdersApi {

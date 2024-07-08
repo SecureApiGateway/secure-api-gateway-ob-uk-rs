@@ -25,11 +25,11 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticstan
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticstandingorders.DomesticStandingOrderConsentsApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
 import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
 
 class OBWriteDomesticStandingOrderConsentResponse6FactoryTest {

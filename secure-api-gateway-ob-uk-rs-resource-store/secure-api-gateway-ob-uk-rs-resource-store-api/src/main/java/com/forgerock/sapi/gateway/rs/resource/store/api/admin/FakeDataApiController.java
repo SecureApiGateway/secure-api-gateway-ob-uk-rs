@@ -96,11 +96,11 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standing
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
-import uk.org.openbanking.datamodel.account.OBExternalStatementAmountType1Code;
-import uk.org.openbanking.datamodel.account.OBExternalStatementType1Code;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInnerProductType;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.v3.account.OBExternalStatementAmountType1Code;
+import uk.org.openbanking.datamodel.v3.account.OBExternalStatementType1Code;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInnerProductType;
+import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Code;
 
 @Controller("FakeDataApi")
 public class FakeDataApiController implements FakeDataApi {

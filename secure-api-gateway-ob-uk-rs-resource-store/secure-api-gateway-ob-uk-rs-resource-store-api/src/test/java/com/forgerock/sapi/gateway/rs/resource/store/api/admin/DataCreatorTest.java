@@ -42,7 +42,7 @@ import org.mockito.internal.util.collections.Iterables;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.v3.account.*;
 
 import java.util.Collections;
 import java.util.List;

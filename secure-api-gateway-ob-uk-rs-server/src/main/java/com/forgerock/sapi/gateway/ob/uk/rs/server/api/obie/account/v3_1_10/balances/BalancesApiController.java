@@ -39,8 +39,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalanc
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import uk.org.openbanking.datamodel.account.OBReadBalance1;
-import uk.org.openbanking.datamodel.account.OBReadBalance1Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadBalance1;
+import uk.org.openbanking.datamodel.v3.account.OBReadBalance1Data;
 
 @Controller("BalancesApiV3.1.10")
 public class BalancesApiController implements BalancesApi {

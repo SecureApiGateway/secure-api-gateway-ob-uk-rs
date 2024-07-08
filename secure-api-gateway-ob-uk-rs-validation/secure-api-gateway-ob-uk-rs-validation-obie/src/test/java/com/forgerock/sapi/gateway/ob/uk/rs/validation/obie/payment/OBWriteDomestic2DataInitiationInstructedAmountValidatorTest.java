@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 
 public class OBWriteDomestic2DataInitiationInstructedAmountValidatorTest {
 

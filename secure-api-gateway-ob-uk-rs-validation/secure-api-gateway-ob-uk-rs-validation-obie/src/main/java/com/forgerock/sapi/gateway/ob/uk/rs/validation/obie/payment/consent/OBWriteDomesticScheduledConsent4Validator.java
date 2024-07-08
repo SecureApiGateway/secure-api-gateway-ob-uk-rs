@@ -23,10 +23,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
 
 /**
  * Validator of OBWriteDomesticScheduledConsent4 objects (Domestic Scheduled Payment Consents)

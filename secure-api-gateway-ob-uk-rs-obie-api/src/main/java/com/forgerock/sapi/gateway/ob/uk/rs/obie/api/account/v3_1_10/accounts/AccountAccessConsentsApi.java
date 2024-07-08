@@ -45,8 +45,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsentResponse1;
 
 @Api(tags = "v3.1.10", description = "the account-access-consents API")
 @RequestMapping(value = "/open-banking/v3.1.10/aisp")

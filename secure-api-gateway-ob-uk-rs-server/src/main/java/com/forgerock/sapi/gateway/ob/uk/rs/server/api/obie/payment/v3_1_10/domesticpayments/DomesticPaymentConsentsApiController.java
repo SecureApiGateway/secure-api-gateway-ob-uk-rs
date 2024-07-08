@@ -42,10 +42,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
 import jakarta.servlet.http.HttpServletRequest;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsentResponse5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
 
 @Controller("DomesticPaymentConsentsApiV3.1.10")
 public class DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {

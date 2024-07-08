@@ -35,9 +35,9 @@ import org.springframework.test.context.ActiveProfiles;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBStandardErrorCodes1;
 
 /**
  * Tests for the GlobalExceptionHandler, uses the {@link com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.accounts.AccountAccessConsentsApi}

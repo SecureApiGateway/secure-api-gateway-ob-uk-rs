@@ -23,12 +23,12 @@ import org.springframework.stereotype.Component;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequestData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequestData;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseData;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseDataStatus;
 
 @Component
 public class OBDomesticVRPConsentResponseFactory {

@@ -24,12 +24,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChar
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
 
 @Component
 public class OBWriteFileConsentResponse4Factory {

@@ -27,13 +27,13 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
 
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse6Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse6DataInitiation;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsentResponse6Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsentResponse6DataInitiation;
 
 @Component
 public class OBWriteInternationalScheduledConsentResponse6Factory {

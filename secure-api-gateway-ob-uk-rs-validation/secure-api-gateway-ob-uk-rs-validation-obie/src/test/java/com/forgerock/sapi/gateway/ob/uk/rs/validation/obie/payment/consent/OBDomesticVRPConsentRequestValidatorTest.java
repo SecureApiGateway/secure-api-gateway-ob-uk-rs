@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 class OBDomesticVRPConsentRequestValidatorTest {

@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -66,17 +66,17 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1DataInstructedAmount;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1Data;
 
 /**
  * Test for {@link FundsConfirmationsApiController}

@@ -52,7 +52,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransa
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBReadTransaction6;
 
 /**
  * Spring Boot Test for {@link TransactionsApiController}.

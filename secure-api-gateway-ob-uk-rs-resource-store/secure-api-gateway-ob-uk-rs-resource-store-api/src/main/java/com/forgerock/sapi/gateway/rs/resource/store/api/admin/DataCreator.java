@@ -71,15 +71,15 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transact
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
 
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.account.OBBeneficiary5;
-import uk.org.openbanking.datamodel.account.OBReadBalance1DataBalanceInner;
-import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebitInner;
-import uk.org.openbanking.datamodel.account.OBReadOffer1DataOfferInner;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
-import uk.org.openbanking.datamodel.account.OBStandingOrder6;
-import uk.org.openbanking.datamodel.account.OBStatement2;
-import uk.org.openbanking.datamodel.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBBeneficiary5;
+import uk.org.openbanking.datamodel.v3.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadDirectDebit2DataDirectDebitInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadOffer1DataOfferInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.v3.account.OBScheduledPayment3;
+import uk.org.openbanking.datamodel.v3.account.OBStandingOrder6;
+import uk.org.openbanking.datamodel.v3.account.OBStatement2;
+import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
 
 @Service
 @NoArgsConstructor

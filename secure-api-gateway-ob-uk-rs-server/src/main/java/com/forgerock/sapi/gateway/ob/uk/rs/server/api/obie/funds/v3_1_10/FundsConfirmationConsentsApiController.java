@@ -33,8 +33,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Crea
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1;
 
 @Controller("FundsConfirmationConsentsApiV3.1.10")
 @Slf4j

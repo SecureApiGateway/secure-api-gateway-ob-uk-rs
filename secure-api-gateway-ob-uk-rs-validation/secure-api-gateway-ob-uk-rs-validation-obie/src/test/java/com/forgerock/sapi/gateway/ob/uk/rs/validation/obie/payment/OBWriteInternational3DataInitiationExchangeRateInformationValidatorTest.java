@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
+import uk.org.openbanking.datamodel.v3.payment.OBExchangeRateType;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 
 public class OBWriteInternational3DataInitiationExchangeRateInformationValidatorTest {

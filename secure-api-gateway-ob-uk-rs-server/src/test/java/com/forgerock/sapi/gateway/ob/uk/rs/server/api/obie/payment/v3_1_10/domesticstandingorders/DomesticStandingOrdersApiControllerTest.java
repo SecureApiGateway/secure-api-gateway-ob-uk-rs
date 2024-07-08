@@ -63,22 +63,22 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccoun
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticStandingOrderPaymentSubmissionRepository;
 
-import uk.org.openbanking.datamodel.common.OBReadRefundAccount;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5DataRefundAccount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse6Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.v3.common.OBReadRefundAccount;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticResponse5DataRefundAccount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrder3Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrder3DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderResponse6Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
 
 /**
  * A SpringBoot test for the {@link DomesticStandingOrdersApiController}.<br/>

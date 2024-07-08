@@ -39,8 +39,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBReadProduct2;
-import uk.org.openbanking.datamodel.account.OBReadProduct2Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2Data;
 
 @Controller("ProductsApiV3.1.10")
 public class ProductsApiController implements ProductsApi {

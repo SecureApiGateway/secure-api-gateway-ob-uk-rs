@@ -46,7 +46,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FROffer;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadOffer1;
+import uk.org.openbanking.datamodel.v3.account.OBReadOffer1;
 
 /**
  * Spring Boot Test for {@link OffersApiController}.

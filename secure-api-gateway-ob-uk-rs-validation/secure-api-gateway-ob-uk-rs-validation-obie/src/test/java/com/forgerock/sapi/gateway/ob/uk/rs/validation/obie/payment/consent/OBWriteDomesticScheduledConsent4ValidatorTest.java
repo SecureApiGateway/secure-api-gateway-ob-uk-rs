@@ -31,12 +31,12 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1Validator;
 
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduled2DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4Data;
 
 class OBWriteDomesticScheduledConsent4ValidatorTest {
 

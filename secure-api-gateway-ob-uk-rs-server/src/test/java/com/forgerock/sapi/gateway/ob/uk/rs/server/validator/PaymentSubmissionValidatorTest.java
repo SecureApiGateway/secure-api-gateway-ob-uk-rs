@@ -20,8 +20,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
 
 import java.util.UUID;
 

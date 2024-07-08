@@ -23,12 +23,12 @@ import org.junit.jupiter.api.function.Executable;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.BasePaymentRequestValidator.PaymentRequestValidationContext;
 
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequestData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequestData;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequestData;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPInitiation;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPRequestData;
 
 class BasePaymentRequestValidatorTest {
 

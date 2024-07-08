@@ -28,12 +28,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInstruction;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPControlParameters;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPInstruction;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPRequest;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpRequestTestDataFactory;
 

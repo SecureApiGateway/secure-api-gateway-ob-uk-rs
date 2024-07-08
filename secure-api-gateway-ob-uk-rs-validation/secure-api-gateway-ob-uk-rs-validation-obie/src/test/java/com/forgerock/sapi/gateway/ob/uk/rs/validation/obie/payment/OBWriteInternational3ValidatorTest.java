@@ -24,16 +24,16 @@ import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
 
-import uk.org.openbanking.datamodel.common.OBExternalPaymentContext1Code;
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5Data;
+import uk.org.openbanking.datamodel.v3.common.OBExternalPaymentContext1Code;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5Data;
 
 class OBWriteInternational3ValidatorTest {
 

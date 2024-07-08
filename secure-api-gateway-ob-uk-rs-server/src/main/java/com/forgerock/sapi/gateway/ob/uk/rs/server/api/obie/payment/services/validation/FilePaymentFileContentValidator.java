@@ -23,8 +23,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFil
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
 
 /**
  * Validator which verifies that the Payment File uploaded is valid for the Consent

@@ -68,16 +68,16 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalResponse5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalResponse5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason;
 
 @Controller("InternationalPaymentsApiV3.1.10")
 public class InternationalPaymentsApiController implements InternationalPaymentsApi {

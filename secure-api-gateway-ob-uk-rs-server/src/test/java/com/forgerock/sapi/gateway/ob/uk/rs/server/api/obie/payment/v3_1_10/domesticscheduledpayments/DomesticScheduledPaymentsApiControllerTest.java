@@ -61,20 +61,20 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccoun
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticScheduledPaymentSubmissionRepository;
 
-import uk.org.openbanking.datamodel.common.OBReadRefundAccount;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5DataRefundAccount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
+import uk.org.openbanking.datamodel.v3.common.OBReadRefundAccount;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticResponse5DataRefundAccount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduled2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduled2Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledResponse5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledResponse5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
 
 /**
  * A SpringBoot test for the {@link DomesticScheduledPaymentsApiController}.<br/>

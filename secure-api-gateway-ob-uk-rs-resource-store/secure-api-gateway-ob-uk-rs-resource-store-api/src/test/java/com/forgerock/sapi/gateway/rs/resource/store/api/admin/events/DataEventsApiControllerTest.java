@@ -50,11 +50,11 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventMessages;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 
-import uk.org.openbanking.datamodel.event.OBEvent1;
-import uk.org.openbanking.datamodel.event.OBEventLink1;
-import uk.org.openbanking.datamodel.event.OBEventNotification1;
-import uk.org.openbanking.datamodel.event.OBEventResourceUpdate1;
-import uk.org.openbanking.datamodel.event.OBEventSubject1;
+import uk.org.openbanking.datamodel.v3.event.OBEvent1;
+import uk.org.openbanking.datamodel.v3.event.OBEventLink1;
+import uk.org.openbanking.datamodel.v3.event.OBEventNotification1;
+import uk.org.openbanking.datamodel.v3.event.OBEventResourceUpdate1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubject1;
 
 /**
  * Test for {@link DataEventsApiController}

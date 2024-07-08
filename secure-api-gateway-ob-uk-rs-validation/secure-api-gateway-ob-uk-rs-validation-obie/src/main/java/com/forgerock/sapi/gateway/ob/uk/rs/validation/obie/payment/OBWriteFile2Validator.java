@@ -20,11 +20,11 @@ import java.util.function.Supplier;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
 
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
 
 /**
  * Validator of OBWriteFile2 objects (File Payment Requests)

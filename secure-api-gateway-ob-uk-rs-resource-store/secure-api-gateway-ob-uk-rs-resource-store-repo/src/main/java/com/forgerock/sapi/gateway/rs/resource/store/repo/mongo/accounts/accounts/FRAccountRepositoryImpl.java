@@ -21,7 +21,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccoun
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Code;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

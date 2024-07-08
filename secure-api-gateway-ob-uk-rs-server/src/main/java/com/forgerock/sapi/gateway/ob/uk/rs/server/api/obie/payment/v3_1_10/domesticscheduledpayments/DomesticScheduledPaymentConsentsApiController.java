@@ -38,8 +38,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticsched
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsentResponse5;
 
 @Controller("DomesticScheduledPaymentConsentsApiV3.1.10")
 public class DomesticScheduledPaymentConsentsApiController implements DomesticScheduledPaymentConsentsApi {

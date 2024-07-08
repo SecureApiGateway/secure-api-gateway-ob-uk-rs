@@ -55,21 +55,21 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.Domestic
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatus;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataChargesInner;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataStatus;
-import uk.org.openbanking.datamodel.vrp.OBExternalPaymentChargeType1Code;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.v3.common.OBChargeBearerType1Code;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetails;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsData;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponse;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseData;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseDataChargesInner;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseDataStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBExternalPaymentChargeType1Code;
 
 @Controller("DomesticVrpsApiV3.1.10")
 @Slf4j

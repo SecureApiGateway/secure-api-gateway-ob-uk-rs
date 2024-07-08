@@ -65,12 +65,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
 
 @Controller("FilePaymentsApiV3.1.10")
 public class FilePaymentsApiController implements FilePaymentsApi {

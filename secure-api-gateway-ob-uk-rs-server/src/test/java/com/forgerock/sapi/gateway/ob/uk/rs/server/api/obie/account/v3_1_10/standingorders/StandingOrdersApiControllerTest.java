@@ -46,7 +46,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStandi
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standingorders.FRStandingOrderRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadStandingOrder6;
+import uk.org.openbanking.datamodel.v3.account.OBReadStandingOrder6;
 
 /**
  * Spring Boot Test for {@link StandingOrdersApiController}.

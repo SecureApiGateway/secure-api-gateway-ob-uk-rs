@@ -31,9 +31,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.SuccessValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.account.consent.OBReadConsent1Validator;
 
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
-import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
 
 class OBValidationServiceTest {
 

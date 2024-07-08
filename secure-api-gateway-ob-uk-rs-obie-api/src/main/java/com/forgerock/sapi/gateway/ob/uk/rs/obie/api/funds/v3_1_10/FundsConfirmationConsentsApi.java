@@ -21,9 +21,9 @@ import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

@@ -38,9 +38,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount6Data;
+import uk.org.openbanking.datamodel.v3.account.OBAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBReadAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBReadAccount6Data;
 
 @Controller("AccountsApiV3.1.10")
 public class AccountsApiController implements AccountsApi {

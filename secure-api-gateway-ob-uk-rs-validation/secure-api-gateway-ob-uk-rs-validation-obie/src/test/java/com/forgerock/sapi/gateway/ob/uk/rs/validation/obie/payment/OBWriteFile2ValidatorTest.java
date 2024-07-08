@@ -27,12 +27,12 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 class OBWriteFile2ValidatorTest {

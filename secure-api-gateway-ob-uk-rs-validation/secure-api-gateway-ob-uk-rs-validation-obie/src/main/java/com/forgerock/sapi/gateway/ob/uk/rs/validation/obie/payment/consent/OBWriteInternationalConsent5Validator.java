@@ -20,12 +20,12 @@ import java.util.Objects;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
-import uk.org.openbanking.datamodel.common.OBRisk1;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.common.OBRisk1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
 
 /**
  * Validator of OBWriteInternationalConsent5 objects (OBIE International Payment Consents)

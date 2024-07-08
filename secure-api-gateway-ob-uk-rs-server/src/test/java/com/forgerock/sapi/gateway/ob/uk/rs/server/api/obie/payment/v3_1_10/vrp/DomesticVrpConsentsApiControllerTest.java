@@ -28,8 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1FundsAvailable.AVAILABLE;
-import static uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1FundsAvailable.NOTAVAILABLE;
+import static uk.org.openbanking.datamodel.v3.vrp.OBPAFundsAvailableResult1FundsAvailable.AVAILABLE;
+import static uk.org.openbanking.datamodel.v3.vrp.OBPAFundsAvailableResult1FundsAvailable.NOTAVAILABLE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -67,17 +67,17 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_1
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequestData;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
+import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBStandardErrorCodes1;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseDataStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationRequestData;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationResponse;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 /**

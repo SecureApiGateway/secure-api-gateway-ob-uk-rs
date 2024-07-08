@@ -26,12 +26,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsentResponse6Data;
 
 @Component
 public class OBWriteInternationalConsentResponse6Factory {

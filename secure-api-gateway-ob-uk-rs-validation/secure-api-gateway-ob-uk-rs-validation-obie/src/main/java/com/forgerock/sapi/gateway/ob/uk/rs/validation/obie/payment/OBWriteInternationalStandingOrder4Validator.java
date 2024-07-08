@@ -18,10 +18,10 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrder4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrder4DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
 
 /**
  * Validator of OBWriteInternationalStandingOrder4 objects (International Standing Order Requests)

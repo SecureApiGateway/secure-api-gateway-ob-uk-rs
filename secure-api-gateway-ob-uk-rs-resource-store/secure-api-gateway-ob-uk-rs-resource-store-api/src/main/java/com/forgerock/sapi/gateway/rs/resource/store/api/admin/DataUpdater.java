@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.v3.account.*;
 
 import java.util.*;
 
