@@ -104,6 +104,36 @@ public class AccountsApiControllerTest {
     }
 
     @Test
+    public void shouldFindUserAccountsWithMultipleBalances() {
+        // Given
+        FRAccount account = FRAccountTestDataFactory.aValidFRAccount();
+        frAccountRepository.save(account);
+
+        final List<FRBalance> balances = createMultipleBalances(account);
+
+        URI uri = findUserAccountsUriWithBalance(account.getUserID());
+        ParameterizedTypeReference<List<FRAccountWithBalance>> typeReference = new ParameterizedTypeReference<>() {
+        };
+
+        // When
+        ResponseEntity<List<FRAccountWithBalance>> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                new HttpEntity<>(httpHeaders()),
+                typeReference);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotEmpty();
+        FRAccountWithBalance accountWithBalance = response.getBody().get(0);
+        assertThat(accountWithBalance.getId()).isEqualTo(account.getId());
+        assertThat(accountWithBalance.getUserId()).isEqualTo(account.getUserID());
+        assertThat(accountWithBalance.getAccount().getAccountId()).isEqualTo(account.getAccount().getAccountId());
+        assertThat(accountWithBalance.getBalances()).isNotEmpty();
+        assertThat(accountWithBalance.getBalances()).isEqualTo(balances.stream().map(FRBalance::getBalance).toList());
+    }
+
+    @Test
     public void shouldFindUserAccountsWithoutBalance() {
         // Given
         FRAccount account = FRAccountTestDataFactory.aValidFRAccount();
@@ -194,6 +224,42 @@ public class AccountsApiControllerTest {
     }
 
     @Test
+    public void shouldFindAccountWithMultipleBalancesByAccountIdentifiers(){
+        // Given
+        FRAccount account = FRAccountTestDataFactory.aValidFRAccount();
+        frAccountRepository.save(account);
+        final List<FRBalance> balances = createMultipleBalances(account);
+        URI uri = findAccountUriByAccountIdentifiers(account.getUserID(), account.getAccount().getFirstAccount());
+        ParameterizedTypeReference<FRAccountWithBalance> typeReference = new ParameterizedTypeReference<>() {
+        };
+
+        // When
+        ResponseEntity<FRAccountWithBalance> response = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                new HttpEntity<>(httpHeaders()),
+                typeReference);
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        FRAccountWithBalance accountWithBalance = response.getBody();
+        assertThat(accountWithBalance.getId()).isEqualTo(account.getId());
+        assertThat(accountWithBalance.getUserId()).isEqualTo(account.getUserID());
+        assertThat(accountWithBalance.getAccount().getAccountId()).isEqualTo(account.getAccount().getAccountId());
+        assertThat(accountWithBalance.getBalances()).isNotEmpty();
+        assertThat(accountWithBalance.getBalances()).isEqualTo(balances.stream().map(FRBalance::getBalance).toList());
+    }
+
+    private List<FRBalance> createMultipleBalances(FRAccount account) {
+        List<FRBalance> balances = List.of(aValidFRBalance(account.getId(), FRBalanceType.PREVIOUSLYCLOSEDBOOKED),
+                                           aValidFRBalance(account.getId(), FRBalanceType.INTERIMAVAILABLE),
+                                           aValidFRBalance(account.getId(), FRBalanceType.INTERIMBOOKED));
+        frBalanceRepository.saveAll(balances);
+        return balances;
+    }
+
+    @Test
     public void shouldFindAccountWithBalanceByAccountIdentifiersNoUserId(){
         // Given
         FRAccount account = FRAccountTestDataFactory.aValidFRAccount();
@@ -223,12 +289,16 @@ public class AccountsApiControllerTest {
     }
 
     private FRBalance aValidFRBalance(String accountId) {
+        return aValidFRBalance(accountId, FRBalanceType.INTERIMAVAILABLE);
+    }
+
+    private FRBalance aValidFRBalance(String accountId, FRBalanceType balanceType) {
         FRBalance accountBalance = FRBalance.builder()
                 .accountId(accountId)
                 .balance(FRCashBalance.builder()
                         .accountId(accountId)
                         .creditDebitIndicator(FRCreditDebitIndicator.CREDIT)
-                        .type(FRBalanceType.INTERIMAVAILABLE)
+                        .type(balanceType)
                         .amount(FRAmount.builder()
                                 .currency("GBP")
                                 .amount("10.00")

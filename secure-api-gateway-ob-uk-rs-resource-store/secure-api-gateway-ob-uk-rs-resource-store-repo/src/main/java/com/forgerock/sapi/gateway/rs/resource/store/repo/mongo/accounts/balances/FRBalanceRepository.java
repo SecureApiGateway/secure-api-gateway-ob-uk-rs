@@ -31,7 +31,7 @@ public interface FRBalanceRepository extends MongoRepository<FRBalance, String>,
 
     Page<FRBalance> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
 
-    FRBalance findByAccountId(@Param("accountId") String accountId);
+    Collection<FRBalance> findByAccountId(@Param("accountId") String accountId);
 
     Page<FRBalance> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
 

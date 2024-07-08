@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
 @Controller
@@ -56,8 +56,8 @@ public class AccountsApiController implements AccountsApi {
         if (!withBalance || accountsByUserID.isEmpty()) {
             log.debug("No balances required so returning {} accounts for userId: {}", accountsByUserID.size(), userId);
             return ResponseEntity.ok(accountsByUserID.stream()
-                    .map(account -> toFRAccountWithBalance(account, emptyMap()))
-                    .collect(toList()));
+                                 .map(account -> new FRAccountWithBalance(toFRAccountDto(account), emptyList()))
+                                 .collect(toList()));
         }
 
         List<String> accountIds = accountsByUserID.stream()
@@ -65,15 +65,15 @@ public class AccountsApiController implements AccountsApi {
                 .collect(toList());
         Collection<FRBalance> balances = balanceRepository.findByAccountIdIn(accountIds);
 
-        Map<String, List<FRBalance>> balancesByAccountId = balances.stream()
+        Map<String, List<FRCashBalance>> balancesByAccountId = balances.stream()
                 .collect(Collectors.groupingBy(
                         FRBalance::getAccountId,
                         HashMap::new,
-                        Collectors.toCollection(ArrayList::new)));
+                        mapping(FRBalance::getBalance, Collectors.toCollection(ArrayList::new))));
         log.debug("Balances by accountId: {}", balancesByAccountId);
 
         return ResponseEntity.ok(accountsByUserID.stream()
-                .map(account -> toFRAccountWithBalance(account, balancesByAccountId))
+                .map(account -> new FRAccountWithBalance(toFRAccountDto(account), balancesByAccountId.get(account.getId())))
                 .collect(toList())
         );
 
@@ -107,26 +107,16 @@ public class AccountsApiController implements AccountsApi {
             );
         }
 
-        if(account!=null) {
-            FRBalance balance = balanceRepository.findByAccountId(account.getId());
-            log.debug("Balance by accountId: {}", balance);
-            if(balance!=null) {
-                return ResponseEntity.ok(new FRAccountWithBalance(toFRAccountDto(account), List.of(balance.getBalance())));
-            }
-            return ResponseEntity.ok(new FRAccountWithBalance(toFRAccountDto(account), Collections.EMPTY_LIST));
+        if (account != null) {
+            final List<FRCashBalance> balances = balanceRepository.findByAccountId(account.getId())
+                                                                  .stream()
+                                                                  .map(FRBalance::getBalance)
+                                                                  .toList();
+            return ResponseEntity.ok(new FRAccountWithBalance(toFRAccountDto(account), balances));
         }
         return ResponseEntity.ok(null);
     }
 
-    private FRAccountWithBalance toFRAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {
-        List<FRCashBalance> balances = Optional.ofNullable(balanceMap.get(account.getId()))
-                .orElse(emptyList())
-                .stream()
-                .map(FRBalance::getBalance)
-                .collect(toList());
-
-        return new FRAccountWithBalance(toFRAccountDto(account), balances);
-    }
 
     private com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccount toFRAccountDto(FRAccount account) {
         return account == null ? null : com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccount.builder()
