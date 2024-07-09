@@ -339,7 +339,9 @@ public class FakeDataApiController implements FakeDataApi {
     }
 
     private void generateAccountData(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
-        FRBalance balance = generateBalance(account, FRCreditDebitIndicator.DEBIT, null);
+        final List<FRBalance> balances = generateBalances(account, FRCreditDebitIndicator.DEBIT, null);
+        final FRBalance balance = balances.get(0);
+
         int nbBeneficiaries = ThreadLocalRandom.current().nextInt(2, 8);
         int nbDirectDebits = ThreadLocalRandom.current().nextInt(2, 8);
         int nbStandingOrders = ThreadLocalRandom.current().nextInt(2, 8);
@@ -393,16 +395,16 @@ public class FakeDataApiController implements FakeDataApi {
         statementRepository.saveAll(statements);
         transactionRepository.saveAll(transactions);
         productRepository.save(product2);
-        balanceRepository.save(balance);
+        balanceRepository.saveAll(balances);
 
         accountsRepository.save(account);
     }
 
-    private FRBalance generateBalance(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account, FRCreditDebitIndicator creditDebitCode, List<FRCreditLine> creditLine) {
+    private List<FRBalance> generateBalances(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account, FRCreditDebitIndicator creditDebitCode, List<FRCreditLine> creditLine) {
         Double amount = generateAmount(1000.0d, 10000.0d);
-        FRBalance balance = new FRBalance();
-        balance.setAccountId(account.getId());
-        balance.setBalance(FRCashBalance.builder()
+        FRBalance interimAvailable = new FRBalance();
+        interimAvailable.setAccountId(account.getId());
+        interimAvailable.setBalance(FRCashBalance.builder()
                 .accountId(account.getId())
                 .amount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()).build())
                 .creditDebitIndicator(creditDebitCode)
@@ -411,8 +413,21 @@ public class FakeDataApiController implements FakeDataApi {
                 .creditLines(creditLine)
                 .build()
         );
-        LOGGER.debug("FRBalance1 '{}' generated", balance);
-        return balance;
+
+        FRBalance interimBooked = new FRBalance();
+        interimBooked.setAccountId(account.getId());
+        interimBooked.setBalance(FRCashBalance.builder()
+                .accountId(account.getId())
+                .amount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()).build())
+                .creditDebitIndicator(creditDebitCode)
+                .type(FRBalanceType.INTERIMBOOKED)
+                .dateTime(DateTime.now())
+                .creditLines(creditLine)
+                .build()
+        );
+        LOGGER.debug("FRBalance1 '{}' generated", interimAvailable);
+
+        return List.of(interimAvailable, interimBooked);
     }
 
     private FRBeneficiary generateBeneficiary(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account) {
