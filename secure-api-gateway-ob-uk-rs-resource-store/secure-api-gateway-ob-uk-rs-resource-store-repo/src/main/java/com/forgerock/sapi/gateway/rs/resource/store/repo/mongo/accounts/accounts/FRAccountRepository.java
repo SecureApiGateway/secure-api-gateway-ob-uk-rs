@@ -26,17 +26,9 @@ public interface FRAccountRepository extends MongoRepository<FRAccount, String>,
 
     Collection<FRAccount> findByUserID(@Param("userID") String userID);
 
-    @Query("{ 'userID': ?0 , 'account.accounts.name' : ?1, 'account.accounts.identification' : ?2, 'account.accounts.schemeName': ?3}")
+    @Query("{ 'userID': ?0 , 'account.accounts.identification' : ?1, 'account.accounts.schemeName': ?2}")
     FRAccount findByUserIdAndAccountIdentifiers(
             @Param("userID") String userID,
-            @Param("account.accounts.name") String accountIdentifierName,
-            @Param("account.accounts.identification") String accountIdentifierIdentification,
-            @Param("account.accounts.schemeName") String accountIdentifierSchemeName
-    );
-
-    @Query("{ 'account.accounts.name' : ?0, 'account.accounts.identification' : ?1, 'account.accounts.schemeName': ?2}")
-    FRAccount findByAccountIdentifiers(
-            @Param("account.accounts.name") String accountIdentifierName,
             @Param("account.accounts.identification") String accountIdentifierIdentification,
             @Param("account.accounts.schemeName") String accountIdentifierSchemeName
     );

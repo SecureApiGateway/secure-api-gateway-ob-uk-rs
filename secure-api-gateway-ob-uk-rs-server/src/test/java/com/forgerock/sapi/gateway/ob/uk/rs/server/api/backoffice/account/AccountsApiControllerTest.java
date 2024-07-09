@@ -39,7 +39,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -259,35 +258,6 @@ public class AccountsApiControllerTest {
         return balances;
     }
 
-    @Test
-    public void shouldFindAccountWithBalanceByAccountIdentifiersNoUserId(){
-        // Given
-        FRAccount account = FRAccountTestDataFactory.aValidFRAccount();
-        frAccountRepository.save(account);
-        FRBalance accountBalance = aValidFRBalance(account.getId());
-        frBalanceRepository.save(accountBalance);
-        URI uri = findAccountUriByAccountIdentifiers(null, account.getAccount().getFirstAccount());
-        ParameterizedTypeReference<FRAccountWithBalance> typeReference = new ParameterizedTypeReference<>() {
-        };
-
-        // When
-        ResponseEntity<FRAccountWithBalance> response = restTemplate.exchange(
-                uri,
-                HttpMethod.GET,
-                new HttpEntity<>(httpHeaders()),
-                typeReference);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        FRAccountWithBalance accountWithBalance = response.getBody();
-        assertThat(accountWithBalance.getId()).isEqualTo(account.getId());
-        assertThat(accountWithBalance.getUserId()).isEqualTo(account.getUserID());
-        assertThat(accountWithBalance.getAccount().getAccountId()).isEqualTo(account.getAccount().getAccountId());
-        assertThat(accountWithBalance.getBalances()).isNotEmpty();
-        assertThat(accountWithBalance.getBalances().get(0)).isEqualTo(accountBalance.getBalance());
-    }
-
     private FRBalance aValidFRBalance(String accountId) {
         return aValidFRBalance(accountId, FRBalanceType.INTERIMAVAILABLE);
     }
@@ -321,11 +291,8 @@ public class AccountsApiControllerTest {
 
     private URI findAccountUriByAccountIdentifiers(String userId, FRAccountIdentifier accountIdentifier){
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL + port + FIND_USER_ACCOUNTS_URI_BY_IDENTIFIERS);
-        if(Objects.nonNull(userId)) {
-            builder.queryParam("userId", userId);
-        }
+        builder.queryParam("userId", userId);
         builder.queryParam("identification", accountIdentifier.getIdentification());
-        builder.queryParam("name", accountIdentifier.getName());
         builder.queryParam("schemeName", accountIdentifier.getSchemeName());
         return builder.build().encode().toUri();
     }

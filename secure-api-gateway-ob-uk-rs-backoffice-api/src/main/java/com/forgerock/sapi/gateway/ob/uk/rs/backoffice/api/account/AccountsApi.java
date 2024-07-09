@@ -70,18 +70,14 @@ public interface AccountsApi {
     );
 
     /**
-     * Retrieves a user's bank account details, including it's associated balance(s) (if requested).
-     * @param userId
-     *         The ID of the user who owns the account
-     * @param accountIdentifierName
-     *         Indicates the name of account identifier to filter the account identifiers. Defaults to false.
-     * @param accountIdentifierIdentification
-     *         Indicates the identification of account identifier to filter the account identifiers. Defaults to false.
-     * @param accountIdentifierSchemeName
-     *         Indicates the schema name of account identifier to filter the account identifiers. Defaults to false.
-     * @return a {@link FRAccountIdentifier} instance if found, or void otherwise.
+     * Retrieves a user's bank account details, including it's associated balance(s).
+     *
+     * @param userId                          The ID of the user who owns the account
+     * @param accountIdentifierIdentification Indicates the value of account identifier to filter the account identifiers.
+     * @param accountIdentifierSchemeName     Indicates the schema name of account identifier to filter the account identifiers.
+     * @return a {@link FRAccountIdentifier} instance if found, or null otherwise.
      */
-    @ApiOperation(value = "Get User Account with balance filtered by name, identification and schema name",
+    @ApiOperation(value = "Get User Account with balance filtered by userId, identification and schema name",
             nickname = "getUserAccountIdentifier",
             notes = "", response = FRAccountIdentifier.class,
             tags = {"Get User Account identifier",})
@@ -99,14 +95,12 @@ public interface AccountsApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<FRAccountWithBalance> getAccountWithBalanceByIdentifiers(
-            @ApiParam(value = "The ID of the PSU who owns the account. (non mandatory)")
-            @RequestParam(value = "userId", required = false) String userId,
-            @ApiParam(value = "Indicates the name of account identifier to filter the account identifiers. Defaults to false.")
-            @RequestParam(value = "name", defaultValue = "false") String accountIdentifierName,
-            @ApiParam(value = "Indicates the identification of account identifier to filter the account identifiers. Defaults to false.")
-            @RequestParam(value = "identification", defaultValue = "false") String accountIdentifierIdentification,
-            @ApiParam(value = "Indicates the schema name of account identifier to filter the account identifiers. Defaults to false.")
-            @RequestParam(value = "schemeName", defaultValue = "false") String accountIdentifierSchemeName
+            @ApiParam(value = "The ID of the PSU who owns the account.")
+            @RequestParam(value = "userId") String userId,
+            @ApiParam(value = "Indicates the identification of account identifier to filter the account identifiers.")
+            @RequestParam(value = "identification") String accountIdentifierIdentification,
+            @ApiParam(value = "Indicates the schema name of account identifier to filter the account identifiers.")
+            @RequestParam(value = "schemeName") String accountIdentifierSchemeName
     );
 
 }
