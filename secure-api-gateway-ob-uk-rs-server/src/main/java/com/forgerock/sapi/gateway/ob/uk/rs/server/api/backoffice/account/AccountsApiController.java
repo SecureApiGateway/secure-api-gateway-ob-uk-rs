@@ -82,31 +82,17 @@ public class AccountsApiController implements AccountsApi {
     @Override
     public ResponseEntity<FRAccountWithBalance> getAccountWithBalanceByIdentifiers(
             String userId,
-            String accountIdentifierName,
             String accountIdentifierIdentification,
             String accountIdentifierSchemeName
     ) {
         log.info(
-                "Read all account identifier for user ID '{}', with name: {}, identification {} and schema name {}",
-                userId, accountIdentifierName, accountIdentifierIdentification, accountIdentifierSchemeName
+                "Read all account identifier for user ID '{}', identification {} and schema name {}",
+                userId, accountIdentifierIdentification, accountIdentifierSchemeName
         );
 
-        FRAccount account;
-        if(Objects.isNull(userId)) {
-            account = accountsRepository.findByAccountIdentifiers(
-                    accountIdentifierName,
-                    accountIdentifierIdentification,
-                    accountIdentifierSchemeName
-            );
-        } else {
-            account = accountsRepository.findByUserIdAndAccountIdentifiers(
-                    userId,
-                    accountIdentifierName,
-                    accountIdentifierIdentification,
-                    accountIdentifierSchemeName
-            );
-        }
-
+        final FRAccount account = accountsRepository.findByUserIdAndAccountIdentifiers(userId,
+                                                                                       accountIdentifierIdentification,
+                                                                                       accountIdentifierSchemeName);
         if (account != null) {
             final List<FRCashBalance> balances = balanceRepository.findByAccountId(account.getId())
                                                                   .stream()

@@ -29,7 +29,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
