@@ -18,10 +18,10 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
 
 /**
  * Validator of OBWriteDomestic2 objects (Domestic Payment Requests)

@@ -51,13 +51,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3Data;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3Data;
 import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 /**

@@ -18,10 +18,10 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduled3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduled3DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5;
 
 /**
  * Validator of OBWriteInternationalScheduled3 objects (International Scheduled Payment Requests)

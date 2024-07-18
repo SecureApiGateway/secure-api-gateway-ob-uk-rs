@@ -54,8 +54,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatem
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadStatement2;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.account.OBReadStatement2;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 /**
  * Spring Boot Test for {@link StatementsApiController}.

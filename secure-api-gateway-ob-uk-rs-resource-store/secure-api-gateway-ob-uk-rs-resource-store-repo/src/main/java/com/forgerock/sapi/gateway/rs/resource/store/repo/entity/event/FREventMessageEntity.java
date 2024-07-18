@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.event.OBEvent1;
+import uk.org.openbanking.datamodel.v3.event.OBEvent1;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;

@@ -37,11 +37,11 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import uk.org.openbanking.datamodel.account.OBParty2;
-import uk.org.openbanking.datamodel.account.OBReadParty2;
-import uk.org.openbanking.datamodel.account.OBReadParty2Data;
-import uk.org.openbanking.datamodel.account.OBReadParty3;
-import uk.org.openbanking.datamodel.account.OBReadParty3Data;
+import uk.org.openbanking.datamodel.v3.account.OBParty2;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty2;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty2Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty3;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty3Data;
 
 @Controller("PartyApiV3.1.10")
 public class PartyApiController implements PartyApi {

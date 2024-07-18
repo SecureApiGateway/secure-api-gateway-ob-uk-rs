@@ -27,7 +27,7 @@ import org.springframework.data.repository.query.Param;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.ApiConstants;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
 
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode0;
+import uk.org.openbanking.datamodel.v3.account.OBCreditDebitCode0;
 
 public interface FRTransactionRepository extends MongoRepository<FRTransaction, String>, FRTransactionRepositoryCustom {
 

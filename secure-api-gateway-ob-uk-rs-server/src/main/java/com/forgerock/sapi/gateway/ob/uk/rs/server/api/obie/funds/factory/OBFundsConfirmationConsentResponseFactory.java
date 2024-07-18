@@ -24,9 +24,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.Fund
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
 
 @Component
 public class OBFundsConfirmationConsentResponseFactory {

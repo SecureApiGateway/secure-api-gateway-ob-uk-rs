@@ -24,12 +24,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChar
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsentResponse5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsentResponse5Data;
 
 /**
  * Factory to create {@link OBWriteDomesticConsentResponse5}

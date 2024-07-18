@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.rs.resource.store.datamodel.shared.currency;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
+import uk.org.openbanking.datamodel.v3.payment.OBExchangeRateType;
 
 import org.joda.time.DateTime;
 

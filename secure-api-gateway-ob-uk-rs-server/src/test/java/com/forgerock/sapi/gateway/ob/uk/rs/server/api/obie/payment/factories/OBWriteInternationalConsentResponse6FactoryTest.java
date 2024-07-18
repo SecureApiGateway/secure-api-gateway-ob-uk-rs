@@ -26,11 +26,11 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domes
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalpayments.InternationalPaymentConsentsApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsentResponse6Data;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
 
 class OBWriteInternationalConsentResponse6FactoryTest {

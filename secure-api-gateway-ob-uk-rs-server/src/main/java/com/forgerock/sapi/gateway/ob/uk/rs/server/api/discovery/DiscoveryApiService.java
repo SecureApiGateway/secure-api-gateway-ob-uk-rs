@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
-import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
+import uk.org.openbanking.datamodel.v3.discovery.GenericOBDiscoveryAPILinks;
+import uk.org.openbanking.datamodel.v3.discovery.OBDiscoveryAPI;
 
 import java.util.HashMap;
 import java.util.List;

@@ -23,7 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 
-import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
 
 /**
  * Implementation of Validator which can be extended to provide Open Banking specific validation.

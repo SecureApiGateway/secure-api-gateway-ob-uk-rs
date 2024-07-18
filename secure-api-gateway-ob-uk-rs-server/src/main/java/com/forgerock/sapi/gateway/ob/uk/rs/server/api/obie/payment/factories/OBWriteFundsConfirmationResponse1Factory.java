@@ -21,11 +21,11 @@ import java.util.function.Function;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
-import uk.org.openbanking.datamodel.common.Links;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1DataFundsAvailableResult;
+import uk.org.openbanking.datamodel.v3.common.Links;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1DataFundsAvailableResult;
 
 /**
  * Factory capable of producing {@link OBWriteFundsConfirmationResponse1} objects.

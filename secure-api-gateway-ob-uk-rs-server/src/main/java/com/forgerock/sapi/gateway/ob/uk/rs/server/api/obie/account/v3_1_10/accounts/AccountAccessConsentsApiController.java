@@ -34,8 +34,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.Accou
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsentResponse1;
 
 @Controller("AccountAccessConsentsApiV3.1.10")
 public class AccountAccessConsentsApiController implements AccountAccessConsentsApi {

@@ -40,8 +40,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FROffer;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import uk.org.openbanking.datamodel.account.OBReadOffer1;
-import uk.org.openbanking.datamodel.account.OBReadOffer1Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadOffer1;
+import uk.org.openbanking.datamodel.v3.account.OBReadOffer1Data;
 
 @Controller("OffersApiV3.1.10")
 public class OffersApiController implements OffersApi {

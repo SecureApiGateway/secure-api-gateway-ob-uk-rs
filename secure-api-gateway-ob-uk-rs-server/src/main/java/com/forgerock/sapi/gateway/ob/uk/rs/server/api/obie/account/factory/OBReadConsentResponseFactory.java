@@ -27,10 +27,10 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
-import uk.org.openbanking.datamodel.account.OBRisk2;
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsentResponse1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsentResponse1Data;
+import uk.org.openbanking.datamodel.v3.account.OBRisk2;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 @Component
 public class OBReadConsentResponseFactory {

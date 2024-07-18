@@ -26,13 +26,13 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternat
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
 
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7DataInitiation;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsentResponse7;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsentResponse7Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsentResponse7DataInitiation;
 
 @Component
 public class OBWriteInternationalStandingOrderConsentResponse7Factory {

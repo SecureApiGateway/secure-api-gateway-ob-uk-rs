@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadConsent1Data;
-import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
 
 public class OBReadConsent1ValidatorTest {
 

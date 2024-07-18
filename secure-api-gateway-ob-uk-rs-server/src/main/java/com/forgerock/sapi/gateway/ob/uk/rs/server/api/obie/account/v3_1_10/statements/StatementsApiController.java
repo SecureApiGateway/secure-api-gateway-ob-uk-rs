@@ -54,8 +54,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Ac
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadDataStatement2;
-import uk.org.openbanking.datamodel.account.OBReadStatement2;
+import uk.org.openbanking.datamodel.v3.account.OBReadDataStatement2;
+import uk.org.openbanking.datamodel.v3.account.OBReadStatement2;
 
 @Controller("StatementsApiV3.1.10")
 public class StatementsApiController implements StatementsApi {

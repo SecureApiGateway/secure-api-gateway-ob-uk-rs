@@ -48,8 +48,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4;
 
 @Controller("FilePaymentConsentsApiV3.1.10")
 public class FilePaymentConsentsApiController implements FilePaymentConsentsApi {

@@ -28,10 +28,10 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscription1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscriptionResponse1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscriptionsResponse1;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -18,9 +18,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,13 +32,13 @@ import org.junit.jupiter.api.Test;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1DataInstructedAmount;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 public class FundsConfirmationValidatorTest {
 

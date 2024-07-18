@@ -26,13 +26,13 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRMode
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6DataInitiation;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 
 @Component
 public class OBWriteDomesticStandingOrderConsentResponse6Factory {

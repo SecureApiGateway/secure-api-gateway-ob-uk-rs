@@ -31,7 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.v3.payment.*;
 
 
 import static com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion.v3_1_5;

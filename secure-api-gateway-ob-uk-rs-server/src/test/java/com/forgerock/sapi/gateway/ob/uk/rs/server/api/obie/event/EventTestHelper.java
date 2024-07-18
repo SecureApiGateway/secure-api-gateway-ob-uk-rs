@@ -21,11 +21,11 @@ import java.util.UUID;
 
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 
-import uk.org.openbanking.datamodel.event.OBEvent1;
-import uk.org.openbanking.datamodel.event.OBEventLink1;
-import uk.org.openbanking.datamodel.event.OBEventPolling1;
-import uk.org.openbanking.datamodel.event.OBEventResourceUpdate1;
-import uk.org.openbanking.datamodel.event.OBEventSubject1;
+import uk.org.openbanking.datamodel.v3.event.OBEvent1;
+import uk.org.openbanking.datamodel.v3.event.OBEventLink1;
+import uk.org.openbanking.datamodel.v3.event.OBEventPolling1;
+import uk.org.openbanking.datamodel.v3.event.OBEventResourceUpdate1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubject1;
 
 public class EventTestHelper {
 

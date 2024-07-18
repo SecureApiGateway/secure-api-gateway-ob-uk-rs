@@ -43,9 +43,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTes
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMessageRepository;
 
-import uk.org.openbanking.datamodel.event.OBEventPolling1;
-import uk.org.openbanking.datamodel.event.OBEventPolling1SetErrsValue;
-import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
+import uk.org.openbanking.datamodel.v3.event.OBEventPolling1;
+import uk.org.openbanking.datamodel.v3.event.OBEventPolling1SetErrsValue;
+import uk.org.openbanking.datamodel.v3.event.OBEventPollingResponse1;
 
 /**
  * A SpringBoot test for the {@link AggregatedPollingApiController}.

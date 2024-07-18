@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.payment.OBExchangeRateType;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
 
 class OBWriteInternationalConsent5ValidatorTest {

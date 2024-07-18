@@ -22,7 +22,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
 @Service
 public class DefaultAccountResourceAccessService implements AccountResourceAccessService {

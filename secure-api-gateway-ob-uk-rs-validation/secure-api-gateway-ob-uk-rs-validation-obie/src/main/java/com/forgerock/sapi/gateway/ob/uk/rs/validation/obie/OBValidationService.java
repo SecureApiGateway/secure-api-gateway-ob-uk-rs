@@ -27,7 +27,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidateAll;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 
-import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
 
 /**
  * A service which invokes 1 or more validators and throws an exception if there are any errors in the results.

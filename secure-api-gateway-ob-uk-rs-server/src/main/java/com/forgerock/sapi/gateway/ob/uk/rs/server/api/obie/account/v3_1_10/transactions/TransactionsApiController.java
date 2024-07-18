@@ -46,9 +46,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Ac
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadDataTransaction6;
-import uk.org.openbanking.datamodel.account.OBReadTransaction6;
-import uk.org.openbanking.datamodel.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBReadDataTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBReadTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
 
 @Controller("TransactionsApiV3.1.10")
 public class TransactionsApiController implements TransactionsApi {

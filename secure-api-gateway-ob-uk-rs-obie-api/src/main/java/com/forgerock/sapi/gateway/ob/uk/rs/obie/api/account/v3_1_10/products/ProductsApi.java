@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
-import uk.org.openbanking.datamodel.account.OBReadProduct2;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2;
 
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;

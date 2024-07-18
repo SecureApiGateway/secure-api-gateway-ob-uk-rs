@@ -46,7 +46,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadParty2;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty2;
 
 /**
  * Spring Boot Test for {@link PartyApiController}.

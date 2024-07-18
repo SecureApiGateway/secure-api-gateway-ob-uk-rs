@@ -46,7 +46,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.schedule
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
-import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3;
+import uk.org.openbanking.datamodel.v3.account.OBReadScheduledPayment3;
 
 /**
  * Spring Boot Test for {@link ScheduledPaymentsApiController}.

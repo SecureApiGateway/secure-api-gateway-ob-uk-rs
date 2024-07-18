@@ -48,10 +48,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfir
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1Data;
 
 @Controller("FundsConfirmationsApiV3.1.10")
 public class FundsConfirmationsApiController implements FundsConfirmationsApi {

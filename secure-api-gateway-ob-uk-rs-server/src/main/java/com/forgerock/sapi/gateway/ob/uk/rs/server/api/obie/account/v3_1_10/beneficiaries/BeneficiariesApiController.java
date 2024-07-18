@@ -41,8 +41,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary5;
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary5Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadBeneficiary5;
+import uk.org.openbanking.datamodel.v3.account.OBReadBeneficiary5Data;
 
 @Controller("BeneficiariesApiV3.1.10")
 public class BeneficiariesApiController  implements BeneficiariesApi {

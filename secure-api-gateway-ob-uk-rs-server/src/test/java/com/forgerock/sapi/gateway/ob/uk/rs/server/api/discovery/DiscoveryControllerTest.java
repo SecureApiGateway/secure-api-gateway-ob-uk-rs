@@ -29,7 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import uk.org.openbanking.datamodel.discovery.*;
+import uk.org.openbanking.datamodel.v3.discovery.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
