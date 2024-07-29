@@ -57,9 +57,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import jakarta.annotation.PostConstruct;
+import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v3.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsentResponse5;

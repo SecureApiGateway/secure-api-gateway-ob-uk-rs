@@ -63,9 +63,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v3.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
