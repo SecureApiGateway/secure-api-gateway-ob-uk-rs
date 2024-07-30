@@ -51,6 +51,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Ac
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsentResponse1;
@@ -59,7 +60,6 @@ import uk.org.openbanking.datamodel.v3.common.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v3.error.OBStandardErrorCodes1;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")

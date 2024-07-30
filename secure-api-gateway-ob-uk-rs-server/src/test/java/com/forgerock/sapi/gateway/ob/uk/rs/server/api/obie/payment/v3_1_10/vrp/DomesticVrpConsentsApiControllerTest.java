@@ -67,10 +67,10 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_1
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v3.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponse;
