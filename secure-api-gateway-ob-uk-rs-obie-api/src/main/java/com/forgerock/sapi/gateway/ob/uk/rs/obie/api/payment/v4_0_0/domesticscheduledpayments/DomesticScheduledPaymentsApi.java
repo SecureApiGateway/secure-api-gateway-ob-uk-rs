@@ -63,6 +63,7 @@ public interface DomesticScheduledPaymentsApi {
      * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
      * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
      * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
+     * @param apiClientId OAuth2.0 client_id of the ApiClient making the request
      * @return Domestic Scheduled Payments Created (status code 201)
      *         or Bad request (status code 400)
      *         or Unauthorized (status code 401)
@@ -131,7 +132,8 @@ public interface DomesticScheduledPaymentsApi {
         @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
         @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
+        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
     );
 
 
@@ -144,6 +146,7 @@ public interface DomesticScheduledPaymentsApi {
      * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
      * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
      * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
+     * @param apiClientId OAuth2.0 client_id of the ApiClient making the request
      * @return Domestic Scheduled Payments Read (status code 200)
      *         or Bad request (status code 400)
      *         or Unauthorized (status code 401)
@@ -201,7 +204,8 @@ public interface DomesticScheduledPaymentsApi {
         @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
         @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
+        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
     );
 
 
@@ -214,6 +218,7 @@ public interface DomesticScheduledPaymentsApi {
      * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
      * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
      * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
+     * @param apiClientId OAuth2.0 client_id of the ApiClient making the request
      * @return Payment Details Read (status code 200)
      *         or Bad request (status code 400)
      *         or Unauthorized (status code 401)
@@ -271,7 +276,8 @@ public interface DomesticScheduledPaymentsApi {
         @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
         @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
+        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
     );
 
 }
