@@ -36,6 +36,7 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -59,7 +60,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticStandingOrderPaymentSubmission;
@@ -94,7 +95,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     public DomesticStandingOrdersApiController(
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            DomesticStandingOrderConsentStoreClient consentStoreClient,
+            @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient") DomesticStandingOrderConsentStoreClient consentStoreClient,
             OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;

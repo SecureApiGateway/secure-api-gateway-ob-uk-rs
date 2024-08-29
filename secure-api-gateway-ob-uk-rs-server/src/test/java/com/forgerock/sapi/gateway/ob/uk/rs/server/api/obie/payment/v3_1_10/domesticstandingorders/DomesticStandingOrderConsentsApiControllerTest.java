@@ -32,6 +32,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -48,7 +49,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
@@ -67,7 +68,6 @@ import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsen
 @ActiveProfiles("test")
 public class DomesticStandingOrderConsentsApiControllerTest {
 
-
     private static final String TEST_API_CLIENT_ID = "client_234093-49";
 
     private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders(TEST_API_CLIENT_ID);
@@ -79,6 +79,7 @@ public class DomesticStandingOrderConsentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient")
     private DomesticStandingOrderConsentStoreClient consentStoreClient;
 
     private String controllerBaseUri;
@@ -87,7 +88,6 @@ public class DomesticStandingOrderConsentsApiControllerTest {
     public void postConstruct() {
         controllerBaseUri = "http://localhost:" + port + "/open-banking/v3.1.10/pisp/domestic-standing-order-consents";
     }
-
 
     @Test
     public void testCreateConsent() {

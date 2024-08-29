@@ -38,6 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -56,7 +57,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
@@ -103,6 +104,7 @@ public class DomesticStandingOrdersApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient")
     private DomesticStandingOrderConsentStoreClient consentStoreClient;
 
     @MockBean
