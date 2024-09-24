@@ -13,40 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticpayments;
-
-import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domesticpayments;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteDomesticConsentResponse5Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteFundsConfirmationResponse1Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.domesticpayments.DomesticPaymentConsentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteDomesticConsentResponse5Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteFundsConfirmationResponse1Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
-
 import jakarta.servlet.http.HttpServletRequest;
-import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsentResponse5;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsentResponse5;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1;
 
-@Controller("DomesticPaymentConsentsApiV3.1.10")
+import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
+
+@Controller("DomesticPaymentConsentsApiV4.0.0")
 public class DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -120,7 +118,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 consentId, apiClientId, xFapiInteractionId);
 
         final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
-        if (OBPaymentConsentStatus.fromValue(consent.getStatus()) != OBPaymentConsentStatus.AUTHORISED) {
+        if (OBPaymentConsentStatus.fromValue(consent.getStatus()) != OBPaymentConsentStatus.AUTH) {
             throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
                                                OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
         }
