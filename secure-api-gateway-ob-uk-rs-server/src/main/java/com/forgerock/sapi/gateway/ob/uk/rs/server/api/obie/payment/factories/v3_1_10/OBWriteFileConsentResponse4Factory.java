@@ -20,8 +20,8 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksH
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 
 import uk.org.openbanking.datamodel.v3.common.Meta;

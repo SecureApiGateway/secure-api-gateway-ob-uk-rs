@@ -17,7 +17,8 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.val
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.OBRisk1Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBRisk1Validator;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.v3.common.OBExternalPaymentContext1Code;

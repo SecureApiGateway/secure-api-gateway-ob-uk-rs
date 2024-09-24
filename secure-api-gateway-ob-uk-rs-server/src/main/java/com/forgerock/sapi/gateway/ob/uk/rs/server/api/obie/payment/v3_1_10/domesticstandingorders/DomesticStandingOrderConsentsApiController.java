@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticstandingorders;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
     private final OBWriteDomesticStandingOrderConsentResponse6Factory consentResponseFactory;
 
     public DomesticStandingOrderConsentsApiController(
-            @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient")DomesticStandingOrderConsentStoreClient consentStoreApiClient,
+            @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient") DomesticStandingOrderConsentStoreClient consentStoreApiClient,
             OBValidationService<OBWriteDomesticStandingOrderConsent5> consentValidator,
             OBWriteDomesticStandingOrderConsentResponse6Factory consentResponseFactory) {
 

@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.aggregatedpolling;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.FREventPollingConverter.toFREventPolling;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.event.FREventPollingConverter.toFREventPolling;
 
 import java.util.Map;
 
