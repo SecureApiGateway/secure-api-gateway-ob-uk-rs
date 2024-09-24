@@ -15,10 +15,10 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
@@ -28,13 +28,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
@@ -46,8 +47,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.VRPIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticVrpPaymentSubmission;
@@ -88,7 +89,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
-            OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
+            @Qualifier("v3.1.10domesticVRPPaymentRequestValidator") OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
             DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,

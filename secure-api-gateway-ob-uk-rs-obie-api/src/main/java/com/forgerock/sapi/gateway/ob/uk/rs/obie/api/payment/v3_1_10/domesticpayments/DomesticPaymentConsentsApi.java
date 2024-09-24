@@ -22,7 +22,6 @@ import java.security.Principal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

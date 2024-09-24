@@ -21,10 +21,10 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteFileResponse3DataStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConverter.toFRWriteFile;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toOBWriteFileResponse3DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConverter.toFRWriteFile;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
 
@@ -32,8 +32,8 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataFile;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteFile;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
@@ -48,8 +48,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.Idempotent
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
@@ -60,6 +60,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -86,7 +87,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             FilePaymentSubmissionRepository filePaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             FilePaymentConsentStoreClient consentStoreClient,
-            OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
+            @Qualifier("v3.1.10filePaymentRequestValidator") OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentStoreClient = consentStoreClient;

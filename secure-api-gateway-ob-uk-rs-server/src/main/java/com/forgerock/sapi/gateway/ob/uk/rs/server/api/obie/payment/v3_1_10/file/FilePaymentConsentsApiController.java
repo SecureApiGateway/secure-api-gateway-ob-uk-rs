@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -25,12 +25,13 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -41,7 +42,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.vali
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
@@ -66,9 +67,9 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     private final OBWriteFileConsentResponse4Factory consentResponseFactory;
 
     public FilePaymentConsentsApiController(FilePaymentConsentStoreClient consentStoreApiClient,
-                                            OBValidationService<OBWriteFileConsent3> consentValidator,
+                                            @Qualifier("v3.1.10filePaymentConsentValidator") OBValidationService<OBWriteFileConsent3> consentValidator,
                                             PaymentFileProcessorService paymentFileProcessorService,
-                                            OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator,
+                                            @Qualifier("v3.1.10filePaymentFileContentValidator") OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator,
                                             OBWriteFileConsentResponse4Factory consentResponseFactory) {
         this.consentStoreApiClient = consentStoreApiClient;
         this.consentValidator = consentValidator;

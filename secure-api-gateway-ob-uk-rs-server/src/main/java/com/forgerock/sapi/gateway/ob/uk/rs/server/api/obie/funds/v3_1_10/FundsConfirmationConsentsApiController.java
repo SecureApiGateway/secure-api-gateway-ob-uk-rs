@@ -24,7 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_10.FundsConfirmationConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.factory.OBFundsConfirmationConsentResponseFactory;

@@ -21,13 +21,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -37,7 +38,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
@@ -68,7 +69,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public InternationalScheduledPaymentConsentsApiController(InternationalScheduledPaymentConsentStoreClient consentStoreApiClient,
-            OBValidationService<OBWriteInternationalScheduledConsent5> consentValidator,
+            @Qualifier("v3.1.10internationalScheduledPaymentConsentValidator") OBValidationService<OBWriteInternationalScheduledConsent5> consentValidator,
             ExchangeRateService exchangeRateService,
             OBWriteInternationalScheduledConsentResponse6Factory consentResponseFactory,
             FundsAvailabilityService fundsAvailabilityService,
