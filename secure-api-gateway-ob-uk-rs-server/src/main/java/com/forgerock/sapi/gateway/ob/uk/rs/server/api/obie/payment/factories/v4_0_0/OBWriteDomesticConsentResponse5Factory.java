@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.payment.*;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper.createDomesticPaymentConsentsLink;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper.createDomesticPaymentConsentsLink;
 
 /**
  * Factory to create {@link OBWriteDomesticConsentResponse5}
