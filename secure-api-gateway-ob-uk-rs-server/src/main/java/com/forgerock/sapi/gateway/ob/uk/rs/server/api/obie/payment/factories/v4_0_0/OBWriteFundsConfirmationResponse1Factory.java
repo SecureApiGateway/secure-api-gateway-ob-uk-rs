@@ -18,11 +18,11 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.v3.common.Links;
-import uk.org.openbanking.datamodel.v3.common.Meta;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1Data;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1DataFundsAvailableResult;
+import uk.org.openbanking.datamodel.v4.common.Links;
+import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1DataFundsAvailableResult;
 
 import java.util.function.Function;
 

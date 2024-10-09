@@ -23,13 +23,12 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.domesticpayments.DomesticPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteDomesticConsentResponse5Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteFundsConfirmationResponse1Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.DomesticPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -40,7 +39,6 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsentResponse5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1;
 
-import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,9 +71,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticConsentResponse5> createDomesticPaymentConsents(OBWriteDomesticConsent4 obWriteDomesticConsent4,
-                String authorization, String xIdempotencyKey, String xJwsSignature, String xFapiAuthDate, String xFapiCustomerIpAddress,
-                String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+    public ResponseEntity<OBWriteDomesticConsentResponse5> createDomesticPaymentConsents(String authorization, String xIdempotencyKey, String xJwsSignature, OBWriteDomesticConsent4 obWriteDomesticConsent4, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) throws OBErrorResponseException {
 
         logger.info("Processing createDomesticPaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
                     obWriteDomesticConsent4, xIdempotencyKey, apiClientId, xFapiInteractionId);
@@ -99,9 +95,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticConsentResponse5> getDomesticPaymentConsentsConsentId(String consentId, String authorization,
-            String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
-            String apiClientId, HttpServletRequest request, Principal principal) {
+    public ResponseEntity<OBWriteDomesticConsentResponse5> getDomesticPaymentConsentsConsentId(String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) {
 
         logger.info("Processing getDomesticPaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                     consentId, apiClientId, xFapiInteractionId);
@@ -110,9 +104,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     }
 
     @Override
-    public ResponseEntity<OBWriteFundsConfirmationResponse1> getDomesticPaymentConsentsConsentIdFundsConfirmation(String consentId,
-            String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId,
-            String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+    public ResponseEntity<OBWriteFundsConfirmationResponse1> getDomesticPaymentConsentsConsentIdFundsConfirmation(String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) throws OBErrorResponseException {
 
         logger.info("Processing getDomesticPaymentConsentsConsentIdFundsConfirmation request - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",
                 consentId, apiClientId, xFapiInteractionId);
@@ -129,4 +121,5 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         return ResponseEntity.ok(fundsConfirmationResponseFactory.create(fundsAvailable, consentId,
                 id -> LinksHelper.createDomesticPaymentConsentsFundsConfirmationLink(getClass(), id)));
     }
+
 }
