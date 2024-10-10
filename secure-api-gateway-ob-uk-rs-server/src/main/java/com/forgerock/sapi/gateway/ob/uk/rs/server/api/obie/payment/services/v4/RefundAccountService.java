@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.v4;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRFinancialAgent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRFinancialCreditor;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRReadRefundAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.common.FRReadRefundAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.FRResponseDataRefundFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.refund.v4.FRResponseDataRefundFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.BasePaymentConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.v4.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.v4.FRAccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Service to retrieve Account Data to populate the Refund section of a Payment response
  */
-@Service()
+@Service("RefundAccountServiceV4")
 public class RefundAccountService {
 
     private final FRAccountRepository accountRepository;
@@ -49,7 +49,8 @@ public class RefundAccountService {
         }
     }
 
-    public Optional<FRInternationalResponseDataRefund> getInternationalPaymentRefundData(FRReadRefundAccount readRefundAccount,
+    //TODO - implement for international payments
+    /*public Optional<FRInternationalResponseDataRefund> getInternationalPaymentRefundData(FRReadRefundAccount readRefundAccount,
             FRFinancialCreditor creditor, FRFinancialAgent agent, BasePaymentConsent<?> paymentConsent) {
 
         return getDomesticPaymentRefundData(readRefundAccount, paymentConsent)
@@ -58,5 +59,5 @@ public class RefundAccountService {
                                                                         .creditor(creditor)
                                                                         .agent(agent)
                                                                         .build());
-    }
+    }*/
 }

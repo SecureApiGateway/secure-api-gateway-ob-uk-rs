@@ -27,6 +27,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidateAll;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
 
+import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 
 /**
@@ -38,6 +39,7 @@ import uk.org.openbanking.datamodel.v3.error.OBError1;
  *
  * @param <T> type of object that can be validated by this service.
  */
+@Service
 public class OBValidationService<T> {
 
     /**
