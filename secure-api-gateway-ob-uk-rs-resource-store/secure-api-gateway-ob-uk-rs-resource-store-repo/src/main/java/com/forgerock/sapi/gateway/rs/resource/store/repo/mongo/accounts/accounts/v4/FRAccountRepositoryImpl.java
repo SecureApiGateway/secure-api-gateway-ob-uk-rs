@@ -43,7 +43,7 @@ import java.util.stream.StreamSupport;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
 
-@Repository
+@Repository("FRAccountRepositoryImplV4")
 public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
     @Autowired
     @Lazy
