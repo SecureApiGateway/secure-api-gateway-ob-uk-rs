@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Service to retrieve Account Data to populate the Refund section of a Payment response
  */
-@Service
+@Service("RefundAccountServiceV4")
 public class RefundAccountService {
 
     private final FRAccountRepository accountRepository;

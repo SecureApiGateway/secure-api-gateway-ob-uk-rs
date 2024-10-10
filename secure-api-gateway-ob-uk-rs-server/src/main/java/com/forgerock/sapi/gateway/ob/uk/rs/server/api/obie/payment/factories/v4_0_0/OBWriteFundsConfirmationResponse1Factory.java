@@ -30,7 +30,7 @@ import java.util.function.Function;
  * Factory capable of producing {@link OBWriteFundsConfirmationResponse1} objects.
  * These schema objects are reused by the funds confirmation endpoint of many of the Payment APIs.
  */
-@Component
+@Component("OBWriteFundsConfirmationResponse1FactoryV4")
 public class OBWriteFundsConfirmationResponse1Factory {
 
     public OBWriteFundsConfirmationResponse1 create(boolean fundsAvailable, String consentId, Function<String, Links> fundsConfirmationLinksFactory) {
