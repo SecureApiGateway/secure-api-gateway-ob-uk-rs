@@ -127,7 +127,7 @@ public interface DomesticPaymentConsentsApi {
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
         @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
         @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    ) throws OBErrorResponseException;
+    ) throws OBErrorResponseException, com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBErrorResponseException;
 
 
     /**

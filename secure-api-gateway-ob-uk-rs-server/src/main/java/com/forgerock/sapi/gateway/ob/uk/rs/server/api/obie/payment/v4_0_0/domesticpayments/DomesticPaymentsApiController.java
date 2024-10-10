@@ -76,19 +76,19 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private final DomesticPaymentSubmissionRepository paymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
     private final DomesticPaymentConsentStoreClient consentStoreClient;
-    private final OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator;
+    /*private final OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator;*/
     private final RefundAccountService refundAccountService;
     private final IdempotentPaymentService<FRDomesticPaymentSubmission, FRWriteDomestic> idempotentPaymentService;
 
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,
+            /*OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,*/
             DomesticPaymentConsentStoreClient consentStoreClient,
             RefundAccountService refundAccountService) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
-        this.paymentValidator = paymentValidator;
+        /*this.paymentValidator = paymentValidator;*/
         this.consentStoreClient = consentStoreClient;
         this.refundAccountService = refundAccountService;
         this.idempotentPaymentService = new SinglePaymentForConsentIdempotentPaymentService<>(paymentSubmissionRepository);
@@ -124,7 +124,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         logger.debug("Validating Domestic Payment submission");
         final OBWriteDomestic2ValidationContext validationCtxt = new OBWriteDomestic2ValidationContext(obWriteDomestic2,
                 FRWriteDomesticConsentConverter.toOBWriteDomesticConsent4(consent.getRequestObj()), consent.getStatus());
-        paymentValidator.validate(validationCtxt);
+        /*paymentValidator.validate(validationCtxt);*/
         logger.debug("Domestic Payment validation successful");
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()

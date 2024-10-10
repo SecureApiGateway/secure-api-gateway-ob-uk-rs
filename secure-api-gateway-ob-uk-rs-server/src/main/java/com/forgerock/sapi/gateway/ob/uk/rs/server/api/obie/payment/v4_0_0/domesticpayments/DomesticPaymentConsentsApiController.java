@@ -25,7 +25,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteFundsConfirmationResponse1Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+//import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;
@@ -49,7 +49,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
     private final DomesticPaymentConsentStoreClient consentStoreApiClient;
 
-    private final OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator;
+    //private final OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator;
 
     private final OBWriteDomesticConsentResponse5Factory consentResponseFactory;
 
@@ -58,25 +58,25 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public DomesticPaymentConsentsApiController(DomesticPaymentConsentStoreClient consentStoreApiClient,
-                                                OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator,
+                                                /*OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator,*/
                                                 OBWriteDomesticConsentResponse5Factory consentResponseFactory,
                                                 FundsAvailabilityService fundsAvailabilityService,
                                                 OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory) {
 
         this.consentStoreApiClient = consentStoreApiClient;
-        this.domesticConsentValidator = domesticConsentValidator;
+        //this.domesticConsentValidator = domesticConsentValidator;
         this.consentResponseFactory = consentResponseFactory;
         this.fundsAvailabilityService = fundsAvailabilityService;
         this.fundsConfirmationResponseFactory = fundsConfirmationResponseFactory;
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticConsentResponse5> createDomesticPaymentConsents(String authorization, String xIdempotencyKey, String xJwsSignature, OBWriteDomesticConsent4 obWriteDomesticConsent4, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) throws OBErrorResponseException {
+    public ResponseEntity<OBWriteDomesticConsentResponse5> createDomesticPaymentConsents(String authorization, String xIdempotencyKey, String xJwsSignature, OBWriteDomesticConsent4 obWriteDomesticConsent4, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) throws OBErrorResponseException, com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBErrorResponseException {
 
         logger.info("Processing createDomesticPaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
                     obWriteDomesticConsent4, xIdempotencyKey, apiClientId, xFapiInteractionId);
 
-        domesticConsentValidator.validate(obWriteDomesticConsent4);
+        //domesticConsentValidator.validate(obWriteDomesticConsent4);
 
         final CreateDomesticPaymentConsentRequest createRequest = new CreateDomesticPaymentConsentRequest();
         createRequest.setConsentRequest(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(obWriteDomesticConsent4));
