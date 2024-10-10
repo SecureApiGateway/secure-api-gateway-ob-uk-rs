@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.v4;
+package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.v4;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.common.FRSubmissionStatus;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.payment.FRWriteDomestic;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.PaymentSubmission;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.v4.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,32 +29,28 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Builder
+/**
+ * Representation of an account. This model is only useful for the demo
+ */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-public class FRDomesticPaymentSubmission implements PaymentSubmission<FRWriteDomestic> {
+public class FRAccount implements Account {
 
     @Id
     @Indexed
     private String id;
-
-    private FRWriteDomestic payment;
-
-    private FRSubmissionStatus status;
+    @Indexed
+    private String userID;
+    private FRFinancialAccount account;
+    @Indexed
+    private String latestStatementId;
 
     @CreatedDate
     private Date created;
     @LastModifiedDate
     private Date updated;
 
-    private String idempotencyKey;
-
-    private OBVersion obVersion;
-
-    @Override
-    public String getConsentId() {
-        return payment.getData().getConsentId();
-    }
 }
