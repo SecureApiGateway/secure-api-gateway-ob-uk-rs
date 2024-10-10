@@ -50,8 +50,8 @@
     </parent>
 
     <properties>
-        <uk.bom.version>4.0.0-SNAPSHOT</uk.bom.version>
-        <consent.api.version>4.0.0-SNAPSHOT</consent.api.version>
+        <uk.bom.version>4.0.0-pr-211-SNAPSHOT</uk.bom.version>
+        <consent.api.version>4.0.0-pr-211-pr-248-SNAPSHOT</consent.api.version>
     </properties>
 
     <dependencyManagement>
@@ -75,7 +75,7 @@
     </scm>
 
     <repositories>
-        <!--<repository>
+        <repository>
             <id>maven.forgerock.org-community</id>
             <name>maven.forgerock.org-releases</name>
             <url>https://maven.forgerock.org/artifactory/community</url>
@@ -84,7 +84,7 @@
             <id>maven.forgerock.org-community-snapshots</id>
             <name>maven.forgerock.org-snapshots</name>
             <url>https://maven.forgerock.org/artifactory/community</url>
-        </repository>-->
+        </repository>
         <repository>
             <id>central</id>
             <name>Central Repository</name>
