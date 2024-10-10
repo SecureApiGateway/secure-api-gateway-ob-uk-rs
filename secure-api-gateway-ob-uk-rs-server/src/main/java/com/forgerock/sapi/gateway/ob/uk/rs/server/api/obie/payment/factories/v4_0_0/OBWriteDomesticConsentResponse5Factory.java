@@ -30,7 +30,7 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.Lin
  *
  * The response is built from a {@link DomesticPaymentConsent}
  */
-@Component
+@Component("OBWriteDomesticConsentResponse5FactoryV4")
 public class OBWriteDomesticConsentResponse5Factory {
 
     public OBWriteDomesticConsentResponse5 buildConsentResponse(DomesticPaymentConsent domesticPaymentConsent, Class<?> controllerClass) {
