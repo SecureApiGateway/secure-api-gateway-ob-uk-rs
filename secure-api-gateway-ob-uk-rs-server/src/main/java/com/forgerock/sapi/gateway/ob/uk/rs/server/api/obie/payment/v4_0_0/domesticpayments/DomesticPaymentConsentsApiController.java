@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsentResponse5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1;
@@ -86,6 +86,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
         final DomesticPaymentConsent consent = consentStoreApiClient.createConsent(createRequest);
         logger.info("Created consent - id: {}", consent.getId());
+        logger.info("Created consent: {}", consent);
 
         return new ResponseEntity<>(consentResponseFactory.buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
     }
@@ -110,7 +111,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 consentId, apiClientId, xFapiInteractionId);
 
         final DomesticPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
-        if (OBPaymentConsentStatus.fromValue(consent.getStatus()) != OBPaymentConsentStatus.AUTH) {
+        if (OBPaymentConsentStatus.fromValue(consent.getStatus()) != OBPaymentConsentStatus.AUTHORISED) {
             throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
                                                OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
         }

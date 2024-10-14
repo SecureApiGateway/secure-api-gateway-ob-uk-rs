@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRConsentStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;
 import org.joda.time.DateTime;
@@ -44,7 +45,7 @@ public class OBWriteDomesticConsentResponse5Factory {
         data.initiation(obConsentData.getInitiation());
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(domesticPaymentConsent.getCharges()));
         data.consentId(domesticPaymentConsent.getId());
-        data.status(OBPaymentConsentStatus.fromValue(domesticPaymentConsent.getStatus()));
+        data.status(FRConsentStatusConverter.toOBPaymentConsentStatusV4(domesticPaymentConsent.getStatus()));
         data.creationDateTime(new DateTime(domesticPaymentConsent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(domesticPaymentConsent.getStatusUpdateDateTime()));
 
