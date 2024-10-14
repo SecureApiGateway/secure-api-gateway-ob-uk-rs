@@ -39,7 +39,7 @@ import uk.org.openbanking.datamodel.v3.error.OBError1;
  *
  * @param <T> type of object that can be validated by this service.
  */
-@Service
+@Service("OBValidationServiceV4")
 public class OBValidationService<T> {
 
     /**
