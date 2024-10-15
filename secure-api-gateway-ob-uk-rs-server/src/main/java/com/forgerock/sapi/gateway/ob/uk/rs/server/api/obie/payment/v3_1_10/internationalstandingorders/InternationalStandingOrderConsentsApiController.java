@@ -32,7 +32,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalstandingorders.InternationalStandingOrderConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteInternationalStandingOrderConsentResponse7Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.CreateInternationalStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;

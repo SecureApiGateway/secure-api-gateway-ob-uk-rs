@@ -32,7 +32,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticscheduledpayments.DomesticScheduledPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteDomesticScheduledConsentResponse5Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;

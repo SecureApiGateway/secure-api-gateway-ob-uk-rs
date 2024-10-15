@@ -36,8 +36,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.Idempotent
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;

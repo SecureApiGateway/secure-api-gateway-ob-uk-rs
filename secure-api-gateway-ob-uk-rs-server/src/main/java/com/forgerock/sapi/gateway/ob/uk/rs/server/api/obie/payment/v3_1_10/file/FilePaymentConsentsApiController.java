@@ -41,7 +41,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.vali
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;

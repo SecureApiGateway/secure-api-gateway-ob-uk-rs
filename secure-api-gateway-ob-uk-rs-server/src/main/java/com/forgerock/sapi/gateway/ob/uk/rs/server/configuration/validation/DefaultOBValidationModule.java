@@ -18,8 +18,11 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.validation;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidatorV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationServiceV4;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBWriteDomesticConsent4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.CurrencyCodeValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -29,40 +32,35 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator.FundsConfirmationValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteFileConsent3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalScheduledConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalStandingOrderConsent6Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.funds.FundsConfirmationValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.funds.FundsConfirmationValidator.FundsConfirmationValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBDomesticVRPRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBRisk1Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomestic2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticScheduled2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticStandingOrder3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteFile2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternational3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalScheduled3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalStandingOrder4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBDomesticVRPConsentRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBVRPFundsConfirmationRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteDomesticScheduledConsent4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteFileConsent3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteInternationalConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteInternationalScheduledConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteInternationalStandingOrderConsent6Validator;
 
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
@@ -95,88 +93,88 @@ public class DefaultOBValidationModule {
      * Bean to validate OBWriteDomestic2 objects (Domestic Payment Requests)
      */
     @Bean
-    public OBValidationService<OBWriteDomestic2ValidationContext> domesticPaymentValidator() {
-        return new OBValidationService<>(new OBWriteDomestic2Validator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteDomestic2ValidationContext> domesticPaymentValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteDomestic2Validator());
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidator(), riskValidator));
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBRisk1> riskValidator) {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteDomesticConsent4Validator(instructedAmountValidator(), riskValidator));
     }
 
     @Bean
-    public OBValidationServiceV4<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidatorV4(BaseOBValidatorV4<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
-        return new OBValidationServiceV4<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v4.OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(), riskValidator));
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidatorV4(BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(), riskValidator));
     }
 
     @Bean
-    public BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator() {
-        return new OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidator());
     }
 
     @Bean
-    public BaseOBValidatorV4<uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidatorV4() {
-        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4.OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidatorV4());
+    public BaseOBValidator<uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidatorV4() {
+        return new OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidatorV4());
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(instructedAmountValidator(), riskValidator));
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBRisk1> riskValidator) {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(instructedAmountValidator(), riskValidator));
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticScheduled2ValidationContext> domesticScheduledPaymentValidator() {
-        return new OBValidationService<>(new OBWriteDomesticScheduled2Validator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteDomesticScheduled2ValidationContext> domesticScheduledPaymentValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteDomesticScheduled2Validator());
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(currencyCodeValidator(), riskValidator));
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBRisk1> riskValidator) {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(currencyCodeValidator(), riskValidator));
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> domesticStandingOrderValidator() {
-        return new OBValidationService<>(new OBWriteDomesticStandingOrder3Validator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> domesticStandingOrderValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteDomesticStandingOrder3Validator());
     }
 
     @Bean
-    public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator(riskValidator));
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBRisk1> riskValidator) {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBDomesticVRPConsentRequestValidator(riskValidator));
     }
 
     @Bean
-    public OBValidationService<VRPFundsConfirmationValidationContext> domesticVRPFundsConfirmationValidator() {
-        return new OBValidationService<>(new OBVRPFundsConfirmationRequestValidator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<VRPFundsConfirmationValidationContext> domesticVRPFundsConfirmationValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBVRPFundsConfirmationRequestValidator());
     }
 
     @Bean
-    public OBValidationService<OBDomesticVRPRequestValidationContext> domesticVRPPaymentRequestValidator() {
-        return new OBValidationService<>(new OBDomesticVRPRequestValidator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBDomesticVRPRequestValidationContext> domesticVRPPaymentRequestValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBDomesticVRPRequestValidator());
     }
 
     @Bean
-    public BaseOBValidatorV4<String> currencyCodeValidatorV4() {
-        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4.CurrencyCodeValidator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
-    }
-
-    @Bean
-    public BaseOBValidator<String> currencyCodeValidator() {
+    public BaseOBValidator<String> currencyCodeValidatorV4() {
         return new CurrencyCodeValidator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
     }
 
     @Bean
-    public OBValidationService<OBWriteFileConsent3> filePaymentConsentValidator(PaymentFileProcessorService paymentFileProcessorService) {
-        return new OBValidationService<>(new OBWriteFileConsent3Validator(paymentFileProcessorService.getSupportedFileTypes()));
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<String> currencyCodeValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.CurrencyCodeValidator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
     }
 
     @Bean
-    public OBValidationService<FilePaymentFileContentValidationContext> filePaymentFileContentValidator() {
-        return new OBValidationService<>(new FilePaymentFileContentValidator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteFileConsent3> filePaymentConsentValidator(PaymentFileProcessorService paymentFileProcessorService) {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteFileConsent3Validator(paymentFileProcessorService.getSupportedFileTypes()));
     }
 
     @Bean
-    public OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator() {
-        return new OBValidationService<>(new OBWriteFile2Validator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<FilePaymentFileContentValidationContext> filePaymentFileContentValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new FilePaymentFileContentValidator());
+    }
+
+    @Bean
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteFile2Validator());
     }
 
     @Bean
@@ -185,38 +183,38 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteInternationalConsent5Validator(instructedAmountValidator(),
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBRisk1> riskValidator) {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteInternationalConsent5Validator(instructedAmountValidator(),
                 currencyCodeValidator(), exchangeRateInformationValidator(), riskValidator));
     }
 
     @Bean
-    public OBValidationService<OBWriteInternational3ValidationContext> internationalPaymentValidator() {
-        return new OBValidationService<>(new OBWriteInternational3Validator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteInternational3ValidationContext> internationalPaymentValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteInternational3Validator());
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalScheduledConsent5> internationalScheduledPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteInternationalScheduledConsent5Validator(instructedAmountValidator(),
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteInternationalScheduledConsent5> internationalScheduledPaymentConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBRisk1> riskValidator) {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteInternationalScheduledConsent5Validator(instructedAmountValidator(),
                 currencyCodeValidator(), exchangeRateInformationValidator(), riskValidator));
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalScheduled3ValidationContext> internationalScheduledPaymentValidator() {
-        return new OBValidationService<>(new OBWriteInternationalScheduled3Validator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteInternationalScheduled3ValidationContext> internationalScheduledPaymentValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteInternationalScheduled3Validator());
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalStandingOrderConsent6> internationalStandingOrderConsentValidator(
-            BaseOBValidator<OBRisk1> riskValidator) {
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteInternationalStandingOrderConsent6> internationalStandingOrderConsentValidator(
+            com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<OBRisk1> riskValidator) {
 
-        return new OBValidationService<>(new OBWriteInternationalStandingOrderConsent6Validator(instructedAmountValidator(),
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteInternationalStandingOrderConsent6Validator(instructedAmountValidator(),
                 currencyCodeValidator(), riskValidator));
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> internationalStandingOrderValidator() {
-        return new OBValidationService<>(new OBWriteInternationalStandingOrder4Validator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> internationalStandingOrderValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new OBWriteInternationalStandingOrder4Validator());
     }
 
     @Bean
@@ -226,7 +224,7 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<FundsConfirmationValidationContext> fundsConfirmationValidator() {
-        return new OBValidationService<>(new FundsConfirmationValidator());
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<FundsConfirmationValidationContext> fundsConfirmationValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<>(new FundsConfirmationValidator());
     }
 }
