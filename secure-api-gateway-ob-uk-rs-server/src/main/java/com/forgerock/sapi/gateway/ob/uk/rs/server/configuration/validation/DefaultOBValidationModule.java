@@ -65,6 +65,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWri
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
+
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
@@ -102,8 +103,18 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v4.OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(), riskValidator));
+    }
+
+    @Bean
     public BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator() {
         return new OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidator());
+    }
+
+    @Bean
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator<uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidatorV4() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4.OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidatorV4());
     }
 
     @Bean
@@ -139,6 +150,11 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBDomesticVRPRequestValidationContext> domesticVRPPaymentRequestValidator() {
         return new OBValidationService<>(new OBDomesticVRPRequestValidator());
+    }
+
+    @Bean
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator<String> currencyCodeValidatorV4() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4.CurrencyCodeValidator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
     }
 
     @Bean
