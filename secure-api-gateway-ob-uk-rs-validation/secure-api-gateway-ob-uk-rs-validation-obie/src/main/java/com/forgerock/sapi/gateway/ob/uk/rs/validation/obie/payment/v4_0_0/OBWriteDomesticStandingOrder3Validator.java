@@ -36,8 +36,6 @@ public class OBWriteDomesticStandingOrder3Validator extends BasePaymentRequestVa
 /*        public OBWriteDomesticStandingOrder3ValidationContext(OBWriteDomesticStandingOrder3 paymentRequest, OBWriteDomesticStandingOrderConsent5 consentRequest, String consentStatus) {
             super(paymentRequest, () -> paymentRequest.getData().getInitiation(), paymentRequest::getRisk,
                     consentStatus, () -> consentRequest.getData().getInitiation(), consentRequest::getRisk);
-
-
         }*/
 
         public OBWriteDomesticStandingOrder3ValidationContext(OBWriteDomesticStandingOrder3 paymentRequest, Supplier<OBWriteDomesticStandingOrder3DataInitiation> paymentRequestInitiationSupplier, Supplier<OBRisk1> paymentRequestRiskSupplier, String consentStatus, Supplier<OBWriteDomesticStandingOrder3DataInitiation> consentInitiationSupplier, Supplier<OBRisk1> consentRiskSupplier) {

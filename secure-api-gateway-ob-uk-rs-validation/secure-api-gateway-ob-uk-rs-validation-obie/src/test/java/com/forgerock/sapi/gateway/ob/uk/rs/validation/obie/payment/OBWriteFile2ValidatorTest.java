@@ -33,7 +33,7 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2Data;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2DataInitiation;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
-import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
 
 class OBWriteFile2ValidatorTest {
 

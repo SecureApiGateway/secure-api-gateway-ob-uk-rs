@@ -13,34 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
+package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10;
 
 import java.util.Objects;
 
+import org.joda.time.DateTime;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiation;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduled3DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5;
 
 /**
- * Validator of OBWriteInternationalConsent5 objects (OBIE International Payment Consents)
+ * Validator of OBWriteInternationalScheduledConsent5 objects (OBIE International Scheduled Payment Consents)
  */
-public class OBWriteInternationalConsent5Validator extends BaseOBValidator<OBWriteInternationalConsent5> {
+public class OBWriteInternationalScheduledConsent5Validator extends BaseOBValidator<OBWriteInternationalScheduledConsent5> {
 
     private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
     private final BaseOBValidator<String> currencyCodeValidator;
     private final BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator;
     private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteInternationalConsent5Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-                                                 BaseOBValidator<String> currencyCodeValidator,
-                                                 BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator,
-                                                 BaseOBValidator<OBRisk1> riskValidator) {
+    public OBWriteInternationalScheduledConsent5Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
+                                                          BaseOBValidator<String> currencyCodeValidator,
+                                                          BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator,
+                                                          BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator);
         this.currencyCodeValidator     = Objects.requireNonNull(currencyCodeValidator);
         this.exchangeRateInfoValidator = Objects.requireNonNull(exchangeRateInfoValidator);
@@ -48,15 +51,20 @@ public class OBWriteInternationalConsent5Validator extends BaseOBValidator<OBWri
     }
 
     @Override
-    protected void validate(OBWriteInternationalConsent5 consent, ValidationResult<OBError1> validationResult) {
+    protected void validate(OBWriteInternationalScheduledConsent5 consent, ValidationResult<OBError1> validationResult) {
         validationResult.mergeResults(riskValidator.validate(consent.getRisk()));
 
-        final OBWriteInternational3DataInitiation initiation = consent.getData().getInitiation();
+        final OBWriteInternationalScheduled3DataInitiation initiation = consent.getData().getInitiation();
         validationResult.mergeResults(instructedAmountValidator.validate(initiation.getInstructedAmount()));
         validationResult.mergeResults(currencyCodeValidator.validate(initiation.getCurrencyOfTransfer()));
 
         if (initiation.getExchangeRateInformation() != null) {
             validationResult.mergeResults(exchangeRateInfoValidator.validate(initiation.getExchangeRateInformation()));
+        }
+
+        final DateTime requestedExecutionDateTime = initiation.getRequestedExecutionDateTime();
+        if (!requestedExecutionDateTime.isAfterNow()) {
+            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("RequestedExecutionDateTime must be in the future"));
         }
     }
 }

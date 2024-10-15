@@ -51,16 +51,16 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteIntern
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteFileConsent3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalScheduledConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalStandingOrderConsent6Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBDomesticVRPConsentRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBVRPFundsConfirmationRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBWriteDomesticConsent4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBWriteDomesticScheduledConsent4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBWriteDomesticStandingOrderConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBWriteFileConsent3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBWriteInternationalConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBWriteInternationalScheduledConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10.OBWriteInternationalStandingOrderConsent6Validator;
 
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;

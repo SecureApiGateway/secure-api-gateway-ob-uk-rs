@@ -56,7 +56,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIndicator;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
@@ -78,7 +78,7 @@ import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseDataStatu
 import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationRequest;
 import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationRequestData;
 import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationResponse;
-import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
+import uk.org.openbanking.testsupport.v3.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 /**
  * A SpringBoot test for the {@link DomesticVrpConsentsApiController} <br/>
