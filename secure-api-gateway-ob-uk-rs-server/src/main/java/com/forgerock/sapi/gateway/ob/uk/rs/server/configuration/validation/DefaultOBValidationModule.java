@@ -103,7 +103,7 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidator(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidatorV4(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
         return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v4.OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(), riskValidator));
     }
 
