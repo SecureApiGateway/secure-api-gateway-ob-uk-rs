@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 
 import java.security.Principal;
 import java.util.Date;
