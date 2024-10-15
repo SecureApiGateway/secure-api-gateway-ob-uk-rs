@@ -26,7 +26,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
 //import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationServiceV4;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v4_0_0.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.CreateDomesticPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v4_0_0.DomesticPaymentConsent;
@@ -51,7 +51,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
     private final DomesticPaymentConsentStoreClient consentStoreApiClient;
 
-    private final OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator;
+    private final OBValidationServiceV4<OBWriteDomesticConsent4> domesticConsentValidator;
 
     private final OBWriteDomesticConsentResponse5Factory consentResponseFactory;
 
@@ -60,7 +60,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public DomesticPaymentConsentsApiController(DomesticPaymentConsentStoreClient consentStoreApiClient,
-                                                @Qualifier("v4.0.0OBValidationService")OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator,
+                                                OBValidationServiceV4<OBWriteDomesticConsent4> domesticConsentValidator,
                                                 OBWriteDomesticConsentResponse5Factory consentResponseFactory,
                                                 FundsAvailabilityService fundsAvailabilityService,
                                                 OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory) {

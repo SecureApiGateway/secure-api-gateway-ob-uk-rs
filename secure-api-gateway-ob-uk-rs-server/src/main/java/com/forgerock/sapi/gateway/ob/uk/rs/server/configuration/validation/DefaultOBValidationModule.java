@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.configuration.validation;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationServiceV4;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -103,8 +104,8 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidatorV4(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
-        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v4.OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(), riskValidator));
+    public OBValidationServiceV4<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidatorV4(com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationServiceV4<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v4.OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(), riskValidator));
     }
 
     @Bean

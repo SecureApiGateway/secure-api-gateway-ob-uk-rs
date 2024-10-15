@@ -37,8 +37,8 @@ import java.util.function.Function;
  *
  * @param <T> type of object that can be validated by this service.
  */
-@Service("v4.0.0OBValidationService")
-public class OBValidationService<T> {
+@Service
+public class OBValidationServiceV4<T> {
 
     /**
      * Default Exception Factory which produces OBErrorResponseExceptions with:
@@ -59,12 +59,12 @@ public class OBValidationService<T> {
      */
     private Function<ValidationResult<OBError1>, OBErrorResponseException> exceptionFactory = DEFAULT_EXCEPTION_FACTORY;
 
-    public OBValidationService(Validator<T, OBError1> validator) {
+    public OBValidationServiceV4(Validator<T, OBError1> validator) {
         Objects.requireNonNull(validator, "validator must be supplied");
         this.delegate = validator;
     }
 
-    public OBValidationService(List<Validator<T, OBError1>> validators) {
+    public OBValidationServiceV4(List<Validator<T, OBError1>> validators) {
         if (validators == null || validators.isEmpty()) {
             throw new IllegalArgumentException("one or more validators must be supplied");
         }
