@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v4;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidatorV4;
 import uk.org.openbanking.datamodel.v4.common.OBRisk1;
 import uk.org.openbanking.datamodel.v4.error.OBError1;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount;
@@ -27,13 +27,13 @@ import java.util.Objects;
 /**
  * Validator of OBWriteDomesticConsent4 objects (Domestic Payment Consents)
  */
-public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDomesticConsent4> {
+public class OBWriteDomesticConsent4Validator extends BaseOBValidatorV4<OBWriteDomesticConsent4> {
 
-    private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
-    private final BaseOBValidator<OBRisk1> riskValidator;
+    private final BaseOBValidatorV4<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
+    private final BaseOBValidatorV4<OBRisk1> riskValidator;
 
-    public OBWriteDomesticConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-                                            BaseOBValidator<OBRisk1> riskValidator) {
+    public OBWriteDomesticConsent4Validator(BaseOBValidatorV4<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
+                                            BaseOBValidatorV4<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
         this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }

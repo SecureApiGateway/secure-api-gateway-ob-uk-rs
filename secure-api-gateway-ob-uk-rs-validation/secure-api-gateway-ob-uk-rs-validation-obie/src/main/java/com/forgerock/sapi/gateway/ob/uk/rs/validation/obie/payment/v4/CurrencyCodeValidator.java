@@ -17,13 +17,13 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidatorV4;
 import uk.org.openbanking.datamodel.v4.error.OBError1;
 
 import java.util.Objects;
 import java.util.Set;
 
-public class CurrencyCodeValidator extends BaseOBValidator<String> {
+public class CurrencyCodeValidator extends BaseOBValidatorV4<String> {
 
     private final Set<String> validCurrencyCodes;
 

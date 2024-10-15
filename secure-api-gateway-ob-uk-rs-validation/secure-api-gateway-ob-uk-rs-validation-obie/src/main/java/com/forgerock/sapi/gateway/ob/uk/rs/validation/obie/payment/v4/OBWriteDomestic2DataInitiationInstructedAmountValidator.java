@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidatorV4;
 import uk.org.openbanking.datamodel.v4.error.OBError1;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 
@@ -26,11 +26,11 @@ import java.util.Objects;
 
 import static java.math.BigDecimal.ZERO;
 
-public class OBWriteDomestic2DataInitiationInstructedAmountValidator extends BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> {
+public class OBWriteDomestic2DataInitiationInstructedAmountValidator extends BaseOBValidatorV4<OBWriteDomestic2DataInitiationInstructedAmount> {
 
-    private final BaseOBValidator<String> currencyCodeValidator;
+    private final BaseOBValidatorV4<String> currencyCodeValidator;
 
-    public OBWriteDomestic2DataInitiationInstructedAmountValidator(BaseOBValidator<String> currencyCodeValidator) {
+    public OBWriteDomestic2DataInitiationInstructedAmountValidator(BaseOBValidatorV4<String> currencyCodeValidator) {
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
     }
 

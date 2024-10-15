@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidatorV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.v4.BasePaymentRequestValidator.PaymentRequestValidationContext;
 import uk.org.openbanking.datamodel.v4.common.OBRisk1;
 import uk.org.openbanking.datamodel.v4.error.OBError1;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  * - checking consent initiation data matches payment initiation data
  *
  */
-public abstract class BasePaymentRequestValidator<C extends PaymentRequestValidationContext<T, I>, T, I> extends BaseOBValidator<C> {
+public abstract class BasePaymentRequestValidator<C extends PaymentRequestValidationContext<T, I>, T, I> extends BaseOBValidatorV4<C> {
 
     private static final String DEFAULT_AUTHORISED_CONSENT_STATUS = "Authorised";
 

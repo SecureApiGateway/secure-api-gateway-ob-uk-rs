@@ -31,7 +31,7 @@ import uk.org.openbanking.datamodel.v4.error.OBError1;
  *
  * @param <T> type of the object to validate
  */
-public abstract class BaseOBValidator<T> implements Validator<T, OBError1> {
+public abstract class BaseOBValidatorV4<T> implements Validator<T, OBError1> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
