@@ -21,6 +21,7 @@ import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRDataAuthorisationConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
@@ -40,7 +41,7 @@ public class OBWriteDomesticStandingOrderConsentResponse6Factory {
 
         final OBWriteDomesticStandingOrderConsent5 oBWriteDomesticStandingOrderConsent5 = FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5(consent.getRequestObj());
         final OBWriteDomesticStandingOrderConsent5Data obConsentData = oBWriteDomesticStandingOrderConsent5.getData();
-        data.authorisation((obConsentData.getAuthorisation()));
+        data.authorisation(FRDataAuthorisationConverter.toOBWriteDomesticStandingOrderConsentResponse6DataAuthorisation(obConsentData.getAuthorisation()));
         data.permission(obConsentData.getPermission());
         data.readRefundAccount(obConsentData.getReadRefundAccount());
         data.scASupportData(obConsentData.getScASupportData());
