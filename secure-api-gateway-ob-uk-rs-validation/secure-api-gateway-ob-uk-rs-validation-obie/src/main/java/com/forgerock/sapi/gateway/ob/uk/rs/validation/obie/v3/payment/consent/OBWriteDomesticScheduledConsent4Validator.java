@@ -23,6 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
@@ -37,7 +38,7 @@ public class OBWriteDomesticScheduledConsent4Validator extends BaseOBValidator<O
     private final BaseOBValidator<OBRisk1> riskValidator;
 
     public OBWriteDomesticScheduledConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-                                                     BaseOBValidator<OBRisk1> riskValidator) {
+                                                     @Qualifier("v3.1.10OBRisk1Validator") BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
         this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }

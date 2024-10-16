@@ -60,6 +60,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -86,7 +87,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             FilePaymentSubmissionRepository filePaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             FilePaymentConsentStoreClient consentStoreClient,
-            OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentStoreClient = consentStoreClient;

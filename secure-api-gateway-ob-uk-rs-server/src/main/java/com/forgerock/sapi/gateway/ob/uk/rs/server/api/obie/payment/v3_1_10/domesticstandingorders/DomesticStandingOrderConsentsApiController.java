@@ -55,7 +55,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
     public DomesticStandingOrderConsentsApiController(
             @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient")DomesticStandingOrderConsentStoreClient consentStoreApiClient,
-            OBValidationService<OBWriteDomesticStandingOrderConsent5> consentValidator,
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomesticStandingOrderConsent5> consentValidator,
             OBWriteDomesticStandingOrderConsentResponse6Factory consentResponseFactory) {
 
         this.consentStoreApiClient = consentStoreApiClient;

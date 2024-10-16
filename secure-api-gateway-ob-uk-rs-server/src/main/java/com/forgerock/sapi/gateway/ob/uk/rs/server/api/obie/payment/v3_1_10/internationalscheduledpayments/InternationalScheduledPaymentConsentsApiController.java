@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -68,7 +69,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public InternationalScheduledPaymentConsentsApiController(InternationalScheduledPaymentConsentStoreClient consentStoreApiClient,
-            OBValidationService<OBWriteInternationalScheduledConsent5> consentValidator,
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalScheduledConsent5> consentValidator,
             ExchangeRateService exchangeRateService,
             OBWriteInternationalScheduledConsentResponse6Factory consentResponseFactory,
             FundsAvailabilityService fundsAvailabilityService,

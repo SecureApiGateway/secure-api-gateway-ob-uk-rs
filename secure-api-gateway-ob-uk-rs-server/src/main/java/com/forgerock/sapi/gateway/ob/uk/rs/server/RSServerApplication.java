@@ -15,8 +15,11 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server;
 
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.ValidatorsConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.CloudClientModuleConfiguration;
@@ -29,7 +32,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.ResourceStoreRepoConfig
         CloudClientModuleConfiguration.class,
         ConsentStoreClientConfiguration.class,
         ResourceStoreApiModuleConfiguration.class,
-        ResourceStoreRepoConfiguration.class
+        ResourceStoreRepoConfiguration.class,
+        ValidatorsConfiguration.class
 })
 public class RSServerApplication {
 

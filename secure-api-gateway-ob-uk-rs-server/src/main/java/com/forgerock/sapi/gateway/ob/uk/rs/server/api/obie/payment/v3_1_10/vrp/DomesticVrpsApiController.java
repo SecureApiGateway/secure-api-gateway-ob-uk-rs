@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -88,7 +89,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
-            OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
             DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,

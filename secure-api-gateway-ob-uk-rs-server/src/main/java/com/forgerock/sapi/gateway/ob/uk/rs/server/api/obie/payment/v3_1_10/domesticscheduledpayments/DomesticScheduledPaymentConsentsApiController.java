@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -53,7 +54,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
 
 
     public DomesticScheduledPaymentConsentsApiController(DomesticScheduledPaymentConsentStoreClient consentStoreApiClient,
-                                                         OBValidationService<OBWriteDomesticScheduledConsent4> consentValidator,
+                                                         @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomesticScheduledConsent4> consentValidator,
                                                          OBWriteDomesticScheduledConsentResponse5Factory consentResponseFactory) {
 
         this.consentStoreApiClient = consentStoreApiClient;

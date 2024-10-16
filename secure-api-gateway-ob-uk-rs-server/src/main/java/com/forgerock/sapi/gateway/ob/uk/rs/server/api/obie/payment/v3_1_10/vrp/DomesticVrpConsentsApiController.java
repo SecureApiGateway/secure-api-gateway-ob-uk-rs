@@ -28,6 +28,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_1
 
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,8 +55,8 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
     public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
                                             DomesticVRPConsentStoreClient consentStoreClient,
-                                            OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
-                                            OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
+                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
+                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
                                             OBDomesticVRPConsentResponseFactory responseFactory) {
         this.fundsAvailabilityService = fundsAvailabilityService;
         this.vrpConsentValidator = vrpConsentValidator;

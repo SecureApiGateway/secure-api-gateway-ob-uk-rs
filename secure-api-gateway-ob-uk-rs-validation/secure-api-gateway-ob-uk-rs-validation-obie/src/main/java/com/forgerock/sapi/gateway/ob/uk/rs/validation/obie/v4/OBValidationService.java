@@ -20,6 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBRIErrorResponseCategor
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidateAll;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.v4.error.OBError1;
@@ -37,7 +38,7 @@ import java.util.function.Function;
  *
  * @param <T> type of object that can be validated by this service.
  */
-@Service
+@Service("v4.0.0OBValidationService")
 public class OBValidationService<T> {
 
     /**
@@ -59,6 +60,7 @@ public class OBValidationService<T> {
      */
     private Function<ValidationResult<OBError1>, OBErrorResponseException> exceptionFactory = DEFAULT_EXCEPTION_FACTORY;
 
+    @Autowired
     public OBValidationService(Validator<T, OBError1> validator) {
         Objects.requireNonNull(validator, "validator must be supplied");
         this.delegate = validator;

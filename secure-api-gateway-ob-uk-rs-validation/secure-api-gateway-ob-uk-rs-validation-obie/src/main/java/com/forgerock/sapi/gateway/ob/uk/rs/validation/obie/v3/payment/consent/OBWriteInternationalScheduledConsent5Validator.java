@@ -23,6 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
@@ -43,7 +44,7 @@ public class OBWriteInternationalScheduledConsent5Validator extends BaseOBValida
     public OBWriteInternationalScheduledConsent5Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
                                                           BaseOBValidator<String> currencyCodeValidator,
                                                           BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator,
-                                                          BaseOBValidator<OBRisk1> riskValidator) {
+                                                          @Qualifier("v3.1.10OBRisk1Validator") BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator);
         this.currencyCodeValidator     = Objects.requireNonNull(currencyCodeValidator);
         this.exchangeRateInfoValidator = Objects.requireNonNull(exchangeRateInfoValidator);

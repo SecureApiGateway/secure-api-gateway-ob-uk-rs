@@ -24,6 +24,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrder3DataInitiation;
@@ -45,7 +46,7 @@ public class OBWriteDomesticStandingOrderConsent5Validator extends BaseOBValidat
     private final BaseOBValidator<OBRisk1> riskValidator;
 
     public OBWriteDomesticStandingOrderConsent5Validator(BaseOBValidator<String> currencyCodeValidator,
-                                                         BaseOBValidator<OBRisk1> riskValidator) {
+                                                         @Qualifier("v3.1.10OBRisk1Validator") BaseOBValidator<OBRisk1> riskValidator) {
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
         this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }

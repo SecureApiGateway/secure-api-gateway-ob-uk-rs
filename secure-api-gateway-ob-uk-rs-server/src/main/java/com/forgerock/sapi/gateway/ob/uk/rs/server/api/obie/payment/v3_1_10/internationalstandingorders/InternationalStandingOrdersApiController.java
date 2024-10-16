@@ -38,6 +38,7 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -94,7 +95,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             InternationalStandingOrderConsentStoreClient consentStoreClient,
-            OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator,
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

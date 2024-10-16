@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -68,7 +69,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
             FundsConfirmationRepository fundsConfirmationRepository,
             FundsAvailabilityService fundsAvailabilityService,
             FRAccountRepository accountRepository,
-            OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
             FundsConfirmationConsentStoreClient consentStoreClient
     ) {
         this.fundsConfirmationRepository = fundsConfirmationRepository;

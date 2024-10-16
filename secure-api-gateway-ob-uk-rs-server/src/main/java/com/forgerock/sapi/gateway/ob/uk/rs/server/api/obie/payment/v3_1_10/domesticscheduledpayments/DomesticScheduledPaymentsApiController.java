@@ -37,6 +37,7 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -95,7 +96,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             PaymentSubmissionValidator paymentSubmissionValidator,
             DomesticScheduledPaymentConsentStoreClient consentStoreClient,
             RefundAccountService refundAccountService,
-            OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
     ) {
         this.scheduledPaymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

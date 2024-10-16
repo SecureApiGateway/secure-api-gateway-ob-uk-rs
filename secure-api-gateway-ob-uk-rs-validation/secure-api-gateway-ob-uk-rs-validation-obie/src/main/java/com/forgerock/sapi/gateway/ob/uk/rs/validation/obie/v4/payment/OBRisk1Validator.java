@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment;
+package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator;
-
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.v3.common.OBRisk1;
-import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v4.common.OBRisk1;
+import uk.org.openbanking.datamodel.v4.error.OBError1;
 
 /**
  * Validator of {@link OBRisk1} objects, these objects are sent as part of Payment Consents and Requests.
  */
-@Component("v3.1.10OBRisk1Validator")
+@Component("v4.0.0OBRisk1Validator")
 public class OBRisk1Validator extends BaseOBValidator<OBRisk1> {
 
     private final boolean requirePaymentContextCode;

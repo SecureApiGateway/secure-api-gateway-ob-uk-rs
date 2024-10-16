@@ -20,6 +20,7 @@ import java.util.Objects;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
@@ -36,7 +37,7 @@ public class OBWriteInternationalStandingOrderConsent6Validator extends BaseOBVa
     private final BaseOBValidator<OBRisk1> riskValidator;
 
     public OBWriteInternationalStandingOrderConsent6Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-                                                              BaseOBValidator<String> currencyCodeValidator, BaseOBValidator<OBRisk1> riskValidator) {
+                                                              BaseOBValidator<String> currencyCodeValidator, @Qualifier("v3.1.10OBRisk1Validator") BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
         this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
