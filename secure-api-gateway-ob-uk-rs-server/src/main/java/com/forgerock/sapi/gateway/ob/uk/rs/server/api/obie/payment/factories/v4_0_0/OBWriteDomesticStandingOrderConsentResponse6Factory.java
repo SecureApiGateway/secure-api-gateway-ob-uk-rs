@@ -19,12 +19,13 @@ import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v4_0_0
 
 import org.joda.time.DateTime;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsent5Data;
@@ -39,10 +40,11 @@ public class OBWriteDomesticStandingOrderConsentResponse6Factory {
 
         final OBWriteDomesticStandingOrderConsent5 oBWriteDomesticStandingOrderConsent5 = FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5(consent.getRequestObj());
         final OBWriteDomesticStandingOrderConsent5Data obConsentData = oBWriteDomesticStandingOrderConsent5.getData();
-        data.authorisation(obConsentData.getAuthorisation());
+        data.authorisation((obConsentData.getAuthorisation()));
         data.permission(obConsentData.getPermission());
         data.readRefundAccount(obConsentData.getReadRefundAccount());
         data.scASupportData(obConsentData.getScASupportData());
+        // consent request and response initiation types are different but produce identical json
         data.initiation(FRModelMapper.map(obConsentData.getInitiation(), OBWriteDomesticStandingOrderConsentResponse6DataInitiation.class));
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
