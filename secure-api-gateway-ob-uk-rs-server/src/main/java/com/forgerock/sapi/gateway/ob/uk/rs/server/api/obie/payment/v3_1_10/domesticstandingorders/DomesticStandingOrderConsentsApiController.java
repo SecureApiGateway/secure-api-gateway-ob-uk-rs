@@ -34,7 +34,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticstandingorders.DomesticStandingOrderConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteDomesticStandingOrderConsentResponse6Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
@@ -55,7 +55,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
     public DomesticStandingOrderConsentsApiController(
             @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient")DomesticStandingOrderConsentStoreClient consentStoreApiClient,
-            OBValidationService<OBWriteDomesticStandingOrderConsent5> consentValidator,
+            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomesticStandingOrderConsent5> consentValidator,
             OBWriteDomesticStandingOrderConsentResponse6Factory consentResponseFactory) {
 
         this.consentStoreApiClient = consentStoreApiClient;

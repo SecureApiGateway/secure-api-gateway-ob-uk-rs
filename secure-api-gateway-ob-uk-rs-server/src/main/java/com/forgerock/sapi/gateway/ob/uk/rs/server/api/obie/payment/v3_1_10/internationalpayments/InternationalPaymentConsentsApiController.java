@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.v3_1_10.InternationalPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
@@ -68,7 +69,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public InternationalPaymentConsentsApiController(InternationalPaymentConsentStoreClient consentStoreApiClient,
-                                                     OBValidationService<OBWriteInternationalConsent5> consentValidator,
+                                                     @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalConsent5> consentValidator,
                                                      ExchangeRateService exchangeRateService,
                                                      OBWriteInternationalConsentResponse6Factory consentResponseFactory,
                                                      FundsAvailabilityService fundsAvailabilityService,

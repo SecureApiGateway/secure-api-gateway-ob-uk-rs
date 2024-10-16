@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,7 +33,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWri
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticscheduledpayments.DomesticScheduledPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteDomesticScheduledConsentResponse5Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
@@ -53,7 +54,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
 
 
     public DomesticScheduledPaymentConsentsApiController(DomesticScheduledPaymentConsentStoreClient consentStoreApiClient,
-                                                         OBValidationService<OBWriteDomesticScheduledConsent4> consentValidator,
+                                                         @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomesticScheduledConsent4> consentValidator,
                                                          OBWriteDomesticScheduledConsentResponse5Factory consentResponseFactory) {
 
         this.consentStoreApiClient = consentStoreApiClient;

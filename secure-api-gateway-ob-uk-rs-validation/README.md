@@ -46,10 +46,10 @@ These validators are aimed at capturing rules that cannot be expressed on a per-
 validations to fields.
 
 ### Key classes
-#### [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator<T>](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/BaseOBValidator.java) 
+#### [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator<T>](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/BaseOBValidator.java) 
 Abstract base class which implements the Validator interface and provides some common functionality for all Open Banking specific validators.
 
-#### [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService<T>](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/OBValidationService.java)
+#### [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService<T>](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/OBValidationService.java)
 Service class which applies one or more validators to an object, then throws any error results as OBErrorResponseException.
 
 The OBErrorResponseException is the mechanism that the rs-server uses to construct OBIE error responses to send in the HTTP Response.
@@ -60,5 +60,5 @@ to validate particular fields or can implement all validation rules for a partic
 
 The naming convention for validators is "${TypeToValidate}Validator".
 
-Example validator impl: [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.account.consent.OBReadConsent1Validator](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/account/consent/OBReadConsent1Validator.java),
+Example validator impl: [consent.account.com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBReadConsent1Validator](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/account/consent/OBReadConsent1Validator.java),
 this is responsible for validating OBReadConsent1 objects (Account Access Consents).

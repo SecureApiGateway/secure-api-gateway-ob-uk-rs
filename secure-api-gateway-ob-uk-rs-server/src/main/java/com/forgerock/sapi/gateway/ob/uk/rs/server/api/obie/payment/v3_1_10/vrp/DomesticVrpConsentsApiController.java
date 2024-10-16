@@ -20,14 +20,15 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBDomesticVRPConsentResponseFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,8 +55,8 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
     public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
                                             DomesticVRPConsentStoreClient consentStoreClient,
-                                            OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
-                                            OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
+                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
+                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
                                             OBDomesticVRPConsentResponseFactory responseFactory) {
         this.fundsAvailabilityService = fundsAvailabilityService;
         this.vrpConsentValidator = vrpConsentValidator;
