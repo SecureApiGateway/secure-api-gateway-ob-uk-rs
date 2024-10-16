@@ -44,7 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
@@ -62,7 +62,7 @@ import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
@@ -79,7 +79,7 @@ public class DomesticStandingOrderConsentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient")
+    @Qualifier("v4.0.0RestDomesticStandingOrderConsentStoreClient")
     private DomesticStandingOrderConsentStoreClient consentStoreClient;
 
     private String controllerBaseUri;
@@ -193,7 +193,7 @@ public class DomesticStandingOrderConsentsApiControllerTest {
     }
 
     private static OBWriteDomesticStandingOrderConsent5 createValidateConsentRequest() {
-        final OBWriteDomesticStandingOrderConsent5 consentRequest = OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent5();
+        final OBWriteDomesticStandingOrderConsent5 consentRequest =  OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent5();
         consentRequest.getData().getAuthorisation().setCompletionDateTime(DateTime.now(DateTimeZone.UTC));
         final OBWriteDomesticStandingOrder3DataInitiation initiation = consentRequest.getData().getInitiation();
         initiation.setFirstPaymentAmount(initiation.getFirstPaymentAmount());

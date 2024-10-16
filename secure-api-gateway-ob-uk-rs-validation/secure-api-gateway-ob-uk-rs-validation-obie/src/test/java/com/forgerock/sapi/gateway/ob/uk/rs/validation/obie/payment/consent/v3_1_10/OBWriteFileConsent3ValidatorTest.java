@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
+package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
-import static uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3;
+import static uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3;
 
 import java.math.BigDecimal;
 import java.util.List;
