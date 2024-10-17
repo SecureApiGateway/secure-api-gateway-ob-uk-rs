@@ -53,7 +53,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
     private final OBWriteInternationalStandingOrderConsentResponse7Factory consentResponseFactory;
 
     public InternationalStandingOrderConsentsApiController(InternationalStandingOrderConsentStoreClient consentStoreClient,
-                                                           @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalStandingOrderConsent6> consentValidator,
+                                                           @Qualifier("v3.1.10internationalStandingOrderConsentValidator") OBValidationService<OBWriteInternationalStandingOrderConsent6> consentValidator,
             OBWriteInternationalStandingOrderConsentResponse7Factory consentResponseFactory) {
         this.consentStoreClient = consentStoreClient;
         this.consentValidator = consentValidator;

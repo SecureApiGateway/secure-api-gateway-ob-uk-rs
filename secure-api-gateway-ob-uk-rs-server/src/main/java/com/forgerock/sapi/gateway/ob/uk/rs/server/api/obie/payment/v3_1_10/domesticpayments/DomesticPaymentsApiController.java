@@ -95,7 +95,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     public DomesticPaymentsApiController(
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,
+            @Qualifier("v3.1.10domesticPaymentValidator") OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,
             DomesticPaymentConsentStoreClient consentStoreClient,
             RefundAccountService refundAccountService) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;

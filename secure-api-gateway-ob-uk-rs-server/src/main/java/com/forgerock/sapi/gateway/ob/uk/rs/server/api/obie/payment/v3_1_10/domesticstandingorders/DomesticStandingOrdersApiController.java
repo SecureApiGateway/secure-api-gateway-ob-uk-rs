@@ -96,7 +96,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             DomesticStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient") DomesticStandingOrderConsentStoreClient consentStoreClient,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> paymentValidator,
+            @Qualifier("v3.1.10domesticStandingOrderValidator") OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

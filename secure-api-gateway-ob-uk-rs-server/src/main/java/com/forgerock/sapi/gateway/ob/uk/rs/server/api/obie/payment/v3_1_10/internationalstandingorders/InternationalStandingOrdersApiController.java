@@ -95,7 +95,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             InternationalStandingOrderPaymentSubmissionRepository standingOrderPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             InternationalStandingOrderConsentStoreClient consentStoreClient,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator,
+            @Qualifier("v3.1.10internationalStandingOrderValidator") OBValidationService<OBWriteInternationalStandingOrder4ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.standingOrderPaymentSubmissionRepository = standingOrderPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

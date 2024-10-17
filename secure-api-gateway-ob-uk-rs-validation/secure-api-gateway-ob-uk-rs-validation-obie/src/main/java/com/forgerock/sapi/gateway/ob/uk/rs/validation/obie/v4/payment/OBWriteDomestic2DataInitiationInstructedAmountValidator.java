@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment;
 import com.forgerock.sapi.gateway.ob.uk.common.error.v4.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.BaseOBValidator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.org.openbanking.datamodel.v4.error.OBError1;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 
@@ -30,7 +31,7 @@ public class OBWriteDomestic2DataInitiationInstructedAmountValidator extends Bas
 
     private final BaseOBValidator<String> currencyCodeValidator;
 
-    public OBWriteDomestic2DataInitiationInstructedAmountValidator(BaseOBValidator<String> currencyCodeValidator) {
+    public OBWriteDomestic2DataInitiationInstructedAmountValidator(@Qualifier("v4.0.0currencyCodeValidator") BaseOBValidator<String> currencyCodeValidator) {
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
     }
 

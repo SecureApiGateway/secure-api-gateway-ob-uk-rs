@@ -45,7 +45,7 @@ public class OBWriteDomesticStandingOrderConsent5Validator extends BaseOBValidat
     private final BaseOBValidator<String> currencyCodeValidator;
     private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteDomesticStandingOrderConsent5Validator(BaseOBValidator<String> currencyCodeValidator,
+    public OBWriteDomesticStandingOrderConsent5Validator(@Qualifier("v3.1.10currencyCodeValidator") BaseOBValidator<String> currencyCodeValidator,
                                                          @Qualifier("v3.1.10OBRisk1Validator") BaseOBValidator<OBRisk1> riskValidator) {
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
         this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");

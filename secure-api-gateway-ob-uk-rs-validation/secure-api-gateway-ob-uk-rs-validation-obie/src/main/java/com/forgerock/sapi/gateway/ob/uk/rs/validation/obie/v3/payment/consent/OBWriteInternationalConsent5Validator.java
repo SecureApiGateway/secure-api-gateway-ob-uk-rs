@@ -38,9 +38,9 @@ public class OBWriteInternationalConsent5Validator extends BaseOBValidator<OBWri
     private final BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator;
     private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteInternationalConsent5Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-                                                 BaseOBValidator<String> currencyCodeValidator,
-                                                 BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator,
+    public OBWriteInternationalConsent5Validator(@Qualifier("v3.1.10instructedAmountValidator") BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
+                                                 @Qualifier("v3.1.10currencyCodeValidator") BaseOBValidator<String> currencyCodeValidator,
+                                                 @Qualifier("exchangeRateInformationValidator2") BaseOBValidator<OBWriteInternational3DataInitiationExchangeRateInformation> exchangeRateInfoValidator,
                                                  @Qualifier("v3.1.10OBRisk1Validator") BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator);
         this.currencyCodeValidator     = Objects.requireNonNull(currencyCodeValidator);

@@ -55,8 +55,8 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
     public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
                                             DomesticVRPConsentStoreClient consentStoreClient,
-                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
-                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
+                                            @Qualifier("v3.1.10domesticVRPConsentValidator") OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
+                                            @Qualifier("v3.1.10domesticVRPFundsConfirmationValidator") OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
                                             OBDomesticVRPConsentResponseFactory responseFactory) {
         this.fundsAvailabilityService = fundsAvailabilityService;
         this.vrpConsentValidator = vrpConsentValidator;

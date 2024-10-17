@@ -69,7 +69,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public InternationalPaymentConsentsApiController(InternationalPaymentConsentStoreClient consentStoreApiClient,
-                                                     @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalConsent5> consentValidator,
+                                                     @Qualifier("v3.1.10internationalPaymentConsentValidator") OBValidationService<OBWriteInternationalConsent5> consentValidator,
                                                      ExchangeRateService exchangeRateService,
                                                      OBWriteInternationalConsentResponse6Factory consentResponseFactory,
                                                      FundsAvailabilityService fundsAvailabilityService,

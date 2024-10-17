@@ -67,9 +67,9 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     private final OBWriteFileConsentResponse4Factory consentResponseFactory;
 
     public FilePaymentConsentsApiController(FilePaymentConsentStoreClient consentStoreApiClient,
-                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteFileConsent3> consentValidator,
+                                            @Qualifier("v3.1.10filePaymentConsentValidator") OBValidationService<OBWriteFileConsent3> consentValidator,
                                             PaymentFileProcessorService paymentFileProcessorService,
-                                            @Qualifier("v3.1.10OBValidationService") OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator,
+                                            @Qualifier("v3.1.10filePaymentFileContentValidator") OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator,
                                             OBWriteFileConsentResponse4Factory consentResponseFactory) {
         this.consentStoreApiClient = consentStoreApiClient;
         this.consentValidator = consentValidator;

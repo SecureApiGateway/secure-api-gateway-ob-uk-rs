@@ -34,7 +34,7 @@ public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDom
     private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
     private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteDomesticConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
+    public OBWriteDomesticConsent4Validator(@Qualifier ("v3.1.10instructedAmountValidator") BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
                                             @Qualifier("v3.1.10OBRisk1Validator") BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
         this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");

@@ -69,7 +69,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
             FundsConfirmationRepository fundsConfirmationRepository,
             FundsAvailabilityService fundsAvailabilityService,
             FRAccountRepository accountRepository,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
+            @Qualifier("v3.1.10fundsConfirmationValidator") OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
             FundsConfirmationConsentStoreClient consentStoreClient
     ) {
         this.fundsConfirmationRepository = fundsConfirmationRepository;

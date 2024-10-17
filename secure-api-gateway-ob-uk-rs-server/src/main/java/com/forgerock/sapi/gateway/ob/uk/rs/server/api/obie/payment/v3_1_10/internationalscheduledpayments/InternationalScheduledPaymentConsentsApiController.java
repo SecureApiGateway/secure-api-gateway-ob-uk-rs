@@ -69,7 +69,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public InternationalScheduledPaymentConsentsApiController(InternationalScheduledPaymentConsentStoreClient consentStoreApiClient,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalScheduledConsent5> consentValidator,
+            @Qualifier("v3.1.10internationalScheduledPaymentConsentValidator") OBValidationService<OBWriteInternationalScheduledConsent5> consentValidator,
             ExchangeRateService exchangeRateService,
             OBWriteInternationalScheduledConsentResponse6Factory consentResponseFactory,
             FundsAvailabilityService fundsAvailabilityService,

@@ -60,7 +60,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public DomesticPaymentConsentsApiController(DomesticPaymentConsentStoreClient consentStoreApiClient,
-                                                @Qualifier("v4.0.0OBValidationService") OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator,
+                                                @Qualifier("v4.0.0domesticPaymentConsentValidator") OBValidationService<OBWriteDomesticConsent4> domesticConsentValidator,
                                                 OBWriteDomesticConsentResponse5Factory consentResponseFactory,
                                                 FundsAvailabilityService fundsAvailabilityService,
                                                 OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory) {

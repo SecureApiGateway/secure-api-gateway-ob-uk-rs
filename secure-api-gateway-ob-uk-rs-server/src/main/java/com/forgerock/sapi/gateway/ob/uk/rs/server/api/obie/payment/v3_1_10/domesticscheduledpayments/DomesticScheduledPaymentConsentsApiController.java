@@ -54,7 +54,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
 
 
     public DomesticScheduledPaymentConsentsApiController(DomesticScheduledPaymentConsentStoreClient consentStoreApiClient,
-                                                         @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteDomesticScheduledConsent4> consentValidator,
+                                                         @Qualifier("v3.1.10domesticScheduledPaymentConsentValidator") OBValidationService<OBWriteDomesticScheduledConsent4> consentValidator,
                                                          OBWriteDomesticScheduledConsentResponse5Factory consentResponseFactory) {
 
         this.consentStoreApiClient = consentStoreApiClient;

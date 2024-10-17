@@ -87,7 +87,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             FilePaymentSubmissionRepository filePaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             FilePaymentConsentStoreClient consentStoreClient,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
+            @Qualifier("v3.1.10filePaymentRequestValidator") OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;
         this.consentStoreClient = consentStoreClient;

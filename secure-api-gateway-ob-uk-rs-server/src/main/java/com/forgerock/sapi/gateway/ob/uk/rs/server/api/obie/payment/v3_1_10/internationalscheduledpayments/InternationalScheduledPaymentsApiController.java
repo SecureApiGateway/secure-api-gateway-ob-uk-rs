@@ -96,7 +96,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             InternationalScheduledPaymentConsentStoreClient consentStoreClient,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternationalScheduled3ValidationContext> paymentValidator,
+            @Qualifier("v3.1.10internationalScheduledPaymentValidator") OBValidationService<OBWriteInternationalScheduled3ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.scheduledPaymentSubmissionRepository = scheduledPaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

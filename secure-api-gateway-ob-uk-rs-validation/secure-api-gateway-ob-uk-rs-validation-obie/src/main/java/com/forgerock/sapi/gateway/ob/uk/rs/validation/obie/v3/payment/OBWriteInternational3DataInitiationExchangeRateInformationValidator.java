@@ -21,6 +21,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.BaseOBValidator;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBExchangeRateType;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
@@ -29,7 +30,7 @@ public class OBWriteInternational3DataInitiationExchangeRateInformationValidator
 
     private final BaseOBValidator<String> currencyCodeValidator;
 
-    public OBWriteInternational3DataInitiationExchangeRateInformationValidator(BaseOBValidator<String> currencyCodeValidator) {
+    public OBWriteInternational3DataInitiationExchangeRateInformationValidator(@Qualifier("v3.1.10currencyCodeValidator") BaseOBValidator<String> currencyCodeValidator) {
         this.currencyCodeValidator = Objects.requireNonNull(currencyCodeValidator, "currencyCodeValidator must be supplied");
     }
 

@@ -95,7 +95,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             InternationalPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             InternationalPaymentConsentStoreClient consentStoreClient,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBWriteInternational3ValidationContext> paymentValidator,
+            @Qualifier("v3.1.10internationalPaymentValidator") OBValidationService<OBWriteInternational3ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

@@ -89,7 +89,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
-            @Qualifier("v3.1.10OBValidationService") OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
+            @Qualifier("v3.1.10domesticVRPPaymentRequestValidator") OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
             DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
