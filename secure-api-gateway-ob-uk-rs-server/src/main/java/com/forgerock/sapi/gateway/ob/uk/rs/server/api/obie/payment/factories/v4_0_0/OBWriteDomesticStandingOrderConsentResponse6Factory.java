@@ -17,14 +17,19 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v4_0_0.LinksHelper.createDomesticStandingOrderConsentsLink;
 
+import java.util.Collections;
+
 import org.joda.time.DateTime;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRDataAuthorisationConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRReadRefundAccountConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRStatusReasonConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
+import jakarta.validation.Valid;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
@@ -42,6 +47,7 @@ public class OBWriteDomesticStandingOrderConsentResponse6Factory {
         final OBWriteDomesticStandingOrderConsent5 oBWriteDomesticStandingOrderConsent5 = FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5(consent.getRequestObj());
         final OBWriteDomesticStandingOrderConsent5Data obConsentData = oBWriteDomesticStandingOrderConsent5.getData();
         data.authorisation(FRDataAuthorisationConverter.toOBWriteDomesticStandingOrderConsentResponse6DataAuthorisation(obConsentData.getAuthorisation()));
+        data.authorisation(obConsentData.getAuthorisation());
         data.permission(obConsentData.getPermission());
         data.readRefundAccount(obConsentData.getReadRefundAccount());
         data.scASupportData(obConsentData.getScASupportData());
@@ -52,7 +58,7 @@ public class OBWriteDomesticStandingOrderConsentResponse6Factory {
         data.status(OBPaymentConsentStatus.fromValue(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
-        data.statusReason(FRStatusReasonConverter.toOBStatusReason(consent.getStatusReason()));
+        data.statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class)));
 
         return new OBWriteDomesticStandingOrderConsentResponse6().data(data)
                 .risk(oBWriteDomesticStandingOrderConsent5.getRisk())
