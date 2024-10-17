@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,7 +54,7 @@ public class BalancesApiController implements BalancesApi {
     @Value("${rs.page.default.balances.size:10}")
     private int PAGE_LIMIT_BALANCES;
 
-    public BalancesApiController(FRBalanceRepository frBalanceRepository, AccountResourceAccessService accountResourceAccessService) {
+    public BalancesApiController(FRBalanceRepository frBalanceRepository, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.frBalanceRepository = frBalanceRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }

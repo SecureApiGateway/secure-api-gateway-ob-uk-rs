@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -79,7 +80,7 @@ public class StatementsApiController implements StatementsApi {
     public StatementsApiController(@Value("${rs.page.default.statement.size:10}") int pageLimitStatements,
             FRStatementRepository frStatementRepository,
             AccountDataInternalIdFilter accountDataInternalIdFilter,
-            StatementPDFService statementPDFService, AccountResourceAccessService accountResourceAccessService) {
+            StatementPDFService statementPDFService, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitStatements = pageLimitStatements;
         this.frStatementRepository = frStatementRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

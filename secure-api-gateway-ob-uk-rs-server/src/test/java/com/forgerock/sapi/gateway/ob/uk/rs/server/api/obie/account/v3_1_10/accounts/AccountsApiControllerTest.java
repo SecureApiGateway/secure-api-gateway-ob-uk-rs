@@ -19,13 +19,14 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermi
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.AccountAccessConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -62,6 +63,7 @@ public class AccountsApiControllerTest {
     @LocalServerPort
     private int port;
     @MockBean
+    @Qualifier("v3.1.10RestAccountAccessConsentStoreClient")
     private AccountAccessConsentStoreClient accountAccessConsentStoreClient;
 
     @Autowired

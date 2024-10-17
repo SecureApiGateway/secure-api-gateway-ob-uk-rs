@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.v4_0_0;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-
-import java.util.List;
-
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.v3_1_10.DefaultAccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultAccountResourceAccessServiceTest {
@@ -42,9 +43,11 @@ class DefaultAccountResourceAccessServiceTest {
     final List<String> authorisedAccountIds = List.of("acc-1", "acc-2", "acc-3");
 
     @Mock
+    @Qualifier("v4.0.0RestAccountAccessConsentStoreClient")
     private AccountAccessConsentStoreClient consentStoreClient;
 
     @InjectMocks
+    @Qualifier("v4.0.0DefaultAccountResourceAccessService")
     private DefaultAccountResourceAccessService accountAccessConsentService;
 
 

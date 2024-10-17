@@ -17,11 +17,12 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.acco
 
 import java.security.Principal;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.AccountAccessConsentStoreClient;
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,8 +30,7 @@ import org.springframework.stereotype.Controller;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.accounts.AccountAccessConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory.OBReadConsentResponseFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory.v3_1_10.OBReadConsentResponseFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 
@@ -46,7 +46,7 @@ public class AccountAccessConsentsApiController implements AccountAccessConsents
 
     private final OBReadConsentResponseFactory obReadConsentResponseFactory;
 
-    public AccountAccessConsentsApiController(AccountAccessConsentStoreClient accountAccessConsentStoreClient, OBReadConsentResponseFactory obReadConsentResponseFactory) {
+    public AccountAccessConsentsApiController(@Qualifier("v3.1.10RestAccountAccessConsentStoreClient") AccountAccessConsentStoreClient accountAccessConsentStoreClient, OBReadConsentResponseFactory obReadConsentResponseFactory) {
         this.accountAccessConsentStoreClient = accountAccessConsentStoreClient;
         this.obReadConsentResponseFactory = obReadConsentResponseFactory;
     }

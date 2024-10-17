@@ -29,8 +29,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import java.util.Date;
 import java.util.List;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.AccountAccessConsentStoreClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -46,7 +48,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FR
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
@@ -76,6 +77,7 @@ class AccountAccessConsentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10RestAccountAccessConsentStoreClient")
     private AccountAccessConsentStoreClient consentStoreClient;
 
     public String accountAccessConsentApiUri() {

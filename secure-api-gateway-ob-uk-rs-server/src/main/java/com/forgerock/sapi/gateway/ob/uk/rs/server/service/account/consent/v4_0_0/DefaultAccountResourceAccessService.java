@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent;
-
-import org.springframework.stereotype.Service;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.v4_0_0;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.AccountAccessConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
-@Service
+@Service("v4.0.0DefaultAccountResourceAccessService")
 public class DefaultAccountResourceAccessService implements AccountResourceAccessService {
 
     private final AccountAccessConsentStoreClient consentStoreClient;
 
-    public DefaultAccountResourceAccessService(AccountAccessConsentStoreClient consentStoreClient) {
+    public DefaultAccountResourceAccessService(@Qualifier("v4.0.0RestAccountAccessConsentStoreClient") AccountAccessConsentStoreClient consentStoreClient) {
         this.consentStoreClient = consentStoreClient;
     }
 
