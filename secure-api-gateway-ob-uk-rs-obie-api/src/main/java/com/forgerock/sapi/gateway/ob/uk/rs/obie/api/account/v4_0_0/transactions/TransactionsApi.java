@@ -20,14 +20,12 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.transactions;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,6 +41,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import uk.org.openbanking.datamodel.v4.account.OBReadTransaction6;
 import uk.org.openbanking.datamodel.v4.error.OBErrorResponse1;
+
+import java.time.LocalDateTime;
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
 @Validated
@@ -116,8 +116,84 @@ public interface TransactionsApi {
             @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
             @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
             @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-            @Parameter(name = "fromBookingDateTime", description = "The UTC ISO 8601 Date Time to filter transactions FROM NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "fromBookingDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime fromBookingDateTime,
-            @Parameter(name = "toBookingDateTime", description = "The UTC ISO 8601 Date Time to filter transactions TO NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "toBookingDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime toBookingDateTime
-    );
+            @Parameter(name = "fromBookingDateTime", description = "The UTC ISO 8601 Date Time to filter transactions FROM NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "fromBookingDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromBookingDateTime,
+            @Parameter(name = "toBookingDateTime", description = "The UTC ISO 8601 Date Time to filter transactions TO NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "toBookingDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toBookingDateTime,
+            @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+            @Parameter(name = "x-intent-id", description = "openbanking_intent_id from the access_token", in = ParameterIn.HEADER) @RequestHeader(value = "x-intent-id") String consentId,
+            @Parameter(name = "page", description = "Page number.", in = ParameterIn.HEADER) @RequestHeader(value = "page", defaultValue = "0") int page
+    ) throws OBErrorException;
+
+    /**
+     * GET /accounts/{AccountId}/transactions : Get Transactions
+     *
+     * @param accountId              AccountId (required)
+     * @param authorization          An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
+     * @param xFapiAuthDate          The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
+     * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
+     * @param xFapiInteractionId     An RFC4122 UID used as a correlation id. (optional)
+     * @param xCustomerUserAgent     Indicates the user-agent that the PSU is using. (optional)
+     * @param fromBookingDateTime    The UTC ISO 8601 Date Time to filter transactions FROM NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component. (optional)
+     * @param toBookingDateTime      The UTC ISO 8601 Date Time to filter transactions TO NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component. (optional)
+     * @return Transactions Read (status code 200)
+     * or Bad request (status code 400)
+     * or Unauthorized (status code 401)
+     * or Forbidden (status code 403)
+     * or Method Not Allowed (status code 405)
+     * or Not Acceptable (status code 406)
+     * or Too Many Requests (status code 429)
+     * or Internal Server Error (status code 500)
+     */
+    @Operation(
+            operationId = "getAccountsAccountIdTransactions",
+            summary = "Get Transactions",
+            tags = {"Transactions"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Transactions Read", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBReadTransaction6.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBReadTransaction6.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBReadTransaction6.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
+                    @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+                    @ApiResponse(responseCode = "429", description = "Too Many Requests"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    })
+            },
+            security = {
+                    @SecurityRequirement(name = "PSUOAuth2Security", scopes = {"accounts"})
+            }
+    )
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/accounts/{AccountId}/transactions",
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+    )
+    ResponseEntity<OBReadTransaction6> getAccountsAccountIdTransactions(
+            @Parameter(name = "AccountId", description = "AccountId", required = true, in = ParameterIn.PATH) @PathVariable("AccountId") String accountId,
+            @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
+            @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
+            @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
+            @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
+            @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+            @Parameter(name = "fromBookingDateTime", description = "The UTC ISO 8601 Date Time to filter transactions FROM NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "fromBookingDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromBookingDateTime,
+            @Parameter(name = "toBookingDateTime", description = "The UTC ISO 8601 Date Time to filter transactions TO NB Time component is optional - set to 00:00:00 for just Date. If the Date Time contains a timezone, the ASPSP must ignore the timezone component.", in = ParameterIn.QUERY) @Valid @RequestParam(value = "toBookingDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toBookingDateTime,
+            @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+            @Parameter(name = "x-intent-id", description = "openbanking_intent_id from the access_token", in = ParameterIn.HEADER) @RequestHeader(value = "x-intent-id") String consentId,
+            @Parameter(name = "page", description = "Page number.", in = ParameterIn.HEADER) @RequestHeader(value = "page", defaultValue = "0") int page
+    ) throws OBErrorException;
 
 }
