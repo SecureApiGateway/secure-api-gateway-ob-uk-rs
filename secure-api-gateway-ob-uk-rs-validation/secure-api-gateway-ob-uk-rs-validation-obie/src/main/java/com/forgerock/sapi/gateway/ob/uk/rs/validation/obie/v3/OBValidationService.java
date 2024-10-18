@@ -40,7 +40,6 @@ import uk.org.openbanking.datamodel.v3.error.OBError1;
  *
  * @param <T> type of object that can be validated by this service.
  */
-@Service("v3.1.10OBValidationService")
 public class OBValidationService<T> {
 
     /**
@@ -62,7 +61,6 @@ public class OBValidationService<T> {
      */
     private Function<ValidationResult<OBError1>, OBErrorResponseException> exceptionFactory = DEFAULT_EXCEPTION_FACTORY;
 
-    @Autowired
     public OBValidationService(Validator<T, OBError1> validator) {
         Objects.requireNonNull(validator, "validator must be supplied");
         this.delegate = validator;
