@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRExternalPermissionsCodeConverter.toOBExternalPermissions1CodeList;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRExternalPermissionsCodeConverter.toOBExternalPermissions1CodeList;
 
 import java.util.Date;
 
