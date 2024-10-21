@@ -36,7 +36,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDir
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRStatementConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.converter.account.FRTransactionConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
