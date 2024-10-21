@@ -23,6 +23,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInterna
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRProduct;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.products.FRProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
