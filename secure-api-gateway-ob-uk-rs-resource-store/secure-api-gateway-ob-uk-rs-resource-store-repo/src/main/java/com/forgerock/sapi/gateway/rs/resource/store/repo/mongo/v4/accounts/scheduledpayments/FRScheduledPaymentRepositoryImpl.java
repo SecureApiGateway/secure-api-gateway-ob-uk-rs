@@ -21,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository("V4.0.0FRScheduledPaymentRepositoryImpl")
 public class FRScheduledPaymentRepositoryImpl implements FRScheduledPaymentRepositoryCustom {
 
     @Autowired

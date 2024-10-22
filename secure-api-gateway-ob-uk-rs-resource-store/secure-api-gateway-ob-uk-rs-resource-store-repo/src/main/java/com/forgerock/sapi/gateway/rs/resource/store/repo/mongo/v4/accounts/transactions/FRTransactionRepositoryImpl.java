@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import uk.org.openbanking.datamodel.v4.account.OBCreditDebitCode0;
 import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Code;
 
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+@Repository("V4.0.0FRTransactionRepositoryImpl")
 public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCustom {
     private static final Logger LOGGER = LoggerFactory.getLogger(FRTransactionRepositoryImpl.class);
 

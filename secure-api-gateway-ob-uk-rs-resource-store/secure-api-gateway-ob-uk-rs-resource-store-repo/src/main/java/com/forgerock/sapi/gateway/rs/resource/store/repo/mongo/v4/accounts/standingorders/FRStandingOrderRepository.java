@@ -20,11 +20,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+@Component("V4.0.0FRStandingOrderRepository")
 public interface FRStandingOrderRepository extends MongoRepository<FRStandingOrder, String>, FRStandingOrderRepositoryCustom {
 
     Page<FRStandingOrder> findByAccountId(@Param("accountId") String accountId, Pageable pageable);

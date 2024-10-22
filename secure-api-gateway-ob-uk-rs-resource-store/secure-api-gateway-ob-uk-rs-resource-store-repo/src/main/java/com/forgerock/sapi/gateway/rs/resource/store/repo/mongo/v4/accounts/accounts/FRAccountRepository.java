@@ -19,9 +19,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRAcc
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-
+@Component("V4.0.0FRAccountRepository")
 public interface FRAccountRepository extends MongoRepository<FRAccount, String>, FRAccountRepositoryCustom {
 
     Collection<FRAccount> findByUserID(@Param("userID") String userID);

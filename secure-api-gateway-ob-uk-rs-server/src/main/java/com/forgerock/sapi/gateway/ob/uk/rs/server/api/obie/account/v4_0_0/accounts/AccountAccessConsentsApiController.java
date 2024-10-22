@@ -18,9 +18,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v4_0_0.accou
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.accounts.AccountAccessConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory.OBReadConsentResponseFactoryV4;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.CreateAccountAccessConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v4_0_0.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.CreateAccountAccessConsentRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

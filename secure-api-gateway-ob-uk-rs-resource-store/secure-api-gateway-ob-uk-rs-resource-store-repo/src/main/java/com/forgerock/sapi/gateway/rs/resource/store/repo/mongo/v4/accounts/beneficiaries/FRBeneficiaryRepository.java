@@ -20,10 +20,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
 
+@Component("V4.0.0FRBeneficiaryRepository")
 public interface FRBeneficiaryRepository extends MongoRepository<FRBeneficiary, String>, FRBeneficiaryRepositoryCustom {
 
     Page<FRBeneficiary> findByAccountId(@Param("accountId") String accountId, Pageable pageable);

@@ -21,12 +21,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Component("V4.0.0FRBalanceRepository")
 public interface FRBalanceRepository extends MongoRepository<FRBalance, String>, FRBalanceRepositoryCustom {
 
     Page<FRBalance> findByAccountId(@Param("accountId") String accountId, Pageable pageable);

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("V4.0.0FRBalanceRepositoryImpl")
 public class FRBalanceRepositoryImpl implements FRBalanceRepositoryCustom {
     private static final Logger LOGGER = LoggerFactory.getLogger(FRBalanceRepositoryImpl.class);
 

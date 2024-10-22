@@ -20,10 +20,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
 
+@Component("V4.0.0FRDirectDebitRepository")
 public interface FRDirectDebitRepository extends MongoRepository<FRDirectDebit, String>, FRDirectDebitRepositoryCustom {
 
     Page<FRDirectDebit> findByAccountId(@Param("accountId") String accountId, Pageable pageable);

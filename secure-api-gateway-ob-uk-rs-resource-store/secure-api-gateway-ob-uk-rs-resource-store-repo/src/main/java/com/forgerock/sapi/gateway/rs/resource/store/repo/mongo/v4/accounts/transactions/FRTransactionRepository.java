@@ -21,12 +21,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.v4.account.OBCreditDebitCode0;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+@Component("V4.0.0FRTransactionRepository")
 public interface FRTransactionRepository extends MongoRepository<FRTransaction, String>, FRTransactionRepositoryCustom {
 
     Page<FRTransaction> findByAccountIdAndTransactionCreditDebitIndicator(

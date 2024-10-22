@@ -19,12 +19,13 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRSta
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-
+@Component("V4.0.0FRStatementRepository")
 public interface FRStatementRepository extends MongoRepository<FRStatement, String>, FRStatementRepositoryCustom {
 
     Page<FRStatement> findByAccountIdAndStartDateTimeBetweenAndEndDateTimeBetween(

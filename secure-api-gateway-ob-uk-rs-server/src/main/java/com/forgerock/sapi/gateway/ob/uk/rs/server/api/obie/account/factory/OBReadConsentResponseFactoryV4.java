@@ -19,7 +19,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermi
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelperV4;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;

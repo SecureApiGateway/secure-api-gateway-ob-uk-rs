@@ -25,7 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Repository("V4.0.0FRBeneficiaryRepositoryImpl")
 public class FRBeneficiaryRepositoryImpl implements FRBeneficiaryRepositoryCustom {
     @Autowired
     @Lazy
