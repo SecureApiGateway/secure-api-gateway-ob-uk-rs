@@ -34,7 +34,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBExchangeRateType;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalConsentTestDataFactory;
 
 class OBWriteInternationalConsent5ValidatorTest {
 
