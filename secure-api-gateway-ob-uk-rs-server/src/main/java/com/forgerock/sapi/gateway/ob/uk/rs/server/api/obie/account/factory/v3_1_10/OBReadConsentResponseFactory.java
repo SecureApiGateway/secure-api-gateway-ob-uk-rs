@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory.v3_1_10;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRExternalPermissionsCodeConverter.toOBExternalPermissions1CodeList;
-
-import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
@@ -32,7 +30,7 @@ import uk.org.openbanking.datamodel.v3.account.OBReadConsentResponse1Data;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
 import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 
-@Component
+@Component("V3.1.10OBReadConsentResponseFactory")
 public class OBReadConsentResponseFactory {
 
     public OBReadConsentResponse1 buildConsentResponse(AccountAccessConsent consent, Class<?> controllerClass) {

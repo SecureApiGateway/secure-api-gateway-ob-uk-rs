@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.factory.v4_0_0;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.converter.account.FRConsentStatusConverter.toOBReadConsentStatus;
 
-@Component
-public class OBReadConsentResponseFactoryV4 {
+@Component("V4.0.0OBReadConsentResponseFactory")
+public class OBReadConsentResponseFactory {
 
     public OBReadConsentResponse1 buildConsentResponse(AccountAccessConsent consent, Class<?> controllerClass) {
         final OBRisk2 obRisk2 = new OBRisk2();
@@ -55,7 +55,7 @@ public class OBReadConsentResponseFactoryV4 {
     }
 
     public static List<OBInternalPermissions1Code> toOBInternalPermissions1CodeList(List<FRExternalPermissionsCode> permissions) {
-        return permissions == null ? null : permissions.stream().map(OBReadConsentResponseFactoryV4::toOBInternalPermissions1Code).collect(Collectors.toList());
+        return permissions == null ? null : permissions.stream().map(OBReadConsentResponseFactory::toOBInternalPermissions1Code).collect(Collectors.toList());
     }
 
     public static OBInternalPermissions1Code toOBInternalPermissions1Code(FRExternalPermissionsCode permission) {
