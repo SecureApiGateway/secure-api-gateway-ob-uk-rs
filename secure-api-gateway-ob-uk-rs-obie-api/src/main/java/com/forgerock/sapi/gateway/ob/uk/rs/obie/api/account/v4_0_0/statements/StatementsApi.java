@@ -331,7 +331,7 @@ public interface StatementsApi {
     @RequestMapping(
             method = RequestMethod.GET,
             value = "/accounts/{AccountId}/statements/{StatementId}/file",
-            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            produces = {"*/*"}
     )
     ResponseEntity<Object> getAccountsAccountIdStatementsStatementIdFile(
             @Parameter(name = "StatementId", description = "StatementId", required = true, in = ParameterIn.PATH) @PathVariable("StatementId") String statementId,
