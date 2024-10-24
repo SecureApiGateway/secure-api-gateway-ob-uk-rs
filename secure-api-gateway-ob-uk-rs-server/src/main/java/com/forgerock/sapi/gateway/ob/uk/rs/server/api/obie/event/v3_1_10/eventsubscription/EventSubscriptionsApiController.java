@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.eventsubscription;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.event.FREventSubscriptionConverter.toFREventSubscriptionData;
 
 import java.net.URI;
 import java.security.Principal;

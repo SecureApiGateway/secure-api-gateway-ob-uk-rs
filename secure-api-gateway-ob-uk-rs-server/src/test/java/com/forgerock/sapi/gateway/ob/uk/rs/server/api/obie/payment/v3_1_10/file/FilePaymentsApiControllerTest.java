@@ -41,7 +41,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
@@ -58,7 +58,7 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3Data;
-import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
 
 /**
  * A SpringBoot test for the {@link FilePaymentsApiController}.<br/>
