@@ -26,12 +26,12 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.MongoRepoPackageMarker;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.v4.mongo.MongoRepoPackageMarker;
 import com.forgerock.sapi.gateway.uk.common.shared.spring.converter.JodaTimeConverters;
 
 @Configuration
 @ComponentScan(basePackageClasses = ResourceStoreRepoConfiguration.class)
-@EnableMongoRepositories(basePackageClasses = MongoRepoPackageMarker.class)
+@EnableMongoRepositories(basePackageClasses = {com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.MongoRepoPackageMarker.class, MongoRepoPackageMarker.class})
 @EnableMongoAuditing
 public class ResourceStoreRepoConfiguration {
 
