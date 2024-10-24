@@ -20,7 +20,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentDa
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelperV4;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.account.FRAccountStatusCode;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
@@ -31,7 +30,7 @@ import uk.org.openbanking.datamodel.v4.account.OBReadConsentResponse1Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.converter.account.FRConsentStatusConverter.toOBReadConsentStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.v4.converter.account.FRConsentStatusConverter.toOBReadConsentStatusV4;
 
 @Component("V4.0.0OBReadConsentResponseFactory")
 public class OBReadConsentResponseFactory {
@@ -44,7 +43,7 @@ public class OBReadConsentResponseFactory {
                 .data(new OBReadConsentResponse1Data().consentId(consent.getId())
                                                       .creationDateTime(new DateTime(consent.getCreationDateTime()))
                                                       .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
-                                                      .status(toOBReadConsentStatus(FRAccountStatusCode.valueOf((consent.getStatus()))))
+                                                      .status(toOBReadConsentStatusV4((consent.getStatus())))
                                                       .permissions(toOBInternalPermissions1CodeList(readConsentData.getPermissions()))
                                                       .expirationDateTime(readConsentData.getExpirationDateTime())
                                                       .transactionFromDateTime(readConsentData.getTransactionFromDateTime())
