@@ -22,8 +22,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.transactions.TransactionsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilterV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessServiceV4;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRTransaction;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.transactions.FRTransactionRepository;
 import org.slf4j.Logger;
@@ -59,7 +59,7 @@ public class TransactionsApiController implements TransactionsApi {
 
     private final AccountDataInternalIdFilterV4 accountDataInternalIdFilter;
 
-    private final AccountResourceAccessService accountResourceAccessService;
+    private final AccountResourceAccessServiceV4 accountResourceAccessService;
 
     private final Set<FRExternalPermissionsCode> transactionsPermissions = Set.of(FRExternalPermissionsCode.READTRANSACTIONSBASIC,
             FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -68,7 +68,7 @@ public class TransactionsApiController implements TransactionsApi {
 
     public TransactionsApiController(@Value("${rs.page.default.transaction.size:120}") int pageLimitTransactions,
             FRTransactionRepository FRTransactionRepositoryV4,
-            AccountDataInternalIdFilterV4 accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+            AccountDataInternalIdFilterV4 accountDataInternalIdFilter, AccountResourceAccessServiceV4 accountResourceAccessService) {
         this.pageLimitTransactions = pageLimitTransactions;
         this.FRTransactionRepositoryV4 = FRTransactionRepositoryV4;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

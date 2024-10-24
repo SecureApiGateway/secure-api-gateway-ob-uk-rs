@@ -23,9 +23,9 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.statements.StatementsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilterV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessServiceV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRStatement;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.statements.FRStatementRepository;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class StatementsApiController implements StatementsApi {
 
     private final StatementPDFService statementPDFService;
 
-    private final AccountResourceAccessService accountResourceAccessService;
+    private final AccountResourceAccessServiceV4 accountResourceAccessService;
 
     private final Set<FRExternalPermissionsCode> nonFilePermissions = Set.of(FRExternalPermissionsCode.READSTATEMENTSBASIC, FRExternalPermissionsCode.READSTATEMENTSDETAIL);
 
@@ -78,7 +78,7 @@ public class StatementsApiController implements StatementsApi {
     public StatementsApiController(@Value("${rs.page.default.statement.size:10}") int pageLimitStatements,
             FRStatementRepository frStatementRepository,
             AccountDataInternalIdFilterV4 accountDataInternalIdFilter,
-            StatementPDFService statementPDFService, AccountResourceAccessService accountResourceAccessService) {
+            StatementPDFService statementPDFService, AccountResourceAccessServiceV4 accountResourceAccessService) {
         this.pageLimitStatements = pageLimitStatements;
         this.frStatementRepository = frStatementRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

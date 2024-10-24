@@ -20,8 +20,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.party.PartyApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessServiceV4;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.party.FRPartyRepository;
 import org.slf4j.Logger;
@@ -43,9 +43,9 @@ public class PartyApiController implements PartyApi {
     
     private final FRPartyRepository frPartyRepository;
 
-    private final AccountResourceAccessService accountResourceAccessService;
+    private final AccountResourceAccessServiceV4 accountResourceAccessService;
 
-    public PartyApiController(FRPartyRepository frPartyRepository, AccountResourceAccessService accountResourceAccessService) {
+    public PartyApiController(FRPartyRepository frPartyRepository, AccountResourceAccessServiceV4 accountResourceAccessService) {
         this.frPartyRepository = frPartyRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }

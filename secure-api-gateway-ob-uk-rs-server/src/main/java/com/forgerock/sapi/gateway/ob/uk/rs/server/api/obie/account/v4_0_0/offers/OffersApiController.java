@@ -21,8 +21,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.offers.OffersApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilterV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessServiceV4;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FROffer;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
 import org.slf4j.Logger;
@@ -50,11 +50,11 @@ public class OffersApiController implements OffersApi {
     @Value("${rs.page.default.offers.size:10}")
     private int PAGE_LIMIT_OFFERS;
 
-    private final AccountResourceAccessService accountResourceAccessService;
+    private final AccountResourceAccessServiceV4 accountResourceAccessService;
 
     public OffersApiController(FROfferRepository frOfferRepository,
             AccountDataInternalIdFilterV4 accountDataInternalIdFilter,
-            AccountResourceAccessService accountResourceAccessService) {
+            AccountResourceAccessServiceV4 accountResourceAccessService) {
         this.frOfferRepository = frOfferRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
         this.accountResourceAccessService = accountResourceAccessService;

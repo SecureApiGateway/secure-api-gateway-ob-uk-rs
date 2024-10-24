@@ -21,8 +21,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.balances.BalancesApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessServiceV4;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRBalance;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.balances.FRBalanceRepository;
 import org.slf4j.Logger;
@@ -45,13 +45,13 @@ public class BalancesApiController implements BalancesApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final AccountResourceAccessService accountResourceAccessService;
+    private final AccountResourceAccessServiceV4 accountResourceAccessService;
 
     private final FRBalanceRepository frBalanceRepository;
     @Value("${rs.page.default.balances.size:10}")
     private int PAGE_LIMIT_BALANCES;
 
-    public BalancesApiController(FRBalanceRepository frBalanceRepository, AccountResourceAccessService accountResourceAccessService) {
+    public BalancesApiController(FRBalanceRepository frBalanceRepository, AccountResourceAccessServiceV4 accountResourceAccessService) {
         this.frBalanceRepository = frBalanceRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }

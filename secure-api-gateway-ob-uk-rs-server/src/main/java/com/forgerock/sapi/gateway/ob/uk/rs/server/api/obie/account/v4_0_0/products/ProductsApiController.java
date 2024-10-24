@@ -21,8 +21,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.products.ProductsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilterV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessServiceV4;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRProduct;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.products.FRProductRepository;
 import org.slf4j.Logger;
@@ -47,14 +47,14 @@ public class ProductsApiController implements ProductsApi {
     private final FRProductRepository frProductRepository;
     private final AccountDataInternalIdFilterV4 accountDataInternalIdFilter;
 
-    private final AccountResourceAccessService accountResourceAccessService;
+    private final AccountResourceAccessServiceV4 accountResourceAccessService;
 
     @Value("${rs.page.default.products.size:10}")
     private int PAGE_LIMIT_PRODUCTS;
 
     public ProductsApiController(FRProductRepository frProductRepository,
                                  AccountDataInternalIdFilterV4 accountDataInternalIdFilter,
-                                 AccountResourceAccessService accountResourceAccessService) {
+                                 AccountResourceAccessServiceV4 accountResourceAccessService) {
         this.frProductRepository = frProductRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
         this.accountResourceAccessService = accountResourceAccessService;
