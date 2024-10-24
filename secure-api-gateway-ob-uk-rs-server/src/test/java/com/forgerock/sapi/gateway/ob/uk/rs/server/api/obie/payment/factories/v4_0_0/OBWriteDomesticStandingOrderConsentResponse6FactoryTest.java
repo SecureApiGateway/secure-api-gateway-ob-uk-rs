@@ -32,7 +32,7 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConse
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
 import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
 
-public class OBWriteDomesticStandingOrderConsentResponse6FactoryTest {
+class OBWriteDomesticStandingOrderConsentResponse6FactoryTest {
 
     private final OBWriteDomesticStandingOrderConsentResponse6Factory factory = new OBWriteDomesticStandingOrderConsentResponse6Factory();
 
