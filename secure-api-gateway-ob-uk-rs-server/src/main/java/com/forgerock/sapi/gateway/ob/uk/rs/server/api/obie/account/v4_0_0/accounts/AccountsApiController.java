@@ -21,8 +21,8 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.accounts.AccountsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtilV4;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelperV4;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessServiceV4;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v4_0_0.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.accounts.FRAccountRepository;
 import org.slf4j.Logger;
@@ -42,11 +42,11 @@ public class AccountsApiController implements AccountsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
-    private final AccountResourceAccessService accountResourceAccessService;
+    private final AccountResourceAccessServiceV4 accountResourceAccessService;
 
     private final FRAccountRepository frAccountRepository;
 
-    public AccountsApiController(FRAccountRepository frAccountRepository, AccountResourceAccessService accountResourceAccessService) {
+    public AccountsApiController(FRAccountRepository frAccountRepository, AccountResourceAccessServiceV4 accountResourceAccessService) {
         this.frAccountRepository = frAccountRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }
