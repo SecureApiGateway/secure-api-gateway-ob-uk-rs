@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,6 +50,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRErrorCodeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
@@ -253,6 +256,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.info("({}) Request failed due to OBErrorResponseException - status: {}, category: {}, errors: {}",
                 fapiInteractionId, ex.getStatus(), ex.getCategory(), ex.getErrors());
 
+        if (isV4Request(request)) {
+            translateErrorCodes(ex);
+        }
+
         return ResponseEntity.status(ex.getStatus()).body(
                 new OBErrorResponse1()
                         .code(ex.getCategory().getId())
@@ -260,7 +267,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .message(ex.getCategory().getDescription())
                         .errors(ex.getErrors()));
     }
-
 
     @ExceptionHandler(value = {OBErrorException.class})
     protected ResponseEntity<Object> handleOBError(OBErrorException ex,
@@ -366,5 +372,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static String getFapiInteractionId(WebRequest request) {
         return request.getHeader("x-fapi-interaction-id");
+    }
+
+    private static boolean isV4Request(WebRequest request) {
+        String path = request.getDescription(false);
+        Pattern pattern = Pattern.compile("/open-banking/v(\\d+)\\.");
+        Matcher matcher = pattern.matcher(path);
+        return matcher.find() && "4".equals(matcher.group(1));
+    }
+
+    public void translateErrorCodes(OBErrorResponseException ex) {
+        List<OBError1> errorList = ex.getErrors();
+        for (OBError1 error : errorList) {
+            error.setErrorCode(FRErrorCodeConverter.toObV4ErrorCode(error.getErrorCode()));
+        }
     }
 }
