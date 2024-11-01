@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAmountConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRFilePayment;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;

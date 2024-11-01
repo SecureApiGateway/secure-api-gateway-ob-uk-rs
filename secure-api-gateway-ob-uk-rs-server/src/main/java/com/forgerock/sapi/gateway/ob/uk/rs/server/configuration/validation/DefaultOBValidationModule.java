@@ -29,38 +29,38 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.vali
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.Currencies;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator.FundsConfirmationValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.CurrencyCodeValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBRisk1Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBDomesticVRPConsentRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticConsent4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticScheduledConsent4Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteFileConsent3Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalScheduledConsent5Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.OBWriteInternationalStandingOrderConsent6Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.funds.FundsConfirmationValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.funds.FundsConfirmationValidator.FundsConfirmationValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBDomesticVRPRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBRisk1Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomestic2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticScheduled2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticStandingOrder3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteFile2Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternational3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalScheduled3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalStandingOrder4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalStandingOrder4Validator.OBWriteInternationalStandingOrder4ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBDomesticVRPConsentRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBVRPFundsConfirmationRequestValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteDomesticScheduledConsent4Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteDomesticStandingOrderConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteFileConsent3Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteInternationalConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteInternationalScheduledConsent5Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteInternationalStandingOrderConsent6Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBRisk1ValidatorV4;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBWriteDomesticConsent4Validator;
 
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
@@ -73,13 +73,14 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledCons
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
 
+;
+
 /**
  * Spring Boot configuration for the Open Banking validation module with the default set of rules.
  * <p>
  * Creates Beans that can be used by services and controllers in this simulator for validation purposes.
  * <p>
- * This can be enabled by setting the following property:
- * rs.obie.validation.module: default
+ * This can be enabled by setting the following property: rs.obie.validation.module: default
  * <p>
  * Different validation rules may be implemented by creating a new module that creates the same set of beans, such a
  * module should include the @ConditionalOnProperty annotation as below but with a different havingValue.
@@ -97,18 +98,42 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidator(), riskValidator));
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext> domesticPaymentValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomestic2Validator());
+    }
+
+    @Bean
+    public OBValidationService<OBWriteDomesticConsent4> domesticPaymentConsentValidator(
+            BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBWriteDomesticConsent4Validator(
+                instructedAmountValidator(),
+                riskValidator));
+    }
+
+    @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidatorV4(
+            BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(),
+                                                                              riskValidator));
     }
 
     @Bean
     public BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator(
+                currencyCodeValidator());
+    }
+
+    @Bean
+    public BaseOBValidator<uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidatorV4() {
         return new OBWriteDomestic2DataInitiationInstructedAmountValidator(currencyCodeValidator());
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(instructedAmountValidator(), riskValidator));
+    public OBValidationService<OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidator(
+            BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteDomesticScheduledConsent4Validator(
+                instructedAmountValidator(),
+                riskValidator));
     }
 
     @Bean
@@ -117,8 +142,11 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(currencyCodeValidator(), riskValidator));
+    public OBValidationService<OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidator(
+            BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteDomesticStandingOrderConsent5Validator(
+                currencyCodeValidator(),
+                riskValidator));
     }
 
     @Bean
@@ -127,8 +155,10 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator(riskValidator));
+    public OBValidationService<OBDomesticVRPConsentRequest> domesticVRPConsentValidator(
+            BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBDomesticVRPConsentRequestValidator(
+                riskValidator));
     }
 
     @Bean
@@ -142,13 +172,16 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public BaseOBValidator<String> currencyCodeValidator() {
-        return new CurrencyCodeValidator(Arrays.stream(Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.CurrencyCodeValidator currencyCodeValidator() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.CurrencyCodeValidator(Arrays.stream(
+                Currencies.values()).map(Currencies::getCode).collect(Collectors.toSet()));
     }
 
     @Bean
-    public OBValidationService<OBWriteFileConsent3> filePaymentConsentValidator(PaymentFileProcessorService paymentFileProcessorService) {
-        return new OBValidationService<>(new OBWriteFileConsent3Validator(paymentFileProcessorService.getSupportedFileTypes()));
+    public OBValidationService<OBWriteFileConsent3> filePaymentConsentValidator(
+            PaymentFileProcessorService paymentFileProcessorService) {
+        return new OBValidationService<>(new OBWriteFileConsent3Validator(
+                paymentFileProcessorService.getSupportedFileTypes()));
     }
 
     @Bean
@@ -167,9 +200,13 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteInternationalConsent5Validator(instructedAmountValidator(),
-                currencyCodeValidator(), exchangeRateInformationValidator(), riskValidator));
+    public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator(
+            BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteInternationalConsent5Validator(
+                instructedAmountValidator(),
+                currencyCodeValidator(),
+                exchangeRateInformationValidator(),
+                riskValidator));
     }
 
     @Bean
@@ -178,9 +215,13 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
-    public OBValidationService<OBWriteInternationalScheduledConsent5> internationalScheduledPaymentConsentValidator(BaseOBValidator<OBRisk1> riskValidator) {
-        return new OBValidationService<>(new OBWriteInternationalScheduledConsent5Validator(instructedAmountValidator(),
-                currencyCodeValidator(), exchangeRateInformationValidator(), riskValidator));
+    public OBValidationService<OBWriteInternationalScheduledConsent5> internationalScheduledPaymentConsentValidator(
+            BaseOBValidator<OBRisk1> riskValidator) {
+        return new OBValidationService<>(new OBWriteInternationalScheduledConsent5Validator(
+                instructedAmountValidator(),
+                currencyCodeValidator(),
+                exchangeRateInformationValidator(),
+                riskValidator));
     }
 
     @Bean
@@ -191,9 +232,10 @@ public class DefaultOBValidationModule {
     @Bean
     public OBValidationService<OBWriteInternationalStandingOrderConsent6> internationalStandingOrderConsentValidator(
             BaseOBValidator<OBRisk1> riskValidator) {
-
-        return new OBValidationService<>(new OBWriteInternationalStandingOrderConsent6Validator(instructedAmountValidator(),
-                currencyCodeValidator(), riskValidator));
+        return new OBValidationService<>(new OBWriteInternationalStandingOrderConsent6Validator(
+                instructedAmountValidator(),
+                currencyCodeValidator(),
+                riskValidator));
     }
 
     @Bean
@@ -201,14 +243,21 @@ public class DefaultOBValidationModule {
         return new OBValidationService<>(new OBWriteInternationalStandingOrder4Validator());
     }
 
-    @Bean
+   @Bean
     public OBRisk1Validator paymentRiskValidator(@Value("${rs.obie.validation.config.payments.requirePaymentContextCode:false}")
                                                  boolean requirePaymentContextCode) {
         return new OBRisk1Validator(requirePaymentContextCode);
     }
 
     @Bean
+    public OBRisk1ValidatorV4 paymentRiskValidatorV4(@Value("${rs.obie.validation.config.payments.requirePaymentContextCode:false}")
+                                                 boolean requirePaymentContextCode) {
+        return new OBRisk1ValidatorV4(requirePaymentContextCode);
+    }
+
+    @Bean
     public OBValidationService<FundsConfirmationValidationContext> fundsConfirmationValidator() {
         return new OBValidationService<>(new FundsConfirmationValidator());
     }
+
 }

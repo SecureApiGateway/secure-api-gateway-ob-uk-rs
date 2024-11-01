@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.statements;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toOBStatement2;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.io.IOException;

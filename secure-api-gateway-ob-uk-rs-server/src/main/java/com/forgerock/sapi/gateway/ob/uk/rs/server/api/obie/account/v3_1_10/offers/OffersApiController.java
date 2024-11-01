@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.offers;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toOBReadOffer1DataOffer;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.stream.Collectors;

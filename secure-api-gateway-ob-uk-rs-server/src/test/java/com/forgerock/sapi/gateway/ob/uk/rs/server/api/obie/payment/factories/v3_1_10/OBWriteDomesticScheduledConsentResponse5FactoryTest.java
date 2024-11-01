@@ -30,7 +30,7 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4Data;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsentResponse5;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsentResponse5Data;
-import uk.org.openbanking.testsupport.payment.OBWriteDomesticScheduledConsentTestDataFactory;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticScheduledConsentTestDataFactory;
 
 class OBWriteDomesticScheduledConsentResponse5FactoryTest {
 

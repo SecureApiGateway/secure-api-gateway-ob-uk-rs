@@ -15,13 +15,13 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent6;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRModelMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderConsent;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;

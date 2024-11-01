@@ -27,7 +27,7 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
