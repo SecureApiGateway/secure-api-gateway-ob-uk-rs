@@ -46,6 +46,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -375,10 +376,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private static boolean isV4Request(WebRequest request) {
-        String path = request.getDescription(false);
-        Pattern pattern = Pattern.compile("/open-banking/v(\\d+)\\.");
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() && "4".equals(matcher.group(1));
+        String[] pathElements = ((ServletWebRequest) request).getRequest().getRequestURI().split("/");
+        return pathElements.length > 3 && pathElements[3].startsWith("v4");
     }
 
     public void translateErrorCodes(OBErrorResponseException ex) {
