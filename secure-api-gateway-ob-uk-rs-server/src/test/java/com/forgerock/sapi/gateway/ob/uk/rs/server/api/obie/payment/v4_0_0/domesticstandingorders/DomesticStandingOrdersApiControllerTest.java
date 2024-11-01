@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domesticstandingorders;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.v4_0_0.PaymentsUtils.createTestDataStandingOrderConsentResponse6;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils.createTestDataStandingOrderConsentResponse6;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,8 +25,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.testsupport.v4.payment.OBRisk1TestDataFactory.aValidOBRisk1;
-import static uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrder3DataInitiation;
+import static uk.org.openbanking.testsupport.payment.OBRisk1TestDataFactory.aValidOBRisk1;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrder3DataInitiation;
 
 import java.util.List;
 import java.util.UUID;
@@ -50,10 +50,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRModelMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.v4_0_0.PaymentsUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
@@ -62,10 +62,9 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccoun
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticStandingOrderPaymentSubmissionRepository;
 
-import jakarta.validation.Valid;
+import uk.org.openbanking.datamodel.v3.common.OBReadRefundAccount;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v4.common.OBReadRefundAccount;
 import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticResponse5DataRefundAccount;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrder3;
@@ -77,8 +76,8 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConse
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6Data;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
@@ -99,7 +98,7 @@ public class DomesticStandingOrdersApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    @Qualifier("v4.0.0RestDomesticStandingOrderConsentStoreClient")
+    @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient")
     private DomesticStandingOrderConsentStoreClient consentStoreClient;
 
     @MockBean
@@ -325,8 +324,8 @@ public class DomesticStandingOrdersApiControllerTest {
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        @Valid List<@Valid OBWritePaymentDetails1> responseData = response.getBody().getData().getPaymentStatus();
-        for (@Valid OBWritePaymentDetails1 data : responseData) {
+        List<OBWritePaymentDetailsResponse1DataPaymentStatusInner> responseData = response.getBody().getData().getPaymentStatus();
+        for (OBWritePaymentDetailsResponse1DataPaymentStatusInner data : responseData) {
             assertThat(data).isNotNull();
             String submittedPaymentStatus = PaymentsUtils.statusLinkingMap.get(responsePayment.getData().getStatus().getValue());
             assertThat(data.getStatus().getValue()).isEqualTo(submittedPaymentStatus);

@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticstandingorders;
 
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.v3_1_10.PaymentsUtils.createTestDataStandingOrderConsentResponse6;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils.createTestDataStandingOrderConsentResponse6;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -55,7 +55,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentif
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.v3_1_10.PaymentsUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;

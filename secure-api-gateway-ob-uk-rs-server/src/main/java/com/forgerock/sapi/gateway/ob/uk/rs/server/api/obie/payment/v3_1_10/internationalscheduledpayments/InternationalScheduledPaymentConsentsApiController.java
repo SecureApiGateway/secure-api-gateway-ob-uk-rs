@@ -34,7 +34,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalscheduledpayments.InternationalScheduledPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteFundsConfirmationResponse1Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteInternationalScheduledConsentResponse6Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;

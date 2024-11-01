@@ -20,7 +20,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
 import uk.org.openbanking.datamodel.v3.common.Meta;

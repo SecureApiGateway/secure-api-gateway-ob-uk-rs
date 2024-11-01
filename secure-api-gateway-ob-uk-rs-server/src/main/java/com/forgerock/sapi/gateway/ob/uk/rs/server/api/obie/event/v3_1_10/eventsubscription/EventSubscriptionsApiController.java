@@ -31,7 +31,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventSubscription;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.EventSubscriptionsRepository;

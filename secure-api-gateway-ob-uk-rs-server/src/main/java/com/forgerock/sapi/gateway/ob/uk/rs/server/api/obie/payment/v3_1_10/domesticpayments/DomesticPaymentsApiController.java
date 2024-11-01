@@ -38,6 +38,7 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -52,14 +53,14 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticpaym
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomestic2Validator.OBWriteDomestic2ValidationContext;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.DomesticPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticPaymentSubmission;
@@ -95,7 +96,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             DomesticPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
             OBValidationService<OBWriteDomestic2ValidationContext> paymentValidator,
-            DomesticPaymentConsentStoreClient consentStoreClient,
+            @Qualifier("v3.1.10RestDomesticPaymentConsentStoreClient") DomesticPaymentConsentStoreClient consentStoreClient,
             RefundAccountService refundAccountService) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

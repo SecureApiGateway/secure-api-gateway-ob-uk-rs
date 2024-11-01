@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.account.consent.OBReadConsent1ValidatorTest.expectedConsentExpirationInPastError;
-import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.account.consent.OBReadConsent1ValidatorTest.invalidConsentExpirationInPast;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.account.consent.OBReadConsent1ValidatorTest.expectedConsentExpirationInPastError;
+import static com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.account.consent.OBReadConsent1ValidatorTest.invalidConsentExpirationInPast;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
@@ -29,7 +29,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.SuccessValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.Validator;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.account.consent.OBReadConsent1Validator;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.account.consent.OBReadConsent1Validator;
 
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1;
 import uk.org.openbanking.datamodel.v3.account.OBReadConsent1Data;
@@ -46,9 +46,9 @@ class OBValidationServiceTest {
     @Test
     void failsToCustomiseExceptionFactory() {
         assertEquals("exceptionFactory must be supplied",
-                assertThrows(NullPointerException.class,
-                             () -> new OBValidationService<>(new SuccessValidator<>()).setExceptionFactory(null))
-                .getMessage());
+                     assertThrows(NullPointerException.class,
+                                  () -> new OBValidationService<>(new SuccessValidator<>()).setExceptionFactory(null))
+                             .getMessage());
     }
 
     @Test
@@ -60,7 +60,7 @@ class OBValidationServiceTest {
     void mustRaiseExceptionIfValidationFails() {
         final OBValidationService<OBReadConsent1> accountConsentValidationService = new OBValidationService<>(new OBReadConsent1Validator());
         final OBErrorResponseException responseException = assertThrows(OBErrorResponseException.class,
-                () -> accountConsentValidationService.validate(invalidConsentExpirationInPast()));
+                                                                        () -> accountConsentValidationService.validate(invalidConsentExpirationInPast()));
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(OBRIErrorResponseCategory.REQUEST_INVALID, responseException.getCategory());
         assertEquals(expectedConsentExpirationInPastError(), responseException.getErrors());
@@ -72,7 +72,7 @@ class OBValidationServiceTest {
         accountConsentValidationService.setExceptionFactory(result -> new OBErrorResponseException(HttpStatus.INTERNAL_SERVER_ERROR, OBRIErrorResponseCategory.SERVER_INTERNAL_ERROR, new OBError1()));
 
         final OBErrorResponseException responseException = assertThrows(OBErrorResponseException.class,
-                () -> accountConsentValidationService.validate(invalidConsentExpirationInPast()));
+                                                                        () -> accountConsentValidationService.validate(invalidConsentExpirationInPast()));
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseException.getStatus());
         assertEquals(OBRIErrorResponseCategory.SERVER_INTERNAL_ERROR, responseException.getCategory());
         assertEquals(List.of(new OBError1()), responseException.getErrors());
@@ -81,13 +81,13 @@ class OBValidationServiceTest {
     @Test
     void testListOfValidators() throws Exception {
         final OBValidationService<OBReadConsent1> validationService = new OBValidationService<>(List.of(new SuccessValidator<>(),
-                new OBReadConsent1Validator(), new SuccessValidator<>(), new OBReadConsent1Validator())); // Account validator included twice, errors will be duplicated
+                                                                                                        new OBReadConsent1Validator(), new SuccessValidator<>(), new OBReadConsent1Validator())); // Account validator included twice, errors will be duplicated
 
         validationService.validate(new OBReadConsent1().data(new OBReadConsent1Data())); // valid consent
 
         // Invalid consent, verify we get 2 error objects
         final OBErrorResponseException responseException = assertThrows(OBErrorResponseException.class,
-                () -> validationService.validate(invalidConsentExpirationInPast()));
+                                                                        () -> validationService.validate(invalidConsentExpirationInPast()));
         assertEquals(HttpStatus.BAD_REQUEST, responseException.getStatus());
         assertEquals(OBRIErrorResponseCategory.REQUEST_INVALID, responseException.getCategory());
         assertEquals(Collections.nCopies(2, expectedConsentExpirationInPastError().stream().findFirst().get()), responseException.getErrors());

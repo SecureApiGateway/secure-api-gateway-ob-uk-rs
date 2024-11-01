@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10;
 
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper.createDomesticStandingOrderConsentsLink;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper.createDomesticStandingOrderConsentsLink;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
