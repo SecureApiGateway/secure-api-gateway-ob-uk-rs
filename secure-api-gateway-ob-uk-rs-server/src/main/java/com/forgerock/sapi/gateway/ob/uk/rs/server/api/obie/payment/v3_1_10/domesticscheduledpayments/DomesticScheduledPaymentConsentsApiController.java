@@ -28,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticscheduledpayments.DomesticScheduledPaymentConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteDomesticScheduledConsentResponse5Factory;

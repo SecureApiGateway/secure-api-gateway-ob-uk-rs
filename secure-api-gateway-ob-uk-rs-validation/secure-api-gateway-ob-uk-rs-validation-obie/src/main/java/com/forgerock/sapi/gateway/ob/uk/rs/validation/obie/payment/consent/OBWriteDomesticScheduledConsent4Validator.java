@@ -13,35 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10;
+package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
 import java.util.Objects;
 
+import org.joda.time.DateTime;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.BaseOBValidator;
 
 import uk.org.openbanking.datamodel.v3.common.OBRisk1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticScheduledConsent4;
 
 /**
- * Validator of OBWriteDomesticConsent4 objects (Domestic Payment Consents)
+ * Validator of OBWriteDomesticScheduledConsent4 objects (Domestic Scheduled Payment Consents)
  */
-public class OBWriteDomesticConsent4Validator extends BaseOBValidator<OBWriteDomesticConsent4> {
+public class OBWriteDomesticScheduledConsent4Validator extends BaseOBValidator<OBWriteDomesticScheduledConsent4> {
 
     private final BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator;
     private final BaseOBValidator<OBRisk1> riskValidator;
 
-    public OBWriteDomesticConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
-                                            BaseOBValidator<OBRisk1> riskValidator) {
+    public OBWriteDomesticScheduledConsent4Validator(BaseOBValidator<OBWriteDomestic2DataInitiationInstructedAmount> instructedAmountValidator,
+                                                     BaseOBValidator<OBRisk1> riskValidator) {
         this.instructedAmountValidator = Objects.requireNonNull(instructedAmountValidator, "instructedAmountValidator must be supplied");
         this.riskValidator = Objects.requireNonNull(riskValidator, "riskValidator must be supplied");
     }
 
     @Override
-    protected void validate(OBWriteDomesticConsent4 domesticPaymentConsent, ValidationResult<OBError1> validationResult) {
-        validationResult.mergeResults(instructedAmountValidator.validate(domesticPaymentConsent.getData().getInitiation().getInstructedAmount()));
-        validationResult.mergeResults(riskValidator.validate(domesticPaymentConsent.getRisk()));
+    protected void validate(OBWriteDomesticScheduledConsent4 consent, ValidationResult<OBError1> validationResult) {
+        validationResult.mergeResults(riskValidator.validate(consent.getRisk()));
+        validationResult.mergeResults(instructedAmountValidator.validate(consent.getData().getInitiation().getInstructedAmount()));
+
+        final DateTime requestedExecutionDateTime = consent.getData().getInitiation().getRequestedExecutionDateTime();
+        if (!requestedExecutionDateTime.isAfterNow()) {
+            validationResult.addError(OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("RequestedExecutionDateTime must be in the future"));
+        }
     }
+
 }

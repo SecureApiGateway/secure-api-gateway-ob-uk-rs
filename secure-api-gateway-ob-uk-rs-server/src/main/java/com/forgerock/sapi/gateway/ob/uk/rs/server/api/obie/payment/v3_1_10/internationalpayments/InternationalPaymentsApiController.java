@@ -21,12 +21,12 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalpayments;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse5DataStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConverter.toFRWriteInternational;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse5DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRResponseDataRefundConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRExchangeRateConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternational;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalData;
@@ -52,7 +52,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationa
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;

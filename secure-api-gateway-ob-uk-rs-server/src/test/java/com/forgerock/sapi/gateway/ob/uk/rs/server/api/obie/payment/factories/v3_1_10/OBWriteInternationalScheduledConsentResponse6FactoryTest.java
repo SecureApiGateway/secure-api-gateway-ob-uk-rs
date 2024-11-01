@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.BeanValidationTestUtils.verifyBeanValidationIsSuccessful;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +31,7 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledCons
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5Data;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsentResponse6;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsentResponse6Data;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalScheduledConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalScheduledConsentTestDataFactory;
 
 class OBWriteInternationalScheduledConsentResponse6FactoryTest {
 

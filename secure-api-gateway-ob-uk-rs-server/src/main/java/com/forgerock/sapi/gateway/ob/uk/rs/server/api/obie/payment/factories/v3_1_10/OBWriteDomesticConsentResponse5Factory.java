@@ -15,13 +15,13 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10;
 
-import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper.createDomesticPaymentConsentsLink;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper.createDomesticPaymentConsentsLink;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
 import uk.org.openbanking.datamodel.v3.common.Meta;

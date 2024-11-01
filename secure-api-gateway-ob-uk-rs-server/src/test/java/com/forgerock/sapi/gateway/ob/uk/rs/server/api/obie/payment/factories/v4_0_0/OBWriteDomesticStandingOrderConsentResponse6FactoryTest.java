@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.domesticstandingorders.DomesticStandingOrderConsentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteDomesticStandingOrderConsentResponse6Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domesticstandingorders.DomesticStandingOrderConsentsApiControllerTest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
@@ -30,9 +31,9 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConse
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsent5Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
-import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
 
-class OBWriteDomesticStandingOrderConsentResponse6FactoryTest {
+public class OBWriteDomesticStandingOrderConsentResponse6FactoryTest {
 
     private final OBWriteDomesticStandingOrderConsentResponse6Factory factory = new OBWriteDomesticStandingOrderConsentResponse6Factory();
 

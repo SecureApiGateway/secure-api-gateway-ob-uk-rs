@@ -45,7 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
@@ -64,7 +64,7 @@ import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticConsentResponse5;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")

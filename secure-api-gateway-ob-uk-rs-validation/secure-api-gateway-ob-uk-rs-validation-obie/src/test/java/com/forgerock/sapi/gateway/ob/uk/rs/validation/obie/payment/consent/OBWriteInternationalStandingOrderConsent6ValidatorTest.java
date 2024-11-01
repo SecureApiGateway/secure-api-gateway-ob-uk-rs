@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent.v3_1_10;
+package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.consent;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
@@ -31,7 +31,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
 
 class OBWriteInternationalStandingOrderConsent6ValidatorTest {
 

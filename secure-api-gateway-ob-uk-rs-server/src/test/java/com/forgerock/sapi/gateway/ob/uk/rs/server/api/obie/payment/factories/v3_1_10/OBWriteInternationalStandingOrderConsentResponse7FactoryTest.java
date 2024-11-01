@@ -30,7 +30,7 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrder
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6Data;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsentResponse7;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsentResponse7Data;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
 
 class OBWriteInternationalStandingOrderConsentResponse7FactoryTest {
 

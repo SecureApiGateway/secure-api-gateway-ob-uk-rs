@@ -50,7 +50,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;

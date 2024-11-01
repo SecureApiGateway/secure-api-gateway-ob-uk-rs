@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.scheduledpayments;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.List;

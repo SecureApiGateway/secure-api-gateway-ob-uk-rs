@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalstandingorders;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,7 +60,7 @@ import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsentResponse7;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")

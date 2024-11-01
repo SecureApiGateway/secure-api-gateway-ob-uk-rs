@@ -45,7 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;

@@ -15,8 +15,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 
 import java.security.Principal;
 import java.util.Date;
@@ -35,7 +35,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_10.FundsConfirmationsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;

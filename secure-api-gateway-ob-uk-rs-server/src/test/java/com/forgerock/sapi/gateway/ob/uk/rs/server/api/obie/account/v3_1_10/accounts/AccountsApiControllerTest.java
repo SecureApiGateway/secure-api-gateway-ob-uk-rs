@@ -40,8 +40,8 @@ import uk.org.openbanking.datamodel.v3.account.OBReadAccount6;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
 import static org.assertj.core.api.Assertions.assertThat;

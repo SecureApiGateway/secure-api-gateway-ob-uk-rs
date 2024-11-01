@@ -23,7 +23,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRReadConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRReadConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.accounts.AccountAccessConsentsApi;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 

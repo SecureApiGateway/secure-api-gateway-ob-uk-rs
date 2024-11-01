@@ -99,6 +99,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
     private List<FRCharge> calculateCharges(OBWriteDomesticStandingOrderConsent5 obWriteDomesticStandingOrderConsent5) {
         return Collections.emptyList();
+
     }
 
     @Override

@@ -23,8 +23,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
-import static uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +57,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.v3_1_10.DomesticPaymentConsentStoreClient;

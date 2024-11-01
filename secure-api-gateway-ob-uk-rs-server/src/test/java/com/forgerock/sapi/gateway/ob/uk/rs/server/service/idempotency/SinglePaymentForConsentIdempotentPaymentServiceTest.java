@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.testsupport.v3.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomestic2;
 
 import java.util.Date;
 import java.util.Optional;
@@ -32,7 +32,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDomestic;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;

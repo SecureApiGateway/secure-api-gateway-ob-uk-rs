@@ -33,7 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVrpConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -41,7 +41,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomest
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticVrpPaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
-import uk.org.openbanking.testsupport.v3.vrp.OBDomesticVrpRequestTestDataFactory;
+import uk.org.openbanking.testsupport.vrp.OBDomesticVrpRequestTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")

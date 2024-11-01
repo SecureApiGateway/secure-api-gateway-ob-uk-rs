@@ -37,7 +37,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
 
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
 
 class FilePaymentFileContentValidatorTest {
 

@@ -15,11 +15,11 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.factory;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAccountIdentifierConverter.toOBFundsConfirmationConsent1DataDebtorAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAccountIdentifierConverter.toOBFundsConfirmationConsent1DataDebtorAccount;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.v3_1_10.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 
 import org.joda.time.DateTime;

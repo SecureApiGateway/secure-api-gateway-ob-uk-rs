@@ -29,7 +29,7 @@ import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseData;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseDataStatus;
-import uk.org.openbanking.testsupport.v3.vrp.OBDomesticVrpConsentRequestTestDataFactory;
+import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 class OBDomesticVRPConsentResponseFactoryTest {
 

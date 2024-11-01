@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
-import static uk.org.openbanking.testsupport.v3.payment.OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5;
+import static uk.org.openbanking.testsupport.payment.OBWriteInternationalConsentTestDataFactory.aValidOBWriteInternationalConsent5;
 
 import java.math.BigDecimal;
 import java.util.List;

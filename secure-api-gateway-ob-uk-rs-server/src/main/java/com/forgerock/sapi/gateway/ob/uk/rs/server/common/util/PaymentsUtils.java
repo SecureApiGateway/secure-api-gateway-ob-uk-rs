@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.v3_1_10;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 
 import org.joda.time.DateTimeZone;
 

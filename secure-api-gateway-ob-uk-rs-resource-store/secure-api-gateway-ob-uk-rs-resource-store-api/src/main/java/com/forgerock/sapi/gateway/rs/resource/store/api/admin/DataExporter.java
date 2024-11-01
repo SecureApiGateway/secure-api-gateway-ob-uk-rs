@@ -15,16 +15,16 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBAccount6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toOBReadOffer1DataOffer;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter.toOBParty2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toOBStatement2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRTransactionConverter.toOBTransaction6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRStandingOrderConverter.toOBStandingOrder6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter.toOBTransaction6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter.toOBStandingOrder6;
 
 import java.util.ArrayList;
 import java.util.List;

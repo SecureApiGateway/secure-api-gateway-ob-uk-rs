@@ -48,7 +48,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRCashBalanceConverter.toFRCashBalance;
 import static com.forgerock.sapi.gateway.rs.resource.store.api.testsupport.FRCustomerInfoTestHelper.aValidFRCustomerInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
