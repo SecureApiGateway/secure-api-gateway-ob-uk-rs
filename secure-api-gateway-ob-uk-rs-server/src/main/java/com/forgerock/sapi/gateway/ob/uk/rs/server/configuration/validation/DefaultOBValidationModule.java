@@ -162,8 +162,21 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsent5> domesticStandingOrderConsentValidatorV4(
+            BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBWriteDomesticStandingOrderConsent5Validator(
+                currencyCodeValidator(),
+                riskValidator));
+    }
+
+    @Bean
     public OBValidationService<OBWriteDomesticStandingOrder3ValidationContext> domesticStandingOrderValidator() {
         return new OBValidationService<>(new OBWriteDomesticStandingOrder3Validator());
+    }
+
+    @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomesticStandingOrder3Validator.OBWriteDomesticStandingOrder3ValidationContext> domesticStandingOrderValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomesticStandingOrder3Validator());
     }
 
     @Bean
