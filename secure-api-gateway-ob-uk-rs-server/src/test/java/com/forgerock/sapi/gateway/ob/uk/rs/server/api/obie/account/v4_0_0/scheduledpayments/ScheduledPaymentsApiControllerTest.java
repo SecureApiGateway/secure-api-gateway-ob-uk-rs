@@ -20,10 +20,10 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaym
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v4_0_0.scheduledpayments.ScheduledPaymentsApiController;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRScheduledPayment;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRScheduledPayment;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -18,11 +18,11 @@ package com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIndicator;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRTotalValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -52,7 +52,7 @@ public class FRBalance {
     @Indexed
     private String accountId;
     private FRCashBalance balance;
-
+    private FRTotalValue totalValue;
     @CreatedDate
     private Date created;
     @LastModifiedDate

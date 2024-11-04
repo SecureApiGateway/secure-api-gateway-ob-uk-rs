@@ -23,8 +23,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.balances.Bala
 import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.PaginationUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.v4.account.FRBalance;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.v4.accounts.balances.FRBalanceRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances.FRBalanceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
