@@ -18,19 +18,7 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toOBWriteFileResponse3DataStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConverter.toFRWriteFile;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
-
-import java.security.Principal;
-import java.util.Date;
-import java.util.Optional;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.file;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
@@ -50,29 +38,35 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.RestFilePaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v4_0_0.RestFilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRFilePaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v3.common.Meta;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3Data;
-import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.payment.*;
 
-@Controller("FilePaymentsApiV3.1.10")
+import java.security.Principal;
+import java.util.Date;
+import java.util.Optional;
+
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRSubmissionStatusConverter.toOBWriteFileResponse3DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConverter.toFRWriteFile;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
+
+@Controller("FilePaymentsApiV4.0.0")
 public class FilePaymentsApiController implements FilePaymentsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

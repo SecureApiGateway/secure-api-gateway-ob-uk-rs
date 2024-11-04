@@ -13,44 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.file;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
-
-import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.file.FilePaymentConsentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteFileConsentResponse4Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.v4.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v4_0_0.RestFilePaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFileConsentResponse4;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.file.FilePaymentConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteFileConsentResponse4Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.file.PaymentFileProcessorService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFile;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.RestFilePaymentConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
+import java.util.Collections;
+import java.util.List;
 
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
 
-@Controller("FilePaymentConsentsApiV3.1.10")
+@Controller("FilePaymentConsentsApiV4.0.0")
 public class FilePaymentConsentsApiController implements FilePaymentConsentsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -77,19 +73,12 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         this.consentResponseFactory = consentResponseFactory;
     }
 
-    @Override
-    public ResponseEntity<OBWriteFileConsentResponse4> createFilePaymentConsents(OBWriteFileConsent3 obWriteFileConsent3,
-                                                                                 String authorization,
-                                                                                 String xIdempotencyKey,
-                                                                                 String xJwsSignature,
-                                                                                 String xFapiAuthDate,
-                                                                                 String xFapiCustomerIpAddress,
-                                                                                 String xFapiInteractionId,
-                                                                                 String xCustomerUserAgent,
-                                                                                 String apiClientId,
-                                                                                 HttpServletRequest request,
-                                                                                 Principal principal) throws OBErrorResponseException {
+    private List<FRCharge> calculateCharges(OBWriteFileConsent3 obWriteFileConsent3) {
+        return Collections.emptyList();
+    }
 
+    @Override
+    public ResponseEntity<OBWriteFileConsentResponse4> createFilePaymentConsents(String authorization, String xIdempotencyKey, String xJwsSignature, OBWriteFileConsent3 obWriteFileConsent3, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) throws OBErrorResponseException {
         logger.info("Processing createFilePaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 obWriteFileConsent3, xIdempotencyKey, apiClientId, xFapiInteractionId);
 
@@ -107,24 +96,8 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         return new ResponseEntity<>(consentResponseFactory.buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
     }
 
-    private List<FRCharge> calculateCharges(OBWriteFileConsent3 obWriteFileConsent3) {
-        return Collections.emptyList();
-    }
-
     @Override
-    public ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(String fileParam,
-                                                                       String consentId,
-                                                                       String authorization,
-                                                                       String xIdempotencyKey,
-                                                                       String xJwsSignature,
-                                                                       String xFapiAuthDate,
-                                                                       String xFapiCustomerIpAddress,
-                                                                       String xFapiInteractionId,
-                                                                       String xCustomerUserAgent,
-                                                                       String apiClientId,
-                                                                       HttpServletRequest request,
-                                                                       Principal principal) throws OBErrorException, OBErrorResponseException {
-
+    public ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(String consentId, String authorization, String xIdempotencyKey, String xJwsSignature, Object body, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, String fileParam, HttpServletRequest request) throws OBErrorException, OBErrorResponseException {
         logger.info("Processing createFilePaymentConsentsConsentIdFile request - idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 xIdempotencyKey, apiClientId, xFapiInteractionId);
 
@@ -158,16 +131,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     }
 
     @Override
-    public ResponseEntity<OBWriteFileConsentResponse4> getFilePaymentConsentsConsentId(String consentId,
-                                                                                       String authorization,
-                                                                                       String xFapiAuthDate,
-                                                                                       String xFapiCustomerIpAddress,
-                                                                                       String xFapiInteractionId,
-                                                                                       String xCustomerUserAgent,
-                                                                                       String apiClientId,
-                                                                                       HttpServletRequest request,
-                                                                                       Principal principal) {
-
+    public ResponseEntity<OBWriteFileConsentResponse4> getFilePaymentConsentsConsentId(String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) {
         logger.info("Processing getFilePaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 consentId, apiClientId, xFapiInteractionId);
 
@@ -175,15 +139,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     }
 
     @Override
-    public ResponseEntity<String> getFilePaymentConsentsConsentIdFile(String consentId,
-                                                                      String authorization,
-                                                                      String xFapiAuthDate,
-                                                                      String xFapiCustomerIpAddress,
-                                                                      String xFapiInteractionId,
-                                                                      String xCustomerUserAgent,
-                                                                      String apiClientId,
-                                                                      HttpServletRequest request,
-                                                                      Principal principal) throws OBErrorException {
+    public ResponseEntity<Object> getFilePaymentConsentsConsentIdFile(String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) throws OBErrorException {
         logger.info("Processing getFilePaymentConsentsConsentIdFile request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 consentId, apiClientId, xFapiInteractionId);
 
@@ -195,7 +151,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         final PaymentFileType paymentFileType = paymentFileProcessorService.findPaymentFileType(fileType);
 
         return ResponseEntity.status(HttpStatus.OK)
-                             .contentType(paymentFileType.getContentType())
-                             .body(consent.getFileContent());
+                .contentType(paymentFileType.getContentType())
+                .body(consent.getFileContent());
     }
 }
