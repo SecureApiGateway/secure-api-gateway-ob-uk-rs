@@ -24,6 +24,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -52,7 +53,7 @@ public class PartyApiController implements PartyApi {
 
     private final AccountResourceAccessService accountResourceAccessService;
 
-    public PartyApiController(FRPartyRepository frPartyRepository, AccountResourceAccessService accountResourceAccessService) {
+    public PartyApiController(FRPartyRepository frPartyRepository, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.frPartyRepository = frPartyRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }

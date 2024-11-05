@@ -31,6 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -81,6 +82,7 @@ public class TransactionsApiControllerTest {
     private int pageLimitTransactions;
 
     @MockBean
+    @Qualifier("v3.1.10DefaultAccountResourceAccessService")
     private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;

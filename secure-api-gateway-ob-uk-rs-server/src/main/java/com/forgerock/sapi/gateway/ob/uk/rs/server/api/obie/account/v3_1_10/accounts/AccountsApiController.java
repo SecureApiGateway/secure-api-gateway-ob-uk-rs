@@ -32,9 +32,9 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.accounts.AccountsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -46,12 +46,12 @@ import uk.org.openbanking.datamodel.v3.account.OBReadAccount6Data;
 public class AccountsApiController implements AccountsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     private final AccountResourceAccessService accountResourceAccessService;
 
     private final FRAccountRepository frAccountRepository;
 
-    public AccountsApiController(FRAccountRepository frAccountRepository, AccountResourceAccessService accountResourceAccessService) {
+    public AccountsApiController(FRAccountRepository frAccountRepository, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.frAccountRepository = frAccountRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }

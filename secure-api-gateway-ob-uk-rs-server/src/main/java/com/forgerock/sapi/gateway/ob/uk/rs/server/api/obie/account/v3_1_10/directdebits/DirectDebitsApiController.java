@@ -35,6 +35,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.Accoun
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +60,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
 
     public DirectDebitsApiController(@Value("${rs.page.default.direct-debits.size:10}") int pageLimitDirectDebits,
             FRDirectDebitRepository frDirectDebitRepository,
-            AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+            AccountDataInternalIdFilter accountDataInternalIdFilter, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitDirectDebits = pageLimitDirectDebits;
         this.frDirectDebitRepository = frDirectDebitRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

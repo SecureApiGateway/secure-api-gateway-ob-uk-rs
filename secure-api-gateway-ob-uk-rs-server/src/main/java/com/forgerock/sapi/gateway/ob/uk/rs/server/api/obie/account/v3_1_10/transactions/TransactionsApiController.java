@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,7 +71,7 @@ public class TransactionsApiController implements TransactionsApi {
 
     public TransactionsApiController(@Value("${rs.page.default.transaction.size:120}") int pageLimitTransactions,
             FRTransactionRepository FRTransactionRepository,
-            AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+            AccountDataInternalIdFilter accountDataInternalIdFilter, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitTransactions = pageLimitTransactions;
         this.FRTransactionRepository = FRTransactionRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

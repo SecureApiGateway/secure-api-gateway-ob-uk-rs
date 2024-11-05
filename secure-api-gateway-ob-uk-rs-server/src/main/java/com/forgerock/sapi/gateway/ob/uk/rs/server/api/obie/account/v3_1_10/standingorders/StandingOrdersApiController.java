@@ -35,6 +35,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.Accoun
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,7 +61,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     public StandingOrdersApiController(@Value("${rs.page.default.standing-order.size:10}") int pageLimitStandingOrders,
             FRStandingOrderRepository frStandingOrderRepository,
             AccountDataInternalIdFilter accountDataInternalIdFilter,
-            AccountResourceAccessService accountResourceAccessService) {
+            @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitStandingOrders = pageLimitStandingOrders;
         this.frStandingOrderRepository = frStandingOrderRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

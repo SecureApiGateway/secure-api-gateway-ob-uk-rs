@@ -33,6 +33,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.scheduledpay
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import uk.org.openbanking.datamodel.v3.account.OBReadScheduledPayment3;
 import uk.org.openbanking.datamodel.v3.account.OBReadScheduledPayment3Data;
 
@@ -61,7 +62,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
 
     public ScheduledPaymentsApiController(@Value("${rs.page.default.scheduled-payments.size:10}") int pageLimitSchedulePayments,
             FRScheduledPaymentRepository frScheduledPaymentRepository,
-            AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+            AccountDataInternalIdFilter accountDataInternalIdFilter, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitSchedulePayments = pageLimitSchedulePayments;
         this.frScheduledPaymentRepository = frScheduledPaymentRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,7 +58,7 @@ public class OffersApiController implements OffersApi {
 
     public OffersApiController(FROfferRepository frOfferRepository,
             AccountDataInternalIdFilter accountDataInternalIdFilter,
-            AccountResourceAccessService accountResourceAccessService) {
+            @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.frOfferRepository = frOfferRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
         this.accountResourceAccessService = accountResourceAccessService;
