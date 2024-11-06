@@ -162,13 +162,30 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPConsentRequest> domesticVRPConsentValidatorV4(
+            BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBDomesticVRPConsentRequestValidator(
+                riskValidator));
+    }
+
+    @Bean
     public OBValidationService<VRPFundsConfirmationValidationContext> domesticVRPFundsConfirmationValidator() {
         return new OBValidationService<>(new OBVRPFundsConfirmationRequestValidator());
     }
 
     @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext> domesticVRPFundsConfirmationValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBVRPFundsConfirmationRequestValidator());
+    }
+
+    @Bean
     public OBValidationService<OBDomesticVRPRequestValidationContext> domesticVRPPaymentRequestValidator() {
         return new OBValidationService<>(new OBDomesticVRPRequestValidator());
+    }
+
+    @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext> domesticVRPPaymentRequestValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBDomesticVRPRequestValidator());
     }
 
     @Bean

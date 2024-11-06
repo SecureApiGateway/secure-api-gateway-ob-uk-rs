@@ -36,6 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -54,7 +55,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FR
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.RestDomesticScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.DomesticScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
@@ -99,7 +100,8 @@ public class DomesticScheduledPaymentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    private RestDomesticScheduledPaymentConsentStoreClient consentStoreClient;
+    @Qualifier("v3.1.10RestDomesticScheduledPaymentConsentStoreClient")
+    private DomesticScheduledPaymentConsentStoreClient consentStoreClient;
 
     @MockBean
     private FRAccountRepository frAccountRepository;

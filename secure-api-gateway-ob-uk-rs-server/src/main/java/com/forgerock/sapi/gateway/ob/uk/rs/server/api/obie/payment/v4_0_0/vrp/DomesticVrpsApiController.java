@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.vrp;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
@@ -34,21 +34,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRResponseDataRefundConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.vrp.DomesticVrpsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.simulations.vrp.PeriodicLimitBreachResponseSimulatorService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.VRPIdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticVrpPaymentSubmission;
@@ -56,23 +57,22 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.Domestic
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.v3.common.Meta;
-import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.v3.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetails;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsData;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatus;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPRequest;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponse;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseData;
-import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseDataChargesInner;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseDataStatus;
-import uk.org.openbanking.datamodel.v3.vrp.OBExternalPaymentChargeType1Code;
+import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.v4.common.OBInternalChargeBearerType1Code;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPDetails;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPDetailsData;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPResponse;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPResponseData;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPResponseDataChargesInner;
+import uk.org.openbanking.datamodel.v4.vrp.OBInternalPaymentChargeType1Code;
 
-@Controller("DomesticVrpsApiV3.1.10")
+@Controller("DomesticVrpsApiV4.0.0")
 @Slf4j
 public class DomesticVrpsApiController implements DomesticVrpsApi {
 
@@ -90,7 +90,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
             OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
-            @Qualifier("v3.1.10RestDomesticVRPConsentStoreClient") DomesticVRPConsentStoreClient consentStoreClient,
+            @Qualifier(("v4.0.0RestDomesticVRPConsentStoreClient")) DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
             RefundAccountService refundAccountService
@@ -152,9 +152,6 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         log.debug("Found VRP payment '{}' to get details.", domesticVRPId);
         // Build the response object with data just to meet the expected data defined by the spec
         FRDomesticVrpPaymentSubmission paymentSubmission = optionalVrpPayment.get();
-        OBDomesticVRPDetailsDataPaymentStatusInnerStatus status = OBDomesticVRPDetailsDataPaymentStatusInnerStatus.fromValue(
-                paymentSubmission.getStatus().getValue()
-        );
 
         OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason statusReasonEnum = OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason.PENDINGSETTLEMENT;
         String localInstrument = paymentSubmission.getPayment().getData().getInstruction().getLocalInstrument();
@@ -163,14 +160,14 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                         new OBDomesticVRPDetailsData()
                                 .addPaymentStatusItem(
                                         new OBDomesticVRPDetailsDataPaymentStatusInner()
-                                                .status(status)
+                                                .status(FRPaymentDetailsStatusConverter.toOBDomesticVRPDetailsDataPaymentStatusInnerStatus(paymentSubmission.getStatus().getValue()))
                                                 .paymentTransactionId(paymentSubmission.getTransactionId())
                                                 .statusUpdateDateTime(new DateTime(paymentSubmission.getUpdated()))
                                                 .statusDetail(
                                                         new OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail()
                                                                 .localInstrument(localInstrument)
-                                                                .status(status.getValue())
-                                                                .statusReason(statusReasonEnum)
+                                                                .status(FRPaymentDetailsStatusConverter.toOBDomesticVRPDetailsDataPaymentStatusInnerStatus(paymentSubmission.getStatus().getValue()).getValue())
+                                                                .statusReason(FRPaymentDetailsStatusConverter.toOBDomesticVRPDetailsDataPaymentStatusInnerStatus(paymentSubmission.getStatus().getValue()).getValue())
                                                                 .statusReasonDescription(statusReasonEnum.getValue())
                                                 )
                                 )
@@ -182,8 +179,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     @Override
     public ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
             String authorization,
-            String xIdempotencyKey,
             String xJwsSignature,
+            String xIdempotencyKey,
             OBDomesticVRPRequest obDomesticVRPRequest,
             String xFapiAuthDate,
             String xFapiCustomerIpAddress,
@@ -276,8 +273,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         response.getData()
                 .charges(List.of(
                         new OBDomesticVRPResponseDataChargesInner()
-                                .type(OBExternalPaymentChargeType1Code.BALANCETRANSFEROUT)
-                                .chargeBearer(OBChargeBearerType1Code.BORNEBYCREDITOR)
+                                .type(OBInternalPaymentChargeType1Code.BALANCETRANSFEROUT)
+                                .chargeBearer(OBInternalChargeBearerType1Code.BORNEBYCREDITOR)
                                 .amount(
                                         new OBActiveOrHistoricCurrencyAndAmount()
                                                 .amount(DEFAULT_CHARGE_AMOUNT)

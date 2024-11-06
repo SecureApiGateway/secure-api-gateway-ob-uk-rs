@@ -13,33 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.vrp;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.vrp.DomesticVrpConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBDomesticVRPConsentResponseFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.DomesticVRPConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
+import java.util.UUID;
 
-import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.v3.vrp.*;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.vrp.DomesticVrpConsentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBDomesticVRPConsentResponseFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.DomesticVRPConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.v4.vrp.OBPAFundsAvailableResult1;
+import uk.org.openbanking.datamodel.v4.vrp.OBPAFundsAvailableResult1FundsAvailable;
+import uk.org.openbanking.datamodel.v4.vrp.OBVRPFundsConfirmationRequest;
+import uk.org.openbanking.datamodel.v4.vrp.OBVRPFundsConfirmationResponse;
+import uk.org.openbanking.datamodel.v4.vrp.OBVRPFundsConfirmationResponseData;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen")
-@Controller("DomesticVrpConsentApiV3.1.10")
+@Controller("DomesticVrpConsentApiV4.0.0")
 @Slf4j
 public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {
 
@@ -54,7 +60,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     private final OBDomesticVRPConsentResponseFactory responseFactory;
 
     public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
-                                            @Qualifier("v3.1.10RestDomesticVRPConsentStoreClient") DomesticVRPConsentStoreClient consentStoreClient,
+                                            @Qualifier("v4.0.0RestDomesticVRPConsentStoreClient")DomesticVRPConsentStoreClient consentStoreClient,
                                             OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
                                             OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
                                             OBDomesticVRPConsentResponseFactory responseFactory) {
@@ -162,5 +168,35 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                 )
                                 )
                 );
+    }
+
+    @Override
+    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPut(final String consentId,
+                                                                               final String authorization,
+                                                                               final String xIdempotencyKey,
+                                                                               final String xJwsSignature,
+                                                                               final OBDomesticVRPConsentRequest obDomesticVRPConsentRequest,
+                                                                               final String xFapiAuthDate,
+                                                                               final String xFapiCustomerIpAddress,
+                                                                               final String xFapiInteractionId,
+                                                                               final String xCustomerUserAgent,
+                                                                               final String apiClientId,
+                                                                               final HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPatch(final String consentId,
+                                                                                 final String authorization,
+                                                                                 final String xIdempotencyKey,
+                                                                                 final String xJwsSignature,
+                                                                                 final String body,
+                                                                                 final String xFapiAuthDate,
+                                                                                 final String xFapiCustomerIpAddress,
+                                                                                 final String xFapiInteractionId,
+                                                                                 final String xCustomerUserAgent,
+                                                                                 final String apiClientId,
+                                                                                 final HttpServletRequest request) {
+        return null;
     }
 }
