@@ -182,7 +182,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                                                final String xCustomerUserAgent,
                                                                                final String apiClientId,
                                                                                final HttpServletRequest request) {
-        return null;
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @Override
@@ -197,6 +197,6 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                                                  final String xCustomerUserAgent,
                                                                                  final String apiClientId,
                                                                                  final HttpServletRequest request) {
-        return null;
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }
