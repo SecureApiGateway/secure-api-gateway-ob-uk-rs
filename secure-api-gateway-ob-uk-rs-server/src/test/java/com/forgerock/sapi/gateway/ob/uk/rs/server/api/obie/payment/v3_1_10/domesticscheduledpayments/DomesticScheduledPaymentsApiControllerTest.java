@@ -54,7 +54,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FR
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.RestDomesticScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
@@ -99,7 +99,7 @@ public class DomesticScheduledPaymentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    private DomesticScheduledPaymentConsentStoreClient consentStoreClient;
+    private RestDomesticScheduledPaymentConsentStoreClient consentStoreClient;
 
     @MockBean
     private FRAccountRepository frAccountRepository;
