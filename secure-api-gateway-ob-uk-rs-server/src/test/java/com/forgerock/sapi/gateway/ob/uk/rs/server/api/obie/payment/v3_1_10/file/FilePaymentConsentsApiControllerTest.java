@@ -57,7 +57,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentF
 import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentFileResources.TestPaymentFile;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.RestFilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
@@ -86,7 +86,7 @@ public class FilePaymentConsentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    private FilePaymentConsentStoreClient consentStoreClient;
+    private RestFilePaymentConsentStoreClient consentStoreClient;
 
     private final TestPaymentFileResources testPaymentFileResources = TestPaymentFileResources.getInstance();
 

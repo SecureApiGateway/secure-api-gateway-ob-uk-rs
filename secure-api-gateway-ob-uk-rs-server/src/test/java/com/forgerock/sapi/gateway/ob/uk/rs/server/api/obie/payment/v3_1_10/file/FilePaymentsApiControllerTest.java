@@ -45,7 +45,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FR
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.RestFilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
@@ -82,7 +82,7 @@ public class FilePaymentsApiControllerTest {
     private FilePaymentSubmissionRepository filePaymentsRepository;
 
     @MockBean
-    private FilePaymentConsentStoreClient filePaymentConsentStoreClient;
+    private RestFilePaymentConsentStoreClient filePaymentConsentStoreClient;
 
     @Autowired
     private TestRestTemplate restTemplate;
