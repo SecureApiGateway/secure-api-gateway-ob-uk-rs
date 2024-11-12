@@ -82,7 +82,7 @@ public class EventSubscriptionsApiController implements EventSubscriptionsApi {
                 eventSubscriptionsRepository.save(existingEventSubscription);
                 return ResponseEntity.ok(packageResponse(existingEventSubscription));
             } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("The event subscription can't be update via an older API version.");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("The event subscription can't be updated via an older API version.");
             }
         } else {
             // PUT is only used for amending existing subscriptions
