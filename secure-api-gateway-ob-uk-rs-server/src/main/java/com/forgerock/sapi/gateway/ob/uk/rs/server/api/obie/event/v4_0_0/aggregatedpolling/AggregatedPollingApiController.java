@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2024 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2024 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventPolling;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v4_0_0.aggregatedpolling.AggregatedPollingApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.event.EventPollingService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
