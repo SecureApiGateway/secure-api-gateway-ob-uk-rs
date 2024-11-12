@@ -34,10 +34,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.v4.common.Links;
 import uk.org.openbanking.datamodel.v4.common.Meta;
-import uk.org.openbanking.datamodel.v4.event.*;
+import uk.org.openbanking.datamodel.v4.event.OBEventSubscription1;
+import uk.org.openbanking.datamodel.v4.event.OBEventSubscription1Data;
+import uk.org.openbanking.datamodel.v4.event.OBEventSubscriptionResponse1;
+import uk.org.openbanking.datamodel.v4.event.OBEventSubscriptionsResponse1;
+import uk.org.openbanking.datamodel.v4.event.OBEventSubscriptionsResponse1DataEventSubscriptionInner;
+import uk.org.openbanking.datamodel.v4.event.OBEventSubscriptionsResponse1Data;
+import uk.org.openbanking.datamodel.v4.event.OBEventSubscriptionResponse1Data;
 
 import java.net.URI;
-import java.util.*;
+import java.util.Optional;
+import java.util.Collection;
+import java.util.UUID;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.event.FREventSubscriptionConverter.toFREventSubscriptionData;
