@@ -63,6 +63,8 @@ public class OBDomesticVRPRequestValidator extends BasePaymentRequestValidator<O
        checkCreditorAccount(paymentReqValidationCtxt, validationResult);
        validatePaymentInstructionAgainstControlParams(paymentReqValidationCtxt.getPaymentRequest().getData().getInstruction(),
                               paymentReqValidationCtxt.getControlParameters(), validationResult);
+        validateRemittanceInformationMatches(paymentReqValidationCtxt.getPaymentRequest().getData().getInstruction(),
+                paymentReqValidationCtxt.getPaymentRequest().getData().getInitiation(), validationResult);
     }
 
     /**
@@ -101,6 +103,16 @@ public class OBDomesticVRPRequestValidator extends BasePaymentRequestValidator<O
         final String instructionCurrency = paymentInstruction.getInstructedAmount().getCurrency();
         if (!consentCurrency.equals(instructionCurrency)) {
             validationResult.addError(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETER_CURRENCY_MISMATCH.toOBError1(INSTRUCTED_AMOUNT_FIELD, MAX_INDIVIDUAL_AMOUNT_FIELD));
+        }
+    }
+
+    void validateRemittanceInformationMatches(OBDomesticVRPInstruction paymentInstruction,
+                                              OBDomesticVRPInitiation paymentInitiation,
+                                              ValidationResult<OBError1> validationResult) {
+        if (paymentInitiation.getRemittanceInformation() != null && paymentInstruction.getRemittanceInformation() != null) {
+            if (!paymentInitiation.getRemittanceInformation().equals(paymentInstruction.getRemittanceInformation())) {
+                validationResult.addError(OBRIErrorType.REQUEST_VRP_REMITTANCE_INFORMATION_NOT_MATCHING.toOBError1());
+            }
         }
     }
 
