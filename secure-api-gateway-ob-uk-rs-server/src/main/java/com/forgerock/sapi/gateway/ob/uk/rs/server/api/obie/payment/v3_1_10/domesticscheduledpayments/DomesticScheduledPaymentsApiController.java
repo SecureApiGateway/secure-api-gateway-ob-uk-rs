@@ -59,7 +59,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.RestDomesticScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticScheduledPaymentSubmission;
@@ -85,7 +85,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DomesticScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-    private final DomesticScheduledPaymentConsentStoreClient consentStoreClient;
+    private final RestDomesticScheduledPaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator;
     private final RefundAccountService refundAccountService;
     private final IdempotentPaymentService<FRDomesticScheduledPaymentSubmission, FRWriteDomesticScheduled> idempotentPaymentService;
@@ -93,7 +93,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            DomesticScheduledPaymentConsentStoreClient consentStoreClient,
+            RestDomesticScheduledPaymentConsentStoreClient consentStoreClient,
             RefundAccountService refundAccountService,
             OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
     ) {
