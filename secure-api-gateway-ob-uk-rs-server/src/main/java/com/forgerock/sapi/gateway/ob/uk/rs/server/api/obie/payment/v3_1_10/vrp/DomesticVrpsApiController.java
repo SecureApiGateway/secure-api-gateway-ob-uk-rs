@@ -24,6 +24,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -95,13 +96,15 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             PaymentSubmissionValidator paymentSubmissionValidator,
             RefundAccountService refundAccountService
     ) {
-        this.paymentSubmissionRepository = paymentSubmissionRepository;
-        this.paymentRequestValidator = paymentRequestValidator;
-        this.consentStoreClient = consentStoreClient;
-        this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
-        this.paymentSubmissionValidator = paymentSubmissionValidator;
-        this.refundAccountService = refundAccountService;
-        this.idempotentPaymentService = new VRPIdempotentPaymentService(paymentSubmissionRepository);
+        this.paymentSubmissionRepository = Objects.requireNonNull(paymentSubmissionRepository, "PaymentSubmissionRepository cannot be null");
+        this.paymentRequestValidator = Objects.requireNonNull(paymentRequestValidator, "PaymentRequestValidator cannot be null");
+        this.consentStoreClient = Objects.requireNonNull(consentStoreClient, "ConsentStoreClient cannot be null");
+        this.limitBreachResponseSimulatorService = Objects.requireNonNull(limitBreachResponseSimulatorService, "LimitBreachResponseSimulatorService cannot be null");
+        this.paymentSubmissionValidator = Objects.requireNonNull(paymentSubmissionValidator, "PaymentSubmissionValidator cannot be null");
+        this.refundAccountService = Objects.requireNonNull(refundAccountService, "RefundAccountService cannot be null");
+        this.idempotentPaymentService = new VRPIdempotentPaymentService(
+                Objects.requireNonNull(paymentSubmissionRepository, "PaymentSubmissionRepository cannot be null for IdempotentPaymentService")
+        );
     }
 
     @Override
