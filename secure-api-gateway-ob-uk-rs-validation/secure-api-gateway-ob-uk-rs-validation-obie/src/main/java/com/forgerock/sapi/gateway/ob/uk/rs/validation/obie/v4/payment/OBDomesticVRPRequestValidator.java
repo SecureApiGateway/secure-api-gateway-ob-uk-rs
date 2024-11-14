@@ -48,7 +48,7 @@ public class OBDomesticVRPRequestValidator extends BasePaymentRequestValidator<O
 
         public OBDomesticVRPRequestValidationContext(OBDomesticVRPRequest paymentRequest, OBDomesticVRPConsentRequest consentRequest, String consentStatus) {
             super(paymentRequest, () -> paymentRequest.getData().getInitiation(), paymentRequest::getRisk,
-                    consentStatus, () -> consentRequest.getData().getInitiation(), consentRequest::getRisk);
+                  consentStatus, () -> consentRequest.getData().getInitiation(), consentRequest::getRisk);
             this.controlParameters = consentRequest.getData().getControlParameters();
         }
 
@@ -62,9 +62,9 @@ public class OBDomesticVRPRequestValidator extends BasePaymentRequestValidator<O
         // No additional rules for OBDomesticVRPRequest currently, add validation rules as required.
        checkCreditorAccount(paymentReqValidationCtxt, validationResult);
        validatePaymentInstructionAgainstControlParams(paymentReqValidationCtxt.getPaymentRequest().getData().getInstruction(),
-                              paymentReqValidationCtxt.getControlParameters(), validationResult);
+                                                      paymentReqValidationCtxt.getControlParameters(), validationResult);
         validateRemittanceInformationMatches(paymentReqValidationCtxt.getPaymentRequest().getData().getInstruction(),
-                paymentReqValidationCtxt.getPaymentRequest().getData().getInitiation(), validationResult);
+                                             paymentReqValidationCtxt.getPaymentRequest().getData().getInitiation(), validationResult);
     }
 
     /**
@@ -77,20 +77,18 @@ public class OBDomesticVRPRequestValidator extends BasePaymentRequestValidator<O
                 validationResult.addError(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_DOES_NOT_MATCH_CONSENT.toOBError1());
             }
         }
-       
+
     }
 
     void validatePaymentInstructionAgainstControlParams(OBDomesticVRPInstruction paymentInstruction,
                                                         OBDomesticVRPControlParameters controlParameters,
                                                         ValidationResult<OBError1> validationResult) {
-
         validateMaxIndividualAmountControlParam(paymentInstruction, controlParameters, validationResult);
     }
 
     void validateMaxIndividualAmountControlParam(OBDomesticVRPInstruction paymentInstruction,
                                                  OBDomesticVRPControlParameters controlParameters,
                                                  ValidationResult<OBError1> validationResult) {
-
         final BigDecimal instructionAmount = new BigDecimal(paymentInstruction.getInstructedAmount().getAmount());
         final BigDecimal consentAmount = new BigDecimal(controlParameters.getMaximumIndividualAmount().getAmount());
 

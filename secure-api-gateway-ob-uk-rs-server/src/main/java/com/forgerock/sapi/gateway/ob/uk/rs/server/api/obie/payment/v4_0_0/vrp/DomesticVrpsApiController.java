@@ -198,7 +198,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         String consentId = obDomesticVRPRequest.getData().getConsentId();
         final DomesticVRPConsent consent = consentStoreClient.getConsent(consentId, apiClientId);
         if (xVrpLimitBreachResponseSimulation != null) {
-            log.info("Executing Limit breach simulation, value of header: {}", xVrpLimitBreachResponseSimulation);
+            log.debug("Executing Limit breach simulation, value of header: {}", xVrpLimitBreachResponseSimulation);
             limitBreachResponseSimulatorService.processRequest(xVrpLimitBreachResponseSimulation, consent.getRequestObj());
         }
 
@@ -208,7 +208,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 idempotentPaymentService.findExistingPayment(frDomesticVRPRequest, consentId, apiClientId, xIdempotencyKey);
         if (existingPayment.isPresent()) {
             final FRDomesticVrpPaymentSubmission paymentSubmission = existingPayment.get();
-            log.info("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, FRDomesticVrpPaymentSubmission.id: {}",
+            log.debug("Payment submission is a replay of a previous payment, returning previously created payment for x-idempotencyKey: {}, FRDomesticVrpPaymentSubmission.id: {}",
                     xIdempotencyKey, paymentSubmission.getId());
             return ResponseEntity.status(CREATED).body(responseEntity(consent, paymentSubmission));
         }
