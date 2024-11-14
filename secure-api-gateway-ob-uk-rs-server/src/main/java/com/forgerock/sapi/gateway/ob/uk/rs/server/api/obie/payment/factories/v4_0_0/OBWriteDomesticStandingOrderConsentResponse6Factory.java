@@ -37,7 +37,7 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConse
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 
-@Component("DSOCRv4.0.0Factory")
+@Component("OBWriteDomesticStandingOrderConsentResponse6FactoryV4.0.0")
 public class OBWriteDomesticStandingOrderConsentResponse6Factory {
     public OBWriteDomesticStandingOrderConsentResponse6 buildConsentResponse(DomesticStandingOrderConsent consent, Class<?> controllerClass) {
         final OBWriteDomesticStandingOrderConsentResponse6Data data = new OBWriteDomesticStandingOrderConsentResponse6Data();

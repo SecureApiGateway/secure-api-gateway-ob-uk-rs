@@ -54,7 +54,7 @@ import jakarta.annotation.PostConstruct;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
@@ -140,7 +140,7 @@ public class DomesticStandingOrderConsentsApiControllerTest {
         final DomesticStandingOrderConsent consentStoreResponse = new DomesticStandingOrderConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consentStoreResponse.setRequestObj(FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent(consentRequest));
-        consentStoreResponse.setStatus(OBPaymentConsentStatus.AWAU.toString());
+        consentStoreResponse.setStatus(OBPaymentConsentStatus.AWAITINGAUTHORISATION.toString());
         consentStoreResponse.setCharges(List.of());
         final Date creationDateTime = new Date();
         consentStoreResponse.setCreationDateTime(creationDateTime);
