@@ -22,9 +22,11 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.FundsConfirmationConsentStoreClient;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,7 +41,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.funds.FundsConfirmationValidator;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.funds.FRFundsConfirmation;
@@ -69,7 +70,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
             FundsAvailabilityService fundsAvailabilityService,
             FRAccountRepository accountRepository,
             OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
-            FundsConfirmationConsentStoreClient consentStoreClient
+            @Qualifier("v3.1.10RestFundsConfirmationConsentStoreClient") FundsConfirmationConsentStoreClient consentStoreClient
     ) {
         this.fundsConfirmationRepository = fundsConfirmationRepository;
         this.fundsAvailabilityService = fundsAvailabilityService;

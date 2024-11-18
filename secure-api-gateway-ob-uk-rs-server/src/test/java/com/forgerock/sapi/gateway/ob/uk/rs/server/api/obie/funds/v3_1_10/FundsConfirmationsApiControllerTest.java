@@ -36,6 +36,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -58,7 +59,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreSe
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.RestFundsConfirmationConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
@@ -108,7 +109,8 @@ public class FundsConfirmationsApiControllerTest {
     private FRAccountRepository frAccountRepository;
 
     @MockBean
-    private FundsConfirmationConsentStoreClient consentStoreClient;
+    @Qualifier("v3.1.10RestFundsConfirmationConsentStoreClient")
+    private RestFundsConfirmationConsentStoreClient consentStoreClient;
 
     @Autowired
     private TestRestTemplate restTemplate;
