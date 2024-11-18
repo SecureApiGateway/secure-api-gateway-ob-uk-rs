@@ -37,7 +37,6 @@ import java.util.UUID;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -60,7 +59,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.DomesticScheduledPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticScheduledPaymentSubmission;
@@ -94,7 +93,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     public DomesticScheduledPaymentsApiController(
             DomesticScheduledPaymentSubmissionRepository paymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            @Qualifier("v3.1.10RestDomesticScheduledPaymentConsentStoreClient") DomesticScheduledPaymentConsentStoreClient consentStoreClient,
+            DomesticScheduledPaymentConsentStoreClient consentStoreClient,
             RefundAccountService refundAccountService,
             OBValidationService<OBWriteDomesticScheduled2ValidationContext> paymentValidator
     ) {

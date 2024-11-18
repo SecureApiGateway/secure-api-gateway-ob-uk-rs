@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRConsentStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
@@ -37,7 +36,7 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConse
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 
-@Component("OBWriteDomesticStandingOrderConsentResponse6FactoryV4.0.0")
+@Component("DSOCRv4.0.0Factory")
 public class OBWriteDomesticStandingOrderConsentResponse6Factory {
     public OBWriteDomesticStandingOrderConsentResponse6 buildConsentResponse(DomesticStandingOrderConsent consent, Class<?> controllerClass) {
         final OBWriteDomesticStandingOrderConsentResponse6Data data = new OBWriteDomesticStandingOrderConsentResponse6Data();
@@ -51,7 +50,7 @@ public class OBWriteDomesticStandingOrderConsentResponse6Factory {
         data.initiation(FRModelMapper.map(obConsentData.getInitiation(), OBWriteDomesticStandingOrderConsentResponse6DataInitiation.class));
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
-        data.status(FRConsentStatusConverter.toOBPaymentConsentStatusV4(consent.getStatus()));
+        data.status(OBPaymentConsentStatus.fromValue(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
         data.statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class)));
