@@ -22,8 +22,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.funds.FundsConfirm
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data;
 import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsentStatus;
 
 import java.util.Objects;
 
@@ -100,7 +100,7 @@ public class FundsConfirmationValidator extends BaseOBValidator<FundsConfirmatio
     }
 
     private void validateConsentStatus(String consentStatus, ValidationResult<OBError1> validationResult){
-        if(!Objects.equals(consentStatus, OBFundsConfirmationConsentStatus.AUTH.toString())) {
+        if(!Objects.equals(consentStatus, OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED.toString())) {
             validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consentStatus));
         }
     }
