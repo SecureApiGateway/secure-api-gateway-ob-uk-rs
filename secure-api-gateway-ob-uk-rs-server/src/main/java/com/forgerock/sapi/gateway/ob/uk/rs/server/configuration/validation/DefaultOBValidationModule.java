@@ -73,7 +73,6 @@ import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledCons
 import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
 
-;
 
 /**
  * Spring Boot configuration for the Open Banking validation module with the default set of rules.
@@ -137,8 +136,21 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledConsent4> domesticScheduledPaymentConsentValidatorV4(
+            BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBWriteDomesticScheduledConsent4Validator(
+                instructedAmountValidatorV4(),
+                riskValidator));
+    }
+
+    @Bean
     public OBValidationService<OBWriteDomesticScheduled2ValidationContext> domesticScheduledPaymentValidator() {
         return new OBValidationService<>(new OBWriteDomesticScheduled2Validator());
+    }
+
+    @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomesticScheduled2Validator.OBWriteDomesticScheduled2ValidationContext> domesticScheduledPaymentValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomesticScheduled2Validator());
     }
 
     @Bean

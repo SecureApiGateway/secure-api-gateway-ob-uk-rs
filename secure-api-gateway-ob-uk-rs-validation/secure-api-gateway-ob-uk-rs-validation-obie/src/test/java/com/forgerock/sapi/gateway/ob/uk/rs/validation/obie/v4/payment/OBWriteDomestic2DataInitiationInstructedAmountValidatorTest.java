@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent;
-
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.CurrencyCodeValidatorTest;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteDomestic2DataInitiationInstructedAmountValidator;
-import org.junit.jupiter.api.Test;
-import uk.org.openbanking.datamodel.v3.error.OBError1;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-
-import java.util.List;
+package com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateErrorResult;
 import static com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResultTest.validateSuccessResult;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.CurrencyCodeValidatorTest;
+
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 
 public class OBWriteDomestic2DataInitiationInstructedAmountValidatorTest {
 
@@ -53,7 +54,7 @@ public class OBWriteDomestic2DataInitiationInstructedAmountValidatorTest {
 
     @Test
     public void failsValidationWhenInstructedAmountLessThanOrEqualToZero() {
-        final String[] invalidAmounts = new String[] {
+        final String[] invalidAmounts = new String[]{
                 "-1000.12", "-0.01", "0", "0.0"
         };
 
