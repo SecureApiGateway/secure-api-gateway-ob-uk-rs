@@ -76,7 +76,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
             HttpServletRequest request,
             Principal principal) throws OBErrorResponseException {
 
-        logger.info("Processing createDomesticStandingOrderConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
+        logger.trace("Processing createDomesticStandingOrderConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 obWriteDomesticStandingOrderConsent5, xIdempotencyKey, apiClientId, xFapiInteractionId);
 
         consentValidator.validate(obWriteDomesticStandingOrderConsent5);
@@ -88,7 +88,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         createRequest.setCharges(calculateCharges(obWriteDomesticStandingOrderConsent5));
 
         final DomesticStandingOrderConsent consent = consentStoreApiClient.createConsent(createRequest);
-        logger.info("Created consent - id: {}", consent.getId());
+        logger.trace("Created consent - id: {}", consent.getId());
 
         return new ResponseEntity<>(consentResponseFactory.buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
     }
@@ -109,7 +109,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
             HttpServletRequest request,
             Principal principal) throws OBErrorResponseException {
 
-        logger.info("Processing getDomesticStandingOrderConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
+        logger.trace("Processing getDomesticStandingOrderConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 consentId, apiClientId, xFapiInteractionId);
 
         return ResponseEntity.ok(consentResponseFactory.buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));

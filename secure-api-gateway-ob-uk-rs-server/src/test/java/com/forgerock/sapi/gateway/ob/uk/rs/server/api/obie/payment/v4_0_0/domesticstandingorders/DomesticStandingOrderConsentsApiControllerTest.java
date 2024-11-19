@@ -84,8 +84,6 @@ public class DomesticStandingOrderConsentsApiControllerTest {
         controllerBaseUri = "http://localhost:" + port + "/open-banking/v4.0.0/pisp/domestic-standing-order-consents";
     }
 
-//TODO: Add more unit tests
-
     @Test
     public void failsToCreateConsentIfRequestDoesNotPassJavaBeanValidation() {
         final OBWriteDomesticStandingOrderConsent5 emptyConsent = new OBWriteDomesticStandingOrderConsent5();
