@@ -28,7 +28,7 @@ import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1;
 import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data;
 import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
 
-@Component("OBFundsConfirmationConsentResponseFactoryV3.1.10")
+@Component("V3.1.10OBFundsConfirmationConsentResponseFactory")
 public class OBFundsConfirmationConsentResponseFactory {
 
     public OBFundsConfirmationConsentResponse1 buildConsentResponse(FundsConfirmationConsent consent, Class<?> controllerClass) {

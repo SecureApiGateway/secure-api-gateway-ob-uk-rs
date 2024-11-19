@@ -63,6 +63,7 @@ import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType.INTERIMAVAILABLE;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRFundsConfirmationConsentStatusConverter.toOBFundsConfirmationConsentStatusV4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.v4.FRProxyTestDataFactory.aValidFRProxy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -124,6 +125,7 @@ public class FundsConfirmationsApiControllerTest {
                                                         .name("ACME Inc")
                                                         .schemeName("UK.OBIE.SortCodeAccountNumber")
                                                         .secondaryIdentification("0002")
+                                                        .proxy(aValidFRProxy())
                                                         .build()
                                         )
                                 )
@@ -138,27 +140,27 @@ public class FundsConfirmationsApiControllerTest {
     private void mockConsentStoreGetResponse(String consentId) {
         mockConsentStoreGetResponse(
                 consentId,
-                OBFundsConfirmationConsentStatus.AUTH,
+                AUTHORISED,
                 aValidOBFundsConfirmationConsent(),
                 DateTime.now().plusMonths(3).withZone(DateTimeZone.UTC)
         );
     }
 
-    private void mockConsentStoreGetResponse(String consentId, OBFundsConfirmationConsentStatus status) {
+    private void mockConsentStoreGetResponse(String consentId, uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
         mockConsentStoreGetResponse(consentId, status, aValidOBFundsConfirmationConsent(), DateTime.now().plusMonths(3).withZone(DateTimeZone.UTC));
     }
 
     private void mockConsentStoreGetResponse(String consentId, DateTime expirationDateTime) {
-        mockConsentStoreGetResponse(consentId, OBFundsConfirmationConsentStatus.AUTH, aValidOBFundsConfirmationConsent(), expirationDateTime);
+        mockConsentStoreGetResponse(consentId, AUTHORISED, aValidOBFundsConfirmationConsent(), expirationDateTime);
     }
 
-    private void mockConsentStoreGetResponse(String consentId, DateTime expirationDateTime, OBFundsConfirmationConsentStatus status) {
+    private void mockConsentStoreGetResponse(String consentId, DateTime expirationDateTime, uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
         mockConsentStoreGetResponse(consentId, status, aValidOBFundsConfirmationConsent(), expirationDateTime);
     }
 
     private void mockConsentStoreGetResponse(
             String consentId,
-            OBFundsConfirmationConsentStatus status,
+            uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum status,
             OBFundsConfirmationConsent1 consentRequest,
             DateTime expirationDateTime
     ) {
@@ -319,8 +321,8 @@ public class FundsConfirmationsApiControllerTest {
         mockAccountRepository();
         mockBalanceStoreService(balanceAmount);
         ValidationResult<OBError1> validationResult = new ValidationResult<>();
-        validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1((toOBFundsConfirmationConsentStatusV4(String.valueOf(REJECTED)))));
-        mockConsentStoreGetResponse(consentId, OBFundsConfirmationConsentStatus.RJCT);
+        validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(REJECTED));
+        mockConsentStoreGetResponse(consentId, REJECTED);
         HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
 
         // When
@@ -346,8 +348,8 @@ public class FundsConfirmationsApiControllerTest {
         ValidationResult<OBError1> validationResult = new ValidationResult<>();
         validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_CURRENCY_MISMATCH.toOBError1(DEFAULT_CURRENCY, otherCurrency));
         validationResult.addError(OBRIErrorType.FUNDS_CONFIRMATION_EXPIRED.toOBError1(expirationDateTime));
-        validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(toOBFundsConfirmationConsentStatusV4(String.valueOf(REVOKED))));
-        mockConsentStoreGetResponse(consentId, expirationDateTime, OBFundsConfirmationConsentStatus.CANC);
+        validationResult.addError(OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(REVOKED));
+        mockConsentStoreGetResponse(consentId, expirationDateTime, REVOKED);
         HttpEntity<OBFundsConfirmation1> request = new HttpEntity<>(fundsConfirmationRequest, HTTP_HEADERS);
 
         // When
