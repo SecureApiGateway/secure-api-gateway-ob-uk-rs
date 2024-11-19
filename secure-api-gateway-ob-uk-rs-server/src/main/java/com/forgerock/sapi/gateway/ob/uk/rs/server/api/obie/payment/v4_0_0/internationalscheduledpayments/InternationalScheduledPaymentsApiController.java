@@ -18,15 +18,15 @@
  * https://github.com/swagger-api/swagger-codegen
  * Do not edit the class manually.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalscheduledpayments;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.internationalscheduledpayments;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toOBWriteDomesticScheduledResponse5DataStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRSubmissionStatusConverter.toOBWriteInternationalScheduledResponse6DataStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -42,25 +42,26 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRResponseDataRefundConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRExchangeRateConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRExchangeRateConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRInternationalResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduled;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledData;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalscheduledpayments.InternationalScheduledPaymentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.internationalscheduledpayments.InternationalScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalscheduled.InternationalScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
@@ -69,19 +70,18 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.Internat
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.v3.common.Meta;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduled3;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledResponse6;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledResponse6Data;
-import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1Data;
-import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInner;
-import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus;
-import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail;
-import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason;
+import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduled3;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledResponse6;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledResponse6Data;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1PaymentStatusStatus;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1Status;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1Data;
 
-@Controller("InternationalScheduledPaymentsApiV3.1.10")
+@Controller("InternationalScheduledPaymentsApiV4.0.0")
 public class InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -95,7 +95,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     public InternationalScheduledPaymentsApiController(
             InternationalScheduledPaymentSubmissionRepository scheduledPaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            @Qualifier("v3.1.10RestInternationalScheduledPaymentConsentStoreClient") InternationalScheduledPaymentConsentStoreClient consentStoreClient,
+            @Qualifier("v4.0.0RestInternationalScheduledPaymentConsentStoreClient") InternationalScheduledPaymentConsentStoreClient consentStoreClient,
             OBValidationService<OBWriteInternationalScheduled3ValidationContext> paymentValidator,
             RefundAccountService refundAccountService) {
         this.scheduledPaymentSubmissionRepository = scheduledPaymentSubmissionRepository;
@@ -108,10 +108,10 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
     @Override
     public ResponseEntity<OBWriteInternationalScheduledResponse6> createInternationalScheduledPayments(
-            @Valid OBWriteInternationalScheduled3 obWriteInternationalScheduled3,
             String authorization,
             String xIdempotencyKey,
             String xJwsSignature,
+            OBWriteInternationalScheduled3 obWriteInternationalScheduled3,
             String xFapiAuthDate,
             String xFapiCustomerIpAddress,
             String xFapiInteractionId,
@@ -248,11 +248,11 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()))
                         .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
                         .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
-                        .status(toOBWriteDomesticScheduledResponse5DataStatus(frPaymentSubmission.getStatus()))
+                        .status(toOBWriteInternationalScheduledResponse6DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .expectedExecutionDateTime(data.getInitiation().getRequestedExecutionDateTime())
-                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse5DataRefund).orElse(null))
+                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalScheduledResponse6DataRefund).orElse(null))
                         .exchangeRateInformation(FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()))
                 )
                 .links(LinksHelper.createInternationalScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))
@@ -260,24 +260,24 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalScheduledPaymentSubmission frInternationalScheduledPaymentSubmission) {
-        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus status = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatus.fromValue(
-                PaymentsUtils.statusLinkingMap.get(frInternationalScheduledPaymentSubmission.getStatus().getValue())
-        );
+        OBWritePaymentDetails1Status status = FRPaymentDetailsStatusConverter.toOBPaymentDetailsStatus(
+                frInternationalScheduledPaymentSubmission.getStatus().getValue());
 
         // Build the response object with data to meet the expected data defined by the spec
-        OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason statusReasonEnum = OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetailStatusReason.PENDINGSETTLEMENT;
+        OBWritePaymentDetails1PaymentStatusStatus statusReasonEnum = OBWritePaymentDetails1PaymentStatusStatus.PDNG;
         return new OBWritePaymentDetailsResponse1()
                 .data(
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
-                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInner()
+                                        new OBWritePaymentDetails1()
                                                 .status(status)
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frInternationalScheduledPaymentSubmission.getUpdated()))
                                                 .statusDetail(
-                                                        new OBWritePaymentDetailsResponse1DataPaymentStatusInnerStatusDetail()
-                                                                .status(status.getValue())
-                                                                .statusReason(statusReasonEnum)
+                                                        new OBWritePaymentDetails1StatusDetail()
+                                                                .status(FRPaymentDetailsStatusConverter.toOBWritePaymentDetails1StatusDetailStatus(
+                                                                        frInternationalScheduledPaymentSubmission.getStatus().getValue()))
+                                                                .statusReason(statusReasonEnum.getValue())
                                                                 .statusReasonDescription(statusReasonEnum.getValue())
                                                                 .localInstrument(frInternationalScheduledPaymentSubmission.getScheduledPayment().getData().getInitiation().getLocalInstrument())
                                                 )

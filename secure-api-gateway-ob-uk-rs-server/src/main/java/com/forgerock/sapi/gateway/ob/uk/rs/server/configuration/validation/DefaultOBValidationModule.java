@@ -229,6 +229,11 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator exchangeRateInformationValidatorV4() {
+        return new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteInternational3DataInitiationExchangeRateInformationValidator(currencyCodeValidator());
+    }
+
+    @Bean
     public OBValidationService<OBWriteInternationalConsent5> internationalPaymentConsentValidator(
             BaseOBValidator<OBRisk1> riskValidator) {
         return new OBValidationService<>(new OBWriteInternationalConsent5Validator(
@@ -254,8 +259,23 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledConsent5> internationalScheduledPaymentConsentValidatorV4(
+            BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBWriteInternationalScheduledConsent5Validator(
+                instructedAmountValidatorV4(),
+                currencyCodeValidator(),
+                exchangeRateInformationValidatorV4(),
+                riskValidator));
+    }
+
+    @Bean
     public OBValidationService<OBWriteInternationalScheduled3ValidationContext> internationalScheduledPaymentValidator() {
         return new OBValidationService<>(new OBWriteInternationalScheduled3Validator());
+    }
+
+    @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteInternationalScheduled3Validator.OBWriteInternationalScheduled3ValidationContext> internationalScheduledPaymentValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteInternationalScheduled3Validator());
     }
 
     @Bean

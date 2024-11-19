@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalscheduledpayments;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.internationalscheduledpayments;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -28,16 +28,16 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalscheduledpayments.InternationalScheduledPaymentConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteFundsConfirmationResponse1Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteInternationalScheduledConsentResponse6Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.internationalscheduledpayments.InternationalScheduledPaymentConsentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteFundsConfirmationResponse1Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteInternationalScheduledConsentResponse6Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.service.currency.ExchangeRateService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalscheduled.InternationalScheduledPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.CreateInternationalScheduledPaymentConsentRequest;
@@ -45,13 +45,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internatio
 
 import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduled3DataInitiation;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsent5;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalScheduledConsentResponse6;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduled3DataInitiation;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledConsentResponse6;
 
-@Controller("InternationalScheduledPaymentConsentsApiV3.1.10")
+@Controller("InternationalScheduledPaymentConsentsApiV4.0.0")
 public class InternationalScheduledPaymentConsentsApiController implements InternationalScheduledPaymentConsentsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -69,7 +69,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
     public InternationalScheduledPaymentConsentsApiController(
-            @Qualifier("v3.1.10RestInternationalScheduledPaymentConsentStoreClient") InternationalScheduledPaymentConsentStoreClient consentStoreApiClient,
+            @Qualifier("v4.0.0RestInternationalScheduledPaymentConsentStoreClient") InternationalScheduledPaymentConsentStoreClient consentStoreApiClient,
             OBValidationService<OBWriteInternationalScheduledConsent5> consentValidator,
             ExchangeRateService exchangeRateService,
             OBWriteInternationalScheduledConsentResponse6Factory consentResponseFactory,
@@ -85,8 +85,8 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
     }
 
     @Override
-    public ResponseEntity<OBWriteInternationalScheduledConsentResponse6> createInternationalScheduledPaymentConsents(OBWriteInternationalScheduledConsent5 obWriteInternationalScheduledConsent5,
-            String authorization, String xIdempotencyKey, String xJwsSignature, String xFapiAuthDate, String xFapiCustomerIpAddress,
+    public ResponseEntity<OBWriteInternationalScheduledConsentResponse6> createInternationalScheduledPaymentConsents(
+            String authorization, String xIdempotencyKey, String xJwsSignature, OBWriteInternationalScheduledConsent5 obWriteInternationalScheduledConsent5, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
 
         logger.info("Processing createInternationalScheduledPaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
