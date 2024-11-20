@@ -289,4 +289,9 @@ public class DefaultOBValidationModule {
         return new OBValidationService<>(new FundsConfirmationValidator());
     }
 
+    @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.funds.FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.funds.FundsConfirmationValidator());
+    }
+
 }

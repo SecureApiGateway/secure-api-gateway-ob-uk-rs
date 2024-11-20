@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v4_0_0;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType.INTERIMAVAILABLE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
-import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
-import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
+import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v4_0_0.RestFundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
+import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.AfterEach;
@@ -46,42 +50,28 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
-import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.RestFundsConfirmationConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
-import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
-import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1Data;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1DataInstructedAmount;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v4.common.ExternalProxyAccountType1Code;
+import uk.org.openbanking.datamodel.v4.common.OBProxy1;
+import uk.org.openbanking.datamodel.v4.fund.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType.INTERIMAVAILABLE;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.v4.FRProxyTestDataFactory.aValidFRProxy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.*;
 
 /**
  * Test for {@link FundsConfirmationsApiController}
- * Coverage version 3.0 to 3.1.10
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
@@ -89,7 +79,7 @@ public class FundsConfirmationsApiControllerTest {
     private static final String API_CLIENT_ID = UUID.randomUUID().toString();
     private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredFundsHttpHeadersWithApiClientId(API_CLIENT_ID);
     private static final String BASE_URL = "http://localhost:";
-    private static final String FUNDS_CONFIRMATION_URI = "/open-banking/v3.1.10/cbpii/funds-confirmations";
+    private static final String FUNDS_CONFIRMATION_URI = "/open-banking/v4.0.0/cbpii/funds-confirmations";
     private static final String DEBTOR_ACCOUNT_ID = UUID.randomUUID().toString();
     public static final String DEFAULT_CURRENCY = "GBP";
 
@@ -109,7 +99,7 @@ public class FundsConfirmationsApiControllerTest {
     private FRAccountRepository frAccountRepository;
 
     @MockBean
-    @Qualifier("v3.1.10RestFundsConfirmationConsentStoreClient")
+    @Qualifier("v4.0.0RestFundsConfirmationConsentStoreClient")
     private RestFundsConfirmationConsentStoreClient consentStoreClient;
 
     @Autowired
@@ -134,6 +124,7 @@ public class FundsConfirmationsApiControllerTest {
                                                         .name("ACME Inc")
                                                         .schemeName("UK.OBIE.SortCodeAccountNumber")
                                                         .secondaryIdentification("0002")
+                                                        .proxy(aValidFRProxy())
                                                         .build()
                                         )
                                 )
@@ -154,7 +145,7 @@ public class FundsConfirmationsApiControllerTest {
         );
     }
 
-    private void mockConsentStoreGetResponse(String consentId, OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
+    private void mockConsentStoreGetResponse(String consentId, uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
         mockConsentStoreGetResponse(consentId, status, aValidOBFundsConfirmationConsent(), DateTime.now().plusMonths(3).withZone(DateTimeZone.UTC));
     }
 
@@ -162,13 +153,13 @@ public class FundsConfirmationsApiControllerTest {
         mockConsentStoreGetResponse(consentId, AUTHORISED, aValidOBFundsConfirmationConsent(), expirationDateTime);
     }
 
-    private void mockConsentStoreGetResponse(String consentId, DateTime expirationDateTime, OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
+    private void mockConsentStoreGetResponse(String consentId, DateTime expirationDateTime, uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum status) {
         mockConsentStoreGetResponse(consentId, status, aValidOBFundsConfirmationConsent(), expirationDateTime);
     }
 
     private void mockConsentStoreGetResponse(
             String consentId,
-            OBFundsConfirmationConsentResponse1Data.StatusEnum status,
+            uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum status,
             OBFundsConfirmationConsent1 consentRequest,
             DateTime expirationDateTime
     ) {
@@ -398,6 +389,7 @@ public class FundsConfirmationsApiControllerTest {
                                                 .name("ACME Inc")
                                                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                                                 .secondaryIdentification("0002")
+                                                .proxy(new OBProxy1().code(ExternalProxyAccountType1Code.fromValue("TELE")).identification("+441632960540").type("Telephone"))
                                 )
                 );
     }

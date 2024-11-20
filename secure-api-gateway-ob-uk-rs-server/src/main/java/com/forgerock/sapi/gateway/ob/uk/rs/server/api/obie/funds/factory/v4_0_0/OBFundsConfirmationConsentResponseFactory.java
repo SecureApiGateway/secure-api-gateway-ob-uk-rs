@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.factory;
-
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAccountIdentifierConverter.toOBFundsConfirmationConsent1DataDebtorAccount;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.factory.v4_0_0;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsentData;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaginationUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.PaginationUtil;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
-
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data;
-import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
+import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsentResponse1;
+import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsentResponse1Data;
 
-@Component
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toOBFundsConfirmationConsent1DataDebtorAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRFundsConfirmationConsentStatusConverter.toOBFundsConfirmationConsentStatusV4;
+
+@Component("V4.0.0OBFundsConfirmationConsentResponseFactory")
 public class OBFundsConfirmationConsentResponseFactory {
 
     public OBFundsConfirmationConsentResponse1 buildConsentResponse(FundsConfirmationConsent consent, Class<?> controllerClass) {
@@ -39,7 +38,7 @@ public class OBFundsConfirmationConsentResponseFactory {
                                 .consentId(consent.getId())
                                 .creationDateTime(new DateTime(consent.getCreationDateTime()))
                                 .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
-                                .status(StatusEnum.fromValue(consent.getStatus()))
+                                .status(toOBFundsConfirmationConsentStatusV4(consent.getStatus()))
                                 .expirationDateTime(frFundsConfirmationConsentData.getExpirationDateTime())
                                 .debtorAccount(toOBFundsConfirmationConsent1DataDebtorAccount(frFundsConfirmationConsentData.getDebtorAccount()))
                 )
