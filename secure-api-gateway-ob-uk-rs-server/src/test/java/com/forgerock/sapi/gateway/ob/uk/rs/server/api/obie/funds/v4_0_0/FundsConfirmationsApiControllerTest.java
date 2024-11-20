@@ -62,7 +62,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType.INTERIMAVAILABLE;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRFundsConfirmationConsentStatusConverter.toOBFundsConfirmationConsentStatusV4;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.v4.FRProxyTestDataFactory.aValidFRProxy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
