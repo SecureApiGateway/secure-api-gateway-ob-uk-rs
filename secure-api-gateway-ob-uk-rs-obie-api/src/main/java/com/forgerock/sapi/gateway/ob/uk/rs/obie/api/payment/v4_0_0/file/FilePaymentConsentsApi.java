@@ -84,9 +84,7 @@ public interface FilePaymentConsentsApi {
         tags = { "File Payments" },
         responses = {
             @ApiResponse(responseCode = "201", description = "File Payment Consents Created", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
+                @Content(mediaType = "*/*", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                 @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
@@ -122,8 +120,8 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payment-consents",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
-        consumes = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+        consumes = {"application/json; charset=utf-8", "application/jose+jwe"}
     )
     
     ResponseEntity<OBWriteFileConsentResponse4> createFilePaymentConsents(
@@ -204,8 +202,8 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payment-consents/{ConsentId}/file",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
-        consumes = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"application/json; charset=utf-8"},
+        consumes = {"*/*"}
     )
     
     ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(
@@ -219,7 +217,7 @@ public interface FilePaymentConsentsApi {
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
         @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
         @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
-        @Parameter(name = "fileParam") @RequestHeader(value = "fileParam") String fileParam,
+        @Parameter(name = "fileParam") @RequestBody String fileParam,
         HttpServletRequest request
     ) throws OBErrorException, OBErrorResponseException;
 
@@ -250,9 +248,7 @@ public interface FilePaymentConsentsApi {
         tags = { "File Payments" },
         responses = {
             @ApiResponse(responseCode = "200", description = "File Payment Consents Read", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
+                @Content(mediaType = "*/*", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                 @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
@@ -282,7 +278,7 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payment-consents/{ConsentId}",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"application/json; charset=utf-8", "application/jose+jwe"}
     )
     
     ResponseEntity<OBWriteFileConsentResponse4> getFilePaymentConsentsConsentId(
@@ -322,9 +318,7 @@ public interface FilePaymentConsentsApi {
         tags = { "File Payments" },
         responses = {
             @ApiResponse(responseCode = "200", description = "File Payment Consents Read", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = Object.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = Object.class))
+                @Content(mediaType = "*/*", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                 @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
@@ -354,7 +348,7 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payment-consents/{ConsentId}/file",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"}
     )
     
     ResponseEntity<Object> getFilePaymentConsentsConsentIdFile(
