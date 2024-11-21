@@ -20,6 +20,8 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.domesticstandingorders;
 
+import java.security.Principal;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +29,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +42,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Generated;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -55,229 +61,232 @@ public interface DomesticStandingOrdersApi {
     /**
      * POST /domestic-standing-orders : Create Domestic Standing Orders
      *
-     * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
-     * @param xIdempotencyKey Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours.  (required)
-     * @param xJwsSignature A detached JWS signature of the body of the payload. (required)
+     * @param authorization                 An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
+     * @param xIdempotencyKey               Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours.  (required)
+     * @param xJwsSignature                 A detached JWS signature of the body of the payload. (required)
      * @param obWriteDomesticStandingOrder3 Default (required)
-     * @param xFapiAuthDate The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
-     * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
-     * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
-     * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
-     * @param apiClientId OAuth2.0 client_id of the ApiClient making the request
+     * @param xFapiAuthDate                 The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
+     * @param xFapiCustomerIpAddress        The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
+     * @param xFapiInteractionId            An RFC4122 UID used as a correlation id. (optional)
+     * @param xCustomerUserAgent            Indicates the user-agent that the PSU is using. (optional)
+     * @param apiClientId                   OAuth2.0 client_id of the ApiClient making the request
      * @return Domestic Standing Orders Created (status code 201)
-     *         or Bad request (status code 400)
-     *         or Unauthorized (status code 401)
-     *         or Forbidden (status code 403)
-     *         or Not found (status code 404)
-     *         or Method Not Allowed (status code 405)
-     *         or Not Acceptable (status code 406)
-     *         or Conflict (status code 409)
-     *         or Unsupported Media Type (status code 415)
-     *         or Too Many Requests (status code 429)
-     *         or Internal Server Error (status code 500)
+     * or Bad request (status code 400)
+     * or Unauthorized (status code 401)
+     * or Forbidden (status code 403)
+     * or Not found (status code 404)
+     * or Method Not Allowed (status code 405)
+     * or Not Acceptable (status code 406)
+     * or Conflict (status code 409)
+     * or Unsupported Media Type (status code 415)
+     * or Too Many Requests (status code 429)
+     * or Internal Server Error (status code 500)
      */
     @Operation(
-        operationId = "createDomesticStandingOrders",
-        summary = "Create Domestic Standing Orders",
-        tags = { "Domestic Standing Orders" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Domestic Standing Orders Created", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            }),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "Not found"),
-            @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
-            @ApiResponse(responseCode = "409", description = "Conflict", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            }),
-            @ApiResponse(responseCode = "415", description = "Unsupported Media Type"),
-            @ApiResponse(responseCode = "429", description = "Too Many Requests"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            })
-        },
-        security = {
-            @SecurityRequirement(name = "PSUOAuth2Security", scopes={ "payments" })
-        }
+            operationId = "createDomesticStandingOrders",
+            summary = "Create Domestic Standing Orders",
+            tags = {"Domestic Standing Orders"},
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Domestic Standing Orders Created", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
+                    @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+                    @ApiResponse(responseCode = "409", description = "Conflict", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "415", description = "Unsupported Media Type"),
+                    @ApiResponse(responseCode = "429", description = "Too Many Requests"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    })
+            },
+            security = {
+                    @SecurityRequirement(name = "PSUOAuth2Security", scopes = {"payments"})
+            }
     )
     @RequestMapping(
-        method = RequestMethod.POST,
-        value = "/domestic-standing-orders",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
-        consumes = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+            method = RequestMethod.POST,
+            value = "/domestic-standing-orders",
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
     )
-    
     ResponseEntity<OBWriteDomesticStandingOrderResponse6> createDomesticStandingOrders(
-        @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
-        @NotNull @Pattern(regexp = "^(?!\\s)(.*)(\\S)$") @Size(max = 40) @Parameter(name = "x-idempotency-key", description = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
-        @NotNull @Parameter(name = "x-jws-signature", description = "A detached JWS signature of the body of the payload.", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
-        @Parameter(name = "OBWriteDomesticStandingOrder3", description = "Default", required = true) @Valid @RequestBody OBWriteDomesticStandingOrder3 obWriteDomesticStandingOrder3,
-        @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
-        @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-        @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+            @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
+            @NotNull @Pattern(regexp = "^(?!\\s)(.*)(\\S)$") @Size(max = 40) @Parameter(name = "x-idempotency-key", description = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
+            @NotNull @Parameter(name = "x-jws-signature", description = "A detached JWS signature of the body of the payload.", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
+            @Parameter(name = "OBWriteDomesticStandingOrder3", description = "Default", required = true) @Valid @RequestBody OBWriteDomesticStandingOrder3 obWriteDomesticStandingOrder3,
+            @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
+            @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
+            @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
+            @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+            @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException, OBErrorException;
 
 
     /**
      * GET /domestic-standing-orders/{DomesticStandingOrderId} : Get Domestic Standing Orders
      *
      * @param domesticStandingOrderId DomesticStandingOrderId (required)
-     * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
-     * @param xFapiAuthDate The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
-     * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
-     * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
-     * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
-     * @param apiClientId OAuth2.0 client_id of the ApiClient making the request
+     * @param authorization           An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
+     * @param xFapiAuthDate           The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
+     * @param xFapiCustomerIpAddress  The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
+     * @param xFapiInteractionId      An RFC4122 UID used as a correlation id. (optional)
+     * @param xCustomerUserAgent      Indicates the user-agent that the PSU is using. (optional)
+     * @param apiClientId             OAuth2.0 client_id of the ApiClient making the request
      * @return Domestic Standing Orders Read (status code 200)
-     *         or Bad request (status code 400)
-     *         or Unauthorized (status code 401)
-     *         or Forbidden (status code 403)
-     *         or Not found (status code 404)
-     *         or Method Not Allowed (status code 405)
-     *         or Not Acceptable (status code 406)
-     *         or Too Many Requests (status code 429)
-     *         or Internal Server Error (status code 500)
+     * or Bad request (status code 400)
+     * or Unauthorized (status code 401)
+     * or Forbidden (status code 403)
+     * or Not found (status code 404)
+     * or Method Not Allowed (status code 405)
+     * or Not Acceptable (status code 406)
+     * or Too Many Requests (status code 429)
+     * or Internal Server Error (status code 500)
      */
     @Operation(
-        operationId = "getDomesticStandingOrdersDomesticStandingOrderId",
-        summary = "Get Domestic Standing Orders",
-        tags = { "Domestic Standing Orders" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Domestic Standing Orders Read", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            }),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "Not found"),
-            @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
-            @ApiResponse(responseCode = "429", description = "Too Many Requests"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            })
-        },
-        security = {
-            @SecurityRequirement(name = "TPPOAuth2Security", scopes={ "payments" })
-        }
+            operationId = "getDomesticStandingOrdersDomesticStandingOrderId",
+            summary = "Get Domestic Standing Orders",
+            tags = {"Domestic Standing Orders"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Domestic Standing Orders Read", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteDomesticStandingOrderResponse6.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
+                    @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+                    @ApiResponse(responseCode = "429", description = "Too Many Requests"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    })
+            },
+            security = {
+                    @SecurityRequirement(name = "TPPOAuth2Security", scopes = {"payments"})
+            }
     )
     @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/domestic-standing-orders/{DomesticStandingOrderId}",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+            method = RequestMethod.GET,
+            value = "/domestic-standing-orders/{DomesticStandingOrderId}",
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
     )
-    
     ResponseEntity<OBWriteDomesticStandingOrderResponse6> getDomesticStandingOrdersDomesticStandingOrderId(
-        @Parameter(name = "DomesticStandingOrderId", description = "DomesticStandingOrderId", required = true, in = ParameterIn.PATH) @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
-        @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
-        @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
-        @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-        @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+            @Parameter(name = "DomesticStandingOrderId", description = "DomesticStandingOrderId", required = true, in = ParameterIn.PATH) @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
+            @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
+            @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
+            @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
+            @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
+            @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+            @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException;
 
 
     /**
      * GET /domestic-standing-orders/{DomesticStandingOrderId}/payment-details : Get Payment Details
      *
      * @param domesticStandingOrderId DomesticStandingOrderId (required)
-     * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
-     * @param xFapiAuthDate The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
-     * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
-     * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
-     * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
-     * @param apiClientId OAuth2.0 client_id of the ApiClient making the request
+     * @param authorization           An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
+     * @param xFapiAuthDate           The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
+     * @param xFapiCustomerIpAddress  The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
+     * @param xFapiInteractionId      An RFC4122 UID used as a correlation id. (optional)
+     * @param xCustomerUserAgent      Indicates the user-agent that the PSU is using. (optional)
+     * @param apiClientId             OAuth2.0 client_id of the ApiClient making the request
      * @return Payment Details Read (status code 200)
-     *         or Bad request (status code 400)
-     *         or Unauthorized (status code 401)
-     *         or Forbidden (status code 403)
-     *         or Not found (status code 404)
-     *         or Method Not Allowed (status code 405)
-     *         or Not Acceptable (status code 406)
-     *         or Too Many Requests (status code 429)
-     *         or Internal Server Error (status code 500)
+     * or Bad request (status code 400)
+     * or Unauthorized (status code 401)
+     * or Forbidden (status code 403)
+     * or Not found (status code 404)
+     * or Method Not Allowed (status code 405)
+     * or Not Acceptable (status code 406)
+     * or Too Many Requests (status code 429)
+     * or Internal Server Error (status code 500)
      */
     @Operation(
-        operationId = "getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails",
-        summary = "Get Payment Details",
-        tags = { "Payment Details" },
-        responses = {
-            @ApiResponse(responseCode = "200", description = "Payment Details Read", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWritePaymentDetailsResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBWritePaymentDetailsResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWritePaymentDetailsResponse1.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            }),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "Not found"),
-            @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
-            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
-            @ApiResponse(responseCode = "429", description = "Too Many Requests"),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
-            })
-        },
-        security = {
-            @SecurityRequirement(name = "TPPOAuth2Security", scopes={ "payments" })
-        }
+            operationId = "getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails",
+            summary = "Get Payment Details",
+            tags = {"Payment Details"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Payment Details Read", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWritePaymentDetailsResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBWritePaymentDetailsResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWritePaymentDetailsResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    }),
+                    @ApiResponse(responseCode = "404", description = "Not found"),
+                    @ApiResponse(responseCode = "405", description = "Method Not Allowed"),
+                    @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+                    @ApiResponse(responseCode = "429", description = "Too Many Requests"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                            @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = OBErrorResponse1.class)),
+                            @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBErrorResponse1.class))
+                    })
+            },
+            security = {
+                    @SecurityRequirement(name = "TPPOAuth2Security", scopes = {"payments"})
+            }
     )
     @RequestMapping(
-        method = RequestMethod.GET,
-        value = "/domestic-standing-orders/{DomesticStandingOrderId}/payment-details",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+            method = RequestMethod.GET,
+            value = "/domestic-standing-orders/{DomesticStandingOrderId}/payment-details",
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
     )
-    
     ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails(
-        @Parameter(name = "DomesticStandingOrderId", description = "DomesticStandingOrderId", required = true, in = ParameterIn.PATH) @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
-        @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
-        @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
-        @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-        @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-        @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+            @Parameter(name = "DomesticStandingOrderId", description = "DomesticStandingOrderId", required = true, in = ParameterIn.PATH) @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
+            @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
+            @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
+            @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
+            @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
+            @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+            @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException;
 
 }
