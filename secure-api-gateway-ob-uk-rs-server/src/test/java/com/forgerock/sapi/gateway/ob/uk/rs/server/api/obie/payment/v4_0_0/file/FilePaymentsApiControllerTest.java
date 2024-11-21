@@ -15,9 +15,8 @@
 // */
 //package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.file;
 //
-//import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
+//import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConsentConverter;
 //import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-//import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file.FilePaymentsApiController;
 //import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 //import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 //import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.FilePaymentConsentStoreClient;
@@ -30,6 +29,7 @@
 //import org.junit.jupiter.api.Test;
 //import org.mockito.ArgumentCaptor;
 //import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Qualifier;
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.boot.test.mock.mockito.MockBean;
 //import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -37,8 +37,9 @@
 //import org.springframework.http.*;
 //import org.springframework.test.context.ActiveProfiles;
 //import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-//import uk.org.openbanking.datamodel.v3.payment.*;
-//import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
+//import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
+//import uk.org.openbanking.datamodel.v4.payment.*;
+//import uk.org.openbanking.testsupport.v4.payment.OBWriteFileConsentTestDataFactory;
 //
 //import java.math.BigDecimal;
 //
@@ -58,7 +59,7 @@
 //    private static final String TEST_API_CLIENT_ID = "client-123";
 //    private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredPaymentHttpHeaders(TEST_API_CLIENT_ID);
 //    private static final String BASE_URL = "http://localhost:";
-//    private static final String FILE_PAYMENTS_URI = "/open-banking/v3.1.10/pisp/file-payments";
+//    private static final String FILE_PAYMENTS_URI = "/open-banking/v4.0.0/pisp/file-payments";
 //
 //    private final String debtorAccountId = "debtor-acc-123";
 //
@@ -69,6 +70,7 @@
 //    private FilePaymentSubmissionRepository filePaymentsRepository;
 //
 //    @MockBean
+//    @Qualifier("v4.0.0RestFilePaymentConsentStoreClient")
 //    private FilePaymentConsentStoreClient filePaymentConsentStoreClient;
 //
 //    @Autowired
