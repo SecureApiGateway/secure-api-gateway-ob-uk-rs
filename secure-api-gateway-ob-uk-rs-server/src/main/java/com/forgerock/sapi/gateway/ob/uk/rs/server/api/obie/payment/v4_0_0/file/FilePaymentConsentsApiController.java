@@ -28,13 +28,14 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFil
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.HashUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v4_0_0.RestFilePaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.FilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -51,7 +52,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final RestFilePaymentConsentStoreClient consentStoreApiClient;
+    private final FilePaymentConsentStoreClient consentStoreApiClient;
 
     private final OBValidationService<OBWriteFileConsent3> consentValidator;
 
@@ -61,7 +62,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     private final OBWriteFileConsentResponse4Factory consentResponseFactory;
 
-    public FilePaymentConsentsApiController(RestFilePaymentConsentStoreClient consentStoreApiClient,
+    public FilePaymentConsentsApiController(@Qualifier("v4.0.0RestFilePaymentConsentStoreClient") FilePaymentConsentStoreClient consentStoreApiClient,
                                             OBValidationService<OBWriteFileConsent3> consentValidator,
                                             PaymentFileProcessorService paymentFileProcessorService,
                                             OBValidationService<FilePaymentFileContentValidationContext> fileContentValidator,

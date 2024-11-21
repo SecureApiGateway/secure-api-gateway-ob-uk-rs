@@ -50,7 +50,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionVal
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.ResourceVersionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.RestFilePaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.FilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRFilePaymentSubmission;
@@ -60,6 +60,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -78,14 +79,14 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final FilePaymentSubmissionRepository filePaymentSubmissionRepository;
     private final PaymentSubmissionValidator paymentSubmissionValidator;
-    private final RestFilePaymentConsentStoreClient consentStoreClient;
+    private final FilePaymentConsentStoreClient consentStoreClient;
     private final OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator;
     private final IdempotentPaymentService<FRFilePaymentSubmission, FRWriteFile> idempotentPaymentService;
 
     public FilePaymentsApiController(
             FilePaymentSubmissionRepository filePaymentSubmissionRepository,
             PaymentSubmissionValidator paymentSubmissionValidator,
-            RestFilePaymentConsentStoreClient consentStoreClient,
+            @Qualifier("v3.1.10RestFilePaymentConsentStoreClient") FilePaymentConsentStoreClient consentStoreClient,
             OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator) {
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentSubmissionValidator = paymentSubmissionValidator;

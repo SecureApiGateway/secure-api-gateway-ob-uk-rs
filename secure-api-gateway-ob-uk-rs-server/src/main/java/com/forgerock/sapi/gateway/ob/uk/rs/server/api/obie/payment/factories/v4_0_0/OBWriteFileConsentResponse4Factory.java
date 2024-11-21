@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.payment.*;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRConsentStatusConverter.toOBFilePaymentConsentStatusV4;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper.createFilePaymentConsentsLink;
 
 @Component("OBWriteFileConsentResponse4FactoryV4.0.0")
@@ -38,7 +39,7 @@ public class OBWriteFileConsentResponse4Factory {
         data.initiation(obConsentData.getInitiation());
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
-        data.status(OBWriteFileConsentResponse4DataStatus.fromValue(consent.getStatus()));
+        data.status(toOBFilePaymentConsentStatusV4(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
 
