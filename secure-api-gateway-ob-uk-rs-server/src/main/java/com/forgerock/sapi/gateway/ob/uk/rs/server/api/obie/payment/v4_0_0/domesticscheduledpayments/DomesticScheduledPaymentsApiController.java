@@ -251,9 +251,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
-        OBWritePaymentDetails1PaymentStatusStatus status = OBWritePaymentDetails1PaymentStatusStatus.fromValue(
-                PaymentsUtils.statusLinkingMap.get(frPaymentSubmission.getStatus().getValue())
-        );
         String localInstrument = frPaymentSubmission.getScheduledPayment().getData().getInitiation().getLocalInstrument();
 
         // Build the response object with data to meet the expected data defined by the spec
