@@ -43,6 +43,7 @@ import uk.org.openbanking.datamodel.v4.payment.*;
 import uk.org.openbanking.testsupport.v4.payment.OBWriteFileConsentTestDataFactory;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -84,7 +85,7 @@ public class FilePaymentsApiControllerTest {
 
     private static OBWriteFileConsent3 createValidConsent() {
         final OBWriteFileConsent3 consent = OBWriteFileConsentTestDataFactory.aValidOBWriteFileConsent3(
-                DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType().getFileType(),
+                DefaultPaymentFileType.UK_OBIE_PAYMENT_INITIATION_V3_1.getPaymentFileType().getFileType(),
                 "hash123", "12", BigDecimal.ONE);
         consent.getData().getInitiation().setRequestedExecutionDateTime(
                 consent.getData().getInitiation().getRequestedExecutionDateTime().withZone(DateTimeZone.UTC));
@@ -116,7 +117,7 @@ public class FilePaymentsApiControllerTest {
         final ResponseEntity<OBWriteFileResponse3> filePaymentResponse = restTemplate.exchange(filePaymentsUrl(), HttpMethod.POST, filePaymentEntity, OBWriteFileResponse3.class);
 
         assertThat(filePaymentResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        OBWriteFileResponse3Data responseData = filePaymentResponse.getBody().getData();
+        OBWriteFileResponse3Data responseData = Objects.requireNonNull(filePaymentResponse.getBody()).getData();
         assertThat(responseData.getConsentId()).isEqualTo(consentId);
         assertThat(responseData.getInitiation()).isEqualTo(filePayment.getData().getInitiation());
         assertThat(filePaymentResponse.getBody().getLinks().getSelf().toString()).isEqualTo(filePaymentsIdUrl(responseData.getFilePaymentId()));

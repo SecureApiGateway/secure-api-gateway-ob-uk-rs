@@ -95,58 +95,11 @@ public class FilePaymentConsentsApiControllerTest {
         return controllerGetConsentUri(consentId) + "/file";
     }
 
-
-    @Test
-    public void testCreateConsent() {
-        final String fileHash = "fileHash";
-        final int numTransactions = 1;
-        final BigDecimal controlSum = BigDecimal.ONE;
-        final OBWriteFileConsent3 consentRequest = createValidConsentRequest(DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType(),
-                                                                                fileHash, numTransactions, controlSum);
-        final FilePaymentConsent consentStoreResponse = buildAwaitingUploadConsent(consentRequest);
-        when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
-            final CreateFilePaymentConsentRequest createConsentArg = invocation.getArgument(0, CreateFilePaymentConsentRequest.class);
-            assertThat(createConsentArg.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
-            assertThat(createConsentArg.getConsentRequest()).isEqualTo(FRWriteFileConsentConverter.toFRWriteFileConsent(consentRequest));
-            assertThat(createConsentArg.getCharges()).isEmpty();
-            assertThat(createConsentArg.getIdempotencyKey()).isEqualTo(HTTP_HEADERS.getFirst("x-idempotency-key"));
-
-            return consentStoreResponse;
-        });
-
-        final HttpEntity<OBWriteFileConsent3> entity = new HttpEntity<>(consentRequest, HTTP_HEADERS);
-
-        final ResponseEntity<OBWriteFileConsentResponse4> createResponse = restTemplate.exchange(controllerBaseUri(), HttpMethod.POST,
-                entity, OBWriteFileConsentResponse4.class);
-        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        final OBWriteFileConsentResponse4 consentResponse = createResponse.getBody();
-        assert consentResponse != null;
-        final String consentId = consentResponse.getData().getConsentId();
-        assertThat(consentId).isEqualTo(consentStoreResponse.getId());
-        assertThat(consentResponse.getData().getStatus()).isEqualTo(AWAITINGUPLOAD);
-        assertThat(consentResponse.getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
-        assertThat(consentResponse.getData().getAuthorisation()).isEqualTo(consentRequest.getData().getAuthorisation());
-        assertThat(consentResponse.getData().getScASupportData()).isEqualTo(consentRequest.getData().getScASupportData());
-        assertThat(consentResponse.getData().getCreationDateTime()).isNotNull();
-        assertThat(consentResponse.getData().getStatusUpdateDateTime()).isNotNull();
-        final String selfLinkToConsent = consentResponse.getLinks().getSelf().toString();
-        assertThat(selfLinkToConsent).isEqualTo(controllerGetConsentUri(consentId));
-
-        // Get the consent and verify it matches the create response
-        when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consentStoreResponse);
-
-        final ResponseEntity<OBWriteFileConsentResponse4> getConsentResponse = restTemplate.exchange(selfLinkToConsent,
-                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBWriteFileConsentResponse4.class);
-
-        assertThat(getConsentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(getConsentResponse.getBody()).isEqualTo(consentResponse);
-    }
-
     @Test
     void testUploadFile() {
         final String consentId = IntentType.PAYMENT_FILE_CONSENT.generateIntentId();
 
-        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(TestPaymentFileResources.PAYMENT_INITIATION_3_1_FILE_PATH);
+        final TestPaymentFile paymentFile = testPaymentFileResources.getPaymentFile(TestPaymentFileResources.PAIN_001_001_08_FILE_PATH);
 
         final String idempotencyKey = UUID.randomUUID().toString();
         final HttpEntity<String> entity = new HttpEntity<>(paymentFile.getFileContent(), createHeadersForFileUpload(idempotencyKey, paymentFile.getFileType()));

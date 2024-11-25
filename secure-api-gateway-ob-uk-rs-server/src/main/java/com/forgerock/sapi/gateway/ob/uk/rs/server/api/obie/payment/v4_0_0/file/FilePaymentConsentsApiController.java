@@ -98,11 +98,11 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     }
 
     @Override
-    public ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(String consentId, String authorization, String xIdempotencyKey, String xJwsSignature, Object body, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, String fileParam, HttpServletRequest request) throws OBErrorException, OBErrorResponseException {
+    public ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(String consentId, String authorization, String xIdempotencyKey, String xJwsSignature, String body, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request) throws OBErrorException, OBErrorResponseException {
         logger.info("Processing createFilePaymentConsentsConsentIdFile request - idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 xIdempotencyKey, apiClientId, xFapiInteractionId);
 
-        if (fileParam == null || fileParam.isBlank()) {
+        if (body == null || body.isBlank()) {
             throw new OBErrorException(OBRIErrorType.REQUEST_FILE_EMPTY);
         }
 
@@ -115,16 +115,16 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             throw new OBErrorException(OBRIErrorType.REQUEST_MEDIA_TYPE_NOT_SUPPORTED, contentType, paymentFileType.getContentType());
         }
 
-        final PaymentFile paymentFile = paymentFileProcessorService.processFile(fileType, fileParam);
+        final PaymentFile paymentFile = paymentFileProcessorService.processFile(fileType, body);
 
-        fileContentValidator.validate(new FilePaymentFileContentValidationContext(HashUtils.computeSHA256FullHash(fileParam),
+        fileContentValidator.validate(new FilePaymentFileContentValidationContext(HashUtils.computeSHA256FullHash(body),
                 paymentFile, FRWriteFileConsentConverter.toOBWriteFileConsent3(consent.getRequestObj())));
 
         final FileUploadRequest fileUploadRequest = new FileUploadRequest();
         fileUploadRequest.setApiClientId(apiClientId);
         fileUploadRequest.setConsentId(consentId);
         fileUploadRequest.setFileUploadIdempotencyKey(xIdempotencyKey);
-        fileUploadRequest.setFileContents(fileParam);
+        fileUploadRequest.setFileContents(body);
 
         consentStoreApiClient.uploadFile(fileUploadRequest);
 
