@@ -37,6 +37,7 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomesticScheduled;
@@ -262,13 +263,15 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
                                         new OBWritePaymentDetails1()
-                                                .status(OBWritePaymentDetails1Status.valueOf(status.getValue()))
+                                                .status(FRPaymentDetailsStatusConverter.toOBPaymentDetailsStatus(
+                                                        frPaymentSubmission.getStatus().getValue()))
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated()))
                                                 .statusDetail(
                                                         new OBWritePaymentDetails1StatusDetail()
                                                                 .localInstrument(localInstrument)
-                                                                .status(OBWritePaymentDetails1StatusDetailStatus.valueOf(status.getValue()))
+                                                                .status(FRPaymentDetailsStatusConverter.toOBWritePaymentDetails1StatusDetailStatus(
+                                                                        frPaymentSubmission.getStatus().getValue()))
                                                                 .statusReason(String.valueOf(statusDetailStatus))
                                                                 .statusReasonDescription(statusDetailStatus.getValue())
                                                 )
