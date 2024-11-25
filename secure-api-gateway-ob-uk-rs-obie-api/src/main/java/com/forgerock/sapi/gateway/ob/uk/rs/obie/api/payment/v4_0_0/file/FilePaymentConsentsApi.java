@@ -120,8 +120,8 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payment-consents",
-        produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-        consumes = {"application/json; charset=utf-8", "application/jose+jwe"}
+        produces = {"*/*"},
+        consumes = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileConsentResponse4> createFilePaymentConsents(
@@ -202,7 +202,7 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payment-consents/{ConsentId}/file",
-        produces = {"application/json; charset=utf-8"},
+        produces = {"*/*"},
         consumes = {"*/*"}
     )
     
@@ -277,7 +277,7 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payment-consents/{ConsentId}",
-        produces = {"application/json; charset=utf-8", "application/jose+jwe"}
+        produces = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileConsentResponse4> getFilePaymentConsentsConsentId(

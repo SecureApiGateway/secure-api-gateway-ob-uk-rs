@@ -123,8 +123,8 @@ public interface FilePaymentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payments",
-        produces = {"application/json; charset=utf-8"},
-        consumes = {"application/json; charset=utf-8"}
+        produces = {"*/*"},
+        consumes = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileResponse3> createFilePayments(
@@ -199,7 +199,7 @@ public interface FilePaymentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payments/{FilePaymentId}",
-        produces = {"application/json; charset=utf-8"}
+        produces = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileResponse3> getFilePaymentsFilePaymentId(
@@ -272,7 +272,7 @@ public interface FilePaymentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payments/{FilePaymentId}/payment-details",
-        produces = {"application/json; charset=utf-8"}
+        produces = {"*/*"}
     )
     
     ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
