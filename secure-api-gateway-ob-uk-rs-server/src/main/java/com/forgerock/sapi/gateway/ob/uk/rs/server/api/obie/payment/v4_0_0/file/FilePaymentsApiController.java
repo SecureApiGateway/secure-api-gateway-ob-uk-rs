@@ -174,20 +174,5 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     @Override
     public ResponseEntity<Object> getFilePaymentsFilePaymentIdReportFile(String filePaymentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId) {
         return new ResponseEntity<>(NOT_IMPLEMENTED);
-//        FRFilePaymentSubmission filePayment = filePaymentSubmissionRepository.findById(filePaymentId)
-//                .orElseThrow(() ->
-//                        new OBErrorResponseException(
-//                                HttpStatus.BAD_REQUEST,
-//                                OBRIErrorResponseCategory.REQUEST_INVALID,
-//                                OBRIErrorType.PAYMENT_ID_NOT_FOUND
-//                                        .toOBError1(filePaymentId))
-//                );
-//        logger.debug("Payment File '{}' exists with status: {} so generating a report file for type: '{}'",
-//                filePayment.getId(),
-//                filePayment.getStatus(),
-//                filePayment.getFilePayment().getData().getInitiation().getFileType());
-//        String reportFile = paymentReportFileService.createPaymentReport(filePayment);
-//        logger.debug("Generated report file for Payment File: '{}'", filePayment.getId());
-//        return ResponseEntity.ok(reportFile);
     }
 }
