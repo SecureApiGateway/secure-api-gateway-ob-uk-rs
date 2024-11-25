@@ -26,7 +26,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentF
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.FilePaymentConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
@@ -45,7 +44,6 @@ import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteFileConsentResponse4;
 import uk.org.openbanking.testsupport.v4.payment.OBWriteFileConsentTestDataFactory;
 
 import java.math.BigDecimal;
