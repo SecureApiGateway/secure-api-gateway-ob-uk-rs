@@ -113,7 +113,7 @@ public class DefaultOBValidationModule {
     public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4> domesticPaymentConsentValidatorV4(
             BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
         return new OBValidationService<>(new OBWriteDomesticConsent4Validator(instructedAmountValidatorV4(),
-                                                                              riskValidator));
+                riskValidator));
     }
 
     @Bean
@@ -257,8 +257,23 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalConsent5> internationalPaymentConsentValidatorV4(
+            BaseOBValidator<uk.org.openbanking.datamodel.v4.common.OBRisk1> riskValidator) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBWriteInternationalConsent5Validator(
+                instructedAmountValidatorV4(),
+                currencyCodeValidator(),
+                exchangeRateInformationValidatorV4(),
+                riskValidator));
+    }
+
+    @Bean
     public OBValidationService<OBWriteInternational3ValidationContext> internationalPaymentValidator() {
         return new OBValidationService<>(new OBWriteInternational3Validator());
+    }
+
+    @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteInternational3Validator.OBWriteInternational3ValidationContext> internationalPaymentValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteInternational3Validator());
     }
 
     @Bean
@@ -305,15 +320,15 @@ public class DefaultOBValidationModule {
         return new OBValidationService<>(new OBWriteInternationalStandingOrder4Validator());
     }
 
-   @Bean
+    @Bean
     public OBRisk1Validator paymentRiskValidator(@Value("${rs.obie.validation.config.payments.requirePaymentContextCode:false}")
-                                                 boolean requirePaymentContextCode) {
+    boolean requirePaymentContextCode) {
         return new OBRisk1Validator(requirePaymentContextCode);
     }
 
     @Bean
     public OBRisk1ValidatorV4 paymentRiskValidatorV4(@Value("${rs.obie.validation.config.payments.requirePaymentContextCode:false}")
-                                                 boolean requirePaymentContextCode) {
+    boolean requirePaymentContextCode) {
         return new OBRisk1ValidatorV4(requirePaymentContextCode);
     }
 
