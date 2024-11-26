@@ -37,6 +37,7 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomesticStandingOrder;
@@ -68,7 +69,6 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1PaymentStatusStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1Status;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetailStatus;
@@ -243,7 +243,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticStandingOrderPaymentSubmission frStandingOrderSubmission) {
-        OBWritePaymentDetails1PaymentStatusStatus status = OBWritePaymentDetails1PaymentStatusStatus.fromValue(
+        OBWritePaymentDetails1Status status = OBWritePaymentDetails1Status.fromValue(
                 PaymentsUtils.statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
         );
 
@@ -254,12 +254,13 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
                                         new OBWritePaymentDetails1()
-                                                .status(OBWritePaymentDetails1Status.valueOf(status.getValue()))
+                                                .status(status)
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frStandingOrderSubmission.getUpdated()))
                                                 .statusDetail(
                                                         new OBWritePaymentDetails1StatusDetail()
-                                                                .status(OBWritePaymentDetails1StatusDetailStatus.valueOf(status.getValue()))
+                                                                .status(FRPaymentDetailsStatusConverter.toOBWritePaymentDetails1StatusDetailStatus(
+                                                                        frStandingOrderSubmission.getStatus().getValue()))
                                                                 .statusReason(String.valueOf(statusDetailStatus))
                                                                 .statusReasonDescription(statusDetailStatus.getValue())
                                                 )

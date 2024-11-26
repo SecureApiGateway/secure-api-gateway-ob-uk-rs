@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.internationalpayments;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.internationalpayments;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -28,16 +28,16 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteInternationalConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalpayments.InternationalPaymentConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteFundsConfirmationResponse1Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteInternationalConsentResponse6Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.internationalpayments.InternationalPaymentConsentsApi;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteFundsConfirmationResponse1Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBWriteInternationalConsentResponse6Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.service.currency.ExchangeRateService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.InternationalPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
@@ -45,13 +45,13 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internatio
 
 import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiation;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsentResponse6;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternational3DataInitiation;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalConsentResponse6;
 
-@Controller("InternationalPaymentConsentsApiV3.1.10")
+@Controller("InternationalPaymentConsentsApiV4.0.0")
 public class InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -68,12 +68,13 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
-    public InternationalPaymentConsentsApiController(@Qualifier("v3.1.10RestInternationalPaymentConsentStoreClient") InternationalPaymentConsentStoreClient consentStoreApiClient,
-                                                     OBValidationService<OBWriteInternationalConsent5> consentValidator,
-                                                     ExchangeRateService exchangeRateService,
-                                                     OBWriteInternationalConsentResponse6Factory consentResponseFactory,
-                                                     FundsAvailabilityService fundsAvailabilityService,
-                                                     OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory) {
+    public InternationalPaymentConsentsApiController(
+            @Qualifier("v4.0.0RestInternationalPaymentConsentStoreClient") InternationalPaymentConsentStoreClient consentStoreApiClient,
+            OBValidationService<OBWriteInternationalConsent5> consentValidator,
+            ExchangeRateService exchangeRateService,
+            OBWriteInternationalConsentResponse6Factory consentResponseFactory,
+            FundsAvailabilityService fundsAvailabilityService,
+            OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory) {
 
         this.consentStoreApiClient = consentStoreApiClient;
         this.consentValidator = consentValidator;
@@ -84,11 +85,20 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     }
 
     @Override
-    public ResponseEntity<OBWriteInternationalConsentResponse6> createInternationalPaymentConsents(OBWriteInternationalConsent5 obWriteInternationalConsent5,
-                String authorization, String xIdempotencyKey, String xJwsSignature, String xFapiAuthDate, String xFapiCustomerIpAddress,
-                String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+    public ResponseEntity<OBWriteInternationalConsentResponse6> createInternationalPaymentConsents(
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            OBWriteInternationalConsent5 obWriteInternationalConsent5,
+            String xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException {
 
-        logger.info("Processing createInternationalPaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
+        logger.trace("Processing createInternationalPaymentConsents request - consent: {}, idempotencyKey: {}, apiClient: {}, x-fapi-interaction-id: {}",
                 obWriteInternationalConsent5, xIdempotencyKey, apiClientId, xFapiInteractionId);
 
         consentValidator.validate(obWriteInternationalConsent5);
@@ -104,7 +114,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 new FRAmount(instructedAmount.getAmount(), instructedAmount.getCurrency()), initiation.getExchangeRateInformation()));
 
         final InternationalPaymentConsent consent = consentStoreApiClient.createConsent(createRequest);
-        logger.info("Created consent - id: {}", consent.getId());
+        logger.trace("Created consent - id: {}", consent.getId());
 
         return new ResponseEntity<>(consentResponseFactory.buildConsentResponse(consent, getClass()), HttpStatus.CREATED);
     }
@@ -114,32 +124,46 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     }
 
     @Override
-    public ResponseEntity<OBWriteInternationalConsentResponse6> getInternationalPaymentConsentsConsentId(String consentId, String authorization,
-            String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
-            String apiClientId, HttpServletRequest request, Principal principal) {
+    public ResponseEntity<OBWriteInternationalConsentResponse6> getInternationalPaymentConsentsConsentId(
+            String consentId,
+            String authorization,
+            String xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal) {
 
-        logger.info("Processing getInternationalPaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
-                    consentId, apiClientId, xFapiInteractionId);
+        logger.trace("Processing getInternationalPaymentConsentsConsentId request - consentId: {}, apiClient: {}, x-fapi-interaction-id: {}",
+                consentId, apiClientId, xFapiInteractionId);
 
         return ResponseEntity.ok(consentResponseFactory.buildConsentResponse(consentStoreApiClient.getConsent(consentId, apiClientId), getClass()));
     }
 
     @Override
-    public ResponseEntity<OBWriteFundsConfirmationResponse1> getInternationalPaymentConsentsConsentIdFundsConfirmation(String consentId,
-            String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId,
-            String xCustomerUserAgent, String apiClientId, HttpServletRequest request, Principal principal) throws OBErrorResponseException {
+    public ResponseEntity<OBWriteFundsConfirmationResponse1> getInternationalPaymentConsentsConsentIdFundsConfirmation(
+            String consentId,
+            String authorization,
+            String xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String apiClientId,
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException {
 
-        logger.info("Processing getInternationalPaymentConsentsConsentIdFundsConfirmation request - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",
+        logger.trace("Processing getInternationalPaymentConsentsConsentIdFundsConfirmation request - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",
                 consentId, apiClientId, xFapiInteractionId);
 
         final InternationalPaymentConsent consent = consentStoreApiClient.getConsent(consentId, apiClientId);
         if (OBPaymentConsentStatus.fromValue(consent.getStatus()) != OBPaymentConsentStatus.AUTHORISED) {
             throw new OBErrorResponseException(HttpStatus.BAD_REQUEST, OBRIErrorResponseCategory.REQUEST_INVALID,
-                                               OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
+                    OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consent.getStatus()));
         }
 
         final boolean fundsAvailable = fundsAvailabilityService.isFundsAvailable(consent.getAuthorisedDebtorAccountId(),
-                                                                                 consent.getRequestObj().getData().getInitiation().getInstructedAmount().getAmount());
+                consent.getRequestObj().getData().getInitiation().getInstructedAmount().getAmount());
 
         return ResponseEntity.ok(fundsConfirmationResponseFactory.create(fundsAvailable, consentId,
                 id -> LinksHelper.createInternationalPaymentConsentsFundsConfirmationLink(getClass(), id)));

@@ -37,6 +37,7 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteDataDomesticScheduled;
@@ -69,7 +70,6 @@ import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1PaymentStatusStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1Status;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetailStatus;
@@ -250,7 +250,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticScheduledPaymentSubmission frPaymentSubmission) {
-        OBWritePaymentDetails1PaymentStatusStatus status = OBWritePaymentDetails1PaymentStatusStatus.fromValue(
+        OBWritePaymentDetails1Status status = OBWritePaymentDetails1Status.fromValue(
                 PaymentsUtils.statusLinkingMap.get(frPaymentSubmission.getStatus().getValue())
         );
         String localInstrument = frPaymentSubmission.getScheduledPayment().getData().getInitiation().getLocalInstrument();
@@ -262,13 +262,14 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
                                         new OBWritePaymentDetails1()
-                                                .status(OBWritePaymentDetails1Status.valueOf(status.getValue()))
+                                                .status(status)
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated()))
                                                 .statusDetail(
                                                         new OBWritePaymentDetails1StatusDetail()
-                                                                .localInstrument(localInstrument)
-                                                                .status(OBWritePaymentDetails1StatusDetailStatus.valueOf(status.getValue()))
+                                                                .localInstrument(frPaymentSubmission.getPayment().getData().getInitiation().getLocalInstrument())
+                                                                .status(FRPaymentDetailsStatusConverter.toOBWritePaymentDetails1StatusDetailStatus(
+                                                                        frPaymentSubmission.getStatus().getValue()))
                                                                 .statusReason(String.valueOf(statusDetailStatus))
                                                                 .statusReasonDescription(statusDetailStatus.getValue())
                                                 )
