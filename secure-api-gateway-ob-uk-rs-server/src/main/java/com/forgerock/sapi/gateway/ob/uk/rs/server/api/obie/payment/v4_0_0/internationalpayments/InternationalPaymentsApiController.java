@@ -248,9 +248,6 @@ public class InternationalPaymentsApiController implements InternationalPayments
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalPaymentSubmission frInternationalPaymentSubmission) {
-        OBWritePaymentDetails1Status status = OBWritePaymentDetails1Status.fromValue(
-                frInternationalPaymentSubmission.getStatus().getValue()
-        );
 
         // Build the response object with data to meet the expected data defined by the spec
         OBWritePaymentDetails1StatusDetailStatus statusDetailStatus = OBWritePaymentDetails1StatusDetailStatus.PDNG;
@@ -259,7 +256,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
                                         new OBWritePaymentDetails1()
-                                                .status(status)
+                                                .status(FRPaymentDetailsStatusConverter.toOBPaymentDetailsStatus(frInternationalPaymentSubmission.getStatus().getValue()))
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frInternationalPaymentSubmission.getUpdated()))
                                                 .statusDetail(
