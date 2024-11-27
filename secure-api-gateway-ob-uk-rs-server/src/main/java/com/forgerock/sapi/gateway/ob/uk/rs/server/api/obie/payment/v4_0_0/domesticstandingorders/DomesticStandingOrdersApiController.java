@@ -243,9 +243,6 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRDomesticStandingOrderPaymentSubmission frStandingOrderSubmission) {
-        OBWritePaymentDetails1Status status = OBWritePaymentDetails1Status.fromValue(
-                PaymentsUtils.statusLinkingMap.get(frStandingOrderSubmission.getStatus().getValue())
-        );
 
         // Build the response object with data to meet the expected data defined by the spec
         OBWritePaymentDetails1StatusDetailStatus statusDetailStatus = OBWritePaymentDetails1StatusDetailStatus.PDNG;
@@ -254,7 +251,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                         new OBWritePaymentDetailsResponse1Data()
                                 .addPaymentStatusItem(
                                         new OBWritePaymentDetails1()
-                                                .status(status)
+                                                .status(FRPaymentDetailsStatusConverter.toOBPaymentDetailsStatus(frStandingOrderSubmission.getStatus().getValue()))
                                                 .paymentTransactionId(UUID.randomUUID().toString())
                                                 .statusUpdateDateTime(new DateTime(frStandingOrderSubmission.getUpdated()))
                                                 .statusDetail(

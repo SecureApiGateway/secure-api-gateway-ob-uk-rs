@@ -37,7 +37,7 @@ public class OBWriteInternational3Validator extends BasePaymentRequestValidator<
 
     @Override
     protected void doPaymentSpecificValidation(OBWriteInternational3Validator.OBWriteInternational3ValidationContext paymentReqValidationCtxt,
-            ValidationResult<OBError1> validationResult) {
+                                               ValidationResult<OBError1> validationResult) {
 
         // Add any payment specific validation as required
     }
