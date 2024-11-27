@@ -227,13 +227,30 @@ public class DefaultOBValidationModule {
     }
 
     @Bean
+    public OBValidationService<uk.org.openbanking.datamodel.v4.payment.OBWriteFileConsent3> filePaymentConsentValidatorV4(
+            PaymentFileProcessorService paymentFileProcessorService) {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBWriteFileConsent3Validator(
+                paymentFileProcessorService.getSupportedFileTypes()));
+    }
+
+    @Bean
     public OBValidationService<FilePaymentFileContentValidationContext> filePaymentFileContentValidator() {
         return new OBValidationService<>(new FilePaymentFileContentValidator());
     }
 
     @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.v4.FilePaymentFileContentValidator.FilePaymentFileContentValidationContext> filePaymentFileContentValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.validation.v4.FilePaymentFileContentValidator());
+    }
+
+    @Bean
     public OBValidationService<OBWriteFile2ValidationContext> filePaymentRequestValidator() {
         return new OBValidationService<>(new OBWriteFile2Validator());
+    }
+
+    @Bean
+    public OBValidationService<com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteFile2Validator.OBWriteFile2ValidationContext> filePaymentRequestValidatorV4() {
+        return new OBValidationService<>(new com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.OBWriteFile2Validator());
     }
 
     @Bean

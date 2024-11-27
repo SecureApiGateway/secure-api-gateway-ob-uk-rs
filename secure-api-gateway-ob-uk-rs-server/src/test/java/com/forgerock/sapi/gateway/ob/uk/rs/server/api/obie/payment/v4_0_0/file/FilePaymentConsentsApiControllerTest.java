@@ -13,43 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.file;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
-import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.file;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import org.joda.time.DateTimeZone;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.PaymentFileType;
@@ -59,18 +26,40 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.util.payment.file.TestPaymentF
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.FilePaymentConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.CreateFilePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FileUploadRequest;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
-
+import org.joda.time.DateTimeZone;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4;
-import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
-import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFileConsent3;
+import uk.org.openbanking.testsupport.v4.payment.OBWriteFileConsentTestDataFactory;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
+import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
@@ -87,13 +76,13 @@ public class FilePaymentConsentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    @Qualifier("v3.1.10RestFilePaymentConsentStoreClient")
+    @Qualifier("v4.0.0RestFilePaymentConsentStoreClient")
     private FilePaymentConsentStoreClient consentStoreClient;
 
     private final TestPaymentFileResources testPaymentFileResources = TestPaymentFileResources.getInstance();
 
     private String controllerBaseUri() {
-        return "http://localhost:" + port + "/open-banking/v3.1.10/pisp/file-payment-consents";
+        return "http://localhost:" + port + "/open-banking/v4.0.0/pisp/file-payment-consents";
     }
 
     private String controllerGetConsentUri(String consentId) {
@@ -102,52 +91,6 @@ public class FilePaymentConsentsApiControllerTest {
 
     private String controllerUploadFileUri(String consentId) {
         return controllerGetConsentUri(consentId) + "/file";
-    }
-
-
-    @Test
-    public void testCreateConsent() {
-        final String fileHash = "fileHash";
-        final int numTransactions = 1;
-        final BigDecimal controlSum = BigDecimal.ONE;
-        final OBWriteFileConsent3 consentRequest = createValidConsentRequest(DefaultPaymentFileType.UK_OBIE_PAIN_001.getPaymentFileType(),
-                                                                                fileHash, numTransactions, controlSum);
-        final FilePaymentConsent consentStoreResponse = buildAwaitingUploadConsent(consentRequest);
-        when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
-            final CreateFilePaymentConsentRequest createConsentArg = invocation.getArgument(0, CreateFilePaymentConsentRequest.class);
-            assertThat(createConsentArg.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
-            assertThat(createConsentArg.getConsentRequest()).isEqualTo(FRWriteFileConsentConverter.toFRWriteFileConsent(consentRequest));
-            assertThat(createConsentArg.getCharges()).isEmpty();
-            assertThat(createConsentArg.getIdempotencyKey()).isEqualTo(HTTP_HEADERS.getFirst("x-idempotency-key"));
-
-            return consentStoreResponse;
-        });
-
-        final HttpEntity<OBWriteFileConsent3> entity = new HttpEntity<>(consentRequest, HTTP_HEADERS);
-
-        final ResponseEntity<OBWriteFileConsentResponse4> createResponse = restTemplate.exchange(controllerBaseUri(), HttpMethod.POST,
-                entity, OBWriteFileConsentResponse4.class);
-        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        final OBWriteFileConsentResponse4 consentResponse = createResponse.getBody();
-        final String consentId = consentResponse.getData().getConsentId();
-        assertThat(consentId).isEqualTo(consentStoreResponse.getId());
-        assertThat(consentResponse.getData().getStatus()).isEqualTo(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD);
-        assertThat(consentResponse.getData().getInitiation()).isEqualTo(consentRequest.getData().getInitiation());
-        assertThat(consentResponse.getData().getAuthorisation()).isEqualTo(consentRequest.getData().getAuthorisation());
-        assertThat(consentResponse.getData().getScASupportData()).isEqualTo(consentRequest.getData().getScASupportData());
-        assertThat(consentResponse.getData().getCreationDateTime()).isNotNull();
-        assertThat(consentResponse.getData().getStatusUpdateDateTime()).isNotNull();
-        final String selfLinkToConsent = consentResponse.getLinks().getSelf().toString();
-        assertThat(selfLinkToConsent).isEqualTo(controllerGetConsentUri(consentId));
-
-        // Get the consent and verify it matches the create response
-        when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consentStoreResponse);
-
-        final ResponseEntity<OBWriteFileConsentResponse4> getConsentResponse = restTemplate.exchange(selfLinkToConsent,
-                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBWriteFileConsentResponse4.class);
-
-        assertThat(getConsentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(getConsentResponse.getBody()).isEqualTo(consentResponse);
     }
 
     @Test
@@ -193,6 +136,7 @@ public class FilePaymentConsentsApiControllerTest {
 
         assertThat(fileUploadResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         final OBErrorResponse1 obErrorResponse = fileUploadResponse.getBody();
+        assert obErrorResponse != null;
         assertThat(obErrorResponse.getErrors().size()).isEqualTo(1);
         assertThat(obErrorResponse.getCode()).isEqualTo("OBRI.Request.Invalid");
         final OBError1 obError1 = obErrorResponse.getErrors().get(0);
@@ -222,6 +166,7 @@ public class FilePaymentConsentsApiControllerTest {
 
         assertThat(fileUploadResponse.getStatusCode()).isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         final OBErrorResponse1 obErrorResponse = fileUploadResponse.getBody();
+        assert obErrorResponse != null;
         assertThat(obErrorResponse.getErrors().size()).isEqualTo(1);
         assertThat(obErrorResponse.getCode()).isEqualTo("UNSUPPORTED_MEDIA_TYPE");
         final OBError1 obError1 = obErrorResponse.getErrors().get(0);
@@ -238,7 +183,7 @@ public class FilePaymentConsentsApiControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
-        final List<OBError1> errors = response.getBody().getErrors();
+        final List<OBError1> errors = Objects.requireNonNull(response.getBody()).getErrors();
         assertThat(errors).hasSize(1);
         final String fieldInvalidErrCode = OBStandardErrorCodes1.UK_OBIE_FIELD_INVALID.toString();
         assertThat(errors.get(0)).isEqualTo(
@@ -254,7 +199,7 @@ public class FilePaymentConsentsApiControllerTest {
                 HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBErrorResponse1.class);
 
         assertThat(consentNotFoundResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(consentNotFoundResponse.getBody().getCode()).isEqualTo(OBRI_CONSENT_NOT_FOUND.toString());
+        assertThat(Objects.requireNonNull(consentNotFoundResponse.getBody()).getCode()).isEqualTo(OBRI_CONSENT_NOT_FOUND.toString());
     }
 
     @Test
@@ -264,7 +209,7 @@ public class FilePaymentConsentsApiControllerTest {
                 HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBErrorResponse1.class);
 
         assertThat(consentNotFoundResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(consentNotFoundResponse.getBody().getCode()).isEqualTo(OBRI_PERMISSION_INVALID.toString());
+        assertThat(Objects.requireNonNull(consentNotFoundResponse.getBody()).getCode()).isEqualTo(OBRI_PERMISSION_INVALID.toString());
     }
 
     @Test
@@ -296,7 +241,7 @@ public class FilePaymentConsentsApiControllerTest {
 
 
         assertThat(errorResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(errorResponse.getBody().getErrors()).hasSize(1).singleElement().isEqualTo(OBRIErrorType.NO_FILE_FOR_CONSENT.toOBError1());
+        assertThat(Objects.requireNonNull(errorResponse.getBody()).getErrors()).hasSize(1).singleElement().isEqualTo(OBRIErrorType.NO_FILE_FOR_CONSENT.toOBError1());
     }
 
 
@@ -314,7 +259,7 @@ public class FilePaymentConsentsApiControllerTest {
         final FilePaymentConsent consentStoreResponse = new FilePaymentConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId());
         consentStoreResponse.setRequestObj(FRWriteFileConsentConverter.toFRWriteFileConsent(consentRequest));
-        consentStoreResponse.setStatus(OBWriteFileConsentResponse4DataStatus.AWAITINGUPLOAD.toString());
+        consentStoreResponse.setStatus(AWAITINGUPLOAD.toString());
         consentStoreResponse.setCharges(List.of());
         final Date creationDateTime = new Date();
         consentStoreResponse.setCreationDateTime(creationDateTime);

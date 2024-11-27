@@ -20,6 +20,9 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.file;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,9 +84,7 @@ public interface FilePaymentConsentsApi {
         tags = { "File Payments" },
         responses = {
             @ApiResponse(responseCode = "201", description = "File Payment Consents Created", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
+                @Content(mediaType = "*/*", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                 @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
@@ -119,8 +120,8 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payment-consents",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
-        consumes = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"},
+        consumes = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileConsentResponse4> createFilePaymentConsents(
@@ -133,7 +134,7 @@ public interface FilePaymentConsentsApi {
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
         @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
         @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+    ) throws OBErrorResponseException;
 
 
     /**
@@ -201,8 +202,8 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payment-consents/{ConsentId}/file",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
-        consumes = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"},
+        consumes = {"*/*"}
     )
     
     ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(
@@ -210,13 +211,14 @@ public interface FilePaymentConsentsApi {
         @NotNull @Parameter(name = "Authorization", description = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "Authorization", required = true) String authorization,
         @NotNull @Pattern(regexp = "^(?!\\s)(.*)(\\S)$") @Size(max = 40) @Parameter(name = "x-idempotency-key", description = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
         @NotNull @Parameter(name = "x-jws-signature", description = "A detached JWS signature of the body of the payload.", required = true, in = ParameterIn.HEADER) @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
-        @Parameter(name = "body", description = "Default", required = true) @Valid @RequestBody Object body,
+        @Parameter(name = "body", description = "Default", required = true) @Valid @RequestBody String body,
         @Pattern(regexp = "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$") @Parameter(name = "x-fapi-auth-date", description = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
         @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
         @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+        HttpServletRequest request
+    ) throws OBErrorException, OBErrorResponseException;
 
 
     /**
@@ -245,9 +247,7 @@ public interface FilePaymentConsentsApi {
         tags = { "File Payments" },
         responses = {
             @ApiResponse(responseCode = "200", description = "File Payment Consents Read", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = OBWriteFileConsentResponse4.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
+                @Content(mediaType = "*/*", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                 @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
@@ -277,7 +277,7 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payment-consents/{ConsentId}",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileConsentResponse4> getFilePaymentConsentsConsentId(
@@ -317,9 +317,7 @@ public interface FilePaymentConsentsApi {
         tags = { "File Payments" },
         responses = {
             @ApiResponse(responseCode = "200", description = "File Payment Consents Read", content = {
-                @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = Object.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = Object.class)),
-                @Content(mediaType = "application/jose+jwe", schema = @Schema(implementation = Object.class))
+                @Content(mediaType = "*/*", schema = @Schema(implementation = OBWriteFileConsentResponse4.class))
             }),
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                 @Content(mediaType = "application/json; charset=utf-8", schema = @Schema(implementation = OBErrorResponse1.class)),
@@ -349,7 +347,7 @@ public interface FilePaymentConsentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payment-consents/{ConsentId}/file",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"}
     )
     
     ResponseEntity<Object> getFilePaymentConsentsConsentIdFile(
@@ -360,6 +358,6 @@ public interface FilePaymentConsentsApi {
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
         @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
         @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+    ) throws OBErrorException;
 
 }

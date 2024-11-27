@@ -20,6 +20,9 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.file;
 
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -120,8 +123,8 @@ public interface FilePaymentsApi {
     @RequestMapping(
         method = RequestMethod.POST,
         value = "/file-payments",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
-        consumes = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"},
+        consumes = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileResponse3> createFilePayments(
@@ -133,8 +136,9 @@ public interface FilePaymentsApi {
         @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
         @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+        HttpServletRequest request
+    ) throws OBErrorResponseException, OBErrorException;
 
 
     /**
@@ -195,7 +199,7 @@ public interface FilePaymentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payments/{FilePaymentId}",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"}
     )
     
     ResponseEntity<OBWriteFileResponse3> getFilePaymentsFilePaymentId(
@@ -205,8 +209,9 @@ public interface FilePaymentsApi {
         @Parameter(name = "x-fapi-customer-ip-address", description = "The PSU's IP address if the PSU is currently logged in with the TPP.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
         @Parameter(name = "x-fapi-interaction-id", description = "An RFC4122 UID used as a correlation id.", in = ParameterIn.HEADER) @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
         @Parameter(name = "x-customer-user-agent", description = "Indicates the user-agent that the PSU is using.", in = ParameterIn.HEADER) @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId
-    );
+        @Parameter(name = "x-api-client-id", description = "OAuth2.0 client_id of the ApiClient making the request", in = ParameterIn.HEADER) @RequestHeader(value = "x-api-client-id") String apiClientId,
+        HttpServletRequest request
+    ) throws OBErrorResponseException;
 
 
     /**
@@ -267,7 +272,7 @@ public interface FilePaymentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payments/{FilePaymentId}/payment-details",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"}
     )
     
     ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
@@ -339,7 +344,7 @@ public interface FilePaymentsApi {
     @RequestMapping(
         method = RequestMethod.GET,
         value = "/file-payments/{FilePaymentId}/report-file",
-        produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" }
+        produces = {"*/*"}
     )
     
     ResponseEntity<Object> getFilePaymentsFilePaymentIdReportFile(
