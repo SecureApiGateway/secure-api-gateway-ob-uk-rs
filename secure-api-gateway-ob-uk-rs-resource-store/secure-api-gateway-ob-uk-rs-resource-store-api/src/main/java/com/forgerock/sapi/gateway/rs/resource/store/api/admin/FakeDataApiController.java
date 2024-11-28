@@ -98,8 +98,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transact
 
 import uk.org.openbanking.datamodel.v3.account.OBExternalStatementAmountType1Code;
 import uk.org.openbanking.datamodel.v3.account.OBExternalStatementType1Code;
-import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
-import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInnerProductType;
+import uk.org.openbanking.datamodel.v4.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.v4.account.OBReadProduct2DataProductInnerProductType;
 import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Code;
 
 @Controller("FakeDataApi")

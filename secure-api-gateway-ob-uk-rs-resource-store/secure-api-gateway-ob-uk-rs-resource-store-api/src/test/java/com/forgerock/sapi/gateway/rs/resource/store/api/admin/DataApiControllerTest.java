@@ -15,6 +15,7 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRBalanceTypeConverter.toOBBalanceType1CodeV4;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -65,13 +66,13 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
 
-import uk.org.openbanking.datamodel.v3.account.OBAccount6;
+import uk.org.openbanking.datamodel.v4.account.OBAccount6;
 import uk.org.openbanking.datamodel.v3.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.v3.account.OBCreditDebitCode2;
-import uk.org.openbanking.datamodel.v3.account.OBReadBalance1DataBalanceInner;
-import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
-import uk.org.openbanking.datamodel.v3.account.OBTransactionCashBalance;
-import uk.org.openbanking.datamodel.v3.account.OBTransactionCashBalanceAmount;
+import uk.org.openbanking.datamodel.v4.account.OBCreditDebitCode2;
+import uk.org.openbanking.datamodel.v4.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v4.account.OBTransactionCashBalance;
+import uk.org.openbanking.datamodel.v4.account.OBTransactionCashBalanceAmount;
 
 /**
  * A SpringBoot test for the {@link DataApiController}.
@@ -283,8 +284,8 @@ public class DataApiControllerTest {
 
         List<FRAccountData> accountDatas = List.of(accountDataWithBalances(
                 account, 1001,
-                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMAVAILABLE),
-                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMBOOKED)));
+                new OBReadBalance1DataBalanceInner().type(toOBBalanceType1CodeV4(String.valueOf(OBBalanceType1Code.INTERIMAVAILABLE))),
+                new OBReadBalance1DataBalanceInner().type(toOBBalanceType1CodeV4(String.valueOf(OBBalanceType1Code.INTERIMBOOKED)))));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(savedAccount.getUserID());
@@ -322,7 +323,7 @@ public class DataApiControllerTest {
         final List<OBTransaction6> transactions = new ArrayList<>(numTransactions);
         for (int i = 0; i < numTransactions; i++) {
             OBTransaction6 transaction = new OBTransaction6();
-            transaction.balance(new OBTransactionCashBalance(OBCreditDebitCode2.CREDIT, OBBalanceType1Code.CLOSINGCLEARED, new OBTransactionCashBalanceAmount(i + ".00", "GBP")))
+            transaction.balance(new OBTransactionCashBalance(OBCreditDebitCode2.CREDIT, toOBBalanceType1CodeV4(String.valueOf(OBBalanceType1Code.CLOSINGBOOKED)), new OBTransactionCashBalanceAmount(i + ".00", "GBP")))
                        .transactionReference("Test Payment: " + i);
             transactions.add(transaction);
         }

@@ -15,17 +15,18 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBAccount6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toOBReadOffer1DataOffer;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter.toOBParty2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toOBStatement2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRTransactionConverter.toOBTransaction6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRStandingOrderConverter.toOBStandingOrder6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalanceInner;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FROfferConverter.toOBReadOffer1DataOffer;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRTransactionConverter.toOBTransaction6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRStandingOrderConverter.toOBStandingOrder6;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -311,7 +312,7 @@ public class DataApiController implements DataApi {
                 //Party
                 dataCreator.createParty(accountData).ifPresent(p -> accountDataResponse.setParty(toOBParty2(p)));
                 //Balance
-                dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(toOBReadBalance1DataBalance(b.getBalance())));
+                dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(toOBReadBalance1DataBalanceInner(b.getBalance())));
                 //Beneficiaries
                 dataCreator.createBeneficiaries(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBeneficiary(toOBBeneficiary5(b.getBeneficiary())));
                 //Direct debits
