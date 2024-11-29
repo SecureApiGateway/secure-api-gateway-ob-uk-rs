@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.aggregatedpolling;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.FREventPollingConverter.toFREventPolling;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.event.FREventPollingConverter.toFREventPolling;
 
 import java.util.Map;
 
@@ -30,8 +30,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.event.v3_1_10.aggregatedpoll
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.event.EventPollingService;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.event.OBEventPolling1;
-import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
+import uk.org.openbanking.datamodel.v3.event.OBEventPolling1;
+import uk.org.openbanking.datamodel.v3.event.OBEventPollingResponse1;
 
 @Controller("AggregatedPollingApiV3.1.10")
 @Slf4j

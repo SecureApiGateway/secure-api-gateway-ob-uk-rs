@@ -19,13 +19,14 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermi
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRReadConsentData;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.account.v3_1_10.AccountAccessConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.account.AccountAccessConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -35,13 +36,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBReadAccount6;
 
 import java.util.List;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.testsupport.account.FRFinancialAccountTestDataFactory.aValidFRFinancialAccount;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory.requiredAccountApiHeaders;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +63,7 @@ public class AccountsApiControllerTest {
     @LocalServerPort
     private int port;
     @MockBean
+    @Qualifier("v3.1.10RestAccountAccessConsentStoreClient")
     private AccountAccessConsentStoreClient accountAccessConsentStoreClient;
 
     @Autowired

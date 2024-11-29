@@ -16,7 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link;
 
 import org.springframework.hateoas.Link;
-import uk.org.openbanking.datamodel.common.Links;
+import uk.org.openbanking.datamodel.v3.common.Links;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 

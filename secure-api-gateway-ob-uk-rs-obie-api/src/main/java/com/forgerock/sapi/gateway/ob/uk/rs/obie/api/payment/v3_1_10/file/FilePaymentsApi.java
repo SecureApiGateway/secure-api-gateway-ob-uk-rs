@@ -36,10 +36,10 @@ import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3;
+import uk.org.openbanking.datamodel.v3.payment.OBWritePaymentDetailsResponse1;
 
 import org.joda.time.DateTime;
 import org.springframework.core.io.Resource;

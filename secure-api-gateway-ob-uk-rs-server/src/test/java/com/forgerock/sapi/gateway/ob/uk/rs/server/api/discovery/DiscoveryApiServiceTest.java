@@ -26,8 +26,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
-import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
+import uk.org.openbanking.datamodel.v3.discovery.GenericOBDiscoveryAPILinks;
+import uk.org.openbanking.datamodel.v3.discovery.OBDiscoveryAPI;
 
 import java.util.HashMap;
 import java.util.Map;

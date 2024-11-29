@@ -60,5 +60,5 @@ to validate particular fields or can implement all validation rules for a partic
 
 The naming convention for validators is "${TypeToValidate}Validator".
 
-Example validator impl: [com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.account.consent.OBReadConsent1Validator](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/account/consent/OBReadConsent1Validator.java),
+Example validator impl: [consent.account.com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.OBReadConsent1Validator](secure-api-gateway-ob-uk-rs-validation-obie/src/main/java/com/forgerock/sapi/gateway/ob/uk/rs/validation/obie/account/consent/OBReadConsent1Validator.java),
 this is responsible for validating OBReadConsent1 objects (Account Access Consents).

@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.scheduledpayments;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.List;
@@ -33,8 +33,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.scheduledpay
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3;
-import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3Data;
+import org.springframework.beans.factory.annotation.Qualifier;
+import uk.org.openbanking.datamodel.v3.account.OBReadScheduledPayment3;
+import uk.org.openbanking.datamodel.v3.account.OBReadScheduledPayment3Data;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
 
     public ScheduledPaymentsApiController(@Value("${rs.page.default.scheduled-payments.size:10}") int pageLimitSchedulePayments,
             FRScheduledPaymentRepository frScheduledPaymentRepository,
-            AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+            AccountDataInternalIdFilter accountDataInternalIdFilter, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitSchedulePayments = pageLimitSchedulePayments;
         this.frScheduledPaymentRepository = frScheduledPaymentRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

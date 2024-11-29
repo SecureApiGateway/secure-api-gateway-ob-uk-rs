@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
-import uk.org.openbanking.datamodel.account.OBReadTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBReadTransaction6;
 
 @Api(tags = {"v3.1.10", SwaggerApiTags.ACCOUNTS_AND_TRANSACTION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.10/aisp")

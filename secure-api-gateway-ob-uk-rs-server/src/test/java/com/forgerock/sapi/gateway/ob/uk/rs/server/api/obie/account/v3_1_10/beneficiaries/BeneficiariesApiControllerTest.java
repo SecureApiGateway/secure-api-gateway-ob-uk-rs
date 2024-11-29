@@ -27,6 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -46,7 +47,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.benefici
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary5;
+import uk.org.openbanking.datamodel.v3.account.OBReadBeneficiary5;
 
 /**
  * Spring Boot Test for {@link BeneficiariesApiController}.
@@ -72,6 +73,7 @@ public class BeneficiariesApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10DefaultAccountResourceAccessService")
     private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;

@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.accounts;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBAccount6;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,26 +32,26 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.accounts.AccountsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount6;
-import uk.org.openbanking.datamodel.account.OBReadAccount6Data;
+import uk.org.openbanking.datamodel.v3.account.OBAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBReadAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBReadAccount6Data;
 
 @Controller("AccountsApiV3.1.10")
 public class AccountsApiController implements AccountsApi {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     private final AccountResourceAccessService accountResourceAccessService;
 
     private final FRAccountRepository frAccountRepository;
 
-    public AccountsApiController(FRAccountRepository frAccountRepository, AccountResourceAccessService accountResourceAccessService) {
+    public AccountsApiController(FRAccountRepository frAccountRepository, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.frAccountRepository = frAccountRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }

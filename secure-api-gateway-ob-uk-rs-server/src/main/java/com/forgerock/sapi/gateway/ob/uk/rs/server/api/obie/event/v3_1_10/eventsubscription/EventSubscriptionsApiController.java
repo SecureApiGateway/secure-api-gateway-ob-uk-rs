@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.event.v3_1_10.eventsubscription;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.event.FREventSubscriptionConverter.toFREventSubscriptionData;
 
 import java.net.URI;
 import java.security.Principal;
@@ -46,15 +46,15 @@ import org.springframework.stereotype.Controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.common.Links;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1DataEventSubscriptionInner;
+import uk.org.openbanking.datamodel.v3.common.Links;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscription1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscription1Data;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscriptionResponse1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscriptionResponse1Data;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscriptionsResponse1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscriptionsResponse1Data;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubscriptionsResponse1DataEventSubscriptionInner;
 
 @Controller("EventSubscriptionApiV3.1.10")
 public class EventSubscriptionsApiController implements EventSubscriptionsApi {

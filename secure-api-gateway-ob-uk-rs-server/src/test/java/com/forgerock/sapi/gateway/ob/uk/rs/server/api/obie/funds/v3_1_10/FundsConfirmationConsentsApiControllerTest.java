@@ -30,10 +30,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.FundsConfirmationConsentStoreClient;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -45,31 +47,30 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.common.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
+import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum;
 
 /**
  * Test for {@link FundsConfirmationConsentsApiController}
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-public class FundsConfirmationConsentsApiControllerTest {
+class FundsConfirmationConsentsApiControllerTest {
     private static final String TEST_API_CLIENT_ID = UUID.randomUUID().toString();
 
     private static final HttpHeaders HTTP_HEADERS = HttpHeadersTestDataFactory.requiredFundsConsentApiHeaders(TEST_API_CLIENT_ID);
@@ -80,6 +81,7 @@ public class FundsConfirmationConsentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10RestFundsConfirmationConsentStoreClient")
     private FundsConfirmationConsentStoreClient consentStoreClient;
 
     public String fundsConfirmationConsentApiUri() {

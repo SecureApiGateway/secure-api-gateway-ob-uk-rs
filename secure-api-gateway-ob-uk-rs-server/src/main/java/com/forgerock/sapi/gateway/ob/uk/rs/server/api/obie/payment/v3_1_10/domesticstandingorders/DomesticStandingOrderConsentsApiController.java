@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.domesticstandingorders;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -23,9 +23,9 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,14 +33,14 @@ import org.springframework.stereotype.Controller;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.domesticstandingorders.DomesticStandingOrderConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteDomesticStandingOrderConsentResponse6Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteDomesticStandingOrderConsentResponse6Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsentResponse6;
 
 @Controller("DomesticStandingOrdersConsentsApiV3.1.10")
 public class DomesticStandingOrderConsentsApiController implements DomesticStandingOrderConsentsApi {
@@ -53,7 +53,8 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
     private final OBWriteDomesticStandingOrderConsentResponse6Factory consentResponseFactory;
 
-    public DomesticStandingOrderConsentsApiController(DomesticStandingOrderConsentStoreClient consentStoreApiClient,
+    public DomesticStandingOrderConsentsApiController(
+            @Qualifier("v3.1.10RestDomesticStandingOrderConsentStoreClient") DomesticStandingOrderConsentStoreClient consentStoreApiClient,
             OBValidationService<OBWriteDomesticStandingOrderConsent5> consentValidator,
             OBWriteDomesticStandingOrderConsentResponse6Factory consentResponseFactory) {
 

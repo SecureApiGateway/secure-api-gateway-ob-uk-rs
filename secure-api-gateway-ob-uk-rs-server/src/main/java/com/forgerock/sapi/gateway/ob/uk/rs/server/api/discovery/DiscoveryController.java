@@ -25,9 +25,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import uk.org.openbanking.datamodel.discovery.OBDiscovery;
-import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
-import uk.org.openbanking.datamodel.discovery.OBDiscoveryResponse;
+import uk.org.openbanking.datamodel.v3.discovery.OBDiscovery;
+import uk.org.openbanking.datamodel.v3.discovery.OBDiscoveryAPI;
+import uk.org.openbanking.datamodel.v3.discovery.OBDiscoveryResponse;
 
 import java.util.Map;
 

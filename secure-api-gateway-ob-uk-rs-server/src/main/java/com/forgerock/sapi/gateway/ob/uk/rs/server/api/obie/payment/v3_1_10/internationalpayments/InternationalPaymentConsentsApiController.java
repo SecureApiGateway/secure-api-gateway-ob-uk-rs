@@ -19,37 +19,37 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalpayments.InternationalPaymentConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteFundsConfirmationResponse1Factory;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteInternationalConsentResponse6Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteFundsConfirmationResponse1Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteInternationalConsentResponse6Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.currency.ExchangeRateService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.v3_1_10.InternationalPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.international.InternationalPaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.CreateInternationalPaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.international.v3_1_10.InternationalPaymentConsent;
 
 import jakarta.servlet.http.HttpServletRequest;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsent5;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalConsentResponse6;
 
 @Controller("InternationalPaymentConsentsApiV3.1.10")
 public class InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
@@ -68,7 +68,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
     private final OBWriteFundsConfirmationResponse1Factory fundsConfirmationResponseFactory;
 
-    public InternationalPaymentConsentsApiController(InternationalPaymentConsentStoreClient consentStoreApiClient,
+    public InternationalPaymentConsentsApiController(@Qualifier("v3.1.10RestInternationalPaymentConsentStoreClient") InternationalPaymentConsentStoreClient consentStoreApiClient,
                                                      OBValidationService<OBWriteInternationalConsent5> consentValidator,
                                                      ExchangeRateService exchangeRateService,
                                                      OBWriteInternationalConsentResponse6Factory consentResponseFactory,

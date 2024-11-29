@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.offers;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toOBReadOffer1DataOffer;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.stream.Collectors;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,8 +41,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FROffer;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.offers.FROfferRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import uk.org.openbanking.datamodel.account.OBReadOffer1;
-import uk.org.openbanking.datamodel.account.OBReadOffer1Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadOffer1;
+import uk.org.openbanking.datamodel.v3.account.OBReadOffer1Data;
 
 @Controller("OffersApiV3.1.10")
 public class OffersApiController implements OffersApi {
@@ -57,7 +58,7 @@ public class OffersApiController implements OffersApi {
 
     public OffersApiController(FROfferRepository frOfferRepository,
             AccountDataInternalIdFilter accountDataInternalIdFilter,
-            AccountResourceAccessService accountResourceAccessService) {
+            @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.frOfferRepository = frOfferRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
         this.accountResourceAccessService = accountResourceAccessService;

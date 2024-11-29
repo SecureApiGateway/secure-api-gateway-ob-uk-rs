@@ -21,13 +21,13 @@ import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMI
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_SERVER_INTERNAL_ERROR;
 import static uk.org.openbanking.datamodel.error.OBStandardErrorCodes1.UK_OBIE_RESOURCE_INVALID_CONSENT_STATUS;
 
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
-import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -46,16 +46,21 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRErrorCodeConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
+
+import lombok.extern.slf4j.Slf4j;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 @ControllerAdvice
 @Slf4j
@@ -252,6 +257,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.info("({}) Request failed due to OBErrorResponseException - status: {}, category: {}, errors: {}",
                 fapiInteractionId, ex.getStatus(), ex.getCategory(), ex.getErrors());
 
+        if (isV4Request(request)) {
+            translateErrorCodes(ex);
+        }
+
         return ResponseEntity.status(ex.getStatus()).body(
                 new OBErrorResponse1()
                         .code(ex.getCategory().getId())
@@ -259,7 +268,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .message(ex.getCategory().getDescription())
                         .errors(ex.getErrors()));
     }
-
 
     @ExceptionHandler(value = {OBErrorException.class})
     protected ResponseEntity<Object> handleOBError(OBErrorException ex,
@@ -365,5 +373,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static String getFapiInteractionId(WebRequest request) {
         return request.getHeader("x-fapi-interaction-id");
+    }
+
+    private static boolean isV4Request(WebRequest request) {
+        String[] pathElements = ((ServletWebRequest) request).getRequest().getRequestURI().split("/");
+        return pathElements.length > 3 && pathElements[3].startsWith("v4");
+    }
+
+    public void translateErrorCodes(OBErrorResponseException ex) {
+        List<OBError1> errorList = ex.getErrors();
+        for (OBError1 error : errorList) {
+            error.setErrorCode(FRErrorCodeConverter.toObV4ErrorCode(error.getErrorCode()));
+        }
     }
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRStandingOrderConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRStandingOrderConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.AccountDataInternalIdFilter;
@@ -35,14 +35,15 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.Accoun
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBReadStandingOrder6;
-import uk.org.openbanking.datamodel.account.OBReadStandingOrder6Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadStandingOrder6;
+import uk.org.openbanking.datamodel.v3.account.OBReadStandingOrder6Data;
 
 @Controller("StandingOrdersApiV3.1.10")
 public class StandingOrdersApiController implements StandingOrdersApi {
@@ -60,7 +61,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     public StandingOrdersApiController(@Value("${rs.page.default.standing-order.size:10}") int pageLimitStandingOrders,
             FRStandingOrderRepository frStandingOrderRepository,
             AccountDataInternalIdFilter accountDataInternalIdFilter,
-            AccountResourceAccessService accountResourceAccessService) {
+            @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitStandingOrders = pageLimitStandingOrders;
         this.frStandingOrderRepository = frStandingOrderRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

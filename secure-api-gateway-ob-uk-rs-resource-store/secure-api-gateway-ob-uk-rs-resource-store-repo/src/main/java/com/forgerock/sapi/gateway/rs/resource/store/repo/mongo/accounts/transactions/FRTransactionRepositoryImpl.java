@@ -30,8 +30,8 @@ import org.springframework.data.domain.Pageable;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
 
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode0;
-import uk.org.openbanking.datamodel.common.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.v3.account.OBCreditDebitCode0;
+import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Code;
 
 public class FRTransactionRepositoryImpl implements FRTransactionRepositoryCustom {
     private static final Logger LOGGER = LoggerFactory.getLogger(FRTransactionRepositoryImpl.class);

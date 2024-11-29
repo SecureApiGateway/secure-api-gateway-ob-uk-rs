@@ -21,25 +21,25 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRCharge;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteInternationalStandingOrderConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteInternationalStandingOrderConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v3_1_10.internationalstandingorders.InternationalStandingOrderConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.OBWriteInternationalStandingOrderConsentResponse7Factory;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v3_1_10.OBWriteInternationalStandingOrderConsentResponse7Factory;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.internationalstandingorder.InternationalStandingOrderConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.CreateInternationalStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse7;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsent6;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternationalStandingOrderConsentResponse7;
 
 @Controller("InternationalStandingOrderConsentsApiV3.1.10")
 public class InternationalStandingOrderConsentsApiController implements InternationalStandingOrderConsentsApi {
@@ -52,7 +52,8 @@ public class InternationalStandingOrderConsentsApiController implements Internat
 
     private final OBWriteInternationalStandingOrderConsentResponse7Factory consentResponseFactory;
 
-    public InternationalStandingOrderConsentsApiController(InternationalStandingOrderConsentStoreClient consentStoreClient,
+    public InternationalStandingOrderConsentsApiController(
+            @Qualifier("v3.1.10RestInternationalStandingOrderConsentStoreClient") InternationalStandingOrderConsentStoreClient consentStoreClient,
             OBValidationService<OBWriteInternationalStandingOrderConsent6> consentValidator,
             OBWriteInternationalStandingOrderConsentResponse7Factory consentResponseFactory) {
         this.consentStoreClient = consentStoreClient;

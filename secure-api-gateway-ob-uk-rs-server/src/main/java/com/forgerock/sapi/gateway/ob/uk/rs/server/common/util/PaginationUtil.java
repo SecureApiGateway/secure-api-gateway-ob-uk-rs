@@ -16,8 +16,8 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.org.openbanking.datamodel.common.Links;
-import uk.org.openbanking.datamodel.common.Meta;
+import uk.org.openbanking.datamodel.v3.common.Links;
+import uk.org.openbanking.datamodel.v3.common.Meta;
 
 import java.net.URI;
 

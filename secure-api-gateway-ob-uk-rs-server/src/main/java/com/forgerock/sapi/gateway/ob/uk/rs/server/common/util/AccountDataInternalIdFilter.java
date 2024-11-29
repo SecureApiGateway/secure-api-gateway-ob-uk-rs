@@ -18,12 +18,12 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.common.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.v3.account.*;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@Service
+@Service("V3.1.10AccountDataInternalIdFilter")
 @Slf4j
 public class AccountDataInternalIdFilter {
     private final boolean showAccountDataInternalIds;

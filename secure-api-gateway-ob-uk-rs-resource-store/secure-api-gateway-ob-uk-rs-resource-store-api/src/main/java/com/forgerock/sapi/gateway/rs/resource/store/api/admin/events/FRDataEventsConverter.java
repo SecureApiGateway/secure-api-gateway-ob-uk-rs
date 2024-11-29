@@ -17,11 +17,11 @@ package com.forgerock.sapi.gateway.rs.resource.store.api.admin.events;
 
 import java.util.Objects;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.mapper.FRModelMapper;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.event.FREventMessage;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.event.FREventMessageEntity;
 
-import uk.org.openbanking.datamodel.event.OBEventNotification1;
+import uk.org.openbanking.datamodel.v3.event.OBEventNotification1;
 
 public class FRDataEventsConverter {
 

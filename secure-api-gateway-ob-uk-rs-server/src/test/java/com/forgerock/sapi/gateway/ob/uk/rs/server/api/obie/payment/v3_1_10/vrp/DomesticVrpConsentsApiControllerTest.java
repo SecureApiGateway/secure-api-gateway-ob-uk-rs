@@ -28,8 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1FundsAvailable.AVAILABLE;
-import static uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1FundsAvailable.NOTAVAILABLE;
+import static uk.org.openbanking.datamodel.v3.vrp.OBPAFundsAvailableResult1FundsAvailable.AVAILABLE;
+import static uk.org.openbanking.datamodel.v3.vrp.OBPAFundsAvailableResult1FundsAvailable.NOTAVAILABLE;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -41,6 +41,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -56,29 +57,29 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIndicator;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreService;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.CreateDomesticVRPConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
-import uk.org.openbanking.datamodel.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseDataStatus;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequestData;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
-import uk.org.openbanking.testsupport.vrp.OBDomesticVrpConsentRequestTestDataFactory;
+import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBPaymentConsentStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPConsentResponseDataStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationRequestData;
+import uk.org.openbanking.datamodel.v3.vrp.OBVRPFundsConfirmationResponse;
+import uk.org.openbanking.testsupport.v3.vrp.OBDomesticVrpConsentRequestTestDataFactory;
 
 /**
  * A SpringBoot test for the {@link DomesticVrpConsentsApiController} <br/>
@@ -97,6 +98,7 @@ public class DomesticVrpConsentsApiControllerTest {
     private int port;
 
     @MockBean
+    @Qualifier("v3.1.10RestDomesticVRPConsentStoreClient")
     private DomesticVRPConsentStoreClient consentStoreClient;
 
     @MockBean

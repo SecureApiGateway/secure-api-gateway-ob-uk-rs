@@ -27,6 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -36,9 +37,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import uk.org.openbanking.datamodel.account.OBReadProduct2;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInner;
-import uk.org.openbanking.datamodel.account.OBReadProduct2DataProductInnerProductType;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInnerProductType;
 
 import java.util.UUID;
 
@@ -73,6 +74,7 @@ public class ProductsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10DefaultAccountResourceAccessService")
     private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;

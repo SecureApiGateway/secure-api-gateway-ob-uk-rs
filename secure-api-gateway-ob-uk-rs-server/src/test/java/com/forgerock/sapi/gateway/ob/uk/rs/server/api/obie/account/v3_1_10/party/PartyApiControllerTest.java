@@ -27,6 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -46,7 +47,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadParty2;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty2;
 
 /**
  * Spring Boot Test for {@link PartyApiController}.
@@ -72,6 +73,7 @@ public class PartyApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10DefaultAccountResourceAccessService")
     private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;

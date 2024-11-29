@@ -30,6 +30,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -54,8 +55,8 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatem
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadStatement2;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.account.OBReadStatement2;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 
 /**
  * Spring Boot Test for {@link StatementsApiController}.
@@ -85,6 +86,7 @@ public class StatementsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
+    @Qualifier("v3.1.10DefaultAccountResourceAccessService")
     private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;

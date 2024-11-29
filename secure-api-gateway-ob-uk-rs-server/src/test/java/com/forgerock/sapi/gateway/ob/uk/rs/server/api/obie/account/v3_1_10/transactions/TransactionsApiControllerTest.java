@@ -31,6 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -52,7 +53,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransa
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts.FRAccountRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBReadTransaction6;
 
 /**
  * Spring Boot Test for {@link TransactionsApiController}.
@@ -81,6 +82,7 @@ public class TransactionsApiControllerTest {
     private int pageLimitTransactions;
 
     @MockBean
+    @Qualifier("v3.1.10DefaultAccountResourceAccessService")
     private AccountResourceAccessService accountResourceAccessService;
 
     private String accountId;

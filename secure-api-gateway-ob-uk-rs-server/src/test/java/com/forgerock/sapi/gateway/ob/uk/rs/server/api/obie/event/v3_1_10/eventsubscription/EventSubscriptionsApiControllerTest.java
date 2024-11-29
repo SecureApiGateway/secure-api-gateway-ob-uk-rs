@@ -28,7 +28,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import uk.org.openbanking.datamodel.event.*;
+import uk.org.openbanking.datamodel.v3.event.*;
 
 import java.net.URI;
 import java.util.List;

@@ -15,16 +15,18 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 
 import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.FundsConfirmationConsentStoreClient;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,8 +40,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtract
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.funds.FundsConfirmationValidator;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.funds.FundsConfirmationValidator;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.funds.FRFundsConfirmation;
@@ -48,10 +49,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfir
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1Data;
 
 @Controller("FundsConfirmationsApiV3.1.10")
 public class FundsConfirmationsApiController implements FundsConfirmationsApi {
@@ -69,7 +70,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
             FundsAvailabilityService fundsAvailabilityService,
             FRAccountRepository accountRepository,
             OBValidationService<FundsConfirmationValidator.FundsConfirmationValidationContext> fundsConfirmationValidator,
-            FundsConfirmationConsentStoreClient consentStoreClient
+            @Qualifier("v3.1.10RestFundsConfirmationConsentStoreClient") FundsConfirmationConsentStoreClient consentStoreClient
     ) {
         this.fundsConfirmationRepository = fundsConfirmationRepository;
         this.fundsAvailabilityService = fundsAvailabilityService;

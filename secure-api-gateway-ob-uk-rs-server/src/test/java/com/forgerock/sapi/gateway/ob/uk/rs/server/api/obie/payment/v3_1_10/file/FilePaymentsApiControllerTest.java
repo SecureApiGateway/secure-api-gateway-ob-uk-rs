@@ -25,11 +25,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import java.math.BigDecimal;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.FilePaymentConsentStoreClient;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -41,24 +43,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.payment.FRWriteFileConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRWriteFileConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.DefaultPaymentFileType;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.file.v3_1_10.FilePaymentConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.ConsumePaymentConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_10.FilePaymentConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2Data;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4DataStatus;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse3Data;
-import uk.org.openbanking.testsupport.payment.OBWriteFileConsentTestDataFactory;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFile2Data;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileConsentResponse4DataStatus;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteFileResponse3Data;
+import uk.org.openbanking.testsupport.v3.payment.OBWriteFileConsentTestDataFactory;
 
 /**
  * A SpringBoot test for the {@link FilePaymentsApiController}.<br/>
@@ -82,6 +83,7 @@ public class FilePaymentsApiControllerTest {
     private FilePaymentSubmissionRepository filePaymentsRepository;
 
     @MockBean
+    @Qualifier("v3.1.10RestFilePaymentConsentStoreClient")
     private FilePaymentConsentStoreClient filePaymentConsentStoreClient;
 
     @Autowired

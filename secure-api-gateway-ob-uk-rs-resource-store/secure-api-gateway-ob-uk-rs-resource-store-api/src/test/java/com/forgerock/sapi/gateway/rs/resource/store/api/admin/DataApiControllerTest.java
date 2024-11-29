@@ -65,13 +65,13 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
 
-import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode2;
-import uk.org.openbanking.datamodel.account.OBReadBalance1DataBalanceInner;
-import uk.org.openbanking.datamodel.account.OBTransaction6;
-import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
-import uk.org.openbanking.datamodel.account.OBTransactionCashBalanceAmount;
+import uk.org.openbanking.datamodel.v3.account.OBAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBBalanceType1Code;
+import uk.org.openbanking.datamodel.v3.account.OBCreditDebitCode2;
+import uk.org.openbanking.datamodel.v3.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBTransactionCashBalance;
+import uk.org.openbanking.datamodel.v3.account.OBTransactionCashBalanceAmount;
 
 /**
  * A SpringBoot test for the {@link DataApiController}.

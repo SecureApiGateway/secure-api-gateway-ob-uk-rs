@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.directdebits;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.List;
@@ -35,14 +35,15 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.Accoun
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBReadDirectDebit2;
-import uk.org.openbanking.datamodel.account.OBReadDirectDebit2Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadDirectDebit2;
+import uk.org.openbanking.datamodel.v3.account.OBReadDirectDebit2Data;
 
 @Controller("DirectDebitsApiV3.1.10")
 public class DirectDebitsApiController implements DirectDebitsApi {
@@ -59,7 +60,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
 
     public DirectDebitsApiController(@Value("${rs.page.default.direct-debits.size:10}") int pageLimitDirectDebits,
             FRDirectDebitRepository frDirectDebitRepository,
-            AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+            AccountDataInternalIdFilter accountDataInternalIdFilter, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitDirectDebits = pageLimitDirectDebits;
         this.frDirectDebitRepository = frDirectDebitRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

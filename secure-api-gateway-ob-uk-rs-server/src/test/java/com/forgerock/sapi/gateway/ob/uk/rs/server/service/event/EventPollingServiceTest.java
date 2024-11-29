@@ -48,10 +48,10 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.events.FREventMes
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import uk.org.openbanking.datamodel.event.OBEvent1;
-import uk.org.openbanking.datamodel.event.OBEventLink1;
-import uk.org.openbanking.datamodel.event.OBEventResourceUpdate1;
-import uk.org.openbanking.datamodel.event.OBEventSubject1;
+import uk.org.openbanking.datamodel.v3.event.OBEvent1;
+import uk.org.openbanking.datamodel.v3.event.OBEventLink1;
+import uk.org.openbanking.datamodel.v3.event.OBEventResourceUpdate1;
+import uk.org.openbanking.datamodel.v3.event.OBEventSubject1;
 
 /**
  * Unit test for {@link EventPollingService}.

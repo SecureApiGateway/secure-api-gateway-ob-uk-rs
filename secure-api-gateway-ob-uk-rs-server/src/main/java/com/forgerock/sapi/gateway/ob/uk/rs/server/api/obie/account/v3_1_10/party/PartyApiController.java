@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.party;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter.toOBParty2;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -37,11 +38,11 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.party.FRPartyRepository;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.AccountResourceAccessService;
 
-import uk.org.openbanking.datamodel.account.OBParty2;
-import uk.org.openbanking.datamodel.account.OBReadParty2;
-import uk.org.openbanking.datamodel.account.OBReadParty2Data;
-import uk.org.openbanking.datamodel.account.OBReadParty3;
-import uk.org.openbanking.datamodel.account.OBReadParty3Data;
+import uk.org.openbanking.datamodel.v3.account.OBParty2;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty2;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty2Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty3;
+import uk.org.openbanking.datamodel.v3.account.OBReadParty3Data;
 
 @Controller("PartyApiV3.1.10")
 public class PartyApiController implements PartyApi {
@@ -52,7 +53,7 @@ public class PartyApiController implements PartyApi {
 
     private final AccountResourceAccessService accountResourceAccessService;
 
-    public PartyApiController(FRPartyRepository frPartyRepository, AccountResourceAccessService accountResourceAccessService) {
+    public PartyApiController(FRPartyRepository frPartyRepository, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.frPartyRepository = frPartyRepository;
         this.accountResourceAccessService = accountResourceAccessService;
     }

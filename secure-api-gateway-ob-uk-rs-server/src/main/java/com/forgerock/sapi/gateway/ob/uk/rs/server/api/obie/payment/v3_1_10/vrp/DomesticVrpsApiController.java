@@ -15,26 +15,28 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v3_1_10.vrp;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toFRSubmissionStatus;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRSubmissionStatusConverter.toOBDomesticVRPResponseDataStatusEnum;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVrpConverters.toFRDomesticVRPRequest;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVrpConverters.toOBDomesticVRPRequest;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.common.FRResponseDataRefundConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.vrp.FRDomesticVRPConsentConverters;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRResponseDataRefundConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.vrp.FRDomesticVrpRequest;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
@@ -47,29 +49,29 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.Idempotent
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.VRPIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.validator.PaymentSubmissionValidator;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
-import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.v3_1_10.DomesticVRPConsentStoreClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v3.payment.OBDomesticVRPRequestValidator.OBDomesticVRPRequestValidationContext;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.DomesticVRPConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRDomesticVrpPaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.DomesticVrpPaymentSubmissionRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.common.Meta;
-import uk.org.openbanking.datamodel.common.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.common.OBChargeBearerType1Code;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatus;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataChargesInner;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataStatus;
-import uk.org.openbanking.datamodel.vrp.OBExternalPaymentChargeType1Code;
+import uk.org.openbanking.datamodel.v3.common.Meta;
+import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.v3.common.OBChargeBearerType1Code;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetails;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsData;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetailStatusReason;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponse;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseData;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseDataChargesInner;
+import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseDataStatus;
+import uk.org.openbanking.datamodel.v3.vrp.OBExternalPaymentChargeType1Code;
 
 @Controller("DomesticVrpsApiV3.1.10")
 @Slf4j
@@ -89,18 +91,20 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     public DomesticVrpsApiController(
             DomesticVrpPaymentSubmissionRepository paymentSubmissionRepository,
             OBValidationService<OBDomesticVRPRequestValidationContext> paymentRequestValidator,
-            DomesticVRPConsentStoreClient consentStoreClient,
+            @Qualifier("v3.1.10RestDomesticVRPConsentStoreClient") DomesticVRPConsentStoreClient consentStoreClient,
             PeriodicLimitBreachResponseSimulatorService limitBreachResponseSimulatorService,
             PaymentSubmissionValidator paymentSubmissionValidator,
             RefundAccountService refundAccountService
     ) {
-        this.paymentSubmissionRepository = paymentSubmissionRepository;
-        this.paymentRequestValidator = paymentRequestValidator;
-        this.consentStoreClient = consentStoreClient;
-        this.limitBreachResponseSimulatorService = limitBreachResponseSimulatorService;
-        this.paymentSubmissionValidator = paymentSubmissionValidator;
-        this.refundAccountService = refundAccountService;
-        this.idempotentPaymentService = new VRPIdempotentPaymentService(paymentSubmissionRepository);
+        this.paymentSubmissionRepository = Objects.requireNonNull(paymentSubmissionRepository, "PaymentSubmissionRepository cannot be null");
+        this.paymentRequestValidator = Objects.requireNonNull(paymentRequestValidator, "PaymentRequestValidator cannot be null");
+        this.consentStoreClient = Objects.requireNonNull(consentStoreClient, "ConsentStoreClient cannot be null");
+        this.limitBreachResponseSimulatorService = Objects.requireNonNull(limitBreachResponseSimulatorService, "LimitBreachResponseSimulatorService cannot be null");
+        this.paymentSubmissionValidator = Objects.requireNonNull(paymentSubmissionValidator, "PaymentSubmissionValidator cannot be null");
+        this.refundAccountService = Objects.requireNonNull(refundAccountService, "RefundAccountService cannot be null");
+        this.idempotentPaymentService = new VRPIdempotentPaymentService(
+                Objects.requireNonNull(paymentSubmissionRepository, "PaymentSubmissionRepository cannot be null for IdempotentPaymentService")
+        );
     }
 
     @Override

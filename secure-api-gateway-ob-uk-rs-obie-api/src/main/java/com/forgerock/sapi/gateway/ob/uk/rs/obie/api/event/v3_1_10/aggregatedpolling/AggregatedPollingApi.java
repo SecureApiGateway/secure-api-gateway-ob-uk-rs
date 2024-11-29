@@ -34,9 +34,9 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import io.swagger.annotations.AuthorizationScope;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.event.OBEventPolling1;
-import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.event.OBEventPolling1;
+import uk.org.openbanking.datamodel.v3.event.OBEventPollingResponse1;
 
 @Api(tags = {"v3.1.10", SwaggerApiTags.EVENT_NOTIFICATION_TAG})
 @RequestMapping(value = "/open-banking/v3.1.10/events")

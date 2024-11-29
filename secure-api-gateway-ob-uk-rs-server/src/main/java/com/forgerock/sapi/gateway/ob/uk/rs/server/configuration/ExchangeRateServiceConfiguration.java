@@ -55,4 +55,11 @@ public class ExchangeRateServiceConfiguration {
 
         return new DefaultExchangeRateService(exchangeRateConfig, defaultExchangeRate);
     }
+
+    @Bean
+    public com.forgerock.sapi.gateway.ob.uk.rs.server.v4.service.currency.ExchangeRateService exchangeRateServiceV4(Map<String, BigDecimal> exchangeRateConfig,
+                                                   @Value("${rs.exchange.rates.default:1.5}") BigDecimal defaultExchangeRate) {
+
+        return new com.forgerock.sapi.gateway.ob.uk.rs.server.v4.service.currency.DefaultExchangeRateService(exchangeRateConfig, defaultExchangeRate);
+    }
 }

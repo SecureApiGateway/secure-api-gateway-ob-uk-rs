@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.beneficiaries;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.util.List;
@@ -35,14 +35,15 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.Accoun
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary5;
-import uk.org.openbanking.datamodel.account.OBReadBeneficiary5Data;
+import uk.org.openbanking.datamodel.v3.account.OBReadBeneficiary5;
+import uk.org.openbanking.datamodel.v3.account.OBReadBeneficiary5Data;
 
 @Controller("BeneficiariesApiV3.1.10")
 public class BeneficiariesApiController  implements BeneficiariesApi {
@@ -60,7 +61,7 @@ public class BeneficiariesApiController  implements BeneficiariesApi {
     public BeneficiariesApiController(@Value("${rs.page.default.beneficiaries.size:50}") int pageLimitBeneficiaries,
             FRBeneficiaryRepository frBeneficiaryRepository,
             AccountDataInternalIdFilter accountDataInternalIdFilter,
-            AccountResourceAccessService accountResourceAccessService) {
+            @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
 
         this.pageLimitBeneficiaries = pageLimitBeneficiaries;
         this.frBeneficiaryRepository = frBeneficiaryRepository;

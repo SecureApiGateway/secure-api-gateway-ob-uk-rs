@@ -17,24 +17,24 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.v3_1_10;
 
 import java.security.Principal;
 
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.FundsConfirmationConsentStoreClient;
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.funds.v3_1_10.FundsConfirmationConsentsApi;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.factory.OBFundsConfirmationConsentResponseFactory;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.funds.factory.v3_1_10.OBFundsConfirmationConsentResponseFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.CreateFundsConfirmationConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1;
 
 @Controller("FundsConfirmationConsentsApiV3.1.10")
 @Slf4j
@@ -44,7 +44,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
 
     private final OBFundsConfirmationConsentResponseFactory obFundsConfirmationConsentResponseFactory;
 
-    public FundsConfirmationConsentsApiController(FundsConfirmationConsentStoreClient fundsConfirmationConsentStoreClient, OBFundsConfirmationConsentResponseFactory obFundsConfirmationConsentResponseFactory) {
+    public FundsConfirmationConsentsApiController(@Qualifier("v3.1.10RestFundsConfirmationConsentStoreClient") FundsConfirmationConsentStoreClient fundsConfirmationConsentStoreClient, OBFundsConfirmationConsentResponseFactory obFundsConfirmationConsentResponseFactory) {
         this.fundsConfirmationConsentStoreClient = fundsConfirmationConsentStoreClient;
         this.obFundsConfirmationConsentResponseFactory = obFundsConfirmationConsentResponseFactory;
     }

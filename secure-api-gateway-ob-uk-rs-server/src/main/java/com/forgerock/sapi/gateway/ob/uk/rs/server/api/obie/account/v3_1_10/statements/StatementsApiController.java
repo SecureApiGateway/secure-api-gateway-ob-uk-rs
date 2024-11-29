@@ -15,7 +15,7 @@
  */
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v3_1_10.statements;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toOBStatement2;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.io.IOException;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -54,8 +55,8 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Ac
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadDataStatement2;
-import uk.org.openbanking.datamodel.account.OBReadStatement2;
+import uk.org.openbanking.datamodel.v3.account.OBReadDataStatement2;
+import uk.org.openbanking.datamodel.v3.account.OBReadStatement2;
 
 @Controller("StatementsApiV3.1.10")
 public class StatementsApiController implements StatementsApi {
@@ -79,7 +80,7 @@ public class StatementsApiController implements StatementsApi {
     public StatementsApiController(@Value("${rs.page.default.statement.size:10}") int pageLimitStatements,
             FRStatementRepository frStatementRepository,
             AccountDataInternalIdFilter accountDataInternalIdFilter,
-            StatementPDFService statementPDFService, AccountResourceAccessService accountResourceAccessService) {
+            StatementPDFService statementPDFService, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitStatements = pageLimitStatements;
         this.frStatementRepository = frStatementRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

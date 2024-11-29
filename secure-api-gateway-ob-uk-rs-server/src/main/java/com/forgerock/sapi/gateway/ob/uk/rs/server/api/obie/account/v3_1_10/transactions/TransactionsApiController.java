@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.account.FRTransactionConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRTransactionConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v3_1_10.transactions.TransactionsApi;
@@ -46,9 +47,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.Ac
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
-import uk.org.openbanking.datamodel.account.OBReadDataTransaction6;
-import uk.org.openbanking.datamodel.account.OBReadTransaction6;
-import uk.org.openbanking.datamodel.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBReadDataTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBReadTransaction6;
+import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
 
 @Controller("TransactionsApiV3.1.10")
 public class TransactionsApiController implements TransactionsApi {
@@ -70,7 +71,7 @@ public class TransactionsApiController implements TransactionsApi {
 
     public TransactionsApiController(@Value("${rs.page.default.transaction.size:120}") int pageLimitTransactions,
             FRTransactionRepository FRTransactionRepository,
-            AccountDataInternalIdFilter accountDataInternalIdFilter, AccountResourceAccessService accountResourceAccessService) {
+            AccountDataInternalIdFilter accountDataInternalIdFilter, @Qualifier("v3.1.10DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitTransactions = pageLimitTransactions;
         this.FRTransactionRepository = FRTransactionRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;

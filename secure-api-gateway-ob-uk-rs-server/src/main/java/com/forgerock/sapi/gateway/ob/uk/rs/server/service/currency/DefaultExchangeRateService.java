@@ -26,7 +26,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExchangeRateInformation.FRRateType;
 
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
+import uk.org.openbanking.datamodel.v3.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 
 /**
  * Default implementation of the ExchangeRateService.

@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
-import static uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.AUTHORISED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REJECTED;
+import static uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data.StatusEnum.REVOKED;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,6 +36,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -50,7 +51,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.funds.FRFundsConfirmationConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.funds.FRFundsConfirmationConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.funds.FRFundsConfirmationConsent;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
@@ -58,7 +59,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.BalanceStoreSe
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.ValidationResult;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.FundsConfirmationConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.funds.v3_1_10.RestFundsConfirmationConsentStoreClient;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.funds.v3_1_10.FundsConfirmationConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
@@ -66,17 +67,17 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.accounts
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.funds.FundsConfirmationRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1Data;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmation1DataInstructedAmount;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsent1DataDebtorAccount;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationConsentResponse1Data;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.v3.fund.OBFundsConfirmationResponse1Data;
 
 /**
  * Test for {@link FundsConfirmationsApiController}
@@ -108,7 +109,8 @@ public class FundsConfirmationsApiControllerTest {
     private FRAccountRepository frAccountRepository;
 
     @MockBean
-    private FundsConfirmationConsentStoreClient consentStoreClient;
+    @Qualifier("v3.1.10RestFundsConfirmationConsentStoreClient")
+    private RestFundsConfirmationConsentStoreClient consentStoreClient;
 
     @Autowired
     private TestRestTemplate restTemplate;
