@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
+import static uk.org.openbanking.datamodel.v4.account.OBExternalAccountSubType1Code.CACC;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,7 +134,7 @@ public class DataApiControllerTest {
     @Test
     public void shouldCreateNewData() throws Exception {
         // Given
-        OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
+        OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString()).accountTypeCode(CACC);
         final int numTransactions = 650;
         List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, numTransactions, new OBReadBalance1DataBalanceInner()));
         FRUserData userData = new FRUserData();
