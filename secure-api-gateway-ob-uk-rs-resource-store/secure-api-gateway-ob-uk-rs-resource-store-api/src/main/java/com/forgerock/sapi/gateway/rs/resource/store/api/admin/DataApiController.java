@@ -16,7 +16,6 @@
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalanceInner;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRFinancialAccountConverter.toOBAccount6;

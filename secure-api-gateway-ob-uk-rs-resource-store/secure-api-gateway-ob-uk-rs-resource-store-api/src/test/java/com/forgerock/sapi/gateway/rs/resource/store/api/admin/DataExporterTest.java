@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.org.openbanking.datamodel.v4.account.ExternalMandateStatus1Code.ACTV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +64,6 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statemen
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
 import uk.org.openbanking.datamodel.v4.account.*;
-import uk.org.openbanking.datamodel.v3.account.OBBeneficiaryType1Code;
-import uk.org.openbanking.datamodel.v3.account.OBExternalPartyType1Code;
-import uk.org.openbanking.datamodel.v3.account.OBExternalStatementType1Code;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -121,7 +119,7 @@ class DataExporterTest {
     }
 
     private FRAccount createAccount() {
-        return FRAccount.builder().id(accountId).account(FRFinancialAccount.builder().accountId(accountId).build()).build();
+        return FRAccount.builder().id(accountId).account(FRFinancialAccount.builder().accountId(accountId).accountSubType(FRFinancialAccount.FRAccountSubTypeCode.CURRENTACCOUNT).build()).build();
     }
 
     private FRAccountData exportAccountData() {
@@ -149,6 +147,7 @@ class DataExporterTest {
                                                  .balance(new OBTransactionCashBalance(OBCreditDebitCode2.CREDIT,
                                                          OBBalanceType1Code.CLBD,
                                                          new OBTransactionCashBalanceAmount(i + ".00", "GBP")))
+                                                 .status(ExternalEntryStatus1Code.BOOK)
                                                  .transactionReference("Test Payment: " + i));
         }
         transactionRepository.saveAll(transactions.stream().map(obTransaction -> {
@@ -161,16 +160,16 @@ class DataExporterTest {
 
     @Test
     public void testExportingAccountWithProductData() {
-        final OBReadProduct2DataProductInner product = generateProductData();
+        final uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner product = generateProductData();
 
         final FRAccountData accountData = exportAccountData();
         assertThat(accountData.getProduct()).isEqualTo(product);
     }
 
-    private OBReadProduct2DataProductInner generateProductData() {
-        final OBReadProduct2DataProductInner product = new OBReadProduct2DataProductInner().accountId(accountId)
+    private uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner generateProductData() {
+        final uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner product = new uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner().accountId(accountId)
                                                                                            .productId(UUID.randomUUID().toString())
-                                                                                           .productType(OBReadProduct2DataProductInnerProductType.PERSONALCURRENTACCOUNT)
+                                                                                           .productType(uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInnerProductType.PERSONALCURRENTACCOUNT)
                                                                                            .productName("321 Product");
 
         productRepository.save(FRProduct.builder().accountId(accountId).product(product).build());
@@ -314,7 +313,11 @@ class DataExporterTest {
     private List<OBReadDirectDebit2DataDirectDebitInner> generateDirectDebitData(int numDirectDebits) {
         final List<OBReadDirectDebit2DataDirectDebitInner> directDebits = new ArrayList<>(numDirectDebits);
         for (int i = 0; i < numDirectDebits; i++) {
-            directDebits.add(new OBReadDirectDebit2DataDirectDebitInner().accountId(accountId).name("DirectDebit #" + i));
+            directDebits.add(new OBReadDirectDebit2DataDirectDebitInner()
+                    .accountId(accountId)
+                    .name("DirectDebit #" + i)
+                    .mandateRelatedInformation(new OBMandateRelatedInformation1())
+                    .directDebitStatusCode(ACTV));
         }
         directDebitRepository.saveAll(directDebits.stream().map(obDirectDebit ->
                         FRDirectDebit.builder().accountId(accountId)
@@ -382,7 +385,9 @@ class DataExporterTest {
     private List<OBStandingOrder6> generateStandingOrders(int numStandingOrders) {
         final List<OBStandingOrder6> standingOrders = new ArrayList<>(numStandingOrders);
         for (int i = 0; i < numStandingOrders; i++) {
-            standingOrders.add(new OBStandingOrder6().standingOrderId(UUID.randomUUID().toString()).accountId(accountId).standingOrderId("Standing Order #" + i));
+            standingOrders.add(new OBStandingOrder6().standingOrderId(UUID.randomUUID().toString()).accountId(accountId).standingOrderId("Standing Order #" + i)
+                    .standingOrderStatusCode(ACTV)
+                    .mandateRelatedInformation(new OBMandateRelatedInformation1()));
                     //reference("Standing Order #" + i));
         }
         standingOrderRepository.saveAll(
@@ -416,6 +421,7 @@ class DataExporterTest {
             balances.add(new OBReadBalance1().data(
                     new OBReadBalance1Data().balance(
                             List.of(new OBReadBalance1DataBalanceInner().accountId(accountId)
+                                    .type(OBBalanceType1Code.CLAV)
                                     .amount(new OBReadBalance1DataBalanceInnerAmount(i + ".01", "GBP"))))));
         }
         balanceRepository.saveAll(balances.stream().map(obBalance ->
@@ -434,7 +440,7 @@ class DataExporterTest {
         final List<OBReadDirectDebit2DataDirectDebitInner> directDebits = generateDirectDebitData(128);
         final List<OBBeneficiary5> beneficiaries = generateBeneficiaries(9);
         final OBParty2 party = generatePartyData();
-        final OBReadProduct2DataProductInner product = generateProductData();
+        final uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner product = generateProductData();
         final List<OBScheduledPayment3> scheduledPayments = generateScheduledPayments(501);
         final List<OBStandingOrder6> standingOrders = generateStandingOrders(12);
         final List<OBStatement2> statements = generateStatements(128);

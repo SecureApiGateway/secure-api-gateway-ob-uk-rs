@@ -20,7 +20,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.org.openbanking.datamodel.v4.account.*;
-
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
 import java.util.ArrayList;
 import java.util.List;
 

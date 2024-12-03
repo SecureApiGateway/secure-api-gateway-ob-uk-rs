@@ -26,7 +26,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.v4.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
 
 /**
  * Representation of an account. This model is only useful for the demo

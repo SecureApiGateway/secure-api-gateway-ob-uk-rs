@@ -43,6 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uk.org.openbanking.datamodel.v4.account.*;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
 
 import java.util.*;
 
