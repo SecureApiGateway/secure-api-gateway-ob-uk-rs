@@ -23,6 +23,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
+import static uk.org.openbanking.datamodel.v4.account.ExternalEntryStatus1Code.BOOK;
+import static uk.org.openbanking.datamodel.v4.account.OBExternalAccountSubType1Code.CACC;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,13 +67,13 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.balances
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
 
-import uk.org.openbanking.datamodel.v3.account.OBAccount6;
-import uk.org.openbanking.datamodel.v3.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.v3.account.OBCreditDebitCode2;
-import uk.org.openbanking.datamodel.v3.account.OBReadBalance1DataBalanceInner;
-import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
-import uk.org.openbanking.datamodel.v3.account.OBTransactionCashBalance;
-import uk.org.openbanking.datamodel.v3.account.OBTransactionCashBalanceAmount;
+import uk.org.openbanking.datamodel.v4.account.OBAccount6;
+import uk.org.openbanking.datamodel.v4.account.OBBalanceType1Code;
+import uk.org.openbanking.datamodel.v4.account.OBCreditDebitCode2;
+import uk.org.openbanking.datamodel.v4.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v4.account.OBTransactionCashBalance;
+import uk.org.openbanking.datamodel.v4.account.OBTransactionCashBalanceAmount;
 
 /**
  * A SpringBoot test for the {@link DataApiController}.
@@ -119,9 +121,9 @@ public class DataApiControllerTest {
         // Insert extra test data into the repo to ensure that the controller only exports data belonging to the user
         final String accountId = UUID.randomUUID().toString();
         frTransactionRepository.save(FRTransaction.builder().accountId(accountId).transaction(
-                FRTransactionData.builder().accountId(accountId)
-                                           .amount(new FRAmount("1.23", "GBP"))
-                                           .build())
+                        FRTransactionData.builder().accountId(accountId)
+                                .amount(new FRAmount("1.23", "GBP"))
+                                .build())
                 .build());
 
         frBalanceRepository.save(FRBalance.builder().accountId(accountId).build());
@@ -132,9 +134,10 @@ public class DataApiControllerTest {
     @Test
     public void shouldCreateNewData() throws Exception {
         // Given
-        OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
+        OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString()).accountTypeCode(CACC);
         final int numTransactions = 650;
-        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, numTransactions, new OBReadBalance1DataBalanceInner()));
+        List<FRAccountData> accountDatas = List.of(accountDataWithBalances(account, numTransactions,
+                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.ITAV)));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(USER_NAME);
@@ -216,7 +219,8 @@ public class DataApiControllerTest {
                 .userID(UUID.randomUUID().toString())
                 .build());
 
-        List<FRAccountData> accountDataList = List.of(accountDataWithBalances(account,12, new OBReadBalance1DataBalanceInner()));
+        List<FRAccountData> accountDataList = List.of(accountDataWithBalances(account,12,
+                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.ITAV)));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDataList);
         userData.setUserName(savedAccount.getUserID());
@@ -283,8 +287,7 @@ public class DataApiControllerTest {
 
         List<FRAccountData> accountDatas = List.of(accountDataWithBalances(
                 account, 1001,
-                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMAVAILABLE),
-                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.INTERIMBOOKED)));
+                new OBReadBalance1DataBalanceInner().type(OBBalanceType1Code.ITAV)));
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(savedAccount.getUserID());
@@ -312,6 +315,7 @@ public class DataApiControllerTest {
     private FRAccountData accountDataWithBalances(OBAccount6 account, int numTransactions, OBReadBalance1DataBalanceInner... obCashBalance1s) {
         FRAccountData accountData = new FRAccountData();
         accountData.setAccount(account);
+        //accountData.setAccount(account.accountTypeCode(CACC));
         accountData.setTransactions(generateTransactions(numTransactions));
         accountData.setBalances(Arrays.asList(obCashBalance1s));
 
@@ -322,8 +326,9 @@ public class DataApiControllerTest {
         final List<OBTransaction6> transactions = new ArrayList<>(numTransactions);
         for (int i = 0; i < numTransactions; i++) {
             OBTransaction6 transaction = new OBTransaction6();
-            transaction.balance(new OBTransactionCashBalance(OBCreditDebitCode2.CREDIT, OBBalanceType1Code.CLOSINGCLEARED, new OBTransactionCashBalanceAmount(i + ".00", "GBP")))
-                       .transactionReference("Test Payment: " + i);
+            transaction.status(BOOK);
+            transaction.balance(new OBTransactionCashBalance(OBCreditDebitCode2.CREDIT, OBBalanceType1Code.CLBD, new OBTransactionCashBalanceAmount(i + ".00", "GBP")))
+                    .transactionReference("Test Payment: " + i);
             transactions.add(transaction);
         }
         return transactions;

@@ -42,13 +42,13 @@ import org.mockito.internal.util.collections.Iterables;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import uk.org.openbanking.datamodel.v3.account.*;
+import uk.org.openbanking.datamodel.v4.account.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toFRCashBalance;
 import static com.forgerock.sapi.gateway.rs.resource.store.api.testsupport.FRCustomerInfoTestHelper.aValidFRCustomerInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -100,7 +100,7 @@ public class DataCreatorTest {
     public void createBalancesShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addBalance(new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE));
+        FRAccountData accountData = new FRAccountData().addBalance(new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.ITAV));
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
@@ -228,7 +228,7 @@ public class DataCreatorTest {
     public void createBalancesShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBReadBalance1DataBalanceInner cashBalance = new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE);
+        OBReadBalance1DataBalanceInner cashBalance = new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.ITAV);
         FRAccountData accountData = new FRAccountData().addBalance(cashBalance);
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
@@ -374,7 +374,7 @@ public class DataCreatorTest {
         given(balanceRepository.findByAccountIdAndBalanceType(any(), any())).willReturn(Optional.empty());
         OBReadBalance1DataBalanceInner interimAvailBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
-                .type(OBBalanceType1Code.INTERIMAVAILABLE);
+                .type(OBBalanceType1Code.ITAV);
 
         // When
         dataCreator.createBalances(accountDataWithBalance(interimAvailBalance), Collections.singleton(interimAvailBalance.getAccountId()));
@@ -388,7 +388,7 @@ public class DataCreatorTest {
         // Given
         OBReadBalance1DataBalanceInner interimAvailBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
-                .type(OBBalanceType1Code.INTERIMAVAILABLE);
+                .type(OBBalanceType1Code.ITAV);
         FRBalance frBalance = FRBalance.builder()
                 .balance(toFRCashBalance(interimAvailBalance))
                 .accountId(interimAvailBalance.getAccountId())
@@ -408,7 +408,7 @@ public class DataCreatorTest {
         given(balanceRepository.findByAccountIdAndBalanceType(eq("1"), eq(FRBalanceType.OPENINGBOOKED))).willReturn(Optional.empty());
         OBReadBalance1DataBalanceInner openingBookedBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
-                .type(OBBalanceType1Code.OPENINGBOOKED);
+                .type(OBBalanceType1Code.OPBD);
         // When
         dataCreator.createBalances(accountDataWithBalance(openingBookedBalance), Collections.singleton(openingBookedBalance.getAccountId()));
 
