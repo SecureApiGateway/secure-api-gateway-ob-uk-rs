@@ -42,20 +42,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import uk.org.openbanking.datamodel.v3.account.*;
+import uk.org.openbanking.datamodel.v4.account.*;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
 
 import java.util.*;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toFRCashBalance;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRDirectDebitConverter.toFRDirectDebitData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toFRFinancialAccount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toFROfferData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toFRStatementData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRTransactionConverter.toFRTransactionData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRStandingOrderConverter.toFRStandingOrderData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRDirectDebitConverter.toFRDirectDebitData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRFinancialAccountConverter.toFRFinancialAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FROfferConverter.toFROfferData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRStatementConverter.toFRStatementData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRTransactionConverter.toFRTransactionData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRStandingOrderConverter.toFRStandingOrderData;
 
 @Service
 @NoArgsConstructor
