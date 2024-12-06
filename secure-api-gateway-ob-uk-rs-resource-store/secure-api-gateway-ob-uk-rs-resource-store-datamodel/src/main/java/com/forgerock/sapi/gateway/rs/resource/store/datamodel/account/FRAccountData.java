@@ -19,8 +19,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.v3.account.*;
-
+import uk.org.openbanking.datamodel.v4.account.OBBeneficiary5;
+import uk.org.openbanking.datamodel.v4.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v4.account.OBReadDirectDebit2DataDirectDebitInner;
+import uk.org.openbanking.datamodel.v4.account.OBReadOffer1DataOfferInner;
+import uk.org.openbanking.datamodel.v4.account.OBScheduledPayment3;
+import uk.org.openbanking.datamodel.v4.account.OBStatement2;
+import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v4.account.OBStandingOrder6;
+import uk.org.openbanking.datamodel.v4.account.OBParty2;
+import uk.org.openbanking.datamodel.v4.account.OBAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
 import java.util.ArrayList;
 import java.util.List;
 

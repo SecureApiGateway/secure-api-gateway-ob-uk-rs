@@ -20,7 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomer
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.v3.account.OBParty2;
+import uk.org.openbanking.datamodel.v4.account.OBParty2;
 
 import java.util.ArrayList;
 import java.util.List;

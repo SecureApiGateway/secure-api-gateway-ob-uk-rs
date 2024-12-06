@@ -17,7 +17,7 @@ package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRPartyConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
 import com.forgerock.sapi.gateway.rs.resource.store.api.testsupport.FRCustomerInfoTestHelper;
 import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
@@ -45,21 +45,21 @@ import org.mockito.internal.util.collections.Iterables;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import uk.org.openbanking.datamodel.v3.account.*;
+import uk.org.openbanking.datamodel.v4.account.*;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toFRCashBalance;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRDirectDebitConverter.toFRDirectDebitData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toFROfferData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toFRStatementData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRTransactionConverter.toFRTransactionData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRStandingOrderConverter.toFRStandingOrderData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRDirectDebitConverter.toFRDirectDebitData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FROfferConverter.toFROfferData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRStatementConverter.toFRStatementData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRTransactionConverter.toFRTransactionData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRStandingOrderConverter.toFRStandingOrderData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -111,7 +111,7 @@ public class DataUpdaterTest {
     public void updateBalancesShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addBalance(new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE));
+        FRAccountData accountData = new FRAccountData().addBalance(new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.ITAV));
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
@@ -239,7 +239,7 @@ public class DataUpdaterTest {
     public void updateBalancesShouldAllowUpdatesWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBReadBalance1DataBalanceInner cashBalance = new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE);
+        OBReadBalance1DataBalanceInner cashBalance = new OBReadBalance1DataBalanceInner().accountId(accountId).type(OBBalanceType1Code.ITAV);
         FRAccountData accountData = new FRAccountData().addBalance(cashBalance);
         accountData.setAccount(new OBAccount6().accountId(accountId));
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
@@ -406,7 +406,7 @@ public class DataUpdaterTest {
         given(balanceRepository.findByAccountIdAndBalanceType(any(), any())).willReturn(Optional.empty());
         OBReadBalance1DataBalanceInner interimAvailBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
-                .type(OBBalanceType1Code.INTERIMAVAILABLE);
+                .type(OBBalanceType1Code.ITAV);
 
         // When
         dataUpdater.updateBalances(accountDataWithBalance(interimAvailBalance), Collections.emptySet());
@@ -420,7 +420,7 @@ public class DataUpdaterTest {
         // Given
         OBReadBalance1DataBalanceInner interimAvailBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
-                .type(OBBalanceType1Code.INTERIMAVAILABLE);
+                .type(OBBalanceType1Code.ITAV);
         FRBalance frBalance = FRBalance.builder()
                 .balance(toFRCashBalance(interimAvailBalance))
                 .accountId(interimAvailBalance.getAccountId())
@@ -444,7 +444,7 @@ public class DataUpdaterTest {
         given(balanceRepository.findByAccountIdAndBalanceType(eq("1"), eq(FRBalanceType.OPENINGBOOKED))).willReturn(Optional.empty());
         OBReadBalance1DataBalanceInner openingBookedBalance = new OBReadBalance1DataBalanceInner()
                 .accountId("1")
-                .type(OBBalanceType1Code.OPENINGBOOKED);
+                .type(OBBalanceType1Code.OPBD);
         // When
         dataUpdater.updateBalances(accountDataWithBalance(openingBookedBalance), Collections.emptySet());
 
@@ -472,7 +472,7 @@ public class DataUpdaterTest {
     @Test
     public void updatePartyInfo() {
         final String partyId = UUID.randomUUID().toString();
-        final OBParty2 obParty = new OBParty2().partyId(partyId).partyType(OBExternalPartyType1Code.SOLE).name("John Smith");
+        final OBParty2 obParty = new OBParty2().partyId(partyId).partyType(OBInternalPartyType1Code.SOLE).name("John Smith");
 
         final FRUserData userData = new FRUserData();
         final String userId = UUID.randomUUID().toString();
