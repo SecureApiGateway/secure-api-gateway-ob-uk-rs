@@ -19,8 +19,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.v3.account.*;
-
+import uk.org.openbanking.datamodel.v4.account.OBBeneficiary5;
+import uk.org.openbanking.datamodel.v4.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v4.account.OBReadDirectDebit2DataDirectDebitInner;
+import uk.org.openbanking.datamodel.v4.account.OBReadOffer1DataOfferInner;
+import uk.org.openbanking.datamodel.v4.account.OBScheduledPayment3;
+import uk.org.openbanking.datamodel.v4.account.OBStatement2;
+import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v4.account.OBStandingOrder6;
+import uk.org.openbanking.datamodel.v4.account.OBParty2;
+import uk.org.openbanking.datamodel.v4.account.OBAccount6;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,42 +51,42 @@ public class FRAccountData {
     private List<OBScheduledPayment3> scheduledPayments = new ArrayList<>();
     private List<OBReadOffer1DataOfferInner> offers = new ArrayList<>();
 
-    public FRAccountData addBalance(OBReadBalance1DataBalanceInner balance) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addBalance(OBReadBalance1DataBalanceInner balance) {
         balances.add(balance);
         return this;
     }
 
-    public FRAccountData addBeneficiary(OBBeneficiary5 beneficiary) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addBeneficiary(OBBeneficiary5 beneficiary) {
         beneficiaries.add(beneficiary);
         return this;
     }
 
-    public FRAccountData addDirectDebit(OBReadDirectDebit2DataDirectDebitInner directDebit1) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addDirectDebit(OBReadDirectDebit2DataDirectDebitInner directDebit1) {
         directDebits.add(directDebit1);
         return this;
     }
 
-    public FRAccountData addStandingOrder(OBStandingOrder6 standingOrder) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addStandingOrder(OBStandingOrder6 standingOrder) {
         standingOrders.add(standingOrder);
         return this;
     }
 
-    public FRAccountData addTransaction(OBTransaction6 transaction) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addTransaction(OBTransaction6 transaction) {
         transactions.add(transaction);
         return this;
     }
 
-    public FRAccountData addStatement(OBStatement2 statement1) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addStatement(OBStatement2 statement1) {
         statements.add(statement1);
         return this;
     }
 
-    public FRAccountData addScheduledPayment(OBScheduledPayment3 scheduledPayment1) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addScheduledPayment(OBScheduledPayment3 scheduledPayment1) {
         scheduledPayments.add(scheduledPayment1);
         return this;
     }
 
-    public FRAccountData addOffer(OBReadOffer1DataOfferInner offer1) {
+    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addOffer(OBReadOffer1DataOfferInner offer1) {
         offers.add(offer1);
         return this;
     }

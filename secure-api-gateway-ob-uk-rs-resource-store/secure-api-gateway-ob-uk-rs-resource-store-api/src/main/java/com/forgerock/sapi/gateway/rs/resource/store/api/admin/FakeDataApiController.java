@@ -20,6 +20,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinanc
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.FRAccountTypeCode;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.builder;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType.DATA_INVALID_REQUEST;
+import static uk.org.openbanking.datamodel.v4.common.ExternalCategoryPurpose1Code.BONU;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +42,38 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountServicer;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIndicator;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountBeneficiary;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRMandateRelatedInformation;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditLine;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRDirectDebitData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStatementData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRTransactionData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FROfferData;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRPostalAddress;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRLocalAmount;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRTotalValue;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRFinancialAgent;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRRemittanceInformation;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRRemittanceInformationStructured;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRRemittanceInformationStructuredCreditorReferenceInformation;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRExternalCreditorReferenceTypeCode;
+
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRProxy;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRStandingOrderFrequency;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRStandingOrderFrequencyCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRExternalPaymentPurposeCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRExternalCategoryPurposeCode;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -55,20 +88,6 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRAccountBeneficiary;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRBalanceType;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCashBalance;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditDebitIndicator;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRCreditLine;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRDirectDebitData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FROfferData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRScheduledPaymentData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStandingOrderData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRStatementData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRTransactionData;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAccountIdentifier;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRAmount;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.DataConfigurationProperties;
 import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.TestUserAccountIds;
@@ -101,10 +120,12 @@ import uk.org.openbanking.datamodel.v3.account.OBExternalStatementType1Code;
 import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
 import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInnerProductType;
 import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.v4.common.ExternalProxyAccountType1Code;
+import uk.org.openbanking.datamodel.v4.common.OBAddressType2Code;
 
 @Controller("FakeDataApi")
 public class FakeDataApiController implements FakeDataApi {
-    private final static Logger LOGGER = LoggerFactory.getLogger(FakeDataApiController.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(com.forgerock.sapi.gateway.rs.resource.store.api.admin.FakeDataApiController.class);
     private static final String RANDOM_PROFILE_ID = "random";
     private static final String GBP = "GBP";
     private static final String EUR = "EUR";
@@ -220,6 +241,30 @@ public class FakeDataApiController implements FakeDataApi {
                     .nickname("UK Bills")
                     .status(FRAccountStatusCode.ENABLED)
                     .statusUpdateDateTime(DateTime.now())
+                    .switchStatus("UK.CASS.NotSwitched")
+                    .servicer(FRAccountServicer.builder().identification("8020441910203345").name("ServicerName").schemeName("UK.OBIE.BICFI").build())
+                    .statementFrequencyAndFormat(List.of(FRFinancialAccount.FRStatementFrequencyAndFormat.builder()
+                            .format(FRFinancialAccount.FRFormat.DPDF)
+                            .statementFrequency(FRFinancialAccount.FRStatementFrequency.YEAR)
+                            .communicationMethod(FRFinancialAccount.FRCommunicationMethod.EMAL)
+                            .postalAddress(FRPostalAddress.builder()
+                                    .addressType(OBAddressType2Code.HOME.name())
+                                    .buildingNumber("21")
+                                    .streetName("Jagger Road")
+                                    .townName("Stroud")
+                                    .postCode("GL5 3AA")
+                                    .countrySubDivision("Gloucestershire")
+                                    .country("UK")
+                                    .room("1")
+                                    .careOf("Dave")
+                                    .floor("Ground")
+                                    .districtName("Somewhere")
+                                    .townLocationName("Outskirts")
+                                    .postBox("POBOX123")
+                                    .unitNumber("42")
+                                    .buildingName("The Lodge")
+                                    .addressLine(List.of("Extra Address Line1", "Extra Address Line2"))
+                                    .build()).build()))
                     .openingDate(DateTime.now().minusDays(1))
                     .maturityDate(DateTime.now().plusDays(1))
                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
@@ -227,6 +272,7 @@ public class FakeDataApiController implements FakeDataApi {
                             .identification(accountId)
                             .name(username)
                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
+                            .LEI("9193001QZMP2PQT4AK86")
                             .build()))
                     .build()
             );
@@ -252,6 +298,30 @@ public class FakeDataApiController implements FakeDataApi {
                     .currency(EUR)
                     .nickname("FR Bills")
                     .status(FRAccountStatusCode.ENABLED)
+                    .switchStatus("UK.CASS.NotSwitched")
+                    .servicer(FRAccountServicer.builder().identification("8020441910203345").name("ServicerName").schemeName("UK.OBIE.BICFI").build())
+                    .statementFrequencyAndFormat(List.of(FRFinancialAccount.FRStatementFrequencyAndFormat.builder()
+                            .format(FRFinancialAccount.FRFormat.DPDF)
+                            .statementFrequency(FRFinancialAccount.FRStatementFrequency.YEAR)
+                            .communicationMethod(FRFinancialAccount.FRCommunicationMethod.EMAL)
+                            .postalAddress(FRPostalAddress.builder()
+                                    .addressType(OBAddressType2Code.HOME.name())
+                                    .buildingNumber("21")
+                                    .streetName("Jagger Road")
+                                    .townName("Stroud")
+                                    .postCode("GL5 3AA")
+                                    .countrySubDivision("Gloucestershire")
+                                    .country("UK")
+                                    .room("1")
+                                    .careOf("Dave")
+                                    .floor("Ground")
+                                    .districtName("Somewhere")
+                                    .townLocationName("Outskirts")
+                                    .postBox("POBOX123")
+                                    .unitNumber("42")
+                                    .buildingName("The Lodge")
+                                    .addressLine(List.of("Extra Address Line1", "Extra Address Line2"))
+                                    .build()).build()))
                     .statusUpdateDateTime(DateTime.now())
                     .openingDate(DateTime.now().minusDays(1))
                     .maturityDate(DateTime.now().plusDays(1))
@@ -286,6 +356,30 @@ public class FakeDataApiController implements FakeDataApi {
                     .currency(GBP)
                     .nickname("Household")
                     .status(FRAccountStatusCode.ENABLED)
+                    .switchStatus("UK.CASS.NotSwitched")
+                    .servicer(FRAccountServicer.builder().identification("8020441910203345").name("ServicerName").schemeName("UK.OBIE.BICFI").build())
+                    .statementFrequencyAndFormat(List.of(FRFinancialAccount.FRStatementFrequencyAndFormat.builder()
+                            .format(FRFinancialAccount.FRFormat.DPDF)
+                            .statementFrequency(FRFinancialAccount.FRStatementFrequency.YEAR)
+                            .communicationMethod(FRFinancialAccount.FRCommunicationMethod.EMAL)
+                            .postalAddress(FRPostalAddress.builder()
+                                    .addressType(OBAddressType2Code.HOME.name())
+                                    .buildingNumber("21")
+                                    .streetName("Jagger Road")
+                                    .townName("Stroud")
+                                    .postCode("GL5 3AA")
+                                    .countrySubDivision("Gloucestershire")
+                                    .country("UK")
+                                    .room("1")
+                                    .careOf("Dave")
+                                    .floor("Ground")
+                                    .districtName("Somewhere")
+                                    .townLocationName("Outskirts")
+                                    .postBox("POBOX123")
+                                    .unitNumber("42")
+                                    .buildingName("The Lodge")
+                                    .addressLine(List.of("Extra Address Line1", "Extra Address Line2"))
+                                    .build()).build()))
                     .statusUpdateDateTime(DateTime.now())
                     .openingDate(DateTime.now().minusDays(1))
                     .maturityDate(DateTime.now().plusDays(1))
@@ -423,8 +517,10 @@ public class FakeDataApiController implements FakeDataApi {
                 .type(FRBalanceType.INTERIMBOOKED)
                 .dateTime(DateTime.now())
                 .creditLines(creditLine)
+                .localAmount(FRLocalAmount.builder().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()).subType("BCUR").build())
                 .build()
         );
+        interimBooked.setTotalValue(FRTotalValue.builder().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()).build());
         LOGGER.debug("FRBalance1 '{}' generated", interimAvailable);
 
         return List.of(interimAvailable, interimBooked);
@@ -441,12 +537,38 @@ public class FakeDataApiController implements FakeDataApi {
         beneficiary.setBeneficiary(FRAccountBeneficiary.builder()
                 .accountId(account.getId())
                 .beneficiaryId(UUID.randomUUID().toString())
+                .beneficiaryType(FRAccountBeneficiary.FRBeneficiaryType.ORDINARY)
                 .reference(company)
                 .creditorAccount(FRAccountIdentifier.builder()
                         .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
+                        .secondaryIdentification("ID_0002")
+                        .proxy(FRProxy.builder().type("Telephone").identification("2360549017905188").code(ExternalProxyAccountType1Code.TELE).build())
                         .build())
+                .creditorAgent(FRFinancialAgent.builder()
+                        .identification("80200112344562")
+                        .LEI("IZ9Q00LZEVUKWCQY6X15")
+                        .name("The Credit Agent")
+                        .schemeName("UK.OBIE.BICFI")
+                        .postalAddress(FRPostalAddress.builder()
+                                .addressType(OBAddressType2Code.HOME.name())
+                                .buildingNumber("21")
+                                .streetName("Jagger Road")
+                                .townName("Stroud")
+                                .postCode("GL5 3AA")
+                                .countrySubDivision("Gloucestershire")
+                                .country("UK")
+                                .room("1")
+                                .careOf("Dave")
+                                .floor("Ground")
+                                .districtName("Somewhere")
+                                .townLocationName("Outskirts")
+                                .postBox("POBOX123")
+                                .unitNumber("42")
+                                .buildingName("The Lodge")
+                                .addressLine(List.of("Extra Address Line1", "Extra Address Line2"))
+                                .build()).build())
                 .build()
         );
         beneficiary.setId(beneficiary.getBeneficiary().getBeneficiaryId());
@@ -463,7 +585,17 @@ public class FakeDataApiController implements FakeDataApi {
         directDebit.setDirectDebit(FRDirectDebitData.builder()
                 .accountId(account.getId())
                 .directDebitId(UUID.randomUUID().toString())
-                .mandateIdentification(company.trim())
+                .mandateRelatedInformation(FRMandateRelatedInformation.builder()
+                        .mandateIdentification("Caravanners")
+                        .categoryPurposeCode(BONU)
+                        .classification(FRMandateRelatedInformation.FRExternalMandateClassificationCode.FIXE)
+                        .finalPaymentDateTime(DateTime.parse("2024-04-25T12:46:49.425Z"))
+                        .firstPaymentDateTime(DateTime.parse("2024-04-25T12:46:49.425Z"))
+                        .recurringPaymentDateTime(DateTime.parse("2024-04-25T12:46:49.425Z"))
+                        .frequency(FRStandingOrderFrequency.builder()
+                                .type(FRStandingOrderFrequencyCode.WEEK)
+                                .countPerPeriod(1).build())
+                        .reason("To pay monthly membership").build())
                 .directDebitStatusCode(FRDirectDebitData.FRDirectDebitStatus.ACTIVE)
                 .name(company)
                 .previousPaymentDateTime(DateTime.now().minusMonths(1))
@@ -509,23 +641,51 @@ public class FakeDataApiController implements FakeDataApi {
                 .accountId(account.getId())
                 .standingOrderId(UUID.randomUUID().toString())
                 .standingOrderStatusCode(FRStandingOrderData.FRStandingOrderStatus.ACTIVE)
-                .frequency("EvryWorkgDay")
-                .reference(company)
-                .firstPaymentDateTime(DateTime.now().minusYears(1))
+                .nextPaymentDateTime(DateTime.now().plusMonths(2))
+                .lastPaymentDateTime(DateTime.now().plusMonths(1))
                 .firstPaymentAmount(FRAmount.builder()
                         .amount(FORMAT_AMOUNT.format(amount))
                         .currency(account.getAccount().getCurrency()).build())
-                .nextPaymentDateTime(DateTime.now().plusMonths(2))
+                .lastPaymentAmount(FRAmount.builder()
+                        .amount(FORMAT_AMOUNT.format(amount))
+                        .currency(account.getAccount().getCurrency()).build())
                 .nextPaymentAmount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount))
                         .currency(account.getAccount().getCurrency()).build())
-                .finalPaymentDateTime(DateTime.now().plusYears(10))
-                .firstPaymentAmount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount))
+                .finalPaymentAmount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount))
                         .currency(account.getAccount().getCurrency()).build())
-                .standingOrderStatusCode(FRStandingOrderData.FRStandingOrderStatus.ACTIVE)
                 .creditorAccount(FRAccountIdentifier.builder()
                         .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
+                        .secondaryIdentification("80200112895462")
+                        .proxy(FRProxy.builder().type("Telephone").identification("2360549017905188").code(ExternalProxyAccountType1Code.TELE).build())
+                        .build())
+                .mandateRelatedInformation(FRMandateRelatedInformation.builder()
+                        .mandateIdentification("Caravanners")
+                        .categoryPurposeCode(BONU)
+                        .classification(FRMandateRelatedInformation.FRExternalMandateClassificationCode.FIXE)
+                        .finalPaymentDateTime(DateTime.parse("2024-04-25T12:46:49.425Z"))
+                        .firstPaymentDateTime(DateTime.parse("2024-04-25T12:46:49.425Z"))
+                        .recurringPaymentDateTime(DateTime.parse("2024-04-25T12:46:49.425Z"))
+                        .frequency(FRStandingOrderFrequency.builder()
+                                .type(FRStandingOrderFrequencyCode.WEEK)
+                                .countPerPeriod(1).build())
+                        .reason("To pay monthly membership").build())
+                .remittanceInformation(FRRemittanceInformation.builder()
+                        .reference("123456")
+                        .structured(Collections.singletonList(FRRemittanceInformationStructured.builder()
+                                .referredDocumentAmount(2)
+                                .creditorReferenceInformation(FRRemittanceInformationStructuredCreditorReferenceInformation.builder()
+                                        .code(FRExternalCreditorReferenceTypeCode.DISP)
+                                        .issuer("ab")
+                                        .reference("ref")
+                                        .build())
+                                .invoicer("abcd")
+                                .invoicee("wxyz")
+                                .taxRemittance("blah")
+                                .additionalRemittanceInformation(Collections.singletonList("etc"))
+                                .build()))
+                        .unstructured(List.of("INV.001"))
                         .build())
                 .build()
         );
@@ -536,6 +696,7 @@ public class FakeDataApiController implements FakeDataApi {
     }
 
     private FRStatement generateStatements(com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount account, FRBalance balance, DateTime startDate) {
+        Double amount = generateAmount(1000.0d, 10000.0d);
         String statementId = UUID.randomUUID().toString();
         FRStatement statement = new FRStatement();
         statement.setAccountId(account.getId());
@@ -553,9 +714,11 @@ public class FakeDataApiController implements FakeDataApi {
                                 .amount(balance.getBalance().getAmount().getAmount())
                                 .currency(balance.getBalance().getAmount().getCurrency())
                                 .build())
+                        .localAmount(FRLocalAmount.builder().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()).subType("BCUR").build())
                         .creditDebitIndicator(balance.getBalance().getCreditDebitIndicator())
                         .type(OBExternalStatementAmountType1Code.PREVIOUSCLOSINGBALANCE.toString())
                         .build()))
+                .totalValues(FRTotalValue.builder().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()).build())
                 .build()
         );
         statement.setStartDateTime(statement.getStatement().getStartDateTime());
@@ -620,6 +783,9 @@ public class FakeDataApiController implements FakeDataApi {
             balance.getBalance().setCreditDebitIndicator(FRCreditDebitIndicator.DEBIT);
         }
 
+        Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
+        Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
+
         FRTransaction transaction = new FRTransaction();
         transaction.addStatementId(statement.getId());
         transaction.setAccountId(account.getId());
@@ -636,7 +802,16 @@ public class FakeDataApiController implements FakeDataApi {
                 .status(FRTransactionData.FREntryStatus.BOOKED)
                 .bookingDateTime(bookingDate)
                 .valueDateTime(valueDate)
+                .paymentPurposeCode(FRExternalPaymentPurposeCode.ACCT)
+                .categoryPurposeCode(FRExternalCategoryPurposeCode.BONU)
                 .transactionInformation(transactionInformation)
+                .creditorAccount(FRAccountIdentifier.builder()
+                        .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
+                        .identification(sortCode.toString() + accountNumber.toString())
+                        .name(name)
+                        .secondaryIdentification("ID_0002")
+                        .proxy(FRProxy.builder().type("Telephone").identification("2360549017905188").code(ExternalProxyAccountType1Code.TELE).build())
+                        .build())
                 .bankTransactionCode(FRTransactionData.FRBankTransactionCodeStructure.builder()
                         .code("ReceivedCreditTransfer")
                         .subCode("DomesticCreditTransfer")
@@ -688,9 +863,34 @@ public class FakeDataApiController implements FakeDataApi {
                         .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
+                        .secondaryIdentification("23605445279017")
+                        .proxy(FRProxy.builder().type("Telephone").identification("2360549017905188").code(ExternalProxyAccountType1Code.TELE).build())
                         .build()
                 )
-                .build()
+                .creditorAgent(FRFinancialAgent.builder()
+                        .identification("80200112344562")
+                        .LEI("IZ9Q00LZEVUKWCQY6X15")
+                        .name("The Credit Agent")
+                        .schemeName("UK.OBIE.BICFI")
+                        .postalAddress(FRPostalAddress.builder()
+                                .addressType(OBAddressType2Code.HOME.name())
+                                .buildingNumber("21")
+                                .streetName("Jagger Road")
+                                .townName("Stroud")
+                                .postCode("GL5 3AA")
+                                .countrySubDivision("Gloucestershire")
+                                .country("UK")
+                                .room("1")
+                                .careOf("Dave")
+                                .floor("Ground")
+                                .districtName("Somewhere")
+                                .townLocationName("Outskirts")
+                                .postBox("POBOX123")
+                                .unitNumber("42")
+                                .buildingName("The Lodge")
+                                .addressLine(List.of("Extra Address Line1", "Extra Address Line2"))
+                                .build())
+                        .build()).build()
         );
         return scheduledPayment;
     }

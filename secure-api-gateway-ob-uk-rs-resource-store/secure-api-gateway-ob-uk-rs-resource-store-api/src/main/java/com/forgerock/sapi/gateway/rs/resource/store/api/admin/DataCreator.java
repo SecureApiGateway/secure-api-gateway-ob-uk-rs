@@ -15,17 +15,17 @@
  */
 package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toFRBalanceType;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toFRCashBalance;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRDirectDebitConverter.toFRDirectDebitData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toFRFinancialAccount;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toFROfferData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter.toFRPartyData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toFRStatementData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRTransactionConverter.toFRTransactionData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRStandingOrderConverter.toFRStandingOrderData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toFRBalanceType;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRDirectDebitConverter.toFRDirectDebitData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRFinancialAccountConverter.toFRFinancialAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FROfferConverter.toFROfferData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRStatementConverter.toFRStatementData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRTransactionConverter.toFRTransactionData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRScheduledPaymentConverter.toFRScheduledPaymentData;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRStandingOrderConverter.toFRStandingOrderData;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,16 +71,15 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transact
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCustomerInfoRepository;
 
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.v3.account.OBBeneficiary5;
-import uk.org.openbanking.datamodel.v3.account.OBReadBalance1DataBalanceInner;
-import uk.org.openbanking.datamodel.v3.account.OBReadDirectDebit2DataDirectDebitInner;
-import uk.org.openbanking.datamodel.v3.account.OBReadOffer1DataOfferInner;
+import uk.org.openbanking.datamodel.v4.account.OBBeneficiary5;
+import uk.org.openbanking.datamodel.v4.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v4.account.OBReadDirectDebit2DataDirectDebitInner;
+import uk.org.openbanking.datamodel.v4.account.OBReadOffer1DataOfferInner;
+import uk.org.openbanking.datamodel.v4.account.OBScheduledPayment3;
+import uk.org.openbanking.datamodel.v4.account.OBStatement2;
+import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
+import uk.org.openbanking.datamodel.v4.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
-import uk.org.openbanking.datamodel.v3.account.OBScheduledPayment3;
-import uk.org.openbanking.datamodel.v3.account.OBStandingOrder6;
-import uk.org.openbanking.datamodel.v3.account.OBStatement2;
-import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
-
 @Service
 @NoArgsConstructor
 public class DataCreator {
