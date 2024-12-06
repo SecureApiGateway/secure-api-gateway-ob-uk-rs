@@ -315,7 +315,6 @@ public class DataApiControllerTest {
     private FRAccountData accountDataWithBalances(OBAccount6 account, int numTransactions, OBReadBalance1DataBalanceInner... obCashBalance1s) {
         FRAccountData accountData = new FRAccountData();
         accountData.setAccount(account);
-        //accountData.setAccount(account.accountTypeCode(CACC));
         accountData.setTransactions(generateTransactions(numTransactions));
         accountData.setBalances(Arrays.asList(obCashBalance1s));
 
