@@ -152,7 +152,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
                     "can't be found to retrieve the details");
         }
-        log.debug("Found VRP payment '{}' to get details.", domesticVRPId);
+        log.debug("Found VRP payment '{}' to get details. ", domesticVRPId);
         // Build the response object with data just to meet the expected data defined by the spec
         FRDomesticVrpPaymentSubmission paymentSubmission = optionalVrpPayment.get();
 
