@@ -220,6 +220,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             FRInternationalStandingOrderPaymentSubmission frPaymentSubmission
     ) {
         FRWriteInternationalStandingOrderData data = frPaymentSubmission.getStandingOrder().getData();
+        OBWriteInternationalStandingOrderResponse7Data responseData = new OBWriteInternationalStandingOrderResponse7Data();
 
         final Optional<FRInternationalResponseDataRefund> refundAccountData = refundAccountService.getInternationalPaymentRefundData(
                 consent.getRequestObj().getData().getReadRefundAccount(),
@@ -238,6 +239,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalStandingOrderResponse7DataRefund).orElse(null))
+                        .statusReason(responseData.getStatusReason())
                 )
                 .links(LinksHelper.createInternationalStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());

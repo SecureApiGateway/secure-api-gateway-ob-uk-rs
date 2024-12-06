@@ -40,7 +40,9 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.file.v3_1_
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.payment.FRFilePaymentSubmission;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.payments.FilePaymentSubmissionRepository;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.payment.*;
 
@@ -87,6 +90,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     private OBWriteFileResponse3 responseEntity(FilePaymentConsent filePaymentConsent,
             FRFilePaymentSubmission frPaymentSubmission) {
         FRWriteDataFile data = frPaymentSubmission.getFilePayment().getData();
+        OBWriteFileResponse3Data responseData = new OBWriteFileResponse3Data();
         return new OBWriteFileResponse3()
                 .data(new OBWriteFileResponse3Data()
                         .charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(filePaymentConsent.getCharges()))
@@ -96,7 +100,8 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                         .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteFileResponse3DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
-                        .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount())))
+                        .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
+                        .statusReason(responseData.getStatusReason()))
                 .links(LinksHelper.createFilePaymentsLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

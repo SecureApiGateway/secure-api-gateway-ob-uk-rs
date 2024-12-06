@@ -53,7 +53,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.internationalscheduledpayments.InternationalScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
@@ -234,6 +233,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     ) {
 
         FRWriteInternationalScheduledData data = frPaymentSubmission.getScheduledPayment().getData();
+        OBWriteInternationalScheduledResponse6Data responseData = new OBWriteInternationalScheduledResponse6Data();
 
         final Optional<FRInternationalResponseDataRefund> refundAccountData = refundAccountService.getInternationalPaymentRefundData(
                 consent.getRequestObj().getData().getReadRefundAccount(),
@@ -254,7 +254,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .expectedExecutionDateTime(data.getInitiation().getRequestedExecutionDateTime())
                         .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalScheduledResponse6DataRefund).orElse(null))
                         .exchangeRateInformation(FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()))
-                )
+                        .statusReason(responseData.getStatusReason()))
+
                 .links(LinksHelper.createInternationalScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

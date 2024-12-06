@@ -18,17 +18,20 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper.createInternationalScheduledPaymentConsentsLink;
 
+import java.util.Collections;
+
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRInternationalScheduledPaymentsConsentStatusConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRInternationalConsentStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalScheduledConsent;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalscheduled.v3_1_10.InternationalScheduledPaymentConsent;
 
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduled3DataInitiation;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledConsent5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledConsent5Data;
@@ -53,9 +56,10 @@ public class OBWriteInternationalScheduledConsentResponse6Factory {
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
         data.exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()));
-        data.status(FRInternationalScheduledPaymentsConsentStatusConverter.toOBPaymentConsentStatusV4(consent.getStatus()));
+        data.status(FRInternationalConsentStatusConverter.toOBPaymentConsentStatusV4(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
+        data.statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class)));
 
         return new OBWriteInternationalScheduledConsentResponse6()
                 .data(data)
