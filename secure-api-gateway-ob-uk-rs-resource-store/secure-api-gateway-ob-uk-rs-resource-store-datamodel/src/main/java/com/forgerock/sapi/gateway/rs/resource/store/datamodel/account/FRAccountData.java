@@ -51,42 +51,42 @@ public class FRAccountData {
     private List<OBScheduledPayment3> scheduledPayments = new ArrayList<>();
     private List<OBReadOffer1DataOfferInner> offers = new ArrayList<>();
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addBalance(OBReadBalance1DataBalanceInner balance) {
+    public FRAccountData addBalance(OBReadBalance1DataBalanceInner balance) {
         balances.add(balance);
         return this;
     }
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addBeneficiary(OBBeneficiary5 beneficiary) {
+    public FRAccountData addBeneficiary(OBBeneficiary5 beneficiary) {
         beneficiaries.add(beneficiary);
         return this;
     }
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addDirectDebit(OBReadDirectDebit2DataDirectDebitInner directDebit1) {
+    public FRAccountData addDirectDebit(OBReadDirectDebit2DataDirectDebitInner directDebit1) {
         directDebits.add(directDebit1);
         return this;
     }
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addStandingOrder(OBStandingOrder6 standingOrder) {
+    public FRAccountData addStandingOrder(OBStandingOrder6 standingOrder) {
         standingOrders.add(standingOrder);
         return this;
     }
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addTransaction(OBTransaction6 transaction) {
+    public FRAccountData addTransaction(OBTransaction6 transaction) {
         transactions.add(transaction);
         return this;
     }
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addStatement(OBStatement2 statement1) {
+    public FRAccountData addStatement(OBStatement2 statement1) {
         statements.add(statement1);
         return this;
     }
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addScheduledPayment(OBScheduledPayment3 scheduledPayment1) {
+    public FRAccountData addScheduledPayment(OBScheduledPayment3 scheduledPayment1) {
         scheduledPayments.add(scheduledPayment1);
         return this;
     }
 
-    public com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData addOffer(OBReadOffer1DataOfferInner offer1) {
+    public FRAccountData addOffer(OBReadOffer1DataOfferInner offer1) {
         offers.add(offer1);
         return this;
     }
