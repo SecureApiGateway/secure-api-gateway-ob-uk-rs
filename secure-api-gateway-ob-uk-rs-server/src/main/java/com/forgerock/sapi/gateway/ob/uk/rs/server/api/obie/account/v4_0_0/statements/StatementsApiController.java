@@ -16,6 +16,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v4_0_0.statements;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRTransactionConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
@@ -27,7 +28,9 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.service.account.consent.Accoun
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.statement.StatementPDFService;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRStatement;
+import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRTransaction;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,12 +44,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
+
+import uk.org.openbanking.datamodel.v4.account.OBReadDataTransaction6;
+import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
 import uk.org.openbanking.datamodel.v4.account.OBReadDataStatement2;
 import uk.org.openbanking.datamodel.v4.account.OBReadStatement2;
 import uk.org.openbanking.datamodel.v4.account.OBReadTransaction6;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
@@ -66,6 +73,8 @@ public class StatementsApiController implements StatementsApi {
 
     private final FRStatementRepository frStatementRepository;
 
+    private final com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository FRTransactionRepository;
+
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     private final StatementPDFService statementPDFService;
@@ -77,11 +86,13 @@ public class StatementsApiController implements StatementsApi {
     private final Set<FRExternalPermissionsCode> filePermission = Set.of(FRExternalPermissionsCode.READSTATEMENTSDETAIL);
 
     public StatementsApiController(@Value("${rs.page.default.statement.size:10}") int pageLimitStatements,
-            FRStatementRepository frStatementRepository,
-            AccountDataInternalIdFilter accountDataInternalIdFilter,
-            StatementPDFService statementPDFService, @Qualifier("v4.0.0DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
+                                   FRStatementRepository frStatementRepository,
+                                   final com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository repository,
+                                   AccountDataInternalIdFilter accountDataInternalIdFilter,
+                                   StatementPDFService statementPDFService, @Qualifier("v4.0.0DefaultAccountResourceAccessService") AccountResourceAccessService accountResourceAccessService) {
         this.pageLimitStatements = pageLimitStatements;
         this.frStatementRepository = frStatementRepository;
+        this.FRTransactionRepository = repository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
         this.statementPDFService = statementPDFService;
         this.accountResourceAccessService = accountResourceAccessService;
@@ -159,8 +170,38 @@ public class StatementsApiController implements StatementsApi {
     }
 
     @Override
-    public ResponseEntity<OBReadTransaction6> getAccountsAccountIdStatementsStatementIdTransactions(String statementId, String accountId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, String consentId, int page) {
-        return null;
+    public ResponseEntity<OBReadTransaction6> getAccountsAccountIdStatementsStatementIdTransactions(String statementId, String accountId, String authorization, String xFapiAuthDate, LocalDateTime fromBookingDateTime, LocalDateTime toBookingDateTime, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, String consentId, int page)
+            throws OBErrorException {
+        logger.info("getAccountStatementTransactions from account id {}, statement id {}, consentId: {}, apiClientId: {} fromBookingDate {} toBookingDate {} pageNumber {} ",
+                    accountId, statementId, consentId, apiClientId, fromBookingDateTime, toBookingDateTime, page);
+
+        if (toBookingDateTime == null) {
+            toBookingDateTime = LocalDateTime.now();
+        }
+        if (fromBookingDateTime == null) {
+            fromBookingDateTime = toBookingDateTime.minus(Period.ofYears(100));
+        }
+
+        final AccountAccessConsent consent = accountResourceAccessService.getConsentForResourceAccess(consentId, apiClientId, accountId);
+        checkPermissions(consent, nonFilePermissions);
+
+        Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
+                                                                                                                                 new Date(fromBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), new Date(toBookingDateTime.toInstant(ZoneOffset.UTC).toEpochMilli()), consent.getRequestObj().getData().getPermissions(),
+                                                                                                                                 PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "bookingDateTime"));
+
+        List<OBTransaction6> transactions = response.getContent()
+                                                    .stream()
+                                                    .map(FRTransaction::getTransaction)
+                                                    .map(FRTransactionConverter::toOBTransaction6)
+                                                    .map(t -> accountDataInternalIdFilter.apply(t))
+                                                    .collect(Collectors.toList());
+
+        //Package the answer
+        int totalPages = response.getTotalPages();
+
+        return ResponseEntity.ok(new OBReadTransaction6().data(new OBReadDataTransaction6().transaction(transactions))
+                                                         .links(PaginationUtil.generateLinks(buildGetAccountStatementTransactionUri(accountId, statementId), page, totalPages))
+                                                         .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     private String buildGetAccountStatementsUri(String accountId) {
@@ -204,11 +245,7 @@ public class StatementsApiController implements StatementsApi {
         }
     }
 
-
-
-
-//    @Override
-//    public ResponseEntity<OBReadTransaction6> getAccountsAccountIdStatementsStatementIdTransactions(String statementId, String accountId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String apiClientId, String consentId, int page) {
-//        return null;
-//    }
+    private String buildGetAccountStatementTransactionUri(String accountId, String statementId) {
+        return linkTo(getClass()).slash("accounts").slash(accountId).slash("statements").slash(statementId).slash("transactions").toString();
+    }
 }
