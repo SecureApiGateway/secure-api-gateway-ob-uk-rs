@@ -16,7 +16,6 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.account.v4_0_0.balances;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRExternalPermissionsCode;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.balances.BalancesApi;
@@ -35,11 +34,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.v4.account.OBReadBalance1;
 import uk.org.openbanking.datamodel.v4.account.OBReadBalance1Data;
+import uk.org.openbanking.datamodel.v4.account.OBReadBalance1DataTotalValue;
 
 import java.util.stream.Collectors;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalanceInner;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller("BalancesApiV4.0.0")
@@ -67,9 +66,13 @@ public class BalancesApiController implements BalancesApi {
         int totalPage = balances.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBalance1()
-                .data(new OBReadBalance1Data().balance(balances.getContent().stream()
-                        .map(b -> toOBReadBalance1DataBalanceInner(b.getBalance()))
-                        .collect(Collectors.toList())))
+                .data(new OBReadBalance1Data()
+                        .balance(balances.getContent().stream()
+                            .map(b -> toOBReadBalance1DataBalanceInner(b.getBalance()))
+                            .collect(Collectors.toList()))
+                        .totalValue(balances.getContent().stream()
+                            .map(v -> toOBReadBalance1DataTotalValue(v.getTotalValue()))
+                            .collect(Collectors.collectingAndThen(Collectors.toList(), list -> new OBReadBalance1DataTotalValue()))))
                 .links(PaginationUtil.generateLinks(buildGetBalancesUri(), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
@@ -83,9 +86,13 @@ public class BalancesApiController implements BalancesApi {
         int totalPage = balances.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBalance1()
-                .data(new OBReadBalance1Data().balance(balances.getContent().stream()
-                        .map(b -> toOBReadBalance1DataBalanceInner(b.getBalance()))
-                        .collect(Collectors.toList())))
+                .data(new OBReadBalance1Data()
+                        .balance(balances.getContent().stream()
+                            .map(b -> toOBReadBalance1DataBalanceInner(b.getBalance()))
+                            .collect(Collectors.toList()))
+                        .totalValue(balances.getContent().stream()
+                            .map(v -> toOBReadBalance1DataTotalValue(v.getTotalValue()))
+                            .collect(Collectors.collectingAndThen(Collectors.toList(), list -> new OBReadBalance1DataTotalValue()))))
                 .links(PaginationUtil.generateLinks(buildGetAccountBalancesUri(accountId), page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
