@@ -26,7 +26,9 @@ import uk.org.openbanking.datamodel.v3.account.OBRisk2;
 import uk.org.openbanking.datamodel.v4.account.OBInternalPermissions1Code;
 import uk.org.openbanking.datamodel.v4.account.OBReadConsentResponse1;
 import uk.org.openbanking.datamodel.v4.account.OBReadConsentResponse1Data;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,12 +41,15 @@ public class OBReadConsentResponseFactory {
         final OBRisk2 obRisk2 = new OBRisk2();
         obRisk2.setData(consent.getRequestObj().getRisk().getData());
         final FRReadConsentData readConsentData = consent.getRequestObj().getData();
+        OBStatusReason obStatusReason = new OBStatusReason().statusReasonCode("U036").statusReasonDescription("Waiting for completion of consent authorisation to be completed by user");
+
         return new OBReadConsentResponse1()
                 .data(new OBReadConsentResponse1Data().consentId(consent.getId())
                                                       .creationDateTime(new DateTime(consent.getCreationDateTime()))
                                                       .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
                                                       .status(toOBReadConsentStatusV4((consent.getStatus())))
                                                       .permissions(toOBInternalPermissions1CodeList(readConsentData.getPermissions()))
+                                                      .statusReason(Collections.singletonList(obStatusReason))
                                                       .expirationDateTime(readConsentData.getExpirationDateTime())
                                                       .transactionFromDateTime(readConsentData.getTransactionFromDateTime())
                                                       .transactionToDateTime(readConsentData.getTransactionToDateTime()))
