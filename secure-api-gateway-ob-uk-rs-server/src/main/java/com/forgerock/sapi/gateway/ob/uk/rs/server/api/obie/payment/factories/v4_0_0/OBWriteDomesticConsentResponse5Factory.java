@@ -17,15 +17,19 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper.createDomesticPaymentConsentsLink;
 
+import java.util.Collections;
+
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRConsentStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsentResponse5;
@@ -56,6 +60,7 @@ public class OBWriteDomesticConsentResponse5Factory {
         data.status(FRConsentStatusConverter.toOBPaymentConsentStatusV4(domesticPaymentConsent.getStatus()));
         data.creationDateTime(new DateTime(domesticPaymentConsent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(domesticPaymentConsent.getStatusUpdateDateTime()));
+        data.statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class)));
 
         return new OBWriteDomesticConsentResponse5().data(data)
                                                     .risk(obWriteDomesticConsent4.getRisk())

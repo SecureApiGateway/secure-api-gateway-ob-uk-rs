@@ -47,7 +47,6 @@ import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.domesticscheduledpayments.DomesticScheduledPaymentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
@@ -68,9 +67,7 @@ import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5Data;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1Status;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetailStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
@@ -231,7 +228,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         FRWriteDataDomesticScheduled data = frPaymentSubmission.getScheduledPayment().getData();
-        OBWriteDomesticStandingOrderResponse6Data responseData = new OBWriteDomesticStandingOrderResponse6Data();
+        OBWriteDomesticScheduledResponse5Data responseData = new  OBWriteDomesticScheduledResponse5Data();
         return new OBWriteDomesticScheduledResponse5()
                 .data(new OBWriteDomesticScheduledResponse5Data()
                         .charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))

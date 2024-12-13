@@ -232,6 +232,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             FRDomesticPaymentSubmission frPaymentSubmission
     ) {
         FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
+        OBWriteDomesticResponse5Data responseData = new OBWriteDomesticResponse5Data();
 
         final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
                 consent.getRequestObj().getData().getReadRefundAccount(), consent);
@@ -246,8 +247,9 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                               .status(toOBWriteDomesticResponse5DataStatus(frPaymentSubmission.getStatus()))
                               .consentId(data.getConsentId())
                               .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
-                              .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund)
-                                                       .orElse(null)))
+                              .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
+                              .statusReason(responseData.getStatusReason()))
+
                 .links(LinksHelper.createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

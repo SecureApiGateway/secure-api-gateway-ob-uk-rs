@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRConsentStatusConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRInternationalConsentStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.payment.FRWriteInternationalStandingOrderConsent;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internationalstandingorder.v3_1_10.InternationalStandingOrderConsent;
@@ -54,7 +54,7 @@ public class OBWriteInternationalStandingOrderConsentResponse7Factory {
         data.initiation(FRModelMapper.map(obConsentData.getInitiation(), OBWriteInternationalStandingOrder4DataInitiation.class));
         data.charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()));
         data.consentId(consent.getId());
-        data.status(FRConsentStatusConverter.toOBWriteInternationalConsentResponse6DataStatus(consent.getStatus()));
+        data.status(FRInternationalConsentStatusConverter.toOBPaymentConsentStatusV4(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
         data.statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class)));

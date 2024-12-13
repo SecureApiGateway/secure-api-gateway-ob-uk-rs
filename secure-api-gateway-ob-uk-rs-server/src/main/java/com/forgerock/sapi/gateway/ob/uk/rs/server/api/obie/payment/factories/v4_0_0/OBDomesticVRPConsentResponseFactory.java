@@ -17,14 +17,18 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp.FRDomesticVRPConsentConverters.toOBDomesticVRPConsentRequest;
 
+import java.util.Collections;
+
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRConsentStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPConsentRequestData;
 import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPConsentResponse;
@@ -36,6 +40,7 @@ public class OBDomesticVRPConsentResponseFactory {
     public OBDomesticVRPConsentResponse buildConsentResponse(DomesticVRPConsent consent, Class<?> controllerClass) {
         final OBDomesticVRPConsentRequest obDomesticVRPConsentRequest = toOBDomesticVRPConsentRequest(consent.getRequestObj());
         final OBDomesticVRPConsentRequestData consentRequestData = obDomesticVRPConsentRequest.getData();
+        final OBDomesticVRPConsentResponseData data = new OBDomesticVRPConsentResponseData();
 
         return new OBDomesticVRPConsentResponse()
                 .data(new OBDomesticVRPConsentResponseData().consentId(consent.getId())
@@ -44,7 +49,8 @@ public class OBDomesticVRPConsentResponseFactory {
                                                             .initiation(consentRequestData.getInitiation())
                                                             .creationDateTime(new DateTime(consent.getCreationDateTime()))
                                                             .status(FRConsentStatusConverter.toVrpOBPaymentConsentStatusV4(consent.getStatus()))
-                                                            .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime())))
+                                                            .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
+                                                            .statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class))))
                 .risk(obDomesticVRPConsentRequest.getRisk())
                 .links(LinksHelper.createDomesticVrpConsentLink(controllerClass, consent.getId()))
                 .meta(new Meta());

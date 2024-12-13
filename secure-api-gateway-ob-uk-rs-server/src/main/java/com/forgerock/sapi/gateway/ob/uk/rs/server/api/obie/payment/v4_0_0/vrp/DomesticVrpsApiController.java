@@ -252,6 +252,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     private OBDomesticVRPResponse responseEntity(DomesticVRPConsent consent, OBDomesticVRPRequest obDomesticVRPRequest,
             FRDomesticVrpPaymentSubmission paymentSubmission) {
+        OBDomesticVRPResponseData responseData = new OBDomesticVRPResponseData();
 
         final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
                 consent.getRequestObj().getData().getReadRefundAccount(), consent);
@@ -268,7 +269,9 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
                                 .instruction(obDomesticVRPRequest.getData().getInstruction())
                                 .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBCashAccountDebtorWithName).orElse(null))
-                ).links(LinksHelper.createDomesticVrpPaymentLink(this.getClass(), paymentSubmission.getId())
+                                .statusReason(responseData.getStatusReason()))
+
+                .links(LinksHelper.createDomesticVrpPaymentLink(this.getClass(), paymentSubmission.getId())
                 ).meta(new Meta())
                 .risk(obDomesticVRPRequest.getRisk());
 
