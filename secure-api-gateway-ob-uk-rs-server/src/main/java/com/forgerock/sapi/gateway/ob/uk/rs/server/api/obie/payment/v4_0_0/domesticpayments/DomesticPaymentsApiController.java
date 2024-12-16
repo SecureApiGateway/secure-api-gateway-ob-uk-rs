@@ -28,6 +28,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.pay
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +41,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticConsentConverter;
@@ -68,6 +70,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticResponse5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticResponse5Data;
@@ -248,7 +251,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                               .consentId(data.getConsentId())
                               .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                               .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
-                              .statusReason(responseData.getStatusReason()))
+                              .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
 
                 .links(LinksHelper.createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());

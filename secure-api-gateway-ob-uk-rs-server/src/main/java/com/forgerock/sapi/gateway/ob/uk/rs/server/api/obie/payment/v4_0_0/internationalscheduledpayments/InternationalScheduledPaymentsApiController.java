@@ -31,6 +31,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +43,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRExchangeRateConverter;
@@ -70,6 +72,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledResponse6;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledResponse6Data;
@@ -254,7 +257,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .expectedExecutionDateTime(data.getInitiation().getRequestedExecutionDateTime())
                         .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalScheduledResponse6DataRefund).orElse(null))
                         .exchangeRateInformation(FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()))
-                        .statusReason(responseData.getStatusReason()))
+                        .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
 
                 .links(LinksHelper.createInternationalScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
