@@ -18,6 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper.createDomesticScheduledPaymentConsentsLink;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
@@ -53,7 +54,7 @@ public class OBWriteDomesticScheduledConsentResponse5Factory {
         data.status(FRConsentStatusConverter.toOBPaymentConsentStatusV4(consent.getStatus()));
         data.creationDateTime(new DateTime(consent.getCreationDateTime()));
         data.statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()));
-        data.statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class)));
+        data.statusReason((List<OBStatusReason>) FRModelMapper.map(data.getStatusReason(), OBStatusReason.class));
 
         return new OBWriteDomesticScheduledConsentResponse5().data(data)
                 .risk(obWriteDomesticScheduledConsent4.getRisk())
