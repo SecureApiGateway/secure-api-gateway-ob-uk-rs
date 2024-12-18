@@ -24,6 +24,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
@@ -64,6 +66,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5Data;
@@ -228,7 +231,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 consent.getRequestObj().getData().getReadRefundAccount(), consent);
 
         FRWriteDataDomesticScheduled data = frPaymentSubmission.getScheduledPayment().getData();
-        OBWriteDomesticScheduledResponse5Data responseData = new  OBWriteDomesticScheduledResponse5Data();
+        OBWriteDomesticScheduledResponse5Data responseData = new OBWriteDomesticScheduledResponse5Data();
         return new OBWriteDomesticScheduledResponse5()
                 .data(new OBWriteDomesticScheduledResponse5Data()
                         .charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
@@ -240,8 +243,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
-                        .statusReason(responseData.getStatusReason())
-                )
+                        .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
+
                 .links(LinksHelper.createDomesticScheduledPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
     }

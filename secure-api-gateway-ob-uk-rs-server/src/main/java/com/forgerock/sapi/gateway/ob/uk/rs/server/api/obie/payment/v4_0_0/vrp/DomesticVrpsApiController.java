@@ -22,6 +22,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp.FRDomesticVRPConsentConverters;
@@ -63,6 +65,7 @@ import uk.org.openbanking.datamodel.v3.vrp.OBDomesticVRPResponseDataStatus;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.v4.common.OBInternalChargeBearerType1Code;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPDetails;
 import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPDetailsData;
 import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPDetailsDataPaymentStatusInner;
@@ -269,7 +272,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
                                 .instruction(obDomesticVRPRequest.getData().getInstruction())
                                 .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBCashAccountDebtorWithName).orElse(null))
-                                .statusReason(responseData.getStatusReason()))
+                                .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
 
                 .links(LinksHelper.createDomesticVrpPaymentLink(this.getClass(), paymentSubmission.getId())
                 ).meta(new Meta())
