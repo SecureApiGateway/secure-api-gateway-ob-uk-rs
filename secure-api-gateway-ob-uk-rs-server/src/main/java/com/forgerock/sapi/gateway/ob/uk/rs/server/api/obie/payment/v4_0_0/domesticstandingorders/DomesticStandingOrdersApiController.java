@@ -24,6 +24,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRResponseDataRefund;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.mapper.FRModelMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRPaymentDetailsStatusConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRResponseDataRefundConverter;
@@ -48,7 +50,6 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.domesticstand
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.services.RefundAccountService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.PaymentApiResponseUtil;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.VersionPathExtractor;
-import com.forgerock.sapi.gateway.ob.uk.rs.server.common.util.v4_0_0.PaymentsUtils;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.IdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.idempotency.SinglePaymentForConsentIdempotentPaymentService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.v4.common.util.link.LinksHelper;
@@ -65,11 +66,11 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 
 import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v4.common.Meta;
+import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderResponse6Data;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1Status;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetailStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
@@ -236,7 +237,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                         .consentId(data.getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
-                        .statusReason(responseData.getStatusReason())
+                        .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class)))
                 )
                 .links(LinksHelper.createDomesticStandingOrderPaymentLink(this.getClass(), frPaymentSubmission.getId()))
                 .meta(new Meta());
