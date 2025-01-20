@@ -50,7 +50,7 @@
     </parent>
 
     <properties>
-        <uk.bom.version>4.0.4-SNAPSHOT</uk.bom.version>
+        <uk.bom.version>4.0.4-pr-255-SNAPSHOT</uk.bom.version>
         <consent.api.version>4.0.4-SNAPSHOT</consent.api.version>
     </properties>
 
