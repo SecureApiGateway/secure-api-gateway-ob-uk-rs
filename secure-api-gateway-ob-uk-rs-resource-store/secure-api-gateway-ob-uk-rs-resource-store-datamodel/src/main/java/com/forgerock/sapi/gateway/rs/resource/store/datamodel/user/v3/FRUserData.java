@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.datamodel.user;
+package com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.v3;
 
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.v3.FRAccountData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.v4.account.OBParty2;
+import uk.org.openbanking.datamodel.v3.account.OBParty2;
 
 import java.util.ArrayList;
 import java.util.List;

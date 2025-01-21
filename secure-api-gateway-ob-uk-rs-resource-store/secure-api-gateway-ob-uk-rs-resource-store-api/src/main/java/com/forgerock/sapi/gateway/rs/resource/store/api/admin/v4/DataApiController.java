@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
+package com.forgerock.sapi.gateway.rs.resource.store.api.admin.v4;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalanceInner;
@@ -51,8 +51,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClie
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.model.User;
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.services.UserClientService;
 import com.forgerock.sapi.gateway.rs.resource.store.api.admin.exceptions.DataApiException;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.v4.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.v4.FRUserData;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.customerinfo.FRCustomerInfoConverter;
@@ -71,7 +71,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.customerinfo.FRCu
 
 import lombok.extern.slf4j.Slf4j;
 
-@Controller("DataApi")
+@Controller("DataApiV4.0.0")
 @Slf4j
 public class DataApiController implements DataApi {
 

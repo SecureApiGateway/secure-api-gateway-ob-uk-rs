@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
+package com.forgerock.sapi.gateway.rs.resource.store.api.admin.v4;
 
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.v4.FRUserData;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Api(tags = "Fake Data API", description = "API for generating 'fake' data within Mongo DB")
-@RequestMapping(value = "/admin/fake-data")
+@RequestMapping(value = "/admin/fake-data/v4")
 public interface FakeDataApi {
 
     @ApiOperation(value = "Generate Fake Data", nickname = "generateFakeData", notes = "Generates fake data", response = FRUserData.class)
@@ -37,7 +37,7 @@ public interface FakeDataApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error")})
-    @RequestMapping(value = "/generate",
+    @RequestMapping(value = "/generate/v4",
             method = RequestMethod.POST)
     ResponseEntity generateFakeData(
             @ApiParam(value = "UserId", required = true)
