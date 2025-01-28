@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
+package com.forgerock.sapi.gateway.rs.resource.store.api.admin.v3;
 
 import com.forgerock.sapi.gateway.ob.uk.rs.cloud.client.exceptions.ExceptionClient;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.v3.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.v3.FRUserData;
 import io.swagger.annotations.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.datamodel.account;
+package com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.v4;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
+package com.forgerock.sapi.gateway.rs.resource.store.api.admin.v4;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.FRAccountStatusCode;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRFinancialAccount.FRAccountSubTypeCode;
@@ -91,7 +91,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorException;
 import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.DataConfigurationProperties;
 import com.forgerock.sapi.gateway.rs.resource.store.api.admin.configuration.TestUserAccountIds;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.FRUserData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.user.v4.FRUserData;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBeneficiary;
@@ -123,9 +123,9 @@ import uk.org.openbanking.datamodel.v3.common.OBExternalAccountIdentification4Co
 import uk.org.openbanking.datamodel.v4.common.ExternalProxyAccountType1Code;
 import uk.org.openbanking.datamodel.v4.common.OBAddressType2Code;
 
-@Controller("FakeDataApi")
+@Controller("FakeDataApiV4.0.0")
 public class FakeDataApiController implements FakeDataApi {
-    private final static Logger LOGGER = LoggerFactory.getLogger(com.forgerock.sapi.gateway.rs.resource.store.api.admin.FakeDataApiController.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FakeDataApiController.class);
     private static final String RANDOM_PROFILE_ID = "random";
     private static final String GBP = "GBP";
     private static final String EUR = "EUR";

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
+package com.forgerock.sapi.gateway.rs.resource.store.api.admin.v4;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toFRBalanceType;
@@ -43,7 +43,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.account.FRPartyData;
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.customerinfo.FRCustomerInfo;
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.v4.FRAccountData;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalance;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBeneficiary;
@@ -80,7 +80,8 @@ import uk.org.openbanking.datamodel.v4.account.OBStatement2;
 import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
 import uk.org.openbanking.datamodel.v4.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
-@Service
+
+@Service("V4.0.0DataCreator")
 @NoArgsConstructor
 public class DataCreator {
 

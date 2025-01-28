@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.rs.resource.store.api.admin;
+package com.forgerock.sapi.gateway.rs.resource.store.api.admin.v3;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRCashBalanceConverter.toOBReadBalance1DataBalanceInner;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRFinancialAccountConverter.toOBAccount6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FROfferConverter.toOBReadOffer1DataOffer;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRPartyConverter.toOBParty2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRStatementConverter.toOBStatement2;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.account.FRTransactionConverter.toOBTransaction6;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRStandingOrderConverter.toOBStandingOrder6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRCashBalanceConverter.toOBReadBalance1DataBalance;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FROfferConverter.toOBReadOffer1DataOffer;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.account.FRTransactionConverter.toOBTransaction6;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.payment.FRStandingOrderConverter.toOBStandingOrder6;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.FRAccountData;
+import com.forgerock.sapi.gateway.rs.resource.store.datamodel.account.v3.FRAccountData;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRAccount;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRParty;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRProduct;
@@ -56,17 +56,18 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.standing
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.statements.FRStatementRepository;
 import com.forgerock.sapi.gateway.rs.resource.store.repo.mongo.accounts.transactions.FRTransactionRepository;
 
-import uk.org.openbanking.datamodel.v4.account.OBBeneficiary5;
-import uk.org.openbanking.datamodel.v4.account.OBReadBalance1DataBalanceInner;
-import uk.org.openbanking.datamodel.v4.account.OBReadDirectDebit2DataDirectDebitInner;
-import uk.org.openbanking.datamodel.v4.account.OBReadOffer1DataOfferInner;
-import uk.org.openbanking.datamodel.v4.account.OBScheduledPayment3;
-import uk.org.openbanking.datamodel.v4.account.OBStatement2;
-import uk.org.openbanking.datamodel.v4.account.OBTransaction6;
-import uk.org.openbanking.datamodel.v4.account.OBStandingOrder6;
-import uk.org.openbanking.datamodel.v4.account.OBParty2;
+import uk.org.openbanking.datamodel.v3.account.OBBeneficiary5;
+import uk.org.openbanking.datamodel.v3.account.OBParty2;
+import uk.org.openbanking.datamodel.v3.account.OBReadBalance1DataBalanceInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadDirectDebit2DataDirectDebitInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadOffer1DataOfferInner;
+import uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner;
+import uk.org.openbanking.datamodel.v3.account.OBScheduledPayment3;
+import uk.org.openbanking.datamodel.v3.account.OBStandingOrder6;
+import uk.org.openbanking.datamodel.v3.account.OBStatement2;
+import uk.org.openbanking.datamodel.v3.account.OBTransaction6;
 
-@Service
+@Service("V3.1.10DataExporter")
 public class DataExporter {
 
     /**
@@ -193,10 +194,10 @@ public class DataExporter {
 
     private List<OBReadBalance1DataBalanceInner> getBalances(String accountId) {
         return executePagingFindQuery(accountId, balanceRepository::findByAccountId,
-                frBalance -> toOBReadBalance1DataBalanceInner((frBalance.getBalance())));
+                frBalance -> toOBReadBalance1DataBalance(frBalance.getBalance()));
     }
 
-    private uk.org.openbanking.datamodel.v3.account.OBReadProduct2DataProductInner getProduct(String accountId) {
+    private OBReadProduct2DataProductInner getProduct(String accountId) {
         final Page<FRProduct> product = productRepository.findByAccountId(accountId, PageRequest.ofSize(1));
         if (product.hasContent()) {
             return product.getContent().get(0).getProduct();
