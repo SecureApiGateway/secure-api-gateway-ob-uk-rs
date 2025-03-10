@@ -20,6 +20,7 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domesticpayments;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRRemittanceInformationConverter.toOBRemittanceInformationStructured;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse5DataStatus;
@@ -200,6 +201,13 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                                                                              apiClientId);
         logger.debug("Got consent from store: {}", consent);
 
+        if (apiVersion == OBVersion.v4_0_0 && frPaymentSubmission.getObVersion() == OBVersion.v3_1_10){
+            logger.debug("Api V4.0.0, request v3.1.10: {}", consent);
+            OBWriteDomesticResponse5 newResponseEntity = responseEntity(consent, frPaymentSubmission);
+            newResponseEntity.getData().getInitiation().getRemittanceInformation().getStructured().get(0).getCreditorReferenceInformation().setReference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference());
+            return ResponseEntity.ok(newResponseEntity);
+        }
+
         return ResponseEntity.ok(responseEntity(consent, frPaymentSubmission));
     }
 
@@ -231,6 +239,33 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     }
 
     private OBWriteDomesticResponse5 responseEntity(
+            DomesticPaymentConsent consent,
+            FRDomesticPaymentSubmission frPaymentSubmission
+    ) {
+        FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
+        OBWriteDomesticResponse5Data responseData = new OBWriteDomesticResponse5Data();
+
+        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
+                consent.getRequestObj().getData().getReadRefundAccount(), consent);
+
+        return new OBWriteDomesticResponse5()
+                .data(new OBWriteDomesticResponse5Data()
+                              .domesticPaymentId(frPaymentSubmission.getId())
+                              .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
+                              .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
+                              .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
+                              .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
+                              .status(toOBWriteDomesticResponse5DataStatus(frPaymentSubmission.getStatus()))
+                              .consentId(data.getConsentId())
+                              .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
+                              .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
+                              .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
+
+                .links(LinksHelper.createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
+                .meta(new Meta());
+    }
+
+    private OBWriteDomesticResponse5 responseEntityV4_0_0FromV3_1_10(
             DomesticPaymentConsent consent,
             FRDomesticPaymentSubmission frPaymentSubmission
     ) {
