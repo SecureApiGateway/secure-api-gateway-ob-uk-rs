@@ -21,6 +21,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domes
 
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.PENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRRemittanceInformationConverter.toOBRemittanceInformationStructured;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v3.common.FRRemittanceInformationConverter.toOBRemittanceInformationStructuredCreditorReferenceInformation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRSubmissionStatusConverter.toOBWriteDomesticResponse5DataStatus;
@@ -29,10 +30,7 @@ import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.pay
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -72,14 +70,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticResponse5;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticResponse5Data;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1PaymentStatusStatus;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.v4.payment.*;
 
 @Controller("DomesticPaymentsApiV4.0.0")
 @Slf4j
@@ -203,8 +194,9 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         if (apiVersion == OBVersion.v4_0_0 && frPaymentSubmission.getObVersion() == OBVersion.v3_1_10){
             logger.debug("Api V4.0.0, request v3.1.10: {}", consent);
+            logger.debug("Reference: {}", frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference());
             OBWriteDomesticResponse5 newResponseEntity = responseEntity(consent, frPaymentSubmission);
-            newResponseEntity.getData().getInitiation().getRemittanceInformation().getStructured().get(0).getCreditorReferenceInformation().setReference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference());
+            newResponseEntity.getData().getInitiation().getRemittanceInformation().setStructured(List.of(new OBRemittanceInformationStructured().creditorReferenceInformation(new OBRemittanceInformationStructuredCreditorReferenceInformation().reference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference()))));
             return ResponseEntity.ok(newResponseEntity);
         }
 
