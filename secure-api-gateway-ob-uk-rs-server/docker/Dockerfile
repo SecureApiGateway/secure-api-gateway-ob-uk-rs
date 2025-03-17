@@ -3,7 +3,7 @@ FROM gcr.io/forgerock-io/java-17:latest
 ARG JAR_FILE
 
 # dependencies for wait-for.sh
-RUN apt-get -q update && apt-get -qy install netcat
+RUN apt-get -q update && apt-get -qy install netcat-traditional
 
 RUN mkdir /app
 RUN groupadd -r rcs && useradd -r -s /bin/false -g rcs rcs

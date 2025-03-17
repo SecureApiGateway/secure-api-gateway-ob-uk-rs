@@ -7,7 +7,7 @@ on:
       - ob-v*
     paths-ignore:
       - '**/README.md'
-      - '_infra/helm/**'
+      - '../../../secure-api-gateway-core/_infra/helm/**'
 jobs:
   run_pr-template:
     name: Merge - Build and Deploy
