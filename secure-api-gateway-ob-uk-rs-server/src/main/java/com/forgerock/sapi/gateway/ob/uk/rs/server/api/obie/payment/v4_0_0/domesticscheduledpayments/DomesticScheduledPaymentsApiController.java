@@ -69,7 +69,16 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
-import uk.org.openbanking.datamodel.v4.payment.*;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduled2;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5Data;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetailStatus;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructured;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructuredCreditorReferenceInformation;
 
 @Controller("DomesticScheduledPaymentsApiV4.0.0")
 public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
