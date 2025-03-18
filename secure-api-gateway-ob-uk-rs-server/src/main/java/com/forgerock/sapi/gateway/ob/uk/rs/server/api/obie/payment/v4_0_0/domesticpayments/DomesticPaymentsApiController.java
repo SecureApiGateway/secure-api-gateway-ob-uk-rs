@@ -70,7 +70,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
-import uk.org.openbanking.datamodel.v4.payment.*;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomestic2;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticResponse5;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticResponse5Data;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1PaymentStatusStatus;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructured;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructuredCreditorReferenceInformation;
 
 @Controller("DomesticPaymentsApiV4.0.0")
 @Slf4j
@@ -196,7 +205,10 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             logger.debug("Api V4.0.0, request v3.1.10: {}", consent);
             logger.debug("Reference: {}", frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference());
             OBWriteDomesticResponse5 newResponseEntity = responseEntity(consent, frPaymentSubmission);
-            newResponseEntity.getData().getInitiation().getRemittanceInformation().setStructured(List.of(new OBRemittanceInformationStructured().creditorReferenceInformation(new OBRemittanceInformationStructuredCreditorReferenceInformation().reference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference()))));
+            newResponseEntity.getData().getInitiation().getRemittanceInformation().setStructured(List.of(
+                    new OBRemittanceInformationStructured().creditorReferenceInformation(
+                            new OBRemittanceInformationStructuredCreditorReferenceInformation()
+                                    .reference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference()))));
             return ResponseEntity.ok(newResponseEntity);
         }
 
@@ -231,33 +243,6 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     }
 
     private OBWriteDomesticResponse5 responseEntity(
-            DomesticPaymentConsent consent,
-            FRDomesticPaymentSubmission frPaymentSubmission
-    ) {
-        FRWriteDataDomestic data = frPaymentSubmission.getPayment().getData();
-        OBWriteDomesticResponse5Data responseData = new OBWriteDomesticResponse5Data();
-
-        final Optional<FRResponseDataRefund> refundAccountData = refundAccountService.getDomesticPaymentRefundData(
-                consent.getRequestObj().getData().getReadRefundAccount(), consent);
-
-        return new OBWriteDomesticResponse5()
-                .data(new OBWriteDomesticResponse5Data()
-                              .domesticPaymentId(frPaymentSubmission.getId())
-                              .charges(toOBWriteDomesticConsentResponse5DataCharges(consent.getCharges()))
-                              .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
-                              .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
-                              .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
-                              .status(toOBWriteDomesticResponse5DataStatus(frPaymentSubmission.getStatus()))
-                              .consentId(data.getConsentId())
-                              .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
-                              .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
-                              .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
-
-                .links(LinksHelper.createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))
-                .meta(new Meta());
-    }
-
-    private OBWriteDomesticResponse5 responseEntityV4_0_0FromV3_1_10(
             DomesticPaymentConsent consent,
             FRDomesticPaymentSubmission frPaymentSubmission
     ) {

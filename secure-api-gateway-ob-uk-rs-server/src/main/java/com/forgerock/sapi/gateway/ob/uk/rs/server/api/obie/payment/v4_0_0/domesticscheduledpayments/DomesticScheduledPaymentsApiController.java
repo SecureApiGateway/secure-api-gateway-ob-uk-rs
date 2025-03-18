@@ -24,10 +24,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -67,14 +64,7 @@ import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import jakarta.servlet.http.HttpServletRequest;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduled2;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledResponse5Data;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetailStatus;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
-import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.v4.payment.*;
 
 @Controller("DomesticScheduledPaymentsApiV4.0.0")
 public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
@@ -190,6 +180,17 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Get the consent to update the response
         final DomesticScheduledPaymentConsent consent = consentStoreClient.getConsent(frPaymentSubmission.getConsentId(), apiClientId);
         logger.debug("Got consent from store: {}", consent);
+
+        if (apiVersion == OBVersion.v4_0_0 && frPaymentSubmission.getObVersion() == OBVersion.v3_1_10){
+            logger.debug("Api V4.0.0, request v3.1.10: {}", consent);
+            logger.debug("Reference: {}", frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference());
+            OBWriteDomesticScheduledResponse5 newResponseEntity = responseEntity(consent, frPaymentSubmission);
+            newResponseEntity.getData().getInitiation().getRemittanceInformation().setStructured(List.of(
+                    new OBRemittanceInformationStructured().creditorReferenceInformation(
+                            new OBRemittanceInformationStructuredCreditorReferenceInformation()
+                                    .reference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference()))));
+            return ResponseEntity.ok(newResponseEntity);
+        }
 
         return ResponseEntity.ok(responseEntity(consent, frPaymentSubmission));
     }
