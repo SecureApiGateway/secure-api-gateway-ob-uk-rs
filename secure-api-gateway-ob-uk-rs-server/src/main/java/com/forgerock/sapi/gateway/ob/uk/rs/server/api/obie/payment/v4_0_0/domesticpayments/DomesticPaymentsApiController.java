@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -79,6 +80,8 @@ import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1PaymentStat
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetail;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructured;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructuredCreditorReferenceInformation;
 
 @Controller("DomesticPaymentsApiV4.0.0")
 @Slf4j
@@ -199,6 +202,17 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         final DomesticPaymentConsent consent = consentStoreClient.getConsent(frPaymentSubmission.getConsentId(),
                                                                              apiClientId);
         logger.debug("Got consent from store: {}", consent);
+
+        if (apiVersion == OBVersion.v4_0_0 && frPaymentSubmission.getObVersion() == OBVersion.v3_1_10){
+            logger.debug("Api V4.0.0, request v3.1.10: {}", consent);
+            logger.debug("Reference: {}", frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference());
+            OBWriteDomesticResponse5 newResponseEntity = responseEntity(consent, frPaymentSubmission);
+            newResponseEntity.getData().getInitiation().getRemittanceInformation().setStructured(List.of(
+                    new OBRemittanceInformationStructured().creditorReferenceInformation(
+                            new OBRemittanceInformationStructuredCreditorReferenceInformation()
+                                    .reference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference()))));
+            return ResponseEntity.ok(newResponseEntity);
+        }
 
         return ResponseEntity.ok(responseEntity(consent, frPaymentSubmission));
     }

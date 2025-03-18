@@ -24,10 +24,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import java.security.Principal;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -75,6 +77,8 @@ import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetai
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1StatusDetailStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetailsResponse1Data;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructured;
+import uk.org.openbanking.datamodel.v4.payment.OBRemittanceInformationStructuredCreditorReferenceInformation;
 
 @Controller("DomesticScheduledPaymentsApiV4.0.0")
 public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
@@ -190,6 +194,17 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Get the consent to update the response
         final DomesticScheduledPaymentConsent consent = consentStoreClient.getConsent(frPaymentSubmission.getConsentId(), apiClientId);
         logger.debug("Got consent from store: {}", consent);
+
+        if (apiVersion == OBVersion.v4_0_0 && frPaymentSubmission.getObVersion() == OBVersion.v3_1_10){
+            logger.debug("Api V4.0.0, request v3.1.10: {}", consent);
+            logger.debug("Reference: {}", frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference());
+            OBWriteDomesticScheduledResponse5 newResponseEntity = responseEntity(consent, frPaymentSubmission);
+            newResponseEntity.getData().getInitiation().getRemittanceInformation().setStructured(List.of(
+                    new OBRemittanceInformationStructured().creditorReferenceInformation(
+                            new OBRemittanceInformationStructuredCreditorReferenceInformation()
+                                    .reference(frPaymentSubmission.getPayment().getData().getInitiation().getRemittanceInformation().getReference()))));
+            return ResponseEntity.ok(newResponseEntity);
+        }
 
         return ResponseEntity.ok(responseEntity(consent, frPaymentSubmission));
     }
