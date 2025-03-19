@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '../../../secure-api-gateway-core/_infra/helm/**'
+      - '_infra/helm/**'
 jobs:
   run_pr-helm-template:
     name: PR - Check Helm
