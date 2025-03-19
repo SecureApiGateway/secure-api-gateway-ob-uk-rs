@@ -7,7 +7,7 @@ on:
       - ob-v*
     paths-ignore:
       - '**/README.md'
-      - '../../../secure-api-gateway-core/_infra/helm/**'
+      - '_infra/helm/**'
       - DataAPI-payload-definition.md
 
 jobs:
