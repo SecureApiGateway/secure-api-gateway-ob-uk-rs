@@ -46,7 +46,7 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>4.0.0</version>
+        <version>4.0.5</version>
     </parent>
 
     <properties>
