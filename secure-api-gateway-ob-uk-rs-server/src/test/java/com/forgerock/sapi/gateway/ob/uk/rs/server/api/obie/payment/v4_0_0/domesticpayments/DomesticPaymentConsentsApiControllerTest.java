@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020-2025 ForgeRock AS (obst@forgerock.com)
+ * Copyright © 2020-2024 ForgeRock AS (obst@forgerock.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domesticscheduledpayments;
+package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domesticpayments;
 
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
+import static com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.FundsConfirmationTestHelpers.validateConsentNotAuthorisedErrorResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -44,14 +46,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticScheduledConsentConverter;
+import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteDomesticConsentConverter;
 import com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTestDataFactory;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
-import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticscheduled.DomesticScheduledPaymentConsentStoreClient;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.CreateDomesticScheduledPaymentConsentRequest;
-import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticscheduled.v3_1_10.DomesticScheduledPaymentConsent;
+import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domestic.DomesticPaymentConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.CreateDomesticPaymentConsentRequest;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domestic.v3_1_10.DomesticPaymentConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import jakarta.annotation.PostConstruct;
@@ -59,13 +62,14 @@ import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticScheduledConsentResponse5;
-import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticScheduledConsentTestDataFactory;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticConsentResponse5;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
-public class DomesticScheduledPaymentConsentsApiControllerTest {
+public class DomesticPaymentConsentsApiControllerTest {
 
     private static final String TEST_API_CLIENT_ID = "client_234093-49";
 
@@ -78,36 +82,40 @@ public class DomesticScheduledPaymentConsentsApiControllerTest {
     private TestRestTemplate restTemplate;
 
     @MockBean
-    @Qualifier("v4.0.0RestDomesticScheduledPaymentConsentStoreClient")
-    private DomesticScheduledPaymentConsentStoreClient consentStoreClient;
+    @Qualifier("v4.0.0RestDomesticPaymentConsentStoreClient")
+    private DomesticPaymentConsentStoreClient consentStoreClient;
+
+    @MockBean
+    private FundsAvailabilityService fundsAvailabilityService;
 
     private String controllerBaseUri;
 
     @PostConstruct
     public void postConstruct() {
-        controllerBaseUri = "http://localhost:" + port + "/open-banking/v4.0.0/pisp/domestic-scheduled-payment-consents";
+        controllerBaseUri = "http://localhost:" + port + "/open-banking/v4.0.0/pisp/domestic-payment-consents";
     }
 
-    /*@Test
+
+    @Test
     public void testCreateConsent() {
-        final OBWriteDomesticScheduledConsent4 consentRequest = createValidateConsentRequest();
-        final DomesticScheduledPaymentConsent consentStoreResponse = buildAwaitingAuthorisationConsent(consentRequest);
+        final OBWriteDomesticConsent4 consentRequest = createValidateConsentRequest();
+        final DomesticPaymentConsent consentStoreResponse = buildAwaitingAuthorisationConsent(consentRequest);
         when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
-            final CreateDomesticScheduledPaymentConsentRequest createConsentArg = invocation.getArgument(0, CreateDomesticScheduledPaymentConsentRequest.class);
+            final CreateDomesticPaymentConsentRequest createConsentArg = invocation.getArgument(0, CreateDomesticPaymentConsentRequest.class);
             assertThat(createConsentArg.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
-            assertThat(createConsentArg.getConsentRequest()).isEqualTo(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(consentRequest));
+            assertThat(createConsentArg.getConsentRequest()).isEqualTo(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(consentRequest));
             assertThat(createConsentArg.getCharges()).isEmpty();
             assertThat(createConsentArg.getIdempotencyKey()).isEqualTo(HTTP_HEADERS.getFirst("x-idempotency-key"));
 
             return consentStoreResponse;
         });
 
-        final HttpEntity<OBWriteDomesticScheduledConsent4> entity = new HttpEntity<>(consentRequest, HTTP_HEADERS);
+        final HttpEntity<OBWriteDomesticConsent4> entity = new HttpEntity<>(consentRequest, HTTP_HEADERS);
 
-        final ResponseEntity<OBWriteDomesticScheduledConsentResponse5> createResponse = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
-                entity, OBWriteDomesticScheduledConsentResponse5.class);
+        final ResponseEntity<OBWriteDomesticConsentResponse5> createResponse = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
+                entity, OBWriteDomesticConsentResponse5.class);
         assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        final OBWriteDomesticScheduledConsentResponse5 consentResponse = createResponse.getBody();
+        final OBWriteDomesticConsentResponse5 consentResponse = createResponse.getBody();
         final String consentId = consentResponse.getData().getConsentId();
         assertThat(consentId).isEqualTo(consentStoreResponse.getId());
         assertThat(consentResponse.getData().getStatus()).isEqualTo(OBPaymentConsentStatus.AWAU);
@@ -121,19 +129,20 @@ public class DomesticScheduledPaymentConsentsApiControllerTest {
         final String selfLinkToConsent = consentResponse.getLinks().getSelf().toString();
         assertThat(selfLinkToConsent).isEqualTo(controllerGetConsentUri(consentId));
 
+
         // Get the consent and verify it matches the create response
         when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consentStoreResponse);
 
-        final ResponseEntity<OBWriteDomesticScheduledConsentResponse5> getConsentResponse = restTemplate.exchange(selfLinkToConsent,
-                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBWriteDomesticScheduledConsentResponse5.class);
+        final ResponseEntity<OBWriteDomesticConsentResponse5> getConsentResponse = restTemplate.exchange(selfLinkToConsent,
+                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBWriteDomesticConsentResponse5.class);
 
         assertThat(getConsentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(getConsentResponse.getBody()).isEqualTo(consentResponse);
-    }*/
+    }
 
     @Test
     public void failsToCreateConsentIfRequestDoesNotPassJavaBeanValidation() {
-        final OBWriteDomesticScheduledConsent4 emptyConsent = new OBWriteDomesticScheduledConsent4();
+        final OBWriteDomesticConsent4 emptyConsent = new OBWriteDomesticConsent4();
 
         final ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
                 new HttpEntity<>(emptyConsent, HTTP_HEADERS), OBErrorResponse1.class);
@@ -152,7 +161,7 @@ public class DomesticScheduledPaymentConsentsApiControllerTest {
 
     @Test
     public void failsToCreateConsentIfRequestDoesNotPassBizLogicValidation() {
-        final OBWriteDomesticScheduledConsent4 consentWithInvalidAmount = OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4();
+        final OBWriteDomesticConsent4 consentWithInvalidAmount = OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4();
         consentWithInvalidAmount.getData().getInitiation().getInstructedAmount().setAmount("0"); // Invalid amount
 
         final ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
@@ -187,21 +196,57 @@ public class DomesticScheduledPaymentConsentsApiControllerTest {
         assertThat(consentNotFoundResponse.getBody().getCode()).isEqualTo(OBRI_PERMISSION_INVALID.toString());
     }
 
+    @Test
+    public void testFundsConfirmation() {
+        final String accountId = "acc-1234344";
+        final OBWriteDomesticConsent4 consentRequest = createValidateConsentRequest();
+        final DomesticPaymentConsent consentStoreResponse = buildAuthorisedConsent(consentRequest, accountId);
+        when(consentStoreClient.getConsent(eq(consentStoreResponse.getId()), eq(TEST_API_CLIENT_ID))).thenReturn(consentStoreResponse);
+        when(fundsAvailabilityService.isFundsAvailable(eq(accountId), any())).thenReturn(Boolean.TRUE);
+
+        final String fundsConfirmationUri = controllerFundsConfirmationUri(consentStoreResponse.getId());
+        final ResponseEntity<OBWriteFundsConfirmationResponse1> fundsConfirmationResponse = restTemplate.exchange(fundsConfirmationUri,
+                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBWriteFundsConfirmationResponse1.class);
+
+        assertThat(fundsConfirmationResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        final OBWriteFundsConfirmationResponse1 fundsConfirmationResponseBody = fundsConfirmationResponse.getBody();
+        assertThat(fundsConfirmationResponseBody.getData().getFundsAvailableResult().getFundsAvailable()).isTrue();
+        assertThat(fundsConfirmationResponseBody.getLinks().getSelf().toString()).isEqualTo(fundsConfirmationUri);
+    }
+
+    @Test
+    public void failsToGetFundsConfirmationWhenConsentNotAuthorised() {
+        final OBWriteDomesticConsent4 consentRequest = createValidateConsentRequest();
+        final DomesticPaymentConsent consentAwaitingAuthorisation = buildAwaitingAuthorisationConsent(consentRequest);
+        when(consentStoreClient.getConsent(eq(consentAwaitingAuthorisation.getId()), eq(TEST_API_CLIENT_ID))).thenReturn(consentAwaitingAuthorisation);
+
+        final String fundsConfirmationUri = controllerFundsConfirmationUri(consentAwaitingAuthorisation.getId());
+        final ResponseEntity<OBErrorResponse1> fundsConfirmationResponse = restTemplate.exchange(fundsConfirmationUri,
+                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBErrorResponse1.class);
+
+        validateConsentNotAuthorisedErrorResponse(fundsConfirmationResponse);
+
+        verifyNoInteractions(fundsAvailabilityService);
+    }
+
     private String controllerGetConsentUri(String consentId) {
         return controllerBaseUri + "/" + consentId;
     }
 
-    private static OBWriteDomesticScheduledConsent4 createValidateConsentRequest() {
-        final OBWriteDomesticScheduledConsent4 consentRequest = OBWriteDomesticScheduledConsentTestDataFactory.aValidOBWriteDomesticScheduledConsent4();
+    private String controllerFundsConfirmationUri(String consentId) {
+        return controllerGetConsentUri(consentId) + "/funds-confirmation";
+    }
+
+    private static OBWriteDomesticConsent4 createValidateConsentRequest() {
+        final OBWriteDomesticConsent4 consentRequest = OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4();
         consentRequest.getData().getAuthorisation().setCompletionDateTime(DateTime.now(DateTimeZone.UTC));
-        consentRequest.getData().getInitiation().setRequestedExecutionDateTime(DateTime.now(DateTimeZone.UTC).plusDays(2));
         return consentRequest;
     }
 
-    public static DomesticScheduledPaymentConsent buildAwaitingAuthorisationConsent(OBWriteDomesticScheduledConsent4 consentRequest) {
-        final DomesticScheduledPaymentConsent consentStoreResponse = new DomesticScheduledPaymentConsent();
+    public static DomesticPaymentConsent buildAwaitingAuthorisationConsent(OBWriteDomesticConsent4 consentRequest) {
+        final DomesticPaymentConsent consentStoreResponse = new DomesticPaymentConsent();
         consentStoreResponse.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        consentStoreResponse.setRequestObj(FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent(consentRequest));
+        consentStoreResponse.setRequestObj(FRWriteDomesticConsentConverter.toFRWriteDomesticConsent(consentRequest));
         consentStoreResponse.setStatus(OBPaymentConsentStatus.AWAU.toString());
         consentStoreResponse.setCharges(List.of());
         final Date creationDateTime = new Date();
@@ -210,4 +255,10 @@ public class DomesticScheduledPaymentConsentsApiControllerTest {
         return consentStoreResponse;
     }
 
+    private static DomesticPaymentConsent buildAuthorisedConsent(OBWriteDomesticConsent4 consentRequest, String debtorAccountId) {
+        final DomesticPaymentConsent domesticPaymentConsent = buildAwaitingAuthorisationConsent(consentRequest);
+        domesticPaymentConsent.setStatus(OBPaymentConsentStatus.AUTH.toString());
+        domesticPaymentConsent.setAuthorisedDebtorAccountId(debtorAccountId);
+        return domesticPaymentConsent;
+    }
 }
