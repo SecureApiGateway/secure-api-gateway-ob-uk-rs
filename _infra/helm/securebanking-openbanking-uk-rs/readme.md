@@ -118,12 +118,12 @@ spec:
           - name: CONSENT_REPO_URI
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: CONSENT_REPO_URI
           - name: RS_DISCOVERY_FINANCIAL_ID
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: OB_ASPSP_ORG_ID
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
@@ -148,8 +148,8 @@ These are the environment variables declared in the `deployment.yaml`;
 |-----|---------|-------------|--------|
 | SPRING_DATA_MONGODB_HOST | mongodb | Full name of the mongodb deployment | deployment.mongodb.host |
 | SERVER_PORT | 8080 | What port does the container use |deployment.containerPort |
-| CONSENT_REPO_URI | http://ig:80 | URI of IG | core-deployment-config |
-| RS_DISCOVERY_FINANCIAL_ID | 0015800001041REAAY | OB Organisation ID | core-deployment-config |
+| CONSENT_REPO_URI | http://ig:80 | URI of IG | ob-deployment-config |
+| RS_DISCOVERY_FINANCIAL_ID | 0015800001041REAAY | OB Organisation ID | ob-deployment-config |
 | SPRING_PROFILES_ACTIVE | docker |What spring provile to use | Hardcoded |
 | JAVA_OPTS | -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 -agentlib:jdwp=transport=dt_socket,address=*:9090,server=y,suspend=n | Additional Java config | deployment.java.opts |
 
