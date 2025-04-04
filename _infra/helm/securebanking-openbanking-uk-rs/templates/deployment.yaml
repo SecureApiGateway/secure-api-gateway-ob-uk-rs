@@ -76,7 +76,7 @@ spec:
           - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
               configMapKeyRef:
-                name: core-deployment-config
+                name: ob-deployment-config
                 key: GATEWAY_DATA_REPO_URI
           - name: RCS_CONSENT_STORE_API_BASEURI
             valueFrom:
