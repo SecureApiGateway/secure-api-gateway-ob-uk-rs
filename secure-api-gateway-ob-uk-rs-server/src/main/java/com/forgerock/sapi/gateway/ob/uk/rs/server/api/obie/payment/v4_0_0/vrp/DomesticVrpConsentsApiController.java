@@ -26,9 +26,13 @@ import org.springframework.stereotype.Controller;
 
 import com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.vrp.FRDomesticVRPConsentConverters;
 import com.forgerock.sapi.gateway.ob.uk.common.error.OBErrorResponseException;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorResponseCategory;
+import com.forgerock.sapi.gateway.ob.uk.common.error.OBRIErrorType;
 import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.payment.v4_0_0.vrp.DomesticVrpConsentsApi;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.factories.v4_0_0.OBDomesticVRPConsentResponseFactory;
 import com.forgerock.sapi.gateway.ob.uk.rs.server.service.balance.FundsAvailabilityService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.migration.ConsentComparisonService;
+import com.forgerock.sapi.gateway.ob.uk.rs.server.service.migration.ConsentMigrationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.OBValidationService;
 import com.forgerock.sapi.gateway.ob.uk.rs.validation.obie.v4.payment.consent.OBVRPFundsConfirmationRequestValidator.VRPFundsConfirmationValidationContext;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.vrp.DomesticVRPConsentStoreClient;
@@ -52,7 +56,13 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
     private final FundsAvailabilityService fundsAvailabilityService;
 
+    private final ConsentMigrationService consentMigrationService;
+
+    private final ConsentComparisonService consentComparisonService;
+
     private final DomesticVRPConsentStoreClient consentStoreClient;
+
+    private final DomesticVRPConsentStoreClient v3consentStoreClient;
 
     private final OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator;
 
@@ -61,12 +71,18 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     private final OBDomesticVRPConsentResponseFactory responseFactory;
 
     public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
-                                            @Qualifier("v4.0.0RestDomesticVRPConsentStoreClient")DomesticVRPConsentStoreClient consentStoreClient,
+                                            ConsentMigrationService consentMigrationService,
+                                            ConsentComparisonService consentComparisonService,
+                                            @Qualifier("v4.0.0RestDomesticVRPConsentStoreClient") DomesticVRPConsentStoreClient consentStoreClient,
+                                            @Qualifier("v3.1.10RestDomesticVRPConsentStoreClient") DomesticVRPConsentStoreClient v3consentStoreClient,
                                             OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
                                             OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
                                             OBDomesticVRPConsentResponseFactory responseFactory) {
         this.fundsAvailabilityService = Objects.requireNonNull(fundsAvailabilityService, "FundsAvailabilityService cannot be null");
+        this.consentMigrationService = Objects.requireNonNull(consentMigrationService, "ConsentMigrationService cannot be null");
+        this.consentComparisonService = Objects.requireNonNull(consentComparisonService, "ConsentComparisonService cannot be null");
         this.consentStoreClient = Objects.requireNonNull(consentStoreClient, "ConsentStoreClient cannot be null");
+        this.v3consentStoreClient = Objects.requireNonNull(v3consentStoreClient, "ConsentStoreClient cannot be null");
         this.vrpConsentValidator = Objects.requireNonNull(vrpConsentValidator, "VRPConsentValidator cannot be null");
         this.vrpFundsConfirmationValidator = Objects.requireNonNull(vrpFundsConfirmationValidator, "VRPFundsConfirmationValidator cannot be null");
         this.responseFactory = Objects.requireNonNull(responseFactory, "ResponseFactory cannot be null");
@@ -172,18 +188,49 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     }
 
     @Override
-    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPut(final String consentId,
-                                                                               final String authorization,
-                                                                               final String xIdempotencyKey,
-                                                                               final String xJwsSignature,
-                                                                               final OBDomesticVRPConsentRequest obDomesticVRPConsentRequest,
-                                                                               final String xFapiAuthDate,
-                                                                               final String xFapiCustomerIpAddress,
-                                                                               final String xFapiInteractionId,
-                                                                               final String xCustomerUserAgent,
-                                                                               final String apiClientId,
-                                                                               final HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPut(String consentId,
+                                                                               String authorization,
+                                                                               String xIdempotencyKey,
+                                                                               String xJwsSignature,
+                                                                               OBDomesticVRPConsentRequest obDomesticVRPConsentRequest,
+                                                                               String xFapiAuthDate,
+                                                                               String xFapiCustomerIpAddress,
+                                                                               String xFapiInteractionId,
+                                                                               String xCustomerUserAgent,
+                                                                               String apiClientId,
+                                                                               HttpServletRequest request) throws OBErrorResponseException {
+
+        final DomesticVRPConsent consent = v3consentStoreClient.getConsent(consentId, apiClientId);
+        log.debug("domesticVrpConsentsGet - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}", consentId, apiClientId, xFapiInteractionId);
+
+        // Validate consent
+        if (consent == null) {
+            throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.PAYMENT_CONSENT_NOT_FOUND.toOBError1(null)
+            );
+        }
+
+        // Request vs. consent
+        boolean doRequestAndConsentMatch = consentComparisonService.doesRequestMatchConsent(obDomesticVRPConsentRequest, consent);
+        if (doRequestAndConsentMatch) {
+            log.debug("domesticVrpConsentsDelete - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",
+                    consentId, apiClientId, xFapiInteractionId);
+            v3consentStoreClient.deleteConsent(consentId, apiClientId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        // Create new consent
+        CreateDomesticVRPConsentRequest createRequest = new CreateDomesticVRPConsentRequest();
+        createRequest.setConsentRequest(FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(obDomesticVRPConsentRequest));
+        createRequest.setApiClientId(apiClientId);
+        createRequest.setIdempotencyKey(xIdempotencyKey);
+
+        DomesticVRPConsent newConsent = consentStoreClient.createConsent(createRequest);
+        log.debug("Created consent - id: {}", newConsent.getId());
+
+        return new ResponseEntity<>(responseFactory.buildConsentResponse(newConsent, getClass()), HttpStatus.CREATED);
     }
 
     @Override
