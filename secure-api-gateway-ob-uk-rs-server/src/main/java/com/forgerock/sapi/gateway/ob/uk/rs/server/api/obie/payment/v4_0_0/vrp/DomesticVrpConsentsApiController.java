@@ -202,7 +202,8 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
         final DomesticVRPConsent consent = v3consentStoreClient.getConsent(consentId, apiClientId);
         log.error("domesticVrpConsentsGet - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}", consentId, apiClientId, xFapiInteractionId);
-        log.error("V3consent");
+        log.error("request: {}", obDomesticVRPConsentRequest);
+        log.error("V3consent: {}", consent);
 
         // Validate consent
         if (consent == null) {
