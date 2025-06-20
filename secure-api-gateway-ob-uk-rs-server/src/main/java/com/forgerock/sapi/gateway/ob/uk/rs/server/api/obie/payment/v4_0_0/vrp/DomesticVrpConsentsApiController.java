@@ -229,6 +229,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
         createRequest.setConsentRequest(FRDomesticVRPConsentConverters.toFRDomesticVRPConsent(obDomesticVRPConsentRequest));
         createRequest.setApiClientId(apiClientId);
         createRequest.setIdempotencyKey(xIdempotencyKey);
+        createRequest.setConsentId(consentId);
 
         DomesticVRPConsent newConsent = consentStoreClient.createConsent(createRequest);
         log.error("Created consent - id: {}", newConsent.getId());
