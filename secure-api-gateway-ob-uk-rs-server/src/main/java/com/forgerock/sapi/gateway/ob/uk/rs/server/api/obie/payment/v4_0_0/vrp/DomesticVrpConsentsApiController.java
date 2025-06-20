@@ -201,7 +201,9 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                                                                                HttpServletRequest request) throws OBErrorResponseException {
 
         final DomesticVRPConsent consent = v3consentStoreClient.getConsent(consentId, apiClientId);
-        log.debug("domesticVrpConsentsGet - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}", consentId, apiClientId, xFapiInteractionId);
+        log.error("domesticVrpConsentsGet - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}", consentId, apiClientId, xFapiInteractionId);
+        log.error("request: {}", obDomesticVRPConsentRequest);
+        log.error("V3consent: {}", consent);
 
         // Validate consent
         if (consent == null) {
@@ -215,7 +217,8 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
         // Request vs. consent
         boolean doRequestAndConsentMatch = consentComparisonService.doesRequestMatchConsent(obDomesticVRPConsentRequest, consent);
         if (doRequestAndConsentMatch) {
-            log.debug("domesticVrpConsentsDelete - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",
+            log.error("Request and consent match");
+            log.error("domesticVrpConsentsDelete - consentId: {}, apiClientId: {}, x-fapi-interaction-id: {}",
                     consentId, apiClientId, xFapiInteractionId);
             v3consentStoreClient.deleteConsent(consentId, apiClientId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -228,7 +231,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
         createRequest.setIdempotencyKey(xIdempotencyKey);
 
         DomesticVRPConsent newConsent = consentStoreClient.createConsent(createRequest);
-        log.debug("Created consent - id: {}", newConsent.getId());
+        log.error("Created consent - id: {}", newConsent.getId());
 
         return new ResponseEntity<>(responseFactory.buildConsentResponse(newConsent, getClass()), HttpStatus.CREATED);
     }

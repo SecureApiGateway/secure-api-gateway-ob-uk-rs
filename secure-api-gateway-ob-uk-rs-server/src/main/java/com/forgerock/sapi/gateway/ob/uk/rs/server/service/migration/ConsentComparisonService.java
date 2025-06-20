@@ -17,10 +17,15 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.service.migration;
 
 import java.util.Objects;
 
+import org.springframework.stereotype.Service;
+
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.vrp.v3_1_10.DomesticVRPConsent;
 
+import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.v4.vrp.OBDomesticVRPConsentRequest;
 
+@Service
+@Slf4j
 public class ConsentComparisonService {
 
     public boolean doesRequestMatchConsent(OBDomesticVRPConsentRequest request, DomesticVRPConsent consent) {

@@ -152,6 +152,7 @@ public enum OBApiReference {
     CREATE_DOMESTIC_VRP_CONSENT(PISP, "CreateDomesticVRPConsent", POST, "/pisp/domestic-vrp-consents"),
     GET_DOMESTIC_VRP_CONSENT(PISP, "GetDomesticVRPConsent", GET, "/pisp/domestic-vrp-consents/{ConsentId}"),
     DELETE_DOMESTIC_VRP_CONSENT(PISP, "DeleteDomesticVRPConsent", DELETE, "/pisp/domestic-vrp-consents/{ConsentId}"),
+    PUT_DOMESTIC_VRP_CONSENT(PISP, "UpdateDomesticVRPConsent", PUT, "/pisp/domestic-vrp-consents/{ConsentId}"),
     CREATE_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION(PISP, "CreateDomesticVRPConsentsConsentIdFundsConfirmation", POST, "/pisp/domestic-vrp-consents/{ConsentId}/funds-confirmation"),
     CREATE_DOMESTIC_VRP_PAYMENT(PISP, "CreateDomesticVRPPayment", POST, "/pisp/domestic-vrps"),
     GET_DOMESTIC_VRP_PAYMENT(PISP, "GetDomesticVRPPayment", GET, "/pisp/domestic-vrps/{DomesticVRPId}"),
