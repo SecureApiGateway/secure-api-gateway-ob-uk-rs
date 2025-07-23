@@ -563,42 +563,42 @@ public class ConsentComparisonService {
         return consent.getRequestObj().getData().getInitiation().getDebtorAccount().getSecondaryIdentification();
     }
 
-    private boolean doStringsMatch(String requestDataElement, String consentDataElement) {
-        if (Objects.equals(requestDataElement, consentDataElement)) {
-            log.debug("requestDataElement: {}", requestDataElement);
-            log.debug("consentDataElement: {}", consentDataElement);
-            log.debug("DataElements match.");
+    private boolean doStringsMatch(String item1, String item2) {
+        if (Objects.equals(item1, item2)) {
+            log.debug("item1: {}", item1);
+            log.debug("item2: {}", item2);
+            log.debug("Items match.");
             return true;
         } else {
-            log.debug("requestDataElement: {}", requestDataElement);
-            log.debug("consentDataElement: {}", consentDataElement);
-            log.debug("DataElements do not match.");
+            log.debug("item1: {}", item1);
+            log.debug("item2: {}", item2);
+            log.debug("Items do not match.");
             return false;
         }
     }
 
-    private boolean doListsMatch(List<String> requestDataElement, List<String> consentDataElement) {
-        if (requestDataElement == null || consentDataElement == null) {
-            log.debug("requestDataElement: {}", requestDataElement);
-            log.debug("consentDataElement: {}", consentDataElement);
+    private boolean doListsMatch(List<String> item1, List<String> item2) {
+        if (item1 == null || item2 == null) {
+            log.debug("item1: {}", item1);
+            log.debug("item2: {}", item2);
             return false;
         }
 
-        if (requestDataElement.isEmpty() && consentDataElement.isEmpty()) {
-            log.debug("DataElements match.");
+        if (item1.isEmpty() && item2.isEmpty()) {
+            log.debug("Items match.");
             return true;
         }
 
-        if (!requestDataElement.equals(consentDataElement)) {
-            log.debug("requestDataElement: {}", requestDataElement);
-            log.debug("consentDataElement: {}", consentDataElement);
-            log.debug("DataElements do not match.");
+        if (!item1.equals(item2)) {
+            log.debug("item1: {}", item1);
+            log.debug("item2: {}", item2);
+            log.debug("Items do not match.");
             return false;
         }
 
-        log.debug("requestDataElement: {}", requestDataElement);
-        log.debug("consentDataElement: {}", consentDataElement);
-        log.debug("DataElements match.");
+        log.debug("item1: {}", item1);
+        log.debug("item2: {}", item2);
+        log.debug("Items match.");
         return true;
     }
 
