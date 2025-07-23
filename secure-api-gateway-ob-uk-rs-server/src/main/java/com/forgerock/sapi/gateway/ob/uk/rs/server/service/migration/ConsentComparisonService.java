@@ -635,18 +635,18 @@ public class ConsentComparisonService {
 
     private boolean doPeriodicLimitsAmountsMatch(List<String> requestPeriodicLimitsAmount, String consentPeriodicLimitsAmount) {
 
-        List<String> consentPeriodicLimitsCurrencies = new ArrayList<>();
+        List<String> consentPeriodicLimitsAmounts = new ArrayList<>();
         if (consentPeriodicLimitsAmount != null && !consentPeriodicLimitsAmount.isEmpty()) {
-            consentPeriodicLimitsCurrencies = Arrays.asList(consentPeriodicLimitsAmount.substring(1, consentPeriodicLimitsAmount.length() - 1).split(", "));
+            consentPeriodicLimitsAmounts = Arrays.asList(consentPeriodicLimitsAmount.substring(1, consentPeriodicLimitsAmount.length() - 1).split(", "));
         }
 
-        if (requestPeriodicLimitsAmount.size() != consentPeriodicLimitsCurrencies.size()) {
+        if (requestPeriodicLimitsAmount.size() != consentPeriodicLimitsAmounts.size()) {
             return false;
         }
 
         // Compare elements
         for (int i = 0; i < requestPeriodicLimitsAmount.size(); i++) {
-            if (!requestPeriodicLimitsAmount.get(i).equals(consentPeriodicLimitsCurrencies.get(i))) {
+            if (!requestPeriodicLimitsAmount.get(i).equals(consentPeriodicLimitsAmounts.get(i))) {
                 log.debug("Amounts do not match.");
                 return false;
             }

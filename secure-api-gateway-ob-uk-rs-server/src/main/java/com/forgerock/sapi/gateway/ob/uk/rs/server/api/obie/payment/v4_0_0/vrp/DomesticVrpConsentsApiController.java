@@ -60,8 +60,6 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
 
     private final DomesticVRPConsentStoreClient consentStoreClient;
 
-    private final DomesticVRPConsentStoreClient v3consentStoreClient;
-
     private final OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator;
 
     private final OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator;
@@ -71,14 +69,12 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     public DomesticVrpConsentsApiController(FundsAvailabilityService fundsAvailabilityService,
                                             ConsentComparisonService consentComparisonService,
                                             @Qualifier("v4.0.0RestDomesticVRPConsentStoreClient") DomesticVRPConsentStoreClient consentStoreClient,
-                                            @Qualifier("v3.1.10RestDomesticVRPConsentStoreClient") DomesticVRPConsentStoreClient v3consentStoreClient,
                                             OBValidationService<OBDomesticVRPConsentRequest> vrpConsentValidator,
                                             OBValidationService<VRPFundsConfirmationValidationContext> vrpFundsConfirmationValidator,
                                             OBDomesticVRPConsentResponseFactory responseFactory) {
         this.fundsAvailabilityService = Objects.requireNonNull(fundsAvailabilityService, "FundsAvailabilityService cannot be null");
         this.consentComparisonService = Objects.requireNonNull(consentComparisonService, "ConsentComparisonService cannot be null");
         this.consentStoreClient = Objects.requireNonNull(consentStoreClient, "ConsentStoreClient cannot be null");
-        this.v3consentStoreClient = Objects.requireNonNull(v3consentStoreClient, "ConsentStoreClient cannot be null");
         this.vrpConsentValidator = Objects.requireNonNull(vrpConsentValidator, "VRPConsentValidator cannot be null");
         this.vrpFundsConfirmationValidator = Objects.requireNonNull(vrpFundsConfirmationValidator, "VRPFundsConfirmationValidator cannot be null");
         this.responseFactory = Objects.requireNonNull(responseFactory, "ResponseFactory cannot be null");
