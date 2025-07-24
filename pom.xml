@@ -46,12 +46,12 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>4.0.5</version>
+        <version>5.0.0</version>
     </parent>
 
     <properties>
-        <uk.bom.version>4.0.4</uk.bom.version>
-        <consent.api.version>4.0.5-SNAPSHOT</consent.api.version>
+        <uk.bom.version>5.0.0</uk.bom.version>
+        <consent.api.version>5.0.0</consent.api.version>
     </properties>
 
     <dependencyManagement>
