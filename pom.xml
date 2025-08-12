@@ -51,7 +51,7 @@
 
     <properties>
         <uk.bom.version>5.0.1-SNAPSHOT</uk.bom.version>
-        <consent.api.version>5.0.1-SNAPSHOT</consent.api.version>
+        <consent.api.version>5.0.1-pr-304-SNAPSHOT</consent.api.version>
     </properties>
 
     <dependencyManagement>
