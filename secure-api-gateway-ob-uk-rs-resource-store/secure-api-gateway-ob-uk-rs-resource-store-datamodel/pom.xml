@@ -18,15 +18,14 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>secure-api-gateway-ob-uk-rs-resource-store-datamodel</artifactId>
-    <name>secure-api-gateway-ob-uk-rs-resource-store-datamodel</name>
-
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rs-resource-store</artifactId>
-        <version>5.0.4-SNAPSHOT</version>
+        <version>5.0.6-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
+    <artifactId>secure-api-gateway-ob-uk-rs-resource-store-datamodel</artifactId>
+    <name>secure-api-gateway-ob-uk-rs-resource-store-datamodel</name>
 
     <properties>
         <legal.path.header>../../legal/LICENSE-HEADER.txt</legal.path.header>
@@ -46,20 +45,6 @@
             <artifactId>secure-api-gateway-ob-uk-common-obie-datamodel</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -72,11 +57,6 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

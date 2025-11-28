@@ -94,7 +94,7 @@ public class DefaultPaymentFileProcessorService implements PaymentFileProcessorS
             // Guard against unexpected exceptions being raised by the processor impl
             logger.error("Unexpected exception raised processing payment file of type: {}, processorClass: {}",
                     fileType, paymentFileProcessor, t);
-            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_INVALID, "Failed to parse");
+            throw new OBErrorException(OBRIErrorType.REQUEST_FILE_INVALID, "Failed to parse", t);
         }
     }
 }

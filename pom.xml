@@ -18,10 +18,13 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.forgerock.sapi.gateway</groupId>
+    <parent>
+        <groupId>com.forgerock.sapi.gateway</groupId>
+        <artifactId>secure-api-gateway-parent</artifactId>
+        <version>5.0.6-SNAPSHOT</version>
+    </parent>
     <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-    <version>5.0.4-SNAPSHOT</version>
+    <version>5.0.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rs</name>
     <description>A UK Open Banking Resource Server for the Secure API Gateway</description>
@@ -33,39 +36,6 @@
         <name>ForgeRock</name>
         <url>http://www.forgerock.org</url>
     </organization>
-
-    <modules>
-        <module>secure-api-gateway-ob-uk-rs-backoffice-api</module>
-        <module>secure-api-gateway-ob-uk-rs-obie-api</module>
-        <module>secure-api-gateway-ob-uk-rs-server</module>
-        <module>secure-api-gateway-ob-uk-rs-cloud-client</module>
-        <module>secure-api-gateway-ob-uk-rs-validation</module>
-        <module>secure-api-gateway-ob-uk-rs-resource-store</module>
-    </modules>
-
-    <parent>
-        <groupId>com.forgerock.sapi.gateway</groupId>
-        <artifactId>secure-api-gateway-parent</artifactId>
-        <version>5.0.4-SNAPSHOT</version>
-    </parent>
-
-    <properties>
-        <uk.bom.version>5.0.4-SNAPSHOT</uk.bom.version>
-        <consent.api.version>5.0.4-SNAPSHOT</consent.api.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- ForgeRock BOM -->
-            <dependency>
-                <groupId>com.forgerock.sapi.gateway</groupId>
-                <artifactId>secure-api-gateway-ob-uk-common-bom</artifactId>
-                <version>${uk.bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <scm>
         <connection>scm:git:${project.scm.url}</connection>
@@ -86,13 +56,116 @@
             <url>https://maven.forgerock.org/artifactory/community</url>
         </repository>
         <repository>
-            <id>central</id>
-            <name>Central Repository</name>
-            <url>https://repo1.maven.org/maven2</url>
-            <layout>default</layout>
+            <id>forgerock-internal-releases</id>
+            <name>ForgeRock Private Releases Repository</name>
+            <url>https://maven.forgerock.org/artifactory/internal-releases</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>forgerock-internal-snapshots</id>
+            <name>ForgeRock Internal Snapshots Repository</name>
+            <url>https://maven.forgerock.org/artifactory/internal-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
+
+    <properties>
+        <uk.bom.version>5.0.6-SNAPSHOT</uk.bom.version>
+        <consent.api.version>5.0.6-SNAPSHOT</consent.api.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- ForgeRock BOM -->
+            <dependency>
+                <groupId>com.forgerock.sapi.gateway</groupId>
+                <artifactId>secure-api-gateway-ob-uk-common-bom</artifactId>
+                <version>${uk.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.sapi.gateway</groupId>
+                <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-client</artifactId>
+                <version>${consent.api.version}</version>
+            </dependency>
+            <!-- API, java.xml.bind module -->
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>4.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>4.0.6</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modules>
+        <module>secure-api-gateway-ob-uk-rs-backoffice-api</module>
+        <module>secure-api-gateway-ob-uk-rs-obie-api</module>
+        <module>secure-api-gateway-ob-uk-rs-server</module>
+        <module>secure-api-gateway-ob-uk-rs-cloud-client</module>
+        <module>secure-api-gateway-ob-uk-rs-validation</module>
+        <module>secure-api-gateway-ob-uk-rs-resource-store</module>
+    </modules>
 </project>

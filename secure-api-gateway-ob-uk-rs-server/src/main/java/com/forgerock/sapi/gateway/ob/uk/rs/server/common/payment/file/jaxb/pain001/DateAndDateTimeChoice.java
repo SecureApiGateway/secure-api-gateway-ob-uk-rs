@@ -16,9 +16,9 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001;
 
 import jakarta.annotation.Generated;
-import javax.xml.bind.annotation.*;
-import javax.xml.datatype.XMLGregorianCalendar;
+import jakarta.xml.bind.annotation.*;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * <p>Java class for DateAndDateTimeChoice complex type.
