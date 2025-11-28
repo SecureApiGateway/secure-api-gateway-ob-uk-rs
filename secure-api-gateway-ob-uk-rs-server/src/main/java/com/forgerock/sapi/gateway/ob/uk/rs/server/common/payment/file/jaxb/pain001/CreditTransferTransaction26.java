@@ -16,7 +16,12 @@
 package com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain001;
 
 import jakarta.annotation.Generated;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
+
 import java.util.ArrayList;
 import java.util.List;
 

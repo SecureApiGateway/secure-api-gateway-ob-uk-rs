@@ -193,7 +193,8 @@ public class FilePaymentConsentsApiControllerTest {
 
         assertThat(fileUploadResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         final OBErrorResponse1 obErrorResponse = fileUploadResponse.getBody();
-        assertThat(obErrorResponse.getErrors().size()).isEqualTo(1);
+        assertThat(obErrorResponse).isNotNull();
+        assertThat(obErrorResponse.getErrors()).hasSize(1);
         assertThat(obErrorResponse.getCode()).isEqualTo("OBRI.Request.Invalid");
         final OBError1 obError1 = obErrorResponse.getErrors().get(0);
         assertThat(obError1.getErrorCode()).isEqualTo("OBRI.Request.Object.file.wrong.number.of.transactions");

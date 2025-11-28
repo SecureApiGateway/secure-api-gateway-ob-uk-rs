@@ -18,26 +18,16 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
+        <groupId>com.forgerock.sapi.gateway</groupId>
+        <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
+        <version>5.0.6-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
     <artifactId>secure-api-gateway-ob-uk-rs-server</artifactId>
     <packaging>jar</packaging>
     <name>secure-api-gateway-ob-uk-rs-server</name>
     <description>A UK Open Banking RS simulator for the Secure API Gateway</description>
-    <url>
-        https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rs/secure-api-gateway-ob-uk-rs-server
-    </url>
-
-    <organization>
-        <name>ForgeRock</name>
-        <url>http://www.forgerock.org</url>
-    </organization>
-
-    <parent>
-        <groupId>com.forgerock.sapi.gateway</groupId>
-        <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-        <version>5.0.4-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
 
     <properties>
         <tag>latest</tag>
@@ -100,7 +90,6 @@
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>
             <artifactId>secure-api-gateway-ob-uk-rcs-consent-store-client</artifactId>
-            <version>${consent.api.version}</version>
         </dependency>
 
         <!-- External dependencies -->
@@ -138,16 +127,20 @@
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -157,7 +150,6 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback.contrib</groupId>
             <artifactId>logback-json-classic</artifactId>
@@ -191,16 +183,6 @@
 
         <!-- External Test dependencies -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
@@ -213,11 +195,6 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo.spring3x</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

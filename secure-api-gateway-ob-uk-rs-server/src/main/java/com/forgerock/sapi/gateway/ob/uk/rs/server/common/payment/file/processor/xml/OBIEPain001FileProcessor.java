@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -41,6 +39,8 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.jaxb.pain0
 import com.forgerock.sapi.gateway.ob.uk.rs.server.common.payment.file.processor.BasePaymentFileProcessor;
 
 import uk.org.openbanking.datamodel.v3.common.OBActiveOrHistoricCurrencyAndAmount;
+
+import jakarta.xml.bind.JAXB;
 
 @Component
 public class OBIEPain001FileProcessor extends BasePaymentFileProcessor {
