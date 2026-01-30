@@ -21,10 +21,10 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-parent</artifactId>
-        <version>5.0.6</version>
+        <version>5.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-    <version>5.0.7-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>secure-api-gateway-ob-uk-rs</name>
     <description>A UK Open Banking Resource Server for the Secure API Gateway</description>
@@ -80,8 +80,8 @@
     </repositories>
 
     <properties>
-        <uk.bom.version>5.0.6</uk.bom.version>
-        <consent.api.version>5.0.6</consent.api.version>
+        <uk.bom.version>5.2.0-SNAPSHOT</uk.bom.version>
+        <consent.api.version>5.2.0-SNAPSHOT</consent.api.version>
     </properties>
 
     <dependencyManagement>
