@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.forgerock.sapi.gateway</groupId>
         <artifactId>secure-api-gateway-ob-uk-rs</artifactId>
-        <version>5.1.1</version>
+        <version>5.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>secure-api-gateway-ob-uk-rs-cloud-client</artifactId>
