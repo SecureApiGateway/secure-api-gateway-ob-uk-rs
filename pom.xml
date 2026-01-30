@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright © 2020-2025 ForgeRock AS (obst@forgerock.com)
+    Copyright © 2020-2026 ForgeRock AS (obst@forgerock.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
         <connection>scm:git:${project.scm.url}</connection>
         <developerConnection>scm:git:${project.scm.url}</developerConnection>
         <url>https://github.com/SecureApiGateway/secure-api-gateway-ob-uk-rs.git</url>
-        <tag>v5.0.6</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
@@ -80,8 +80,8 @@
     </repositories>
 
     <properties>
-        <uk.bom.version>5.0.6</uk.bom.version>
-        <consent.api.version>5.0.6</consent.api.version>
+        <uk.bom.version>5.1.1</uk.bom.version>
+        <consent.api.version>5.1.1</consent.api.version>
     </properties>
 
     <dependencyManagement>
