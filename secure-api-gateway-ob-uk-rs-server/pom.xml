@@ -34,7 +34,7 @@
         <gcrRepo>europe-west4-docker.pkg.dev/sbat-gcr-develop/sapig-docker-artifact</gcrRepo>
         <!-- property to run individually the module with no license issues -->
         <legal.path.header>../legal/LICENSE-HEADER.txt</legal.path.header>
-        <logback.contrib.version>0.1.5</logback.contrib.version>
+        <logback.version>1.5.25</logback.version>
     </properties>
 
     <dependencies>
@@ -151,15 +151,12 @@
             <artifactId>jackson-datatype-joda</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback.contrib</groupId>
-            <artifactId>logback-json-classic</artifactId>
-            <version>${logback.contrib.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+            <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback.contrib</groupId>
-            <artifactId>logback-jackson</artifactId>
-            <version>${logback.contrib.version}</version>
-        </dependency>
+
         <!-- ForgeRock Test dependencies -->
         <dependency>
             <groupId>com.forgerock.sapi.gateway</groupId>

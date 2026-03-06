@@ -32,6 +32,7 @@
     <properties>
         <!-- property to run individually the module with no license issues -->
         <legal.path.header>../legal/LICENSE-HEADER.txt</legal.path.header>
+        <logback.version>1.5.25</logback.version>
     </properties>
 
     <dependencies>
@@ -70,6 +71,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
