@@ -1,4 +1,4 @@
-FROM gcr.io/forgerock-io/java-17:latest
+FROM gcr.io/forgerock-io/java-21:latest
 
 ARG JAR_FILE
 
