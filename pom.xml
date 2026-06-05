@@ -110,6 +110,12 @@
                 <artifactId>jaxb-impl</artifactId>
                 <version>4.0.6</version>
             </dependency>
+            <!-- IG BOM upgrades logback-classic to 1.5.34 but not logback-core; align them -->
+            <dependency>
+              <groupId>ch.qos.logback</groupId>
+              <artifactId>logback-core</artifactId>
+              <version>1.5.34</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
