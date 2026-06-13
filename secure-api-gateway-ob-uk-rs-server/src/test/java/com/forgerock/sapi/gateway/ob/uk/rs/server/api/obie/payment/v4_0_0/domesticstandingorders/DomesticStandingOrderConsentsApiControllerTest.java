@@ -18,7 +18,9 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.domes
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_CONSENT_NOT_FOUND;
 import static com.forgerock.sapi.gateway.ob.uk.common.error.ErrorCode.OBRI_PERMISSION_INVALID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -47,6 +49,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.server.testsupport.api.HttpHeadersTes
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.ConsentStoreClientException.ErrorType;
 import com.forgerock.sapi.gateway.rcs.consent.store.client.payment.domesticstandingorder.DomesticStandingOrderConsentStoreClient;
+import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.CreateDomesticStandingOrderConsentRequest;
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.domesticstandingorder.v3_1_10.DomesticStandingOrderConsent;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
@@ -57,6 +60,7 @@ import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.v4.payment.OBPaymentConsentStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.v4.payment.OBWriteDomesticStandingOrderConsentResponse6;
 import uk.org.openbanking.testsupport.v4.payment.OBWriteDomesticStandingOrderConsentTestDataFactory;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -85,8 +89,51 @@ public class DomesticStandingOrderConsentsApiControllerTest {
     }
 
     @Test
+    public void testCreateConsent() {
+        final OBWriteDomesticStandingOrderConsent5 consentRequest = createValidateConsentRequest();
+        final DomesticStandingOrderConsent consentStoreResponse = buildAwaitingAuthorisationConsent(consentRequest);
+        when(consentStoreClient.createConsent(any())).thenAnswer(invocation -> {
+            final CreateDomesticStandingOrderConsentRequest createConsentArg = invocation.getArgument(0, CreateDomesticStandingOrderConsentRequest.class);
+            assertThat(createConsentArg.getApiClientId()).isEqualTo(TEST_API_CLIENT_ID);
+            assertThat(createConsentArg.getConsentRequest()).isEqualTo(FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent(consentRequest));
+            assertThat(createConsentArg.getCharges()).isEmpty();
+            assertThat(createConsentArg.getIdempotencyKey()).isEqualTo(HTTP_HEADERS.getFirst("x-idempotency-key"));
+
+            return consentStoreResponse;
+        });
+
+        final HttpEntity<OBWriteDomesticStandingOrderConsent5> entity = new HttpEntity<>(consentRequest, HTTP_HEADERS);
+
+        final ResponseEntity<OBWriteDomesticStandingOrderConsentResponse6> createResponse = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
+                entity, OBWriteDomesticStandingOrderConsentResponse6.class);
+        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        final OBWriteDomesticStandingOrderConsentResponse6 consentResponse = createResponse.getBody();
+        final String consentId = consentResponse.getData().getConsentId();
+        assertThat(consentId).isEqualTo(consentStoreResponse.getId());
+        assertThat(consentResponse.getData().getStatus()).isEqualTo(OBPaymentConsentStatus.AWAU);
+        assertThat(consentResponse.getData().getInitiation()).usingRecursiveComparison().isEqualTo(consentRequest.getData().getInitiation());
+        assertThat(consentResponse.getData().getAuthorisation()).isEqualTo(consentRequest.getData().getAuthorisation());
+        assertThat(consentResponse.getData().getScASupportData()).isEqualTo(consentRequest.getData().getScASupportData());
+        assertThat(consentResponse.getData().getReadRefundAccount()).isEqualTo(consentRequest.getData().getReadRefundAccount());
+        assertThat(consentResponse.getData().getCreationDateTime()).isNotNull();
+        assertThat(consentResponse.getData().getStatusUpdateDateTime()).isNotNull();
+        assertThat(consentResponse.getRisk()).isEqualTo(consentRequest.getRisk());
+        final String selfLinkToConsent = consentResponse.getLinks().getSelf().toString();
+        assertThat(selfLinkToConsent).isEqualTo(controllerGetConsentUri(consentId));
+
+        // Get the consent and verify it matches the create response
+        when(consentStoreClient.getConsent(eq(consentId), eq(TEST_API_CLIENT_ID))).thenReturn(consentStoreResponse);
+
+        final ResponseEntity<OBWriteDomesticStandingOrderConsentResponse6> getConsentResponse = restTemplate.exchange(selfLinkToConsent,
+                HttpMethod.GET, new HttpEntity<>(HTTP_HEADERS), OBWriteDomesticStandingOrderConsentResponse6.class);
+
+        assertThat(getConsentResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(getConsentResponse.getBody()).isEqualTo(consentResponse);
+    }
+
+    @Test
     public void failsToCreateConsentIfRequestDoesNotPassJavaBeanValidation() {
-        final OBWriteDomesticStandingOrderConsent5 emptyConsent = new OBWriteDomesticStandingOrderConsent5();
+        final uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5 emptyConsent = new uk.org.openbanking.datamodel.v3.payment.OBWriteDomesticStandingOrderConsent5();
 
         final ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
                 new HttpEntity<>(emptyConsent, HTTP_HEADERS), OBErrorResponse1.class);
@@ -99,6 +146,23 @@ public class DomesticStandingOrderConsentsApiControllerTest {
         final String fieldInvalidErrCode = OBStandardErrorCodes1.UK_OBIE_FIELD_INVALID.toString();
         assertThat(errors).containsExactlyInAnyOrder(new OBError1().errorCode(fieldInvalidErrCode).message(fieldMustNotBeNullErrMsg).path("risk"),
                 new OBError1().errorCode(fieldInvalidErrCode).message(fieldMustNotBeNullErrMsg).path("data"));
+
+        verifyNoMoreInteractions(consentStoreClient);
+    }
+
+    @Test
+    public void failsToCreateConsentIfRequestDoesNotPassBizLogicValidation() {
+        final OBWriteDomesticStandingOrderConsent5 consentWithInvalidAmount = OBWriteDomesticStandingOrderConsentTestDataFactory.aValidOBWriteDomesticStandingOrderConsent5();
+        consentWithInvalidAmount.getData().getInitiation().getFirstPaymentAmount().setAmount("0"); // Invalid amount
+
+        final ResponseEntity<OBErrorResponse1> response = restTemplate.exchange(controllerBaseUri, HttpMethod.POST,
+                new HttpEntity<>(consentWithInvalidAmount, HTTP_HEADERS), OBErrorResponse1.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        final List<OBError1> errors = response.getBody().getErrors();
+        assertThat(errors).hasSize(1);
+        assertThat(errors.get(0).getErrorCode()).isEqualTo(OBStandardErrorCodes1.UK_OBIE_FIELD_INVALID.toString());
+        assertThat(errors.get(0).getMessage()).isEqualTo("The field received is invalid. Reason 'size must be between 0 and 2'");
 
         verifyNoMoreInteractions(consentStoreClient);
     }
