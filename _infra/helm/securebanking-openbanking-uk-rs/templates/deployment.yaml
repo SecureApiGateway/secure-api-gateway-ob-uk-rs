@@ -76,17 +76,17 @@ spec:
           - name: CLOUD_CLIENT_BASE_URI
             valueFrom:
               configMapKeyRef:
-                name: rs-sapig-deployment-config
+                name: fapi-pep-rs-ob-config
                 key: GATEWAY_DATA_REPO_URI
           - name: RCS_CONSENT_STORE_API_BASEURI
             valueFrom:
               configMapKeyRef:
-                name: rs-sapig-deployment-config
+                name: fapi-pep-rs-ob-config
                 key: RCS_CONSENT_STORE_URI
           - name: RS_DISCOVERY_FINANCIAL_ID
             valueFrom:
               configMapKeyRef:
-                name: rs-sapig-deployment-config
+                name: fapi-pep-rs-ob-config
                 key: OB_ASPSP_ORG_ID
           - name: SPRING_PROFILES_ACTIVE
             value: "docker"
