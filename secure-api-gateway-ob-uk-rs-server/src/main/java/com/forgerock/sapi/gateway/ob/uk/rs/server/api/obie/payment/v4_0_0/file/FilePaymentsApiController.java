@@ -18,7 +18,7 @@ package com.forgerock.sapi.gateway.ob.uk.rs.server.api.obie.payment.v4_0_0.file;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.common.FRSubmissionStatus.INITIATIONPENDING;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRSubmissionStatusConverter.toOBWriteFileResponse3DataStatus;
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConsentConverter.toOBWriteFileResponse3DataInitiation;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.payment.FRWriteFileConverter.toFRWriteFile;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
@@ -100,7 +100,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .data(new OBWriteFileResponse3Data()
                         .charges(FRChargeConverter.toOBWriteDomesticConsentResponse5DataCharges(filePaymentConsent.getCharges()))
                         .filePaymentId(frPaymentSubmission.getId())
-                        .initiation(toOBWriteFile2DataInitiation(data.getInitiation()))
+                        .initiation(toOBWriteFileResponse3DataInitiation(data.getInitiation()))
                         .creationDateTime(new DateTime(frPaymentSubmission.getCreated().getTime()))
                         .statusUpdateDateTime(new DateTime(frPaymentSubmission.getUpdated().getTime()))
                         .status(toOBWriteFileResponse3DataStatus(frPaymentSubmission.getStatus()))
