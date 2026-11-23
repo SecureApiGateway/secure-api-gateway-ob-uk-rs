@@ -42,12 +42,12 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.v4.common.Meta;
 import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmation1;
 import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationResponse1Data;
+import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationDataResponse1;
 
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.funds.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 
 @Controller("FundsConfirmationsApiV4.0.0")
@@ -131,8 +131,8 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, HttpServletRequest request) {
         final FRFundsConfirmationData obFundsConfirmationData = fundsConfirmation.getFundsConfirmation();
         return new OBFundsConfirmationResponse1()
-                .data(new OBFundsConfirmationResponse1Data()
-                        .instructedAmount(toOBFundsConfirmation1DataInstructedAmount(obFundsConfirmationData.getInstructedAmount()))
+                .data(new OBFundsConfirmationDataResponse1()
+                        .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obFundsConfirmationData.getInstructedAmount()))
                         .creationDateTime(new DateTime(fundsConfirmation.getCreated()))
                         .fundsConfirmationId(fundsConfirmation.getId())
                         .fundsAvailable(fundsConfirmation.isFundsAvailable())

@@ -242,7 +242,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .status(toOBWriteInternationalResponse5DataStatus(frPaymentSubmission.getStatus()))
                         .consentId(data.getConsentId())
                         .debtor(FRAccountIdentifierConverter.toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
-                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse5DataRefund).orElse(null))
+                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBDomesticRefundAccount1).orElse(null))
                         .exchangeRateInformation(FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()))
                         .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
                 .links(LinksHelper.createInternationalPaymentLink(this.getClass(), frPaymentSubmission.getId()))

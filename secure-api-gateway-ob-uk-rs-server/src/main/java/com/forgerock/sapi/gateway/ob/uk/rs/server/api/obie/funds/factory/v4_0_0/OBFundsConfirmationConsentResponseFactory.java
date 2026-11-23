@@ -25,9 +25,9 @@ import org.springframework.stereotype.Component;
 
 import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsentResponse1;
-import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsentResponse1Data;
+import uk.org.openbanking.datamodel.v4.fund.OBFundsConfirmationConsentDataResponse1;
 
-import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toOBFundsConfirmationConsent1DataDebtorAccount;
+import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRAccountIdentifierConverter.toFundOBCashAccountDebtorWithName;
 import static com.forgerock.sapi.gateway.ob.uk.common.datamodel.converter.v4.common.FRFundsConfirmationConsentStatusConverter.toOBFundsConfirmationConsentStatusV4;
 
 import java.util.Collections;
@@ -37,16 +37,16 @@ public class OBFundsConfirmationConsentResponseFactory {
 
     public OBFundsConfirmationConsentResponse1 buildConsentResponse(FundsConfirmationConsent consent, Class<?> controllerClass) {
         final FRFundsConfirmationConsentData frFundsConfirmationConsentData = consent.getRequestObj().getData();
-        final OBFundsConfirmationConsentResponse1Data data = new OBFundsConfirmationConsentResponse1Data();
+        final OBFundsConfirmationConsentDataResponse1 data = new OBFundsConfirmationConsentDataResponse1();
         return new OBFundsConfirmationConsentResponse1()
                 .data(
-                        new OBFundsConfirmationConsentResponse1Data()
+                        new OBFundsConfirmationConsentDataResponse1()
                                 .consentId(consent.getId())
                                 .creationDateTime(new DateTime(consent.getCreationDateTime()))
                                 .statusUpdateDateTime(new DateTime(consent.getStatusUpdateDateTime()))
                                 .status(toOBFundsConfirmationConsentStatusV4(consent.getStatus()))
                                 .expirationDateTime(frFundsConfirmationConsentData.getExpirationDateTime())
-                                .debtorAccount(toOBFundsConfirmationConsent1DataDebtorAccount(frFundsConfirmationConsentData.getDebtorAccount()))
+                                .debtorAccount(toFundOBCashAccountDebtorWithName(frFundsConfirmationConsentData.getDebtorAccount()))
                                 .statusReason(Collections.singletonList(FRModelMapper.map(data.getStatusReason(), OBStatusReason.class)))
                 )
                 .meta(PaginationUtil.generateMetaData(1))

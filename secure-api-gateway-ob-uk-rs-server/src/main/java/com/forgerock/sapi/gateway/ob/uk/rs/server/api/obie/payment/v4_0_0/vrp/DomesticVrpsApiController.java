@@ -172,7 +172,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                                 .statusDetail(
                                                         new OBDomesticVRPDetailsDataPaymentStatusInnerStatusDetail()
                                                                 .localInstrument(localInstrument)
-                                                                .status(FRPaymentDetailsStatusConverter.toOBDomesticVRPDetailsDataPaymentStatusInnerStatus(paymentSubmission.getStatus().getValue()).getValue())
+                                                                .status(FRPaymentDetailsStatusConverter.toOBDomesticVRPDetailsDataPaymentStatusInnerStatus(paymentSubmission.getStatus().getValue()))
                                                                 .statusReason(FRPaymentDetailsStatusConverter.toOBDomesticVRPDetailsDataPaymentStatusInnerStatus(paymentSubmission.getStatus().getValue()).getValue())
                                                                 .statusReasonDescription(statusReasonEnum.getValue())
                                                 )
@@ -271,7 +271,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                                 .debtorAccount(obDomesticVRPRequest.getData().getInitiation().getDebtorAccount())
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
                                 .instruction(obDomesticVRPRequest.getData().getInstruction())
-                                .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBCashAccountDebtorWithName).orElse(null))
+                                .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBDomesticVrpRefundAccount1).orElse(null))
                                 .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
 
                 .links(LinksHelper.createDomesticVrpPaymentLink(this.getClass(), paymentSubmission.getId())
