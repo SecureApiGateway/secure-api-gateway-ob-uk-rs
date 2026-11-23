@@ -43,6 +43,7 @@ import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.payment.internatio
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
 import jakarta.annotation.PostConstruct;
+import uk.org.openbanking.datamodel.v4.payment.OBInternalConsentStatus2Code;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;

@@ -39,6 +39,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
+import uk.org.openbanking.datamodel.v4.payment.OBInternalConsentStatus3Code;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;

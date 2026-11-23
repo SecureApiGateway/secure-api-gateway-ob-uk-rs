@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 
 import static com.forgerock.sapi.gateway.ob.uk.rs.server.util.BeanValidationTestUtils.verifyBeanValidationIsSuccessful;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.v4.payment.OBWriteFileConsentResponse4DataStatus.AWUP;
+import static uk.org.openbanking.datamodel.v4.payment.OBInternalConsentStatus3Code.AWUP;
 
 class OBWriteFileConsentResponse4FactoryTest {
 

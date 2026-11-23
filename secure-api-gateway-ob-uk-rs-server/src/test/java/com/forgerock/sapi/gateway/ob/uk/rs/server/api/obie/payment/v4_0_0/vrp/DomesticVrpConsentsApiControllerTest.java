@@ -68,6 +68,7 @@ import com.forgerock.sapi.gateway.rs.resource.store.repo.entity.account.FRBalanc
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.obie.OBVersion;
 import com.forgerock.sapi.gateway.uk.common.shared.api.meta.share.IntentType;
 
+import uk.org.openbanking.datamodel.v4.payment.OBInternalConsentStatus2Code;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;

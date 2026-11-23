@@ -20,6 +20,7 @@ import com.forgerock.sapi.gateway.ob.uk.rs.obie.api.account.v4_0_0.accounts.Acco
 import com.forgerock.sapi.gateway.rcs.consent.store.datamodel.account.v3_1_10.AccountAccessConsent;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
+import uk.org.openbanking.datamodel.v4.account.OBInternalConsentStatus1Code;
 import uk.org.openbanking.datamodel.v3.account.OBRisk2;
 import uk.org.openbanking.datamodel.v4.account.*;
 import uk.org.openbanking.datamodel.v4.account.OBInternalPermissions1Code;
@@ -55,7 +56,7 @@ class OBReadConsentResponseFactoryTest {
         final OBReadConsentResponse1 obReadConsentResponse1 = responseFactory.buildConsentResponse(consent, AccountAccessConsentsApi.class);
         final OBReadConsentResponse1Data response1Data = obReadConsentResponse1.getData();
         assertThat(response1Data.getConsentId()).isEqualTo(consentId);
-        assertThat(response1Data.getStatus()).isEqualTo(OBReadConsentStatus.AWAU);
+        assertThat(response1Data.getStatus()).isEqualTo(OBInternalConsentStatus1Code.AWAU);
         assertThat(response1Data.getPermissions()).isEqualTo(List.of(OBInternalPermissions1Code.READACCOUNTSBASIC, OBInternalPermissions1Code.READBALANCES));
         assertThat(response1Data.getCreationDateTime()).isEqualTo(new DateTime(creationDateTime));
         assertThat(response1Data.getStatusUpdateDateTime()).isEqualTo(new DateTime(creationDateTime));

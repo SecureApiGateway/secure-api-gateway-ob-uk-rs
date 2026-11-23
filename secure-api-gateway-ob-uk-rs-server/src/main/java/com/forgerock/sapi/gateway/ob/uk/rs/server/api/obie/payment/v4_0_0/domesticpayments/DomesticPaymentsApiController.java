@@ -264,7 +264,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                               .status(toOBWriteDomesticResponse5DataStatus(frPaymentSubmission.getStatus()))
                               .consentId(data.getConsentId())
                               .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
-                              .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null))
+                              .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBDomesticRefundAccount1).orElse(null))
                               .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
 
                 .links(LinksHelper.createDomesticPaymentLink(this.getClass(), frPaymentSubmission.getId()))

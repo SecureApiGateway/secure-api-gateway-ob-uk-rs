@@ -76,6 +76,7 @@ import uk.org.openbanking.datamodel.v4.common.OBStatusReason;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledResponse6;
 import uk.org.openbanking.datamodel.v4.payment.OBWriteInternationalScheduledResponse6Data;
+import uk.org.openbanking.datamodel.v4.payment.ExternalPaymentTransactionStatus1Code;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1PaymentStatusStatus;
 import uk.org.openbanking.datamodel.v4.payment.OBWritePaymentDetails1Status;
@@ -255,7 +256,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .consentId(frPaymentSubmission.getScheduledPayment().getData().getConsentId())
                         .debtor(toOBCashAccountDebtor4(data.getInitiation().getDebtorAccount()))
                         .expectedExecutionDateTime(data.getInitiation().getRequestedExecutionDateTime())
-                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBWriteInternationalScheduledResponse6DataRefund).orElse(null))
+                        .refund(refundAccountData.map(FRResponseDataRefundConverter::toOBDomesticRefundAccount1).orElse(null))
                         .exchangeRateInformation(FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation(consent.getExchangeRateInformation()))
                         .statusReason(Collections.singletonList(FRModelMapper.map(responseData.getStatusReason(), OBStatusReason.class))))
 
@@ -264,7 +265,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     }
 
     private OBWritePaymentDetailsResponse1 responseEntityDetails(FRInternationalScheduledPaymentSubmission frInternationalScheduledPaymentSubmission) {
-        OBWritePaymentDetails1Status status = FRPaymentDetailsStatusConverter.toOBPaymentDetailsStatus(
+        ExternalPaymentTransactionStatus1Code status = FRPaymentDetailsStatusConverter.toOBPaymentDetailsStatus(
                 frInternationalScheduledPaymentSubmission.getStatus().getValue());
 
         // Build the response object with data to meet the expected data defined by the spec

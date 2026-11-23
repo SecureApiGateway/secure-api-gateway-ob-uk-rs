@@ -32,6 +32,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
+import uk.org.openbanking.datamodel.v4.account.OBInternalConsentStatus1Code;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.v4.account.OBReadConsent1;
@@ -96,7 +97,7 @@ class AccountAccessConsentsApiControllerTest {
         final OBReadConsentResponse1 createConsentApiResponse = createResponse.getBody();
         assert createConsentApiResponse != null;
         assertThat(createConsentApiResponse.getData().getConsentId()).isEqualTo(mockConsentStoreResponse.getId());
-        assertThat(createConsentApiResponse.getData().getStatus()).isEqualTo(OBReadConsentStatus.AWAU);
+        assertThat(createConsentApiResponse.getData().getStatus()).isEqualTo(OBInternalConsentStatus1Code.AWAU);
         assertThat(createConsentApiResponse.getData().getCreationDateTime()).isNotNull();
         assertThat(createConsentApiResponse.getData().getStatusUpdateDateTime()).isNotNull();
         assertThat(createConsentApiResponse.getData().getPermissions()).isEqualTo(obConsentRequest.getData().getPermissions());

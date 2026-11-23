@@ -34,6 +34,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
+import uk.org.openbanking.datamodel.v4.fund.OBInternalConsentStatus1Code;
 import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.v3.common.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
@@ -98,7 +99,7 @@ public class FundsConfirmationConsentsApiControllerTest {
 
         final OBFundsConfirmationConsentResponse1 createConsentApiResponse = createResponse.getBody();
         assertThat(createConsentApiResponse.getData().getConsentId()).isEqualTo(mockConsentStoreResponse.getId());
-        assertThat(createConsentApiResponse.getData().getStatus()).isEqualTo(OBFundsConfirmationConsentStatus.AWAU);
+        assertThat(createConsentApiResponse.getData().getStatus()).isEqualTo(OBInternalConsentStatus1Code.AWAU);
         assertThat(createConsentApiResponse.getData().getCreationDateTime()).isNotNull();
         assertThat(createConsentApiResponse.getData().getStatusUpdateDateTime()).isNotNull();
         assertThat(createConsentApiResponse.getData().getExpirationDateTime()).isEqualTo(obConsentRequest.getData().getExpirationDateTime());
@@ -199,10 +200,10 @@ public class FundsConfirmationConsentsApiControllerTest {
     private OBFundsConfirmationConsent1 createValidOBConsentRequest() {
         return new OBFundsConfirmationConsent1()
                 .data(
-                        new OBFundsConfirmationConsent1Data()
+                        new OBFundsConfirmationConsentData1()
                                 .expirationDateTime(DateTime.now().plusDays(30).withZone(DateTimeZone.UTC))
                                 .debtorAccount(
-                                        new OBFundsConfirmationConsent1DataDebtorAccount()
+                                        new OBCashAccountDebtorWithName()
                                                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                                                 .identification("40400422390112")
                                                 .name("Mrs B Smith")

@@ -53,6 +53,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
 import uk.org.openbanking.datamodel.v3.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.v4.common.ExternalProxyAccountType1Code;
+import uk.org.openbanking.datamodel.v4.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.v4.common.OBProxy1;
 import uk.org.openbanking.datamodel.v4.fund.*;
 
@@ -206,7 +207,7 @@ public class FundsConfirmationsApiControllerTest {
 
         // Then
         assertThat(fundsConfirmationResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        OBFundsConfirmationResponse1Data responseData = fundsConfirmationResponse.getBody().getData();
+        OBFundsConfirmationDataResponse1 responseData = fundsConfirmationResponse.getBody().getData();
         assertThat(responseData.getFundsConfirmationId()).isNotNull().isNotBlank();
         assertThat(responseData.getConsentId()).isEqualTo(fundsConfirmationRequest.getData().getConsentId());
         assertThat(responseData.getFundsAvailable()).isTrue();
@@ -230,7 +231,7 @@ public class FundsConfirmationsApiControllerTest {
 
         // Then
         assertThat(fundsConfirmationResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        OBFundsConfirmationResponse1Data responseData = fundsConfirmationResponse.getBody().getData();
+        OBFundsConfirmationDataResponse1 responseData = fundsConfirmationResponse.getBody().getData();
         assertThat(responseData.getFundsConfirmationId()).isNotNull().isNotBlank();
         assertThat(responseData.getConsentId()).isEqualTo(fundsConfirmationRequest.getData().getConsentId());
         assertThat(responseData.getFundsAvailable()).isFalse();
@@ -367,11 +368,11 @@ public class FundsConfirmationsApiControllerTest {
 
     private OBFundsConfirmation1 aValidOBFundsConfirmation(String consentId, String currency) {
         return (new OBFundsConfirmation1().data(
-                new OBFundsConfirmation1Data()
+                new OBFundsConfirmationData1()
                         .reference("test-reference")
                         .consentId(consentId)
                         .instructedAmount(
-                                new OBFundsConfirmation1DataInstructedAmount()
+                                new OBActiveOrHistoricCurrencyAndAmount()
                                         .amount("20.00")
                                         .currency(currency)
                         )
@@ -381,10 +382,10 @@ public class FundsConfirmationsApiControllerTest {
     private OBFundsConfirmationConsent1 aValidOBFundsConfirmationConsent() {
         return (new OBFundsConfirmationConsent1())
                 .data(
-                        new OBFundsConfirmationConsent1Data()
+                        new OBFundsConfirmationConsentData1()
                                 .expirationDateTime(DateTime.now().plusMonths(5))
                                 .debtorAccount(
-                                        new OBFundsConfirmationConsent1DataDebtorAccount()
+                                        new OBCashAccountDebtorWithName()
                                                 .identification("08080021325698")
                                                 .name("ACME Inc")
                                                 .schemeName("UK.OBIE.SortCodeAccountNumber")

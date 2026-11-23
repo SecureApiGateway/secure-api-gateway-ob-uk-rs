@@ -21,6 +21,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import uk.org.openbanking.datamodel.v3.error.OBError1;
+import uk.org.openbanking.datamodel.v4.common.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.v4.fund.*;
 
 import java.util.List;
@@ -115,10 +116,10 @@ public class FundsConfirmationValidatorTest {
 
     private OBFundsConfirmation1 aValidOBFundsConfirmation1() {
         return new OBFundsConfirmation1()
-                .data(new OBFundsConfirmation1Data()
+                .data(new OBFundsConfirmationData1()
                         .consentId(UUID.randomUUID().toString())
                         .reference("Funds confirmation ref")
-                        .instructedAmount(new OBFundsConfirmation1DataInstructedAmount()
+                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount()
                                 .currency(ACCOUNT_CURRENCY)
                                 .amount("20.00")
                         ));
@@ -131,10 +132,10 @@ public class FundsConfirmationValidatorTest {
     private OBFundsConfirmationConsent1 createValidOBFundsConfirmationConsent1(DateTime dateTime) {
         return new OBFundsConfirmationConsent1()
                 .data(
-                        new OBFundsConfirmationConsent1Data()
+                        new OBFundsConfirmationConsentData1()
                                 .expirationDateTime(dateTime)
                                 .debtorAccount(
-                                        new OBFundsConfirmationConsent1DataDebtorAccount()
+                                        new OBCashAccountDebtorWithName()
                                                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                                                 .identification("40400422390112")
                                                 .name("Mrs B Smith")
